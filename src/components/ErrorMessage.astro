@@ -1,0 +1,79 @@
+---
+interface Props {
+    message: string;
+    type?: "error" | "warning" | "info";
+    showRetry?: boolean;
+}
+
+const { message, type = "error", showRetry = false } = Astro.props;
+
+const icons: Record<string, string> = {
+    error: "❌",
+    warning: "⚠️",
+    info: "ℹ️",
+};
+---
+
+<div class={`error-message type-${type}`}>
+    <span class="error-icon">{icons[type]}</span>
+    <span class="error-text">{message}</span>
+    {
+        showRetry && (
+            <button class="retry-btn" onclick="window.location.reload()">
+                重試
+            </button>
+        )
+    }
+</div>
+
+<style>
+    .error-message {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 24px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+
+    .type-error {
+        background: rgba(255, 71, 87, 0.1);
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        color: #ff4757;
+    }
+
+    .type-warning {
+        background: rgba(255, 149, 0, 0.1);
+        border: 1px solid rgba(255, 149, 0, 0.3);
+        color: #ff9500;
+    }
+
+    .type-info {
+        background: rgba(0, 153, 255, 0.1);
+        border: 1px solid rgba(0, 153, 255, 0.3);
+        color: #0099ff;
+    }
+
+    .error-icon {
+        font-size: 1.2rem;
+    }
+
+    .error-text {
+        flex: 1;
+    }
+
+    .retry-btn {
+        padding: 6px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid currentColor;
+        border-radius: 6px;
+        color: inherit;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.15s;
+    }
+
+    .retry-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>

@@ -1,0 +1,523 @@
+---
+/**
+ * 新版左側導航欄組件 - Phase 1實現
+ *
+ * 功能：
+ * - 三大工作區分類 (Analysis, Research, Portfolio)
+ * - 可折疊子菜單
+ * - 全局搜索框
+ * - 用戶菜單
+ *
+ * @module SidebarNav
+ * @version 1.0.0
+ */
+
+interface MenuItem {
+    label: string;
+    icon: string;
+    href: string;
+    active?: boolean;
+    children?: MenuItem[];
+}
+
+// 三大工作區架構
+const workspaces: Array<{ label: string; icon: string; items: MenuItem[] }> = [
+    {
+        label: '🔍 Analysis',
+        icon: '🔍',
+        items: [
+            { label: 'Stock Screener', icon: '🔎', href: '/screener', active: false },
+            { label: 'Quick Filter', icon: '⚡', href: '/filter', active: false },
+            { label: 'Strategy Lab', icon: '🧪', href: '/strategies', active: false },
+            { label: 'Holdings Overview', icon: '📊', href: '/portfolio', active: false },
+        ],
+    },
+    {
+        label: '📊 Research',
+        icon: '📊',
+        items: [
+            { label: 'Stock Profile', icon: '📈', href: '/stocks', active: false },
+            { label: 'Technical Analysis', icon: '📉', href: '/stocks', active: false },
+            { label: 'Fundamental', icon: '📋', href: '/stocks', active: false },
+            { label: 'Dividend & Events', icon: '📅', href: '/dividends', active: false },
+            { label: 'News & Sentiment', icon: '📰', href: '/news', active: false },
+        ],
+    },
+    {
+        label: '💼 Portfolio',
+        icon: '💼',
+        items: [
+            { label: 'Dashboard', icon: '📊', href: '/portfolio', active: false },
+            { label: 'Holdings', icon: '🏦', href: '/portfolio', active: false },
+            { label: 'Allocation', icon: '⚖️', href: '/portfolio', active: false },
+            { label: 'Risk & Performance', icon: '📈', href: '/portfolio', active: false },
+            { label: 'Transactions', icon: '📝', href: '/portfolio', active: false },
+        ],
+    },
+];
+
+const quickAccess = [
+    { label: 'Watchlist', icon: '⭐', href: '/watchlist' },
+    { label: 'Industries', icon: '🏭', href: '/industries' },
+    { label: 'Live Data', icon: '📡', href: '/live' },
+];
+
+const settings = [
+    { label: 'Settings', icon: '⚙️', href: '/settings' },
+    { label: 'Help', icon: '❓', href: '/help' },
+    { label: 'Logout', icon: '🚪', href: '/logout' },
+];
+---
+
+<nav class="sidebar-nav" id="sidebar-nav">
+    <!-- Logo Section -->
+    <div class="nav-header">
+        <a href="/" class="logo">
+            <span class="logo-icon">📈</span>
+            <span class="logo-text">TW Stock</span>
+        </a>
+        <div class="nav-actions">
+            <button class="nav-toggle-btn" id="sidebar-toggle" title="Collapse sidebar">
+                <span>«</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Global Search -->
+    <div class="search-section">
+        <input
+            type="text"
+            class="search-input"
+            id="global-search"
+            placeholder="搜索股票、策略..."
+            aria-label="全局搜索"
+        />
+        <span class="search-icon">🔍</span>
+    </div>
+
+    <!-- Workspaces -->
+    <div class="workspaces-section">
+        {
+            workspaces.map(workspace => (
+                <div
+                    class="workspace"
+                    data-workspace={workspace.label.split(' ')[1]?.toLowerCase()}
+                >
+                    <button class="workspace-header" type="button">
+                        <span class="workspace-icon">{workspace.icon}</span>
+                        <span class="workspace-label">{workspace.label}</span>
+                        <span class="workspace-toggle">▼</span>
+                    </button>
+
+                    <div class="workspace-items">
+                        {workspace.items.map(item => (
+                            <a href={item.href} class="workspace-item">
+                                <span class="item-icon">{item.icon}</span>
+                                <span class="item-label">{item.label}</span>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            ))
+        }
+    </div>
+
+    <!-- Quick Access -->
+    <div class="quick-access-section">
+        <div class="section-label">⭐ Quick Access</div>
+        {
+            quickAccess.map(item => (
+                <a href={item.href} class="quick-access-item">
+                    <span class="item-icon">{item.icon}</span>
+                    <span class="item-label">{item.label}</span>
+                </a>
+            ))
+        }
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-section">
+        {
+            settings.map(item => (
+                <a href={item.href} class="settings-item">
+                    <span class="item-icon">{item.icon}</span>
+                    <span class="item-label">{item.label}</span>
+                </a>
+            ))
+        }
+    </div>
+</nav>
+
+<style>
+    .sidebar-nav {
+        width: 240px;
+        height: 100vh;
+        background: var(--c-bg-glass);
+        border-right: 1px solid var(--c-border);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+        overflow-y: auto;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 100;
+        transition: width 0.3s var(--ease-out);
+    }
+
+    .sidebar-nav.collapsed {
+        width: 70px;
+    }
+
+    .sidebar-nav.collapsed .logo-text,
+    .sidebar-nav.collapsed .workspace-label,
+    .sidebar-nav.collapsed .item-label,
+    .sidebar-nav.collapsed .section-label {
+        display: none;
+    }
+
+    .sidebar-nav.collapsed .workspace-toggle {
+        display: none;
+    }
+
+    /* Header */
+    .nav-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--c-border);
+        height: 50px;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #fff;
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+    }
+
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(var(--c-accent-rgb), 0.15);
+        border-radius: 6px;
+        font-size: 18px;
+        border: 1px solid rgba(var(--c-accent-rgb), 0.2);
+    }
+
+    .nav-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .nav-toggle-btn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        border-radius: 6px;
+        color: var(--c-text-muted);
+        cursor: pointer;
+        transition: all 0.3s var(--ease-out);
+        font-size: 16px;
+    }
+
+    .nav-toggle-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--c-accent);
+        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.2);
+    }
+
+    /* Search */
+    .search-section {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-input {
+        width: 100%;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        border-radius: 6px;
+        color: var(--c-text-primary);
+        padding: 0 12px 0 32px;
+        font-size: 12px;
+        outline: none;
+        transition: all 0.2s var(--ease-out);
+    }
+
+    .search-input::placeholder {
+        color: var(--c-text-muted);
+    }
+
+    .search-input:focus {
+        border-color: rgba(var(--c-accent-rgb), 0.5);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 12px rgba(var(--c-accent-rgb), 0.15);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        color: var(--c-text-muted);
+        font-size: 14px;
+    }
+
+    /* Workspaces */
+    .workspaces-section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .workspace {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .workspace-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 40px;
+        padding: 0 10px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        color: var(--c-text-secondary);
+        font-weight: 600;
+        font-size: 12px;
+        transition: all 0.2s var(--ease-out);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .workspace-header:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--c-accent);
+    }
+
+    .workspace-icon {
+        font-size: 16px;
+        min-width: 18px;
+    }
+
+    .workspace-label {
+        flex: 1;
+        text-align: left;
+    }
+
+    .workspace-toggle {
+        font-size: 12px;
+        transition: transform 0.3s var(--ease-out);
+    }
+
+    .workspace.collapsed .workspace-toggle {
+        transform: rotate(-90deg);
+    }
+
+    /* Workspace Items */
+    .workspace-items {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-height: 500px;
+        overflow: hidden;
+        transition:
+            max-height 0.3s var(--ease-out),
+            opacity 0.2s;
+        opacity: 1;
+    }
+
+    .workspace.collapsed .workspace-items {
+        max-height: 0;
+        opacity: 0;
+    }
+
+    .workspace-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 36px;
+        padding: 0 10px 0 24px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--c-text-secondary);
+        font-size: 12px;
+        text-decoration: none;
+        transition: all 0.2s var(--ease-out);
+    }
+
+    .workspace-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--c-accent);
+        border-color: rgba(var(--c-accent-rgb), 0.2);
+    }
+
+    .workspace-item.active {
+        background: rgba(var(--c-accent-rgb), 0.08);
+        color: var(--c-accent);
+        border-left: 3px solid var(--c-accent);
+        font-weight: 600;
+    }
+
+    .item-icon {
+        font-size: 14px;
+        min-width: 16px;
+    }
+
+    .item-label {
+        white-space: nowrap;
+    }
+
+    /* Quick Access & Settings */
+    .quick-access-section,
+    .settings-section {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding-top: 12px;
+        border-top: 1px solid var(--c-border);
+    }
+
+    .section-label {
+        font-size: 11px;
+        color: var(--c-text-muted);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        padding: 0 10px;
+        margin-bottom: 4px;
+    }
+
+    .quick-access-item,
+    .settings-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 36px;
+        padding: 0 10px;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--c-text-secondary);
+        font-size: 12px;
+        text-decoration: none;
+        transition: all 0.2s var(--ease-out);
+    }
+
+    .quick-access-item:hover,
+    .settings-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+    }
+
+    /* Scrollbar */
+    .sidebar-nav::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Collapsed State */
+    .sidebar-nav.collapsed {
+        width: 70px;
+    }
+
+    .sidebar-nav.collapsed .search-section {
+        display: none;
+    }
+
+    .sidebar-nav.collapsed .workspace-header,
+    .sidebar-nav.collapsed .quick-access-item,
+    .sidebar-nav.collapsed .settings-item {
+        justify-content: center;
+        padding: 0;
+    }
+</style>
+
+<script>
+    // Workspace Collapse Toggle
+    document.querySelectorAll('.workspace-header').forEach(header => {
+        header.addEventListener('click', () => {
+            const workspace = header.closest('.workspace');
+            workspace?.classList.toggle('collapsed');
+
+            // Save state
+            const workspaceName = workspace?.getAttribute('data-workspace');
+            if (workspaceName) {
+                const collapsed = workspace?.classList.contains('collapsed');
+                localStorage.setItem(`tw-workspace-${workspaceName}-collapsed`, String(collapsed));
+            }
+        });
+    });
+
+    // Restore workspace state from localStorage
+    document.querySelectorAll('.workspace').forEach(workspace => {
+        const name = workspace.getAttribute('data-workspace');
+        const isSaved = localStorage.getItem(`tw-workspace-${name}-collapsed`);
+        if (isSaved === 'true') {
+            workspace.classList.add('collapsed');
+        }
+    });
+
+    // Sidebar Toggle
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarNav = document.getElementById('sidebar-nav');
+
+    sidebarToggle?.addEventListener('click', () => {
+        sidebarNav?.classList.toggle('collapsed');
+        const isCollapsed = sidebarNav?.classList.contains('collapsed');
+        localStorage.setItem('tw-sidebar-collapsed', String(isCollapsed));
+    });
+
+    // Restore sidebar state
+    if (localStorage.getItem('tw-sidebar-collapsed') === 'true') {
+        sidebarNav?.classList.add('collapsed');
+    }
+
+    // Global Search
+    const searchInput = document.getElementById('global-search');
+    searchInput?.addEventListener('input', e => {
+        const query = (e.target as HTMLInputElement).value.toLowerCase();
+        // TODO: Implement search functionality in Phase 2
+        console.log('Search:', query);
+    });
+
+    // Mark active items
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.workspace-item').forEach(item => {
+        const href = item.getAttribute('href') || '';
+        if (href === currentPath || currentPath.startsWith(href + '/')) {
+            item.classList.add('active');
+        }
+    });
+</script>

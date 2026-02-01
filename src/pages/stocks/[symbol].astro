@@ -1,0 +1,589 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import StockChart from '../../components/StockChart.astro';
+import { fetchStockPrices } from '../../utils/priceService';
+import type { StockPriceRecord } from '../../utils/priceService';
+
+export async function getStaticPaths() {
+    const fs = await import('fs');
+    const path = await import('path');
+    const indexPath = path.join(process.cwd(), 'public/data/price_index.json');
+
+    let paths = [];
+    if (fs.existsSync(indexPath)) {
+        const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+        paths = Object.keys(index).map(symbol => ({ params: { symbol } }));
+    } else {
+        paths = [{ params: { symbol: '2330' } }];
+    }
+
+    return paths;
+}
+
+const { symbol } = Astro.params;
+const prices = await fetchStockPrices(symbol as string);
+
+// Process data
+const sortedPrices = [...prices].sort(
+    (a, b) => new Date(a.Date).getTime() - new Date(b.Date).getTime()
+);
+const latest = sortedPrices[sortedPrices.length - 1];
+
+// Color helper
+const upColor = '#10b981';
+const downColor = '#ef4444';
+---
+
+<Layout title={`${symbol} | TW Stock Terminal`}>
+    <div class="detail-container">
+        <!-- Futuristic HUD Header -->
+        <header class="hud-header">
+            <div class="header-left">
+                <a href="/" class="back-btn">
+                    <span class="icon">↵</span>
+                    <span class="text">TERMINAL_RETURN</span>
+                </a>
+                <div class="stock-identity">
+                    <div class="symbol-badge-large">{symbol}</div>
+                    <div class="meta">
+                        <h1 class="stock-title">市場分析概覽 (Market Overview)</h1>
+                        <p class="status-line">
+                            <span class="dot pulse"></span>
+                            LIVE_FEED_ACTIVE // PORT_AUTO
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {
+                latest && (
+                    <div class="header-right price-hud">
+                        <div class="price-value mono">
+                            {latest.Close.toFixed(2)}
+                            <span class="currency">TWD</span>
+                        </div>
+                        <div class={`price-status ${latest.Change >= 0 ? 'up' : 'down'}`}>
+                            <span class="glyph">{latest.Change >= 0 ? '▲' : '▼'}</span>
+                            <span class="val mono">
+                                {latest.Change > 0 ? '+' : ''}
+                                {latest.Change.toFixed(2)}
+                            </span>
+                            <span class="pct mono">({latest.ChangePct.toFixed(2)}%)</span>
+                        </div>
+                    </div>
+                )
+            }
+        </header>
+
+        <main class="hud-main">
+            <!-- Main Chart Area -->
+            <div class="chart-section hud-panel">
+                <div class="panel-label">交互式 K 線行情預覽 (Price Trends)</div>
+                {
+                    prices.length > 0 ? (
+                        <StockChart symbol={symbol} prices={prices} />
+                    ) : (
+                        <div class="empty-state">
+                            <h2 class="mono">ERR_DATA_NOT_FOUND</h2>
+                            <p>Verify file path: /public/data/prices/{symbol}_*.csv</p>
+                        </div>
+                    )
+                }
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="metric-hud hud-panel">
+                    <span class="label">PE_RATIO</span>
+                    <span class="value mono">18.52 <span class="unit">x</span></span>
+                </div>
+                <div class="metric-hud hud-panel">
+                    <span class="label">DIV_YIELD</span>
+                    <span class="value mono text-pos">2.45 <span class="unit">%</span></span>
+                </div>
+                <div class="metric-hud hud-panel">
+                    <span class="label">RS_INDEX</span>
+                    <span class="value mono">74.12</span>
+                </div>
+                <div class="metric-hud hud-panel">
+                    <span class="label">VOL_AVG</span>
+                    <span class="value mono">1.2M</span>
+                </div>
+            </div>
+
+            <!-- Terminal Data Log -->
+            <div class="table-section hud-panel" id="log-panel">
+                <header class="panel-header-hud" id="log-header">
+                    <div class="panel-label">歷史交易數據集 (Historical Logs)</div>
+                    <div class="header-content-hud">
+                        <span class="title">即時成交數據流 (Real-time Stream)</span>
+                        <button class="toggle-icon-btn">
+                            <span class="chevron">▾</span>
+                        </button>
+                    </div>
+                </header>
+                <div id="log-content" class="collapsible-content">
+                    <div class="table-wrapper">
+                        <table class="terminal-table">
+                            <thead>
+                                <tr>
+                                    <th class="mono">TIMESTAMP</th>
+                                    <th class="mono">OPEN</th>
+                                    <th class="mono">HIGH</th>
+                                    <th class="mono">LOW</th>
+                                    <th class="mono">CLOSE</th>
+                                    <th class="mono">VOLUME</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    sortedPrices
+                                        .slice()
+                                        .reverse()
+                                        .slice(0, 50)
+                                        .map(row => (
+                                            <tr class={row.Change >= 0 ? 'log-up' : 'log-down'}>
+                                                <td class="mono">{row.Date}</td>
+                                                <td class="mono">{row.Open.toFixed(2)}</td>
+                                                <td class="mono">{row.High.toFixed(2)}</td>
+                                                <td class="mono">{row.Low.toFixed(2)}</td>
+                                                <td class="mono">{row.Close.toFixed(2)}</td>
+                                                <td class="mono">{row.Volume.toLocaleString()}</td>
+                                            </tr>
+                                        ))
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</Layout>
+
+<script>
+    // Collapsible Log Functionality
+    const logHeader = document.getElementById('log-header');
+    const logPanel = document.getElementById('log-panel');
+
+    logHeader?.addEventListener('click', () => {
+        logPanel?.classList.toggle('collapsed');
+    });
+</script>
+
+<style>
+    .detail-container {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 32px;
+        gap: 24px;
+        overflow-y: auto;
+        background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.03), transparent 50%);
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    /* HUD Header */
+    .hud-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--c-border);
+        flex-shrink: 0;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .back-btn {
+        display: flex;
+        flex-direction: column;
+        font-size: 10px;
+        color: var(--c-text-muted);
+        letter-spacing: 1px;
+    }
+    .back-btn .icon {
+        font-size: 18px;
+        color: var(--c-accent);
+        margin-bottom: 2px;
+    }
+    .back-btn:hover {
+        color: #fff;
+        transform: translateX(-4px);
+    }
+
+    .stock-identity {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .symbol-badge-large {
+        font-family: 'JetBrains Mono';
+        font-size: 32px;
+        font-weight: 800;
+        color: #fff;
+        background: linear-gradient(135deg, rgba(var(--c-accent-rgb), 0.2), transparent);
+        padding: 8px 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
+        box-shadow: 0 0 30px rgba(var(--c-accent-rgb), 0.15);
+    }
+
+    .stock-title {
+        font-size: 14px;
+        color: var(--c-text-secondary);
+        margin: 0;
+        opacity: 0.8;
+    }
+    .status-line {
+        font-size: 10px;
+        color: var(--c-text-muted);
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pulse {
+        width: 6px;
+        height: 6px;
+        background: var(--c-success);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--c-success);
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% {
+            opacity: 0.4;
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.4;
+        }
+    }
+
+    .price-hud {
+        text-align: right;
+    }
+    .price-value {
+        font-size: 36px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .price-value .currency {
+        font-size: 14px;
+        color: var(--c-text-muted);
+        margin-left: 8px;
+        font-weight: 400;
+    }
+
+    .price-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: flex-end;
+        font-size: 14px;
+        font-weight: 700;
+    }
+    .price-status.up {
+        color: var(--c-success);
+    }
+    .price-status.down {
+        color: var(--c-danger);
+    }
+
+    /* HUD Panels */
+    .hud-panel {
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        position: relative;
+        backdrop-filter: var(--glass-blur);
+        transition:
+            transform 0.3s var(--ease-out),
+            box-shadow 0.3s;
+    }
+
+    .hud-panel.collapsed .collapsible-content {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+    }
+
+    .hud-panel.collapsed .chevron {
+        transform: rotate(-90deg);
+    }
+
+    .panel-header-hud {
+        padding: 16px 24px;
+        min-height: 64px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.3s;
+    }
+
+    .hud-panel:not(.collapsed) .panel-header-hud {
+        border-color: var(--c-border);
+    }
+
+    .header-content-hud {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .header-content-hud .title {
+        font-size: 13px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 2px;
+        line-height: 1.6;
+        display: block;
+        margin-top: 4px;
+    }
+
+    .toggle-icon-btn {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--c-accent);
+        transition: 0.3s;
+    }
+    .chevron {
+        transition: transform 0.3s;
+        font-size: 14px;
+    }
+
+    .collapsible-content {
+        max-height: 1000px;
+        transition:
+            max-height 0.5s var(--ease-out),
+            opacity 0.3s;
+        opacity: 1;
+    }
+
+    .panel-label {
+        position: absolute;
+        top: -8px;
+        left: 16px;
+        background: var(--c-bg-app);
+        padding: 0 8px;
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--c-accent);
+        letter-spacing: 1px;
+    }
+
+    .hud-main {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 20px;
+        flex: 1;
+        min-height: 0;
+    }
+
+    /* Chart Section */
+    .chart-section {
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+        padding: 32px 24px 16px 24px;
+        display: flex;
+        flex-direction: column;
+        animation: fadeIn 0.6s var(--ease-out);
+    }
+
+    .chart-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .y-axis {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: var(--c-text-muted);
+        font-size: 10px;
+        text-align: right;
+        border-left: 1px solid rgba(255, 255, 255, 0.05);
+        padding-left: 8px;
+    }
+
+    .bars-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+        gap: 3px;
+        padding: 0 40px 10px 0;
+    }
+
+    .bar-group {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        position: relative;
+    }
+
+    .bar {
+        width: 100%;
+        border-radius: 1px 1px 0 0;
+        position: relative;
+        transition: transform 0.3s var(--ease-out);
+        transform-origin: bottom;
+    }
+    .bar:hover {
+        transform: scaleY(1.05);
+        filter: brightness(1.2);
+        cursor: pointer;
+    }
+
+    .bar-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: 1px;
+        box-shadow: 0 0 10px currentColor;
+        opacity: 0.1;
+    }
+
+    .x-axis {
+        height: 20px;
+        display: flex;
+        justify-content: space-between;
+        color: var(--c-text-muted);
+        font-size: 10px;
+        padding: 10px 40px 0 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+        grid-column: 2 / 3;
+        grid-row: 1 / 3;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        animation: slideIn 0.8s var(--ease-out);
+    }
+
+    .metric-hud {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .metric-hud .label {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--c-text-muted);
+        letter-spacing: 1px;
+    }
+    .metric-hud .value {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+    }
+    .metric-hud .unit {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--c-text-muted);
+        margin-left: 4px;
+    }
+
+    /* Terminal Table */
+    .table-section {
+        grid-column: 1 / 2;
+        grid-row: 2 / 3;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        animation: fadeIn 1s var(--ease-out);
+    }
+
+    .table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .terminal-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 4px;
+    }
+
+    .terminal-table th {
+        text-align: right;
+        padding: 12px;
+        font-size: 10px;
+        color: var(--c-accent);
+        border-bottom: 2px solid rgba(var(--c-accent-rgb), 0.2);
+        position: sticky;
+        top: 0;
+        background: var(--c-bg-app);
+        z-index: 10;
+    }
+
+    .terminal-table td {
+        padding: 10px 12px;
+        text-align: right;
+        background: rgba(255, 255, 255, 0.01);
+        color: var(--c-text-secondary);
+        font-size: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .terminal-table tr:hover td {
+        background: rgba(255, 255, 255, 0.04);
+        color: #fff;
+    }
+
+    .log-up td:first-child {
+        border-left: 2px solid var(--c-success);
+    }
+    .log-down td:first-child {
+        border-left: 2px solid var(--c-danger);
+    }
+
+    .empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 1024px) {
+        .hud-main {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-container {
+            height: auto;
+        }
+        .chart-section {
+            min-height: 400px;
+        }
+    }
+</style>

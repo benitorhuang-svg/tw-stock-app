@@ -1,0 +1,95 @@
+/* index.astro styles */
+
+.section {
+    margin-bottom: 48px;
+}
+
+.text-secondary {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.stock-card {
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.stock-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+}
+
+.stock-symbol {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.stock-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 4px 0;
+    color: var(--text-primary);
+}
+
+.stock-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.stock-yield,
+.stock-pe {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.stock-yield {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.strategy-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.strategy-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.strategy-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.strategy-icon {
+    font-size: 1.5rem;
+}
+
+.strategy-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--accent);
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.15s;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}

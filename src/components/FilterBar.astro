@@ -1,0 +1,79 @@
+---
+interface Props {
+    categories: { value: string; label: string }[];
+    activeCategory?: string;
+}
+
+const { categories, activeCategory = "all" } = Astro.props;
+---
+
+<div class="filter-bar">
+    <button
+        class={`filter-btn ${activeCategory === "all" ? "active" : ""}`}
+        data-category="all"
+    >
+        全部
+    </button>
+    {
+        categories.map((cat) => (
+            <button
+                class={`filter-btn ${activeCategory === cat.value ? "active" : ""}`}
+                data-category={cat.value}
+            >
+                {cat.label}
+            </button>
+        ))
+    }
+</div>
+
+<style>
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .filter-btn {
+        padding: 8px 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.15s;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .filter-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #000;
+    }
+</style>
+
+<script>
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const category = btn.getAttribute("data-category");
+
+            // 更新 active 狀態
+            document
+                .querySelectorAll(".filter-btn")
+                .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            // 觸發自定義事件
+            window.dispatchEvent(
+                new CustomEvent("filter-change", {
+                    detail: { category },
+                }),
+            );
+        });
+    });
+</script>

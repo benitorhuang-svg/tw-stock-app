@@ -1,0 +1,105 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import StrategyCard from "../../components/StrategyCard.astro";
+import FilterBar from "../../components/FilterBar.astro";
+import { strategies, getStrategiesByCategory } from "../../data/strategies";
+
+const fundamentalStrategies = getStrategiesByCategory("fundamental");
+const technicalStrategies = getStrategiesByCategory("technical");
+const sentimentStrategies = getStrategiesByCategory("sentiment");
+
+const categories = [
+    { value: "fundamental", label: "🏛️ 基本面" },
+    { value: "technical", label: "📈 技術面" },
+    { value: "sentiment", label: "💰 籌碼面" },
+];
+---
+
+<Layout title="選股策略">
+    <h1>🎯 選股策略中心</h1>
+    <p class="page-desc">根據不同的投資風格與目標，選擇適合您的選股策略。</p>
+
+    <FilterBar categories={categories} />
+
+    <!-- 全部策略容器 -->
+    <div id="strategies-container">
+        <!-- 基本面策略 -->
+        <section class="section strategy-section" data-category="fundamental">
+            <h2>🏛️ 基本面策略</h2>
+            <p class="section-desc">適合長期投資、價值投資者</p>
+            <div class="grid grid-3">
+                {
+                    fundamentalStrategies.map((strategy) => (
+                        <StrategyCard strategy={strategy} />
+                    ))
+                }
+            </div>
+        </section>
+
+        <!-- 技術面策略 -->
+        <section class="section strategy-section" data-category="technical">
+            <h2>📈 技術面策略</h2>
+            <p class="section-desc">適合波段操作、短線交易者</p>
+            <div class="grid grid-3">
+                {
+                    technicalStrategies.map((strategy) => (
+                        <StrategyCard strategy={strategy} />
+                    ))
+                }
+            </div>
+        </section>
+
+        <!-- 籌碼面策略 -->
+        <section class="section strategy-section" data-category="sentiment">
+            <h2>💰 籌碼面策略</h2>
+            <p class="section-desc">跟隨主力、法人動向</p>
+            <div class="grid grid-3">
+                {
+                    sentimentStrategies.map((strategy) => (
+                        <StrategyCard strategy={strategy} />
+                    ))
+                }
+            </div>
+        </section>
+    </div>
+</Layout>
+
+<style>
+    .page-desc {
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+    }
+
+    .section-desc {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+
+    .strategy-section {
+        transition:
+            opacity 0.3s,
+            transform 0.3s;
+    }
+
+    .strategy-section.hidden {
+        display: none;
+    }
+</style>
+
+<script>
+    // 監聽篩選事件
+    window.addEventListener("filter-change", (e: CustomEvent) => {
+        const category = e.detail.category;
+
+        document.querySelectorAll(".strategy-section").forEach((section) => {
+            const sectionCategory = section.getAttribute("data-category");
+
+            if (category === "all" || sectionCategory === category) {
+                section.classList.remove("hidden");
+            } else {
+                section.classList.add("hidden");
+            }
+        });
+    });
+</script>

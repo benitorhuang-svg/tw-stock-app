@@ -1,0 +1,376 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="股利歷史">
+    <h1>💰 股利歷史查詢</h1>
+    <p class="page-desc">查看個股歷年股利發放紀錄。</p>
+
+    <div class="reveal-grid">
+        <!-- 搜尋 -->
+        <div class="search-section delay-1">
+            <input
+                type="text"
+                id="stock-search"
+                placeholder="🔍 輸入股票代號 (例: 2330)"
+                class="search-input"
+            />
+            <button id="search-btn" class="btn-primary">查詢</button>
+        </div>
+
+        <!-- 股利摘要 -->
+        <div id="dividend-summary" class="summary-cards hidden delay-2">
+            <div class="card summary-card">
+                <div class="card-header">近 10 年平均現金股利</div>
+                <div id="avg-cash" class="card-value positive">$0</div>
+            </div>
+            <div class="card summary-card">
+                <div class="card-header">近 10 年平均殖利率</div>
+                <div id="avg-yield" class="card-value">0%</div>
+            </div>
+            <div class="card summary-card">
+                <div class="card-header">連續配息年數</div>
+                <div id="consecutive-years" class="card-value">0 年</div>
+            </div>
+            <div class="card summary-card">
+                <div class="card-header">填息成功率</div>
+                <div id="fill-rate" class="card-value">0%</div>
+            </div>
+        </div>
+
+        <!-- 股利圖表 -->
+        <div id="dividend-chart-section" class="section hidden delay-3">
+            <h2>📊 歷年股利走勢</h2>
+            <div class="chart-container">
+                <canvas id="dividend-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- 股利明細表 -->
+        <div id="dividend-table-section" class="section hidden delay-4">
+            <h2>📋 股利明細</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>年度</th>
+                            <th>現金股利</th>
+                            <th>股票股利</th>
+                            <th>合計</th>
+                            <th>殖利率</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dividend-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 空狀態 -->
+        <div id="empty-state" class="empty-state delay-2">
+            <div class="empty-icon">📊</div>
+            <h3>查詢股利歷史</h3>
+            <p>輸入股票代號開始查詢歷年股利發放紀錄</p>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .page-desc {
+        color: var(--c-text-secondary);
+        margin-bottom: 24px;
+    }
+
+    .search-section {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 32px;
+    }
+
+    .search-input {
+        padding: 14px 20px;
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: 12px;
+        color: var(--c-text-primary);
+        font-size: 1rem;
+        width: 250px;
+        backdrop-filter: var(--glass-blur);
+    }
+
+    .btn-primary {
+        padding: 14px 24px;
+        background: var(--c-accent);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition-premium);
+    }
+
+    .btn-primary:hover {
+        background: var(--c-accent-secondary);
+        box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.4);
+        transform: translateY(-2px);
+    }
+
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .summary-card {
+        text-align: center;
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        padding: 20px;
+        border-radius: 16px;
+        backdrop-filter: var(--glass-blur);
+    }
+
+    .section {
+        margin-bottom: 32px;
+    }
+
+    .chart-container {
+        height: 300px;
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: 16px;
+        padding: 20px;
+        backdrop-filter: var(--glass-blur);
+    }
+
+    #dividend-chart {
+        width: 100%;
+        height: 100%;
+    }
+
+    .table-container {
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: 16px;
+        overflow-x: auto;
+        backdrop-filter: var(--glass-blur);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 14px 16px;
+        text-align: right;
+        border-bottom: 1px solid var(--c-border);
+        color: var(--c-text-primary);
+    }
+
+    th:first-child,
+    td:first-child {
+        text-align: left;
+    }
+
+    th {
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--c-text-secondary);
+        font-size: 0.85rem;
+    }
+
+    tr:hover {
+        background: rgba(var(--c-accent-rgb), 0.05);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 24px;
+        background: var(--c-bg-glass);
+        border: 1px dashed var(--c-border);
+        border-radius: 16px;
+        backdrop-filter: var(--glass-blur);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+        margin-bottom: 8px;
+        color: var(--c-text-primary);
+    }
+
+    .empty-state p {
+        color: var(--c-text-secondary);
+    }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<script>
+    // 模擬股利資料
+    const mockDividends: Record<
+        string,
+        { year: number; cash: number; stock: number; yield: number }[]
+    > = {
+        '2330': [
+            { year: 2024, cash: 13.0, stock: 0, yield: 2.2 },
+            { year: 2023, cash: 11.5, stock: 0, yield: 2.1 },
+            { year: 2022, cash: 11.0, stock: 0, yield: 2.0 },
+            { year: 2021, cash: 10.0, stock: 0, yield: 1.8 },
+            { year: 2020, cash: 10.0, stock: 0, yield: 2.4 },
+            { year: 2019, cash: 8.0, stock: 0, yield: 2.9 },
+            { year: 2018, cash: 8.0, stock: 0, yield: 3.4 },
+            { year: 2017, cash: 7.0, stock: 0, yield: 3.2 },
+            { year: 2016, cash: 6.0, stock: 0, yield: 3.5 },
+            { year: 2015, cash: 4.5, stock: 0, yield: 3.3 },
+        ],
+        '2317': [
+            { year: 2024, cash: 5.3, stock: 0, yield: 5.0 },
+            { year: 2023, cash: 5.3, stock: 0, yield: 5.2 },
+            { year: 2022, cash: 5.2, stock: 0, yield: 5.0 },
+            { year: 2021, cash: 4.0, stock: 0, yield: 3.8 },
+            { year: 2020, cash: 4.0, stock: 0, yield: 4.5 },
+            { year: 2019, cash: 4.0, stock: 0, yield: 4.4 },
+            { year: 2018, cash: 4.0, stock: 0, yield: 4.8 },
+            { year: 2017, cash: 2.0, stock: 0, yield: 2.2 },
+            { year: 2016, cash: 2.0, stock: 0, yield: 2.5 },
+            { year: 2015, cash: 2.5, stock: 0, yield: 2.8 },
+        ],
+    };
+
+    const searchBtn = document.getElementById('search-btn');
+    const searchInput = document.getElementById('stock-search') as HTMLInputElement;
+
+    searchBtn?.addEventListener('click', searchDividends);
+    searchInput?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') searchDividends();
+    });
+
+    function searchDividends() {
+        const symbol = searchInput.value.trim();
+        if (!symbol) return;
+
+        const data = mockDividends[symbol];
+
+        if (!data) {
+            alert('找不到此股票的股利資料');
+            return;
+        }
+
+        // 隱藏空狀態
+        document.getElementById('empty-state')!.classList.add('hidden');
+
+        // 顯示各區塊
+        document.getElementById('dividend-summary')!.classList.remove('hidden');
+        document.getElementById('dividend-chart-section')!.classList.remove('hidden');
+        document.getElementById('dividend-table-section')!.classList.remove('hidden');
+
+        // 計算摘要
+        const avgCash = data.reduce((sum, d) => sum + d.cash, 0) / data.length;
+        const avgYield = data.reduce((sum, d) => sum + d.yield, 0) / data.length;
+        const consecutiveYears = data.length;
+
+        document.getElementById('avg-cash')!.textContent = `$${avgCash.toFixed(2)}`;
+        document.getElementById('avg-yield')!.textContent = `${avgYield.toFixed(1)}%`;
+        document.getElementById('consecutive-years')!.textContent = `${consecutiveYears} 年`;
+        document.getElementById('fill-rate')!.textContent = '80%'; // 模擬資料
+
+        // 繪製圖表
+        drawDividendChart(data);
+
+        // 填充表格
+        const tbody = document.getElementById('dividend-body')!;
+        tbody.innerHTML = data
+            .map(
+                d => `
+            <tr>
+                <td>${d.year}</td>
+                <td class="positive">$${d.cash.toFixed(2)}</td>
+                <td>${d.stock > 0 ? d.stock.toFixed(2) : '-'}</td>
+                <td>$${(d.cash + d.stock).toFixed(2)}</td>
+                <td>${d.yield.toFixed(1)}%</td>
+                <td>-</td>
+            </tr>
+        `
+            )
+            .join('');
+    }
+
+    function drawDividendChart(data: { year: number; cash: number; stock: number }[]) {
+        const canvas = document.getElementById('dividend-chart') as HTMLCanvasElement;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // 設定尺寸
+        const container = canvas.parentElement!;
+        canvas.width = container.offsetWidth * window.devicePixelRatio;
+        canvas.height = container.offsetHeight * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+        const padding = { top: 20, right: 40, bottom: 40, left: 50 };
+        const chartWidth = width - padding.left - padding.right;
+        const chartHeight = height - padding.top - padding.bottom;
+
+        // 反轉資料（舊到新）
+        const reversed = [...data].reverse();
+
+        // 計算範圍
+        const maxValue = Math.max(...reversed.map(d => d.cash + d.stock)) * 1.1;
+        const barWidth = (chartWidth / reversed.length) * 0.6;
+        const barGap = (chartWidth / reversed.length) * 0.4;
+
+        // 清空
+        ctx.clearRect(0, 0, width, height);
+
+        // 繪製 Y 軸網格
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.fillStyle = '#a0a0b0';
+        ctx.font = '11px Inter';
+        for (let i = 0; i <= 5; i++) {
+            const y = padding.top + (chartHeight / 5) * i;
+            const value = maxValue - (maxValue / 5) * i;
+
+            ctx.beginPath();
+            ctx.moveTo(padding.left, y);
+            ctx.lineTo(width - padding.right, y);
+            ctx.stroke();
+
+            ctx.textAlign = 'right';
+            ctx.fillText(value.toFixed(1), padding.left - 8, y + 4);
+        }
+
+        // 繪製柱狀圖
+        reversed.forEach((d, i) => {
+            const x = padding.left + (chartWidth / reversed.length) * i + barGap / 2;
+            const barHeight = (d.cash / maxValue) * chartHeight;
+            const y = padding.top + chartHeight - barHeight;
+
+            // 現金股利
+            ctx.fillStyle = '#00d4aa';
+            ctx.fillRect(x, y, barWidth, barHeight);
+
+            // 年份標籤
+            ctx.fillStyle = '#a0a0b0';
+            ctx.textAlign = 'center';
+            ctx.fillText(d.year.toString(), x + barWidth / 2, height - padding.bottom + 20);
+        });
+
+        // 圖例
+        ctx.fillStyle = '#00d4aa';
+        ctx.fillRect(width - padding.right - 100, padding.top, 12, 12);
+        ctx.fillStyle = '#f0f0f0';
+        ctx.textAlign = 'left';
+        ctx.fillText('現金股利', width - padding.right - 82, padding.top + 10);
+    }
+</script>

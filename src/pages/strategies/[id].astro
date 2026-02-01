@@ -1,0 +1,264 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { strategies, getStrategy } from "../../data/strategies";
+import { stockList } from "../../data/stocks";
+
+export function getStaticPaths() {
+    return strategies.map((strategy) => ({
+        params: { id: strategy.id },
+    }));
+}
+
+const { id } = Astro.params;
+const strategy = getStrategy(id!);
+
+if (!strategy) {
+    return Astro.redirect("/strategies");
+}
+
+// 模擬符合條件的股票
+function getMatchingStocks(strategyId: string) {
+    switch (strategyId) {
+        case "low-pe":
+            return stockList.filter((s) => s.pe < 15 && s.pe > 0);
+        case "low-pb":
+            return stockList.filter((s) => s.pb < 1.5);
+        case "high-dividend":
+            return stockList.filter((s) => s.yield > 5);
+        case "high-roe":
+            return stockList.filter((s) => s.roe > 15);
+        default:
+            return stockList.slice(0, 4);
+    }
+}
+
+const matchingStocks = getMatchingStocks(id!);
+const categoryLabels = {
+    fundamental: "基本面",
+    technical: "技術面",
+    sentiment: "籌碼面",
+};
+---
+
+<Layout title={strategy.name}>
+    <div class="strategy-header">
+        <a href="/strategies" class="back-link">← 返回策略列表</a>
+        <div class="strategy-title">
+            <span class="strategy-icon">{strategy.icon}</span>
+            <h1>{strategy.name}</h1>
+            <span class="category-badge"
+                >{categoryLabels[strategy.category]}</span
+            >
+        </div>
+        <p class="strategy-desc">{strategy.description}</p>
+    </div>
+
+    <!-- 篩選條件 -->
+    <section class="section">
+        <h2>📋 篩選條件</h2>
+        <div class="conditions-list">
+            {
+                strategy.conditions.map((condition, index) => (
+                    <div class="condition-item">
+                        <span class="condition-number">{index + 1}</span>
+                        <span class="condition-text">{condition}</span>
+                    </div>
+                ))
+            }
+        </div>
+    </section>
+
+    <!-- 符合條件的股票 -->
+    <section class="section">
+        <h2>📊 符合條件的股票 ({matchingStocks.length} 檔)</h2>
+        {
+            matchingStocks.length > 0 ? (
+                <div class="stock-table">
+                    <div class="table-header">
+                        <span>代號</span>
+                        <span>名稱</span>
+                        <span>股價</span>
+                        <span>本益比</span>
+                        <span>殖利率</span>
+                        <span>ROE</span>
+                    </div>
+                    {matchingStocks.map((stock) => (
+                        <a href={`/stocks/${stock.symbol}`} class="table-row">
+                            <span class="symbol">{stock.symbol}</span>
+                            <span class="name">{stock.name}</span>
+                            <span class="price">{stock.price}</span>
+                            <span>{stock.pe}</span>
+                            <span class="yield">{stock.yield}%</span>
+                            <span>{stock.roe}%</span>
+                        </a>
+                    ))}
+                </div>
+            ) : (
+                <p class="no-results">目前沒有符合條件的股票</p>
+            )
+        }
+    </section>
+
+    <!-- 策略說明 -->
+    <section class="section">
+        <h2>💡 策略說明</h2>
+        <div class="card">
+            <p>
+                本策略透過篩選符合上述條件的股票，幫助投資人快速找到潛在的投資標的。
+            </p>
+            <br />
+            <p><strong>注意事項：</strong></p>
+            <ul>
+                <li>本資料僅供參考，不構成投資建議</li>
+                <li>投資前請自行評估風險</li>
+                <li>建議搭配其他指標綜合判斷</li>
+            </ul>
+        </div>
+    </section>
+</Layout>
+
+<style>
+    .strategy-header {
+        margin-bottom: 40px;
+    }
+
+    .back-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+
+    .back-link:hover {
+        color: var(--accent);
+    }
+
+    .strategy-title {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+
+    .strategy-icon {
+        font-size: 2.5rem;
+    }
+
+    .category-badge {
+        font-size: 0.8rem;
+        padding: 4px 12px;
+        background: var(--accent);
+        color: #000;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .strategy-desc {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .section {
+        margin-bottom: 48px;
+    }
+
+    .conditions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .condition-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+    }
+
+    .condition-number {
+        width: 32px;
+        height: 32px;
+        background: var(--accent);
+        color: #000;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .condition-text {
+        font-size: 1rem;
+    }
+
+    .stock-table {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .table-header,
+    .table-row {
+        display: grid;
+        grid-template-columns: 80px 1fr 100px 80px 80px 80px;
+        padding: 16px 24px;
+        align-items: center;
+    }
+
+    .table-header {
+        background: rgba(0, 0, 0, 0.2);
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .table-row {
+        text-decoration: none;
+        color: var(--text-primary);
+        border-top: 1px solid var(--border);
+        transition: background 0.15s;
+    }
+
+    .table-row:hover {
+        background: rgba(0, 212, 170, 0.05);
+    }
+
+    .symbol {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .name {
+        font-weight: 600;
+    }
+
+    .price {
+        font-weight: 700;
+    }
+
+    .yield {
+        color: var(--positive);
+        font-weight: 600;
+    }
+
+    .no-results {
+        color: var(--text-secondary);
+        padding: 40px;
+        text-align: center;
+    }
+
+    .card ul {
+        margin-left: 24px;
+        margin-top: 8px;
+    }
+
+    .card li {
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+    }
+</style>

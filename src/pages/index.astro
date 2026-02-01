@@ -1,0 +1,419 @@
+---
+import Layout from '../layouts/Layout.astro';
+import StockCard from '../components/StockCard.astro';
+import StrategyCard from '../components/StrategyCard.astro';
+import Heatmap from '../components/Heatmap.astro';
+import { getTopGainers, getTopLosers, getStocksWithPrices } from '../utils/stockDataService';
+import { strategies } from '../data/strategies';
+
+// Load real data from CSV files
+const allStocks = await getStocksWithPrices();
+const topGainers = await getTopGainers(8);
+const topLosers = await getTopLosers(8);
+
+// Convert to format expected by StockCard
+const formatStock = (s: any) => ({
+    symbol: s.symbol,
+    name: s.name,
+    price: s.price,
+    change: s.change,
+    changePercent: s.changePercent,
+    volume: s.volume,
+    pe: s.pe || 0,
+    pb: s.pb || 0,
+    yield: s.yield || 0,
+    roe: s.roe || 0,
+    eps: s.eps || 0,
+});
+
+const gainersFormatted = topGainers.map(formatStock);
+const losersFormatted = topLosers.map(formatStock);
+
+const marketIndices = [
+    {
+        name: '總股數',
+        value: allStocks.length.toLocaleString(),
+        change: '支股票資料',
+        isPositive: true,
+    },
+    {
+        name: '上漲',
+        value: allStocks.filter(s => s.change > 0).length.toString(),
+        change: '支',
+        isPositive: true,
+    },
+    {
+        name: '下跌',
+        value: allStocks.filter(s => s.change < 0).length.toString(),
+        change: '支',
+        isPositive: false,
+    },
+    {
+        name: '平盤',
+        value: allStocks.filter(s => s.change === 0).length.toString(),
+        change: '支',
+        isPositive: null,
+    },
+];
+---
+
+<Layout title="Dashboard">
+    <div class="dashboard-container">
+        <!-- Top Stats Row -->
+        <div class="stats-row">
+            {
+                marketIndices.map(index => (
+                    <div class="stat-card">
+                        <div class="stat-label">{index.name}</div>
+                        <div class="stat-value mono">{index.value}</div>
+                        <div
+                            class={`stat-change mono ${index.isPositive ? 'text-pos' : 'text-neg'}`}
+                        >
+                            {index.change}
+                        </div>
+                    </div>
+                ))
+            }
+        </div>
+
+        <!-- Heatmap -->
+        <Heatmap />
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Column 1: Top Gainers -->
+            <div class="panel col-1 reveal-grid delay-1">
+                <div class="panel-header">
+                    <h2 class="section-title">🔥 市場領漲 (Gainers)</h2>
+                </div>
+                <div class="list-container">
+                    {gainersFormatted.map(stock => <StockCard stock={stock} />)}
+                </div>
+            </div>
+
+            <!-- Column 2: Strategies -->
+            <div class="panel col-2 reveal-grid delay-2">
+                <div class="panel-header">
+                    <h2 class="section-title">🎯 策略信號 (Signals)</h2>
+                </div>
+                <div class="list-container">
+                    {strategies.slice(0, 6).map(strategy => <StrategyCard strategy={strategy} />)}
+                </div>
+            </div>
+
+            <!-- Column 3: Top Losers -->
+            <div class="panel col-3 reveal-grid delay-3">
+                <div class="panel-header">
+                    <h2 class="section-title">� 市場領跌 (Losers)</h2>
+                </div>
+                <div class="list-container">
+                    {losersFormatted.map(stock => <StockCard stock={stock} variant="detailed" />)}
+                </div>
+            </div>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .dashboard-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 32px;
+        gap: 24px;
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    /* Stats Row */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        flex-shrink: 0;
+    }
+
+    /* P0 Optimization: Complete responsive breakpoints */
+    /* Large Desktop (2560px+) - 4 stats inline */
+    @media (min-width: 2560px) {
+        .stats-row {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+    }
+
+    /* Desktop (1400-2560px) - 4 stats inline */
+    @media (max-width: 2400px) and (min-width: 1400px) {
+        .stats-row {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+    }
+
+    /* Tablet L (1024-1400px) - P0 NEW: 2 stats per row */
+    @media (max-width: 1399px) and (min-width: 1024px) {
+        .dashboard-container {
+            padding: 16px;
+            gap: 16px;
+        }
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .main-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    /* Tablet (768-1024px) - P0 NEW: 1 stat per column */
+    @media (max-width: 1023px) and (min-width: 768px) {
+        .dashboard-container {
+            height: auto;
+            overflow-y: auto;
+            padding: 12px;
+            gap: 12px;
+        }
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .stat-card {
+            padding: 12px;
+        }
+        .stat-value {
+            font-size: 18px;
+        }
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Mobile (< 768px) - P0 NEW: Single column */
+    @media (max-width: 767px) {
+        .dashboard-container {
+            height: auto;
+            overflow-y: auto;
+            padding: 8px;
+            gap: 8px;
+        }
+        .stats-row {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .stat-card {
+            padding: 10px;
+        }
+        .stat-label {
+            font-size: 9px;
+        }
+        .stat-value {
+            font-size: 16px;
+        }
+        .stat-change {
+            font-size: 10px;
+        }
+        .main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .stat-card {
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        padding: 24px;
+        border-radius: var(--radius-lg);
+        backdrop-filter: var(--glass-blur);
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition-premium);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 120px;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--c-border-active);
+        box-shadow: var(--shadow-panel);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--c-accent);
+        opacity: 0.6;
+    }
+
+    .stat-card:nth-child(2)::before {
+        background: var(--c-success);
+    }
+    .stat-card:nth-child(3)::before {
+        background: var(--c-danger);
+    }
+    .stat-card:nth-child(4)::before {
+        background: var(--c-warning);
+    }
+
+    .stat-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
+        font-weight: 900;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    .stat-value {
+        font-family: 'Outfit', sans-serif;
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--c-text-primary);
+        line-height: 1;
+        margin: 8px 0;
+    }
+
+    .stat-change {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    /* Main Grid Layout - Refactored to 3 Columns */
+    .main-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        flex: 1;
+        min-height: 0;
+    }
+
+    /* P0 Optimization: Main grid responsive adjustments */
+    @media (max-width: 1399px) and (min-width: 1024px) {
+        .main-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+    }
+
+    @media (max-width: 1023px) and (min-width: 768px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .main-grid {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+    }
+
+    .panel {
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        backdrop-filter: var(--glass-blur);
+        box-shadow: var(--panel-shadow);
+        animation: fadeIn 0.6s var(--ease-out);
+        position: relative;
+    }
+
+    .panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(var(--c-accent-rgb), 0.4) 30%,
+            rgba(var(--c-accent-rgb), 0.6) 50%,
+            rgba(var(--c-accent-rgb), 0.4) 70%,
+            transparent 100%
+        );
+        z-index: 10;
+    }
+
+    .panel-header {
+        padding: 16px 20px;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid var(--c-border);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .panel-header h2 {
+        margin: 0;
+        font-size: 13px;
+    }
+
+    .list-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 4px; /* Slight padding for card focus state glows */
+        position: relative;
+    }
+
+    .list-container::before,
+    .list-container::after {
+        content: '';
+        position: sticky;
+        left: 0;
+        right: 0;
+        height: 20px;
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    .list-container::before {
+        top: 0;
+        background: linear-gradient(to bottom, var(--c-bg-app), transparent);
+    }
+
+    .list-container::after {
+        bottom: 0;
+        background: linear-gradient(to top, var(--c-bg-app), transparent);
+    }
+
+    /* Column Specifics */
+    .col-1 {
+        animation-delay: 0.1s;
+    }
+    .col-2 {
+        animation-delay: 0.2s;
+    }
+    .col-3 {
+        animation-delay: 0.3s;
+    }
+
+    @media (max-width: 1024px) {
+        .dashboard-container {
+            height: auto;
+            overflow-y: auto;
+        }
+        .main-grid {
+            display: flex;
+            flex-direction: column;
+        }
+        .main-panel,
+        .side-panel,
+        .bottom-panel {
+            grid-column: auto;
+            grid-row: auto;
+            min-height: 400px;
+        }
+    }
+</style>

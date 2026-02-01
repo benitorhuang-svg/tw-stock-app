@@ -1,0 +1,422 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="設定">
+    <h1>⚙️ 設定</h1>
+    <p class="page-desc">管理您的個人設定、資料備份與匯出。</p>
+
+    <!-- 個人資料 -->
+    <section class="section card">
+        <h2>👤 個人資料</h2>
+        <div class="form-group">
+            <label>使用者名稱</label>
+            <input type="text" id="user-name" placeholder="投資者" class="input" />
+        </div>
+        <button id="save-profile-btn" class="btn-primary">儲存</button>
+    </section>
+
+    <!-- 顯示設定 -->
+    <section class="section card">
+        <h2>🎨 顯示設定</h2>
+        <div class="setting-row">
+            <span>主題</span>
+            <select id="theme-select" class="select">
+                <option value="dark">深色模式</option>
+                <option value="light">淺色模式</option>
+            </select>
+        </div>
+        <div class="setting-row">
+            <span>預設顯示方式</span>
+            <select id="view-select" class="select">
+                <option value="grid">卡片</option>
+                <option value="list">列表</option>
+            </select>
+        </div>
+        <div class="setting-row">
+            <span>顯示成交量</span>
+            <label class="toggle">
+                <input type="checkbox" id="show-volume" checked />
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="setting-row">
+            <span>顯示均線</span>
+            <label class="toggle">
+                <input type="checkbox" id="show-ma" checked />
+                <span class="slider"></span>
+            </label>
+        </div>
+    </section>
+
+    <!-- 資料管理 -->
+    <section class="section card">
+        <h2>💾 資料管理</h2>
+        <div class="data-actions">
+            <button id="backup-btn" class="btn-secondary">📤 備份資料 (JSON)</button>
+            <button id="restore-btn" class="btn-secondary">📥 還原資料</button>
+            <input type="file" id="restore-file" accept=".json" class="hidden" />
+        </div>
+        <div class="storage-info">
+            <span id="storage-used">使用中: 計算中...</span>
+        </div>
+    </section>
+
+    <!-- 離線匯出 -->
+    <section class="section card highlight">
+        <h2>📦 離線 HTML 匯出</h2>
+        <p class="description">一鍵匯出完整的離線版本，無需網路即可瀏覽所有資料。</p>
+        <div class="export-options">
+            <label class="checkbox-label">
+                <input type="checkbox" id="export-portfolio" checked />
+                包含投資組合
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" id="export-watchlist" checked />
+                包含自選股
+            </label>
+        </div>
+        <button id="export-html-btn" class="btn-primary btn-large">
+            🚀 一鍵匯出離線 HTML
+        </button>
+    </section>
+
+    <!-- 危險區域 -->
+    <section class="section card danger">
+        <h2>⚠️ 危險區域</h2>
+        <p class="warning-text">以下操作不可復原，請謹慎操作。</p>
+        <button id="clear-cache-btn" class="btn-danger">清除快取</button>
+        <button id="reset-all-btn" class="btn-danger">重設所有資料</button>
+    </section>
+</Layout>
+
+<style>
+    .page-desc {
+        color: var(--c-text-secondary, #888);
+        margin-bottom: 32px;
+    }
+
+    /* Container for settings sections */
+    h1 + .page-desc + .section,
+    .section + .section {
+        max-width: 600px;
+    }
+
+    .section {
+        margin-bottom: 24px;
+    }
+
+    .card {
+        background: var(--c-bg-glass, rgba(255, 255, 255, 0.02));
+        border: 1px solid var(--c-border, rgba(255, 255, 255, 0.1));
+        border-radius: 16px;
+        padding: 24px;
+    }
+
+    .section h2 {
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .input, .select {
+        padding: 12px 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .setting-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .setting-row:last-child {
+        border-bottom: none;
+    }
+
+    .toggle {
+        position: relative;
+        width: 50px;
+        height: 26px;
+    }
+
+    .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--border);
+        border-radius: 26px;
+        transition: 0.3s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+
+    .toggle input:checked + .slider {
+        background: var(--accent);
+    }
+
+    .toggle input:checked + .slider:before {
+        transform: translateX(24px);
+    }
+
+    .data-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .storage-info {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .btn-primary {
+        padding: 12px 24px;
+        background: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-secondary {
+        padding: 12px 24px;
+        background: var(--bg-card);
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .btn-danger {
+        padding: 12px 24px;
+        background: rgba(255, 71, 87, 0.1);
+        color: #ff4757;
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        border-radius: 8px;
+        cursor: pointer;
+        margin-right: 12px;
+    }
+
+    .btn-large {
+        padding: 16px 32px;
+        font-size: 1.1rem;
+    }
+
+    .highlight {
+        border: 1px solid var(--accent) !important;
+        background: rgba(0, 212, 170, 0.05) !important;
+    }
+
+    .danger {
+        border: 1px solid rgba(255, 71, 87, 0.3) !important;
+    }
+
+    .description {
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+    }
+
+    .export-options {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 20px;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .warning-text {
+        color: #ff4757;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+<script>
+    // 載入設定
+    function loadSettings() {
+        const userData = JSON.parse(localStorage.getItem('tw-stock-user') || '{}');
+        
+        if (userData.profile?.name) {
+            (document.getElementById('user-name') as HTMLInputElement).value = userData.profile.name;
+        }
+        
+        if (userData.settings?.theme) {
+            (document.getElementById('theme-select') as HTMLSelectElement).value = userData.settings.theme;
+        }
+    }
+
+    loadSettings();
+
+    // 計算儲存空間
+    function calculateStorage() {
+        let total = 0;
+        for (let key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+                total += localStorage.getItem(key)!.length * 2; // UTF-16
+            }
+        }
+        const kb = (total / 1024).toFixed(2);
+        document.getElementById('storage-used')!.textContent = `使用中: ${kb} KB`;
+    }
+    calculateStorage();
+
+    // 儲存個人資料
+    document.getElementById('save-profile-btn')?.addEventListener('click', () => {
+        const name = (document.getElementById('user-name') as HTMLInputElement).value;
+        const userData = JSON.parse(localStorage.getItem('tw-stock-user') || '{}');
+        userData.profile = userData.profile || {};
+        userData.profile.name = name;
+        localStorage.setItem('tw-stock-user', JSON.stringify(userData));
+        alert('已儲存！');
+    });
+
+    // 主題變更
+    document.getElementById('theme-select')?.addEventListener('change', (e) => {
+        const theme = (e.target as HTMLSelectElement).value;
+        if (theme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        localStorage.setItem('tw-stock-theme', theme);
+    });
+
+    // 備份
+    document.getElementById('backup-btn')?.addEventListener('click', () => {
+        const data = {
+            user: JSON.parse(localStorage.getItem('tw-stock-user') || '{}'),
+            portfolio: JSON.parse(localStorage.getItem('tw-portfolio') || '[]'),
+            watchlist: JSON.parse(localStorage.getItem('tw-watchlist') || '[]'),
+            theme: localStorage.getItem('tw-stock-theme')
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tw-stock-backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // 還原
+    document.getElementById('restore-btn')?.addEventListener('click', () => {
+        document.getElementById('restore-file')?.click();
+    });
+
+    document.getElementById('restore-file')?.addEventListener('change', async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            
+            if (data.user) localStorage.setItem('tw-stock-user', JSON.stringify(data.user));
+            if (data.portfolio) localStorage.setItem('tw-portfolio', JSON.stringify(data.portfolio));
+            if (data.watchlist) localStorage.setItem('tw-watchlist', JSON.stringify(data.watchlist));
+            if (data.theme) localStorage.setItem('tw-stock-theme', data.theme);
+            
+            alert('還原成功！頁面將重新載入...');
+            location.reload();
+        } catch (err) {
+            alert('還原失敗：檔案格式錯誤');
+        }
+    });
+
+    // 離線 HTML 匯出
+    document.getElementById('export-html-btn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('export-html-btn') as HTMLButtonElement;
+        btn.textContent = '⏳ 正在匯出...';
+        btn.disabled = true;
+
+        try {
+            // 動態載入匯出模組
+            const { exportOfflineHTML } = await import('../lib/offline-export');
+            await exportOfflineHTML({
+                includePortfolio: (document.getElementById('export-portfolio') as HTMLInputElement).checked,
+                includeWatchlist: (document.getElementById('export-watchlist') as HTMLInputElement).checked
+            });
+            btn.textContent = '✅ 匯出成功！';
+        } catch (err) {
+            console.error(err);
+            btn.textContent = '❌ 匯出失敗';
+        }
+
+        setTimeout(() => {
+            btn.textContent = '🚀 一鍵匯出離線 HTML';
+            btn.disabled = false;
+        }, 2000);
+    });
+
+    // 清除快取
+    document.getElementById('clear-cache-btn')?.addEventListener('click', () => {
+        if (confirm('確定要清除所有快取嗎？')) {
+            Object.keys(localStorage)
+                .filter(k => k.startsWith('tw-cache-'))
+                .forEach(k => localStorage.removeItem(k));
+            alert('已清除快取');
+            calculateStorage();
+        }
+    });
+
+    // 重設所有資料
+    document.getElementById('reset-all-btn')?.addEventListener('click', () => {
+        if (confirm('⚠️ 此操作將刪除所有資料，確定要繼續嗎？')) {
+            if (confirm('最後確認：您確定要刪除所有資料嗎？')) {
+                localStorage.clear();
+                alert('已重設所有資料。頁面將重新載入...');
+                location.reload();
+            }
+        }
+    });
+</script>

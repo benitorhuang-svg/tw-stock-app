@@ -1,0 +1,307 @@
+/*------------------------------------*\
+    $CONTENTS
+\*------------------------------------*/
+/**
+ * CONTENTS............目錄
+ * COLORS..............色彩工具
+ * LAYOUT..............佈局工具
+ * CARDS...............卡片元件 (OOCSS)
+ * GRIDS...............網格系統
+ * BUTTONS.............按鈕元件
+ * TYPOGRAPHY..........文字排版
+ * MICRO-INTERACTIONS..微互動 (Glow)
+ * TRANSITIONS.........動畫過渡
+ * SCROLLBAR...........捲軸樣式
+ * INPUTS..............輸入框樣式
+ */
+
+
+
+
+
+/*------------------------------------*\
+    $COLORS
+\*------------------------------------*/
+.text-primary {
+    color: var(--c-text-primary);
+}
+
+.text-secondary {
+    color: var(--c-text-secondary);
+}
+
+.text-muted {
+    color: var(--c-text-muted);
+}
+
+.text-accent {
+    color: var(--c-accent);
+}
+
+.text-success {
+    color: var(--c-success);
+}
+
+.text-danger {
+    color: var(--c-danger);
+}
+
+
+
+
+
+/*------------------------------------*\
+    $LAYOUT
+\*------------------------------------*/
+.hidden {
+    display: none !important;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: 8px;
+}
+
+.gap-4 {
+    gap: 16px;
+}
+
+
+
+
+
+/*------------------------------------*\
+    $CARDS
+\*------------------------------------*/
+.card {
+    position: relative;
+    padding: 24px;
+    overflow: hidden;
+
+    background: var(--c-bg-glass);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--shadow-panel);
+}
+
+.card-header {
+    margin-bottom: 12px;
+
+    color: var(--c-text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+
+
+
+
+/*------------------------------------*\
+    $GRIDS
+\*------------------------------------*/
+.grid {
+    display: grid;
+    gap: 24px;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.grid-4 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+
+
+
+
+/*------------------------------------*\
+    $BUTTONS
+\*------------------------------------*/
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+}
+
+.btn-primary {
+    color: #fff;
+    background: var(--c-accent);
+    box-shadow: 0 4px 15px rgba(var(--c-accent-rgb), 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(var(--c-accent-rgb), 0.4);
+}
+
+.btn-secondary {
+    color: var(--c-text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--c-border);
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--c-accent);
+}
+
+
+
+
+
+/*------------------------------------*\
+    $TYPOGRAPHY
+\*------------------------------------*/
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    color: var(--c-text-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+
+
+
+
+/*------------------------------------*\
+    $MICRO-INTERACTIONS
+\*------------------------------------*/
+.glow-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.glow-effect::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 400px;
+    z-index: 1;
+
+    background: radial-gradient(circle,
+            rgba(var(--c-accent-rgb), 0.08) 0%,
+            transparent 70%);
+    transform: translate(calc(var(--m-x) - 50%), calc(var(--m-y) - 50%));
+    pointer-events: none;
+    opacity: 0;
+    mix-blend-mode: screen;
+    will-change: transform;
+    transition: opacity 0.4s var(--ease-out);
+}
+
+.glow-effect:hover::before {
+    opacity: 1;
+}
+
+
+
+
+
+/*------------------------------------*\
+    $TRANSITIONS
+\*------------------------------------*/
+.page-enter {
+    animation: pageSlideIn 0.5s var(--ease-out) forwards;
+}
+
+@keyframes pageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+
+
+/*------------------------------------*\
+    $SCROLLBAR
+\*------------------------------------*/
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 99px;
+    transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+
+
+
+
+/*------------------------------------*\
+    $INPUTS
+\*------------------------------------*/
+.input-glass {
+    padding: 10px 14px;
+
+    color: var(--c-text-primary);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.input-glass:focus {
+    outline: none;
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 2px rgba(var(--c-accent-rgb), 0.1);
+}

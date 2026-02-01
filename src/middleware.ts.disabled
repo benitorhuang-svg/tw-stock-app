@@ -1,0 +1,22 @@
+// TEMPORARILY DISABLED - Middleware requires server adapter
+// With output: 'static', middleware is not supported
+// 
+// TODO Phase 2: Re-enable by:
+// 1. Install: npm install @astrojs/node
+// 2. Update astro.config.mjs: output: 'hybrid' + adapter: node()
+// 3. Uncomment the code below
+
+/*
+import { defineMiddleware } from 'astro:middleware';
+
+export const onRequest = defineMiddleware(async (context, next) => {
+    // Basic performance logging for server-side rendered routes
+    const start = Date.now();
+    const response = await next();
+    const end = Date.now();
+
+    console.log(`[LATENCY] ${context.request.method} ${context.url.pathname}: ${end - start}ms`);
+
+    return response;
+});
+*/

@@ -1,0 +1,630 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// P0 Optimization: Use server pagination instead of loading all stocks
+// Initial page load with default filters (no heavy data transfer)
+// Actual filtering happens via /api/screener with pagination
+const initialResults = {
+    success: true,
+    pagination: { page: 1, limit: 50, total: 0, pages: 0 },
+    count: 0,
+    results: []
+};
+---
+
+<Layout title="智能篩選">
+    <h1>🔍 智能篩選器</h1>
+    <p class="page-desc">設定多個條件，找出符合您投資策略的股票。</p>
+
+    <!-- 篩選條件面板 -->
+    <div class="filter-panel hud-panel">
+        <header class="panel-header" id="criteria-header">
+            <div class="panel-label">CRITERIA_CONFIG</div>
+            <div class="header-content">
+                <h2>📋 篩選條件</h2>
+                <button id="toggle-criteria" class="toggle-icon-btn">
+                    <span class="chevron">▾</span>
+                </button>
+            </div>
+        </header>
+
+        <div id="collapsible-criteria" class="collapsible-content">
+            <div class="panel-body">
+                <div class="filter-grid">
+                    <!-- 本益比 -->
+                    <div class="filter-group-hud">
+                        <label class="filter-label">
+                            <input type="checkbox" id="pe-enabled" />
+                            <span class="label-text">本益比 (P/E)</span>
+                        </label>
+                        <div class="filter-inputs">
+                            <input type="number" id="pe-min" placeholder="最小" step="0.1" />
+                            <span class="sep">~</span>
+                            <input type="number" id="pe-max" placeholder="最大" step="0.1" />
+                        </div>
+                    </div>
+
+                    <!-- 殖利率 -->
+                    <div class="filter-group-hud">
+                        <label class="filter-label">
+                            <input type="checkbox" id="yield-enabled" />
+                            <span class="label-text">殖利率 (%)</span>
+                        </label>
+                        <div class="filter-inputs">
+                            <input type="number" id="yield-min" placeholder="最小" step="0.1" />
+                            <span class="sep">~</span>
+                            <input type="number" id="yield-max" placeholder="最大" step="0.1" />
+                        </div>
+                    </div>
+
+                    <!-- ROE -->
+                    <div class="filter-group-hud">
+                        <label class="filter-label">
+                            <input type="checkbox" id="roe-enabled" />
+                            <span class="label-text">ROE (%)</span>
+                        </label>
+                        <div class="filter-inputs">
+                            <input type="number" id="roe-min" placeholder="最小" step="0.1" />
+                            <span class="sep">~</span>
+                            <input type="number" id="roe-max" placeholder="最大" step="0.1" />
+                        </div>
+                    </div>
+
+                    <!-- 股價淨值比 -->
+                    <div class="filter-group-hud">
+                        <label class="filter-label">
+                            <input type="checkbox" id="pb-enabled" />
+                            <span class="label-text">股價淨值比 (P/B)</span>
+                        </label>
+                        <div class="filter-inputs">
+                            <input type="number" id="pb-min" placeholder="最小" step="0.1" />
+                            <span class="sep">~</span>
+                            <input type="number" id="pb-max" placeholder="最大" step="0.1" />
+                        </div>
+                    </div>
+
+                    <!-- EPS -->
+                    <div class="filter-group-hud">
+                        <label class="filter-label">
+                            <input type="checkbox" id="eps-enabled" />
+                            <span class="label-text">EPS</span>
+                        </label>
+                        <div class="filter-inputs">
+                            <input type="number" id="eps-min" placeholder="最小" step="0.1" />
+                            <span class="sep">~</span>
+                            <input type="number" id="eps-max" placeholder="最大" step="0.1" />
+                        </div>
+                    </div>
+
+                    <!-- 股價 -->
+                    <div class="filter-group-hud">
+                        <label class="filter-label">
+                            <input type="checkbox" id="price-enabled" />
+                            <span class="label-text">股價</span>
+                        </label>
+                        <div class="filter-inputs">
+                            <input type="number" id="price-min" placeholder="最小" step="1" />
+                            <span class="sep">~</span>
+                            <input type="number" id="price-max" placeholder="最大" step="1" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-actions-hud">
+                    <button id="apply-filter" class="btn-terminal">EXECUTOR_SCAN</button>
+                    <button id="reset-filter" class="btn-terminal secondary">RESTORE_DEFAULTS</button>
+                    <button id="save-filter" class="btn-terminal secondary">CACHE_PROFILE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速篩選 -->
+    <div class="quick-selectors">
+        <div class="selectors-label">PRESET_MACROS:</div>
+        <button class="quick-tag" data-preset="high-dividend">💴 高股息 (&gt; 5%)</button>
+        <button class="quick-tag" data-preset="low-pe">💰 低本益比 (&lt; 15)</button>
+        <button class="quick-tag" data-preset="high-roe">🏆 高 ROE (&gt; 15%)</button>
+        <button class="quick-tag" data-preset="value">📊 價值投資 (P/B &lt; 1.5)</button>
+    </div>
+
+    <!-- 結果統計 -->
+    <div class="stats-bar hud-panel">
+        <div class="panel-label">MATCH_STATS</div>
+        <div class="stats-content">
+            <span class="label">LIVE_MATCH_BUFFER</span>
+            <span id="result-count" class="mono text-pos">Calculating...</span>
+        </div>
+    </div>
+
+    <!-- P0 Optimization: Server-side pagination for filter results -->
+    <!-- 結果表格 -->
+    <div class="results-container hud-panel">
+        <div class="panel-label">QUERY_RESULT_DUMP</div>
+        <div class="table-wrapper">
+            <table class="terminal-grid">
+                <thead>
+                    <tr>
+                        <th class="mono">UID_CODE</th>
+                        <th class="mono">ENTITY_NAME</th>
+                        <th class="mono">CUR_PRICE</th>
+                        <th class="mono" data-sort="pe">RATIO_PE ↕</th>
+                        <th class="mono" data-sort="yield">YIELD_PCT ↕</th>
+                        <th class="mono" data-sort="roe">ROE_PCT ↕</th>
+                        <th class="mono">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <!-- P0: Client-side rendered from API -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- P0 Optimization: Pagination controls -->
+        <div class="pagination-controls">
+            <button id="prev-page" class="btn-pagination" disabled>← Previous</button>
+            <span id="page-info" class="page-info">Page 1</span>
+            <button id="next-page" class="btn-pagination" disabled>Next →</button>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    /* Collapsible Logic */
+    .collapsible-content {
+        max-height: 2000px;
+        overflow: hidden;
+        transition: max-height 0.5s var(--ease-out), opacity 0.3s;
+    }
+    
+    .filter-panel.collapsed .collapsible-content {
+        max-height: 0;
+        opacity: 0;
+    }
+
+    .filter-panel.collapsed .chevron { transform: rotate(-90deg); }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px;
+        cursor: pointer;
+    }
+    
+    .panel-body { padding: 0 24px 24px 24px; }
+
+    .toggle-icon-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--c-border);
+        border-radius: 50%;
+        color: var(--c-accent);
+        transition: 0.3s;
+    }
+    
+    .toggle-icon-btn:hover { background: rgba(var(--c-accent-rgb), 0.1); }
+    .chevron { transition: transform 0.3s; display: block; font-size: 18px; }
+
+    /* HUD Styling */
+    .hud-panel {
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius);
+        position: relative;
+        backdrop-filter: var(--glass-blur);
+        margin-bottom: 20px;
+        box-shadow: var(--panel-shadow);
+    }
+    
+    .panel-header h2 { font-size: 16px; font-weight: 700; color: #fff; margin:0;}
+
+    .panel-label {
+        position: absolute;
+        top: -8px; left: 16px;
+        background: var(--c-bg-app);
+        padding: 0 8px;
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--c-accent);
+        letter-spacing: 1px;
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .filter-group-hud {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--c-border);
+        border-radius: 8px;
+        padding: 14px;
+        transition: border-color 0.3s;
+        min-width: 0;
+    }
+    
+    .filter-group-hud:hover { border-color: rgba(var(--c-accent-rgb), 0.3); }
+
+    .filter-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        cursor: pointer;
+        color: var(--c-text-secondary);
+    }
+    .filter-label input[type="checkbox"] { 
+        accent-color: var(--c-accent); 
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+    .label-text { font-size: 12px; letter-spacing: 0.2px; white-space: nowrap; }
+
+    .filter-inputs { 
+        display: flex; 
+        align-items: center; 
+        gap: 6px; 
+    }
+
+    .filter-inputs input {
+        flex: 1;
+        min-width: 0;
+        width: 100%;
+        padding: 8px 10px;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid var(--c-border);
+        border-radius: 4px;
+        color: #fff;
+        font-family: 'JetBrains Mono';
+        font-size: 11px;
+    }
+    
+    .filter-inputs input:focus { border-color: var(--c-accent); outline: none; }
+    .filter-inputs input::placeholder { color: var(--c-text-muted); font-size: 10px; }
+    .sep { color: var(--c-text-muted); font-size: 11px; flex-shrink: 0; }
+
+    .filter-actions-hud { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-terminal {
+        padding: 10px 20px;
+        background: var(--c-accent);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-weight: 800;
+        font-family: 'JetBrains Mono';
+        font-size: 11px;
+        letter-spacing: 1px;
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.3);
+        transition: 0.2s;
+    }
+    
+    .btn-terminal:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(var(--c-accent-rgb), 0.5); }
+    
+    .btn-terminal.secondary {
+        background: rgba(255,255,255,0.05);
+        color: var(--c-text-secondary);
+        box-shadow: none;
+        border: 1px solid var(--c-border);
+    }
+    .btn-terminal.secondary:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* Quick Selectors */
+    .quick-selectors {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+        padding: 0 4px;
+        flex-wrap: wrap;
+    }
+    
+    .selectors-label { font-size: 10px; font-weight: 800; color: var(--c-text-muted); letter-spacing: 1px; }
+
+    .quick-tag {
+        padding: 6px 14px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--c-border);
+        border-radius: 99px;
+        color: var(--c-text-secondary);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .quick-tag:hover { border-color: var(--c-accent); color: var(--c-accent); background: rgba(var(--c-accent-rgb), 0.1); }
+
+    /* Stats Bar */
+    .stats-bar { padding: 16px 24px; display: flex; align-items: center; }
+    .stats-content { display: flex; align-items: baseline; gap: 12px; }
+    .stats-content .label { font-size: 10px; font-weight: 800; color: var(--c-text-muted); letter-spacing: 1px; }
+    .stats-content .mono { font-size: 18px; font-weight: 700; }
+
+    /* Data Table */
+    .results-container { flex: 1; padding: 24px 0 0 0; overflow: hidden; display: flex; flex-direction: column; }
+    .table-wrapper { flex: 1; overflow: auto; padding: 0 24px; }
+
+    .terminal-grid { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+    
+    .terminal-grid th {
+        text-align: right;
+        padding: 12px;
+        font-size: 10px;
+        color: var(--c-accent);
+        border-bottom: 2px solid rgba(var(--c-accent-rgb), 0.2);
+        position: sticky; top: 0; background: var(--c-bg-app); z-index: 10;
+    }
+
+    .terminal-grid td {
+        padding: 10px 12px;
+        text-align: right;
+        background: rgba(255,255,255,0.01);
+        color: var(--c-text-secondary);
+        font-size: 13px;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+    
+    .terminal-grid tr:hover td { background: rgba(255,255,255,0.04); color: #fff; }
+    .symbol { color: var(--c-accent); font-weight: 700; border-left: 2px solid var(--c-border); }
+    .name { text-align: left; }
+    .terminal-link { font-size: 10px; font-weight: 800; color: var(--c-accent); text-decoration: underline; opacity: 0.7; }
+    .terminal-link:hover { opacity: 1; }
+
+    /* P0 Optimization: Pagination controls */
+    .pagination-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        padding: 24px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .btn-pagination {
+        padding: 8px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--c-border);
+        border-radius: 4px;
+        color: var(--c-text-secondary);
+        font-family: 'JetBrains Mono';
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .btn-pagination:hover:not(:disabled) {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        border-color: var(--c-accent);
+    }
+
+    .btn-pagination:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .page-info {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--c-text-muted);
+        min-width: 100px;
+        text-align: center;
+    }
+
+</style>
+
+<script>
+    // Collapsible Logic
+    const criteriaHeader = document.getElementById("criteria-header");
+    const filterPanel = document.querySelector(".filter-panel");
+    
+    criteriaHeader?.addEventListener("click", () => {
+        filterPanel?.classList.toggle("collapsed");
+    });
+
+    // P0 Optimization: Client-side cache for filter results
+    const resultCache = new Map<string, { data: any; timestamp: number }>();
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+    let currentPage = 1;
+    let currentFilters = {};
+    const ITEMS_PER_PAGE = 50;
+
+    function getCacheKey(filters: any): string {
+        return JSON.stringify(filters);
+    }
+
+    function getCachedResult(key: string): any | null {
+        const cached = resultCache.get(key);
+        if (!cached) return null;
+        if (Date.now() - cached.timestamp > CACHE_TTL) {
+            resultCache.delete(key);
+            return null;
+        }
+        return cached.data;
+    }
+
+    function setCacheResult(key: string, data: any): void {
+        resultCache.set(key, { data, timestamp: Date.now() });
+        if (resultCache.size > 20) {
+            const oldest = Array.from(resultCache.entries())
+                .sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+            if (oldest) resultCache.delete(oldest[0]);
+        }
+    }
+
+    async function fetchFilterResults(page: number = 1) {
+        const pe = {
+            min: parseFloat((document.getElementById("pe-min") as HTMLInputElement)?.value) || undefined,
+            max: parseFloat((document.getElementById("pe-max") as HTMLInputElement)?.value) || undefined
+        };
+        const dividendYield = {
+            min: parseFloat((document.getElementById("yield-min") as HTMLInputElement)?.value) || undefined,
+            max: parseFloat((document.getElementById("yield-max") as HTMLInputElement)?.value) || undefined
+        };
+        const roe = {
+            min: parseFloat((document.getElementById("roe-min") as HTMLInputElement)?.value) || undefined,
+            max: parseFloat((document.getElementById("roe-max") as HTMLInputElement)?.value) || undefined
+        };
+        const pb = {
+            min: parseFloat((document.getElementById("pb-min") as HTMLInputElement)?.value) || undefined,
+            max: parseFloat((document.getElementById("pb-max") as HTMLInputElement)?.value) || undefined
+        };
+        const eps = {
+            min: parseFloat((document.getElementById("eps-min") as HTMLInputElement)?.value) || undefined,
+            max: parseFloat((document.getElementById("eps-max") as HTMLInputElement)?.value) || undefined
+        };
+        const price = {
+            min: parseFloat((document.getElementById("price-min") as HTMLInputElement)?.value) || undefined,
+            max: parseFloat((document.getElementById("price-max") as HTMLInputElement)?.value) || undefined
+        };
+
+        const filterKey = getCacheKey({ pe, dividendYield, roe, pb, eps, price });
+        currentFilters = { pe, dividendYield, roe, pb, eps, price };
+
+        // P0: Try cache first
+        const cached = getCachedResult(filterKey);
+        let result = cached;
+
+        if (!result) {
+            try {
+                const response = await fetch('/api/screener', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pe: pe.min || pe.max ? pe : undefined,
+                        dividendYield: dividendYield.min || dividendYield.max ? dividendYield : undefined,
+                        roe: roe.min || roe.max ? roe : undefined,
+                        pb: pb.min || pb.max ? pb : undefined,
+                        eps: eps.min || eps.max ? eps : undefined,
+                        price: price.min || price.max ? price : undefined,
+                        page,
+                        limit: ITEMS_PER_PAGE
+                    })
+                });
+
+                result = await response.json();
+                setCacheResult(filterKey, result);
+            } catch (error) {
+                console.error('Filter API error:', error);
+                document.getElementById("result-count")!.textContent = "Error fetching results";
+                return;
+            }
+        }
+
+        renderResults(result);
+        updatePagination(result);
+    }
+
+    function renderResults(data: any) {
+        const tbody = document.getElementById("results-body")!;
+        tbody.innerHTML = '';
+
+        if (!data.results || data.results.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No matching stocks found</td></tr>';
+            document.getElementById("result-count")!.textContent = "0 檔符合";
+            return;
+        }
+
+        data.results.forEach((stock: any) => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-symbol', stock.symbol);
+            row.setAttribute('data-pe', stock.pe);
+            row.setAttribute('data-yield', stock.yield);
+            row.setAttribute('data-roe', stock.roe);
+            row.innerHTML = `
+                <td class="symbol mono">${stock.symbol}</td>
+                <td class="name">${stock.name}</td>
+                <td class="price mono">${stock.price.toFixed(2)}</td>
+                <td class="mono">${stock.pe.toFixed(2)}</td>
+                <td class="yield mono">${stock.yield.toFixed(2)}%</td>
+                <td class="mono">${stock.roe.toFixed(2)}%</td>
+                <td><a href="/stocks/${stock.symbol}" class="terminal-link">ACCESS_DATA</a></td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById("result-count")!.textContent = `${data.pagination.total} 檔符合 (showing ${data.count})`;
+    }
+
+    function updatePagination(data: any) {
+        currentPage = data.pagination.page;
+        const prevBtn = document.getElementById("prev-page") as HTMLButtonElement;
+        const nextBtn = document.getElementById("next-page") as HTMLButtonElement;
+        const pageInfo = document.getElementById("page-info")!;
+
+        pageInfo.textContent = `Page ${data.pagination.page} of ${data.pagination.pages}`;
+        prevBtn.disabled = data.pagination.page <= 1;
+        nextBtn.disabled = data.pagination.page >= data.pagination.pages;
+    }
+
+    // Event listeners
+    document.getElementById("apply-filter")?.addEventListener("click", () => {
+        currentPage = 1;
+        fetchFilterResults(1);
+    });
+
+    document.getElementById("reset-filter")?.addEventListener("click", () => {
+        document.querySelectorAll('.filter-group-hud input[type="checkbox"]').forEach(cb => (cb as HTMLInputElement).checked = false);
+        document.querySelectorAll('.filter-group-hud input[type="number"]').forEach(i => (i as HTMLInputElement).value = "");
+        currentPage = 1;
+        currentFilters = {};
+        resultCache.clear();
+        document.getElementById("results-body")!.innerHTML = '';
+        document.getElementById("result-count")!.textContent = 'Calculating...';
+    });
+
+    document.getElementById("save-filter")?.addEventListener("click", () => {
+        const filters = {
+            pe: { min: (document.getElementById("pe-min") as HTMLInputElement)?.value, max: (document.getElementById("pe-max") as HTMLInputElement)?.value },
+            yield: { min: (document.getElementById("yield-min") as HTMLInputElement)?.value, max: (document.getElementById("yield-max") as HTMLInputElement)?.value },
+            roe: { min: (document.getElementById("roe-min") as HTMLInputElement)?.value, max: (document.getElementById("roe-max") as HTMLInputElement)?.value }
+        };
+        localStorage.setItem('filter-profile', JSON.stringify(filters));
+        alert('Profile saved!');
+    });
+
+    document.querySelectorAll(".quick-tag").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll('.filter-group-hud input').forEach(i => {
+                if((i as HTMLInputElement).type === 'checkbox') (i as HTMLInputElement).checked = false;
+                else (i as HTMLInputElement).value = "";
+            });
+
+            const preset = btn.getAttribute("data-preset");
+            if (preset === "high-dividend") {
+                (document.getElementById("yield-min") as HTMLInputElement).value = "5";
+            } else if (preset === "low-pe") {
+                (document.getElementById("pe-max") as HTMLInputElement).value = "15";
+            } else if (preset === "high-roe") {
+                (document.getElementById("roe-min") as HTMLInputElement).value = "15";
+            } else if (preset === "value") {
+                (document.getElementById("pb-max") as HTMLInputElement).value = "1.5";
+            }
+            currentPage = 1;
+            fetchFilterResults(1);
+        });
+    });
+
+    // Pagination event listeners
+    document.getElementById("prev-page")?.addEventListener("click", () => {
+        if (currentPage > 1) {
+            fetchFilterResults(currentPage - 1);
+        }
+    });
+
+    document.getElementById("next-page")?.addEventListener("click", () => {
+        fetchFilterResults(currentPage + 1);
+    });
+</script>
+

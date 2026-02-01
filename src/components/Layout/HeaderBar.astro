@@ -1,0 +1,463 @@
+---
+/**
+ * 頂部Header欄組件 - Phase 1實現
+ * 
+ * 功能：
+ * - 全局搜索框 (支持股票、策略、組合)
+ * - 快速通知和操作按鈕
+ * - 時間戳和數據更新狀態
+ * - 用戶菜單
+ * 
+ * @module HeaderBar
+ * @version 1.0.0
+ */
+---
+
+<header class="header-bar" id="header-bar">
+  <!-- Left: 標籤頁欄 -->
+  <div class="header-left">
+    <!-- 標籤動態插入 -->
+  </div>
+  
+  <!-- Center: 全局搜索 -->
+  <div class="header-center">
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        class="global-search" 
+        id="global-search-input"
+        placeholder="搜索股票、策略、組合…"
+        aria-label="全局搜索"
+      />
+      <div class="search-suggestions" id="search-suggestions"></div>
+    </div>
+  </div>
+  
+  <!-- Right: 操作區 -->
+  <div class="header-right">
+    <!-- 數據更新狀態 -->
+    <div class="data-status" id="data-status">
+      <span class="status-dot"></span>
+      <span class="status-text">最後更新: --:--</span>
+    </div>
+    
+    <!-- 通知鈴 -->
+    <button class="header-btn" id="notifications-btn" title="通知" aria-label="通知">
+      🔔
+      <span class="badge" id="notification-badge" style="display: none;">3</span>
+    </button>
+    
+    <!-- 設置 -->
+    <button class="header-btn" id="settings-btn" title="設定" aria-label="設定">
+      ⚙️
+    </button>
+    
+    <!-- 用戶菜單 -->
+    <div class="user-menu">
+      <button class="user-avatar" id="user-menu-btn" title="用戶菜單">
+        <span class="avatar-icon">👤</span>
+      </button>
+      <div class="user-menu-dropdown" id="user-menu-dropdown">
+        <a href="/profile" class="menu-item">👤 個人資料</a>
+        <a href="/preferences" class="menu-item">⚙️ 偏好設置</a>
+        <a href="/help" class="menu-item">❓ 幫助</a>
+        <div class="menu-divider"></div>
+        <a href="/logout" class="menu-item">🚪 登出</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    background: var(--c-bg-glass);
+    border-bottom: 1px solid var(--c-border);
+    padding: 0 20px;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+  }
+
+  .header-left {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 200px;
+  }
+
+  .header-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    min-width: 250px;
+  }
+
+  .header-right {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* 全局搜索 */
+  .search-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--c-text-muted);
+    font-size: 14px;
+    pointer-events: none;
+  }
+
+  .global-search {
+    width: 100%;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    color: var(--c-text-primary);
+    padding: 0 12px 0 36px;
+    font-size: 12px;
+    outline: none;
+    transition: all 0.2s var(--ease-out);
+  }
+
+  .global-search::placeholder {
+    color: var(--c-text-muted);
+  }
+
+  .global-search:focus {
+    border-color: rgba(var(--c-accent-rgb), 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 12px rgba(var(--c-accent-rgb), 0.15);
+  }
+
+  .search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--c-bg-glass);
+    border: 1px solid var(--c-border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .search-suggestions.visible {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    color: var(--c-text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+    transition: all 0.2s;
+  }
+
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+
+  .suggestion-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--c-accent);
+  }
+
+  .suggestion-icon {
+    font-size: 14px;
+    min-width: 16px;
+  }
+
+  .suggestion-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .suggestion-count {
+    font-size: 10px;
+    color: var(--c-text-muted);
+  }
+
+  /* 數據狀態 */
+  .data-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--c-text-muted);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* Header按鈕 */
+  .header-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    color: var(--c-text-secondary);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s var(--ease-out);
+    position: relative;
+  }
+
+  .header-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--c-accent);
+    border-color: rgba(var(--c-accent-rgb), 0.3);
+  }
+
+  .badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 4px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  /* 用戶菜單 */
+  .user-menu {
+    position: relative;
+  }
+
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--c-accent-rgb), 0.1);
+    border: 1px solid rgba(var(--c-accent-rgb), 0.2);
+    border-radius: 50%;
+    color: var(--c-accent);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s var(--ease-out);
+  }
+
+  .user-avatar:hover {
+    background: rgba(var(--c-accent-rgb), 0.2);
+    box-shadow: 0 0 12px rgba(var(--c-accent-rgb), 0.2);
+  }
+
+  .user-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--c-bg-glass);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    min-width: 160px;
+    padding: 4px;
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    margin-top: 4px;
+  }
+
+  .user-menu-dropdown.visible {
+    display: flex;
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    color: var(--c-text-secondary);
+    font-size: 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .menu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--c-text-primary);
+  }
+
+  .menu-divider {
+    height: 1px;
+    background: var(--c-border);
+    margin: 2px 0;
+  }
+
+  /* 響應式 */
+  @media (max-width: 1024px) {
+    .header-bar {
+      padding: 0 12px;
+      gap: 12px;
+    }
+
+    .header-left {
+      min-width: 150px;
+    }
+
+    .header-center {
+      max-width: 350px;
+      min-width: 200px;
+    }
+
+    .data-status {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header-bar {
+      height: 48px;
+      padding: 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      display: none;
+    }
+
+    .header-center {
+      order: 2;
+      width: 100%;
+      max-width: 100%;
+      margin-top: 8px;
+    }
+
+    .header-right {
+      order: 1;
+      gap: 8px;
+    }
+
+    .global-search {
+      font-size: 11px;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * 全局搜索功能
+   * 支持股票、策略、組合搜索
+   */
+
+  const searchInput = document.getElementById('global-search-input');
+  const suggestionsPanel = document.getElementById('search-suggestions');
+
+  // 模擬搜索數據
+  const searchData = [
+    { type: 'stock', icon: '📈', label: '2330 台積電', href: '/stocks/2330' },
+    { type: 'stock', icon: '📈', label: '2317 鴻海', href: '/stocks/2317' },
+    { type: 'strategy', icon: '🎯', label: '低本益比', href: '/strategies/low-pe' },
+    { type: 'strategy', icon: '🎯', label: '高殖利率', href: '/strategies/high-dividend' },
+    { type: 'portfolio', icon: '💼', label: '主要組合', href: '/portfolio' },
+  ];
+
+  searchInput?.addEventListener('input', (e) => {
+    const query = (e.target as HTMLInputElement).value.toLowerCase();
+    
+    if (!query) {
+      suggestionsPanel?.classList.remove('visible');
+      return;
+    }
+    
+    const results = searchData.filter(item => 
+      item.label.toLowerCase().includes(query)
+    ).slice(0, 8);
+    
+    if (results.length > 0) {
+      suggestionsPanel!.innerHTML = results.map(result => `
+        <a href="${result.href}" class="suggestion-item">
+          <span class="suggestion-icon">${result.icon}</span>
+          <span class="suggestion-text">${result.label}</span>
+        </a>
+      `).join('');
+      suggestionsPanel?.classList.add('visible');
+    } else {
+      suggestionsPanel?.classList.remove('visible');
+    }
+  });
+
+  // 點擊外部隱藏建議
+  document.addEventListener('click', (e) => {
+    if (!searchInput?.contains(e.target as Node) && !suggestionsPanel?.contains(e.target as Node)) {
+      suggestionsPanel?.classList.remove('visible');
+    }
+  });
+
+  // 用戶菜單
+  const userMenuBtn = document.getElementById('user-menu-btn');
+  const userMenuDropdown = document.getElementById('user-menu-dropdown');
+
+  userMenuBtn?.addEventListener('click', () => {
+    userMenuDropdown?.classList.toggle('visible');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!userMenuBtn?.contains(e.target as Node) && !userMenuDropdown?.contains(e.target as Node)) {
+      userMenuDropdown?.classList.remove('visible');
+    }
+  });
+
+  // 更新時間戳
+  function updateDataStatus() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+    const statusText = document.querySelector('.status-text');
+    if (statusText) {
+      statusText.textContent = `最後更新: ${timeStr}`;
+    }
+  }
+
+  updateDataStatus();
+  setInterval(updateDataStatus, 60000);
+</script>

@@ -1,0 +1,1105 @@
+---
+/**
+ * 股票篩選器元件
+ * 提供基本面與技術面篩選介面
+ */
+
+interface Props {
+    className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class={`stock-screener ${className}`} id="stock-screener">
+    <!-- 篩選條件面板 -->
+    <div class="screener-panel glow-effect">
+        <div class="panel-header">
+            <h2 class="panel-title">
+                <span class="title-icon">🔍</span>
+                選股篩選器
+            </h2>
+            <button id="reset-btn" class="reset-btn" title="重設條件">
+                ↻ 重設
+            </button>
+        </div>
+
+        <!-- 預設策略範本 -->
+        <div class="strategy-templates">
+            <span class="template-label">快速選擇：</span>
+            <button class="template-btn" data-template="value" title="價值型投資">
+                💎 價值型
+            </button>
+            <button class="template-btn" data-template="dividend" title="高殖利率">
+                💰 高股息
+            </button>
+            <button class="template-btn" data-template="growth" title="成長型">
+                🚀 成長型
+            </button>
+        </div>
+
+        <div class="filters-grid">
+            <!-- 基本面篩選 -->
+            <div class="filter-section">
+                <h3 class="section-label">
+                    📊 基本面
+                </h3>
+
+                <div class="filter-group">
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="filter-pe" />
+                        <span class="toggle-label">本益比 (P/E)</span>
+                    </label>
+                    <div class="filter-inputs" data-for="filter-pe">
+                        <input type="number" id="pe-max" placeholder="最大值" value="15" />
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="filter-pb" />
+                        <span class="toggle-label">股價淨值比 (P/B)</span>
+                    </label>
+                    <div class="filter-inputs" data-for="filter-pb">
+                        <input
+                            type="number"
+                            id="pb-max"
+                            placeholder="最大值"
+                            value="1.5"
+                            step="0.1"
+                        />
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="filter-yield" />
+                        <span class="toggle-label">殖利率 (%)</span>
+                    </label>
+                    <div class="filter-inputs" data-for="filter-yield">
+                        <input
+                            type="number"
+                            id="yield-min"
+                            placeholder="最小值"
+                            value="5"
+                            step="0.5"
+                        />
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="filter-roe" />
+                        <span class="toggle-label">ROE (%)</span>
+                    </label>
+                    <div class="filter-inputs" data-for="filter-roe">
+                        <input type="number" id="roe-min" placeholder="最小值" value="15" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 技術面篩選 -->
+            <div class="filter-section">
+                <h3 class="section-label">
+                    📈 技術面
+                </h3>
+
+                <div class="filter-group">
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="filter-golden-cross" />
+                        <span class="toggle-label">黃金交叉</span>
+                        <span class="filter-hint">MA5 上穿 MA20</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="filter-rsi" />
+                        <span class="toggle-label">RSI 超賣反彈</span>
+                        <span class="filter-hint">RSI &lt; 30 後回升</span>
+                    </label>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-toggle">
+                        <input type="checkbox" id="filter-macd" />
+                        <span class="toggle-label">MACD 翻多</span>
+                        <span class="filter-hint">DIF 上穿 MACD</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <button id="run-screener" class="run-btn">
+            ▶️
+            執行篩選
+        </button>
+    </div>
+
+    <!-- 結果面板 -->
+    <div class="results-panel glow-effect">
+        <div class="results-header">
+            <h3 class="results-title">
+                篩選結果
+                <span id="results-count" class="results-count">0</span>
+            </h3>
+            <div class="header-actions">
+                <span id="sync-status" class="sync-status" title="資料同步狀態">
+                    <span class="sync-icon">●</span>
+                    <span id="last-sync" class="last-sync">尚未同步</span>
+                </span>
+                <button id="refresh-btn" class="refresh-btn" title="重新整理資料">
+                    ↻
+                </button>
+                <button id="export-btn" class="export-btn" disabled>
+                    ⬇️ 匯出
+                </button>
+            </div>
+        </div>
+
+        <div id="results-container" class="results-container">
+            <div class="empty-state" id="empty-state">
+                <div class="empty-icon-container">
+                    📊
+                </div>
+                <p>設定篩選條件後點擊「執行篩選」</p>
+            </div>
+
+            <div id="loading-state" class="loading-state" style="display: none;">
+                <div class="skeleton-wrapper">
+                    <div class="skeleton-row skeleton-anim"></div>
+                    <div class="skeleton-row skeleton-anim"></div>
+                    <div class="skeleton-row skeleton-anim"></div>
+                    <div class="skeleton-row skeleton-anim"></div>
+                    <div class="skeleton-row skeleton-anim"></div>
+                </div>
+                <p class="loading-text">AI 正在分析市場數據...</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="results-table" class="results-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>股票</th>
+                            <th>符合策略</th>
+                            <th class="sortable" data-sort="price">價格</th>
+                            <th class="sortable" data-sort="changePercent">漲跌幅</th>
+                            <th class="sortable" data-sort="pe">P/E</th>
+                            <th class="sortable" data-sort="pb">P/B</th>
+                            <th class="sortable" data-sort="dividendYield">殖利率</th>
+                            <th class="sortable" data-sort="roe">ROE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"> </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stock-screener {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 20px;
+        height: 100%;
+        padding: 20px;
+        overflow: hidden;
+    }
+
+    .screener-panel,
+    .results-panel {
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border);
+        border-radius: 12px;
+        overflow: hidden;
+        /* Enable glow */
+        position: relative;
+    }
+
+    .screener-panel {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--c-border);
+    }
+
+    .panel-title {
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .title-icon {
+        font-size: 20px;
+    }
+
+    .reset-btn {
+        font-size: 12px;
+        color: var(--c-text-secondary);
+        padding: 6px 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        transition: all 0.2s;
+    }
+
+    .reset-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .filters-grid {
+        flex: 1;
+        padding: 16px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .filter-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .section-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .filter-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .filter-toggle:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--c-border);
+    }
+
+    .filter-toggle input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--c-accent);
+    }
+
+    .toggle-label {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .filter-hint {
+        font-size: 11px;
+        color: var(--c-text-muted);
+    }
+
+    .filter-inputs {
+        display: none;
+        padding: 0 12px 8px;
+    }
+
+    .filter-toggle:has(input:checked) + .filter-inputs {
+        display: flex;
+        gap: 8px;
+    }
+
+    .filter-inputs input {
+        flex: 1;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--c-border);
+        border-radius: 6px;
+        color: var(--c-text-primary);
+        font-size: 13px;
+    }
+
+    .filter-inputs input:focus {
+        outline: none;
+        border-color: var(--c-accent);
+        box-shadow: 0 0 0 2px rgba(var(--c-accent-rgb), 0.2);
+    }
+
+    .run-btn {
+        margin: 16px 20px 20px;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, var(--c-accent), #2563eb);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(var(--c-accent-rgb), 0.3);
+    }
+
+    .run-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(var(--c-accent-rgb), 0.4);
+    }
+
+    .run-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Results Panel */
+    .results-panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--c-border);
+    }
+
+    .results-title {
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .results-count {
+        background: var(--c-accent);
+        color: #fff;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+
+    .export-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        color: var(--c-text-secondary);
+        transition: all 0.2s;
+    }
+
+    .export-btn:not(:disabled):hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .export-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Header Actions */
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .sync-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        color: var(--c-text-muted);
+    }
+
+    .sync-icon {
+        font-size: 8px;
+        color: #888;
+        transition: color 0.3s;
+    }
+
+    .sync-status.syncing .sync-icon {
+        color: #f59e0b;
+        animation: pulse 1s infinite;
+    }
+
+    .sync-status.success .sync-icon {
+        color: #22c55e;
+    }
+
+    .sync-status.error .sync-icon {
+        color: #ef4444;
+    }
+
+    @keyframes pulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .last-sync {
+        white-space: nowrap;
+    }
+
+    .refresh-btn {
+        font-size: 14px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .refresh-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(30deg);
+    }
+
+    .refresh-btn.spinning {
+        animation: spin 1s linear infinite;
+    }
+
+    /* Results Container & Table */
+    .results-container {
+        flex: 1;
+        overflow: hidden; /* Important for sticky header */
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+        position: relative;
+    }
+
+    .results-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .results-table th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: var(--c-bg-glass-heavy);
+        backdrop-filter: var(--glass-blur);
+        border-bottom: 1px solid var(--c-border);
+    }
+
+    .results-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--c-border);
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .results-table tbody tr {
+        transition: background 0.2s;
+    }
+
+    .results-table tbody tr:hover {
+        background: var(--c-bg-glass-hover);
+    }
+
+    /* Empty & Loading States */
+    .empty-state,
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        min-height: 400px;
+        color: var(--c-text-muted);
+        gap: 20px;
+        text-align: center;
+    }
+
+    .empty-icon-container {
+        width: 80px;
+        height: 80px;
+        background: rgba(var(--c-accent-rgb), 0.05);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--c-accent);
+        border: 1px solid var(--c-border);
+    }
+
+    /* Icons and Elements */
+    .title-icon-svg {
+        color: var(--c-accent);
+    }
+
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .template-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 8px 14px;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--c-border);
+        color: var(--c-text-secondary);
+        transition: all 0.3s;
+    }
+
+    .template-btn:hover {
+        background: var(--c-bg-glass-hover);
+        border-color: var(--c-accent);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .template-btn.active {
+        background: rgba(var(--c-accent-rgb), 0.1);
+        border-color: var(--c-accent);
+        color: var(--c-accent);
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.2);
+    }
+
+    /* Value Coloring */
+    .value-pos { color: var(--c-success); }
+    .value-neg { color: var(--c-danger); }
+    
+    .stock-symbol-link {
+        font-weight: 700;
+        color: var(--c-accent);
+        text-decoration: none;
+    }
+    
+    .stock-symbol-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Scrollbar */
+    .table-wrapper::-webkit-scrollbar {
+        width: 6px;
+    }
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+    }
+    .table-wrapper::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+    .strategy-templates {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--c-border);
+        flex-wrap: wrap;
+    }
+
+    .template-label {
+        font-size: 12px;
+        color: var(--c-text-muted);
+    }
+
+    .template-btn {
+        font-size: 11px;
+        padding: 6px 12px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        color: var(--c-text-secondary);
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .template-btn:hover {
+        background: rgba(var(--c-accent-rgb), 0.15);
+        border-color: rgba(var(--c-accent-rgb), 0.3);
+        color: var(--c-accent);
+    }
+
+    .template-btn.active {
+        background: rgba(var(--c-accent-rgb), 0.2);
+        border-color: var(--c-accent);
+        color: var(--c-accent);
+    }
+
+    /* Sortable Headers */
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s;
+    }
+
+    .sortable:hover {
+        color: var(--c-accent);
+    }
+
+    .sortable::after {
+        content: ' ↕';
+        opacity: 0.3;
+        font-size: 10px;
+    }
+
+    .sortable.asc::after {
+        content: ' ↑';
+        opacity: 1;
+        color: var(--c-accent);
+    }
+
+    .sortable.desc::after {
+        content: ' ↓';
+        opacity: 1;
+        color: var(--c-accent);
+    }
+
+    /* Stock Link */
+    .stock-symbol {
+        font-weight: 600;
+        color: var(--c-accent);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .stock-symbol:hover {
+        text-decoration: underline;
+        text-shadow: 0 0 8px rgba(var(--c-accent-rgb), 0.5);
+    }
+
+    @media (max-width: 900px) {
+        .stock-screener {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+        }
+
+        .strategy-templates {
+            justify-content: center;
+        }
+    }
+    /* Skeleton Loading */
+    .skeleton-wrapper {
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .skeleton-anim {
+        background: linear-gradient(90deg, 
+            rgba(255, 255, 255, 0.03) 25%, 
+            rgba(255, 255, 255, 0.08) 50%, 
+            rgba(255, 255, 255, 0.03) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite linear;
+        border-radius: 4px;
+    }
+
+    .skeleton-row {
+        height: 48px;
+        width: 100%;
+        border-bottom: 1px solid var(--c-border);
+    }
+
+    .loading-text {
+        font-size: 14px;
+        color: var(--c-accent);
+        margin-top: 16px;
+        letter-spacing: 1px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+
+<script>
+    import { actions } from 'astro:actions';
+    let syncInterval: number | null = null;
+    let currentResults: any[] = [];
+
+    function initScreener() {
+        const screenerEl = document.getElementById('stock-screener');
+        if (!screenerEl) return;
+
+        // 取得元素
+        const runBtn = document.getElementById('run-screener') as HTMLButtonElement;
+        const resetBtn = document.getElementById('reset-btn');
+        const exportBtn = document.getElementById('export-btn') as HTMLButtonElement;
+        const resultsCount = document.getElementById('results-count');
+        const emptyState = document.getElementById('empty-state');
+        const loadingState = document.getElementById('loading-state');
+        const resultsTable = document.getElementById('results-table') as HTMLTableElement;
+        const resultsBody = document.getElementById('results-body');
+
+        // 篩選條件 checkboxes
+        const filterPE = document.getElementById('filter-pe') as HTMLInputElement;
+        const filterPB = document.getElementById('filter-pb') as HTMLInputElement;
+        const filterYield = document.getElementById('filter-yield') as HTMLInputElement;
+        const filterROE = document.getElementById('filter-roe') as HTMLInputElement;
+        const filterGoldenCross = document.getElementById('filter-golden-cross') as HTMLInputElement;
+        const filterRSI = document.getElementById('filter-rsi') as HTMLInputElement;
+        const filterMACD = document.getElementById('filter-macd') as HTMLInputElement;
+
+        // 數值欄位
+        const peMax = document.getElementById('pe-max') as HTMLInputElement;
+        const pbMax = document.getElementById('pb-max') as HTMLInputElement;
+        const yieldMin = document.getElementById('yield-min') as HTMLInputElement;
+        const roeMin = document.getElementById('roe-min') as HTMLInputElement;
+
+        // 備用模擬資料（當 API 不可用時）
+        const fallbackData = [
+            { symbol: '2330', name: '台積電', price: 585, change: 12, changePercent: 2.09, pe: 15, pb: 4.5, dividendYield: 2.5, roe: 25 },
+            { symbol: '2317', name: '鴻海', price: 105, change: -1.5, changePercent: -1.41, pe: 12, pb: 1.2, dividendYield: 6.0, roe: 18 },
+            { symbol: '2454', name: '聯發科', price: 920, change: 15, changePercent: 1.66, pe: 8, pb: 0.8, dividendYield: 8.5, roe: 12 },
+            { symbol: '2412', name: '中華電', price: 120, change: 0.5, changePercent: 0.42, pe: 22, pb: 3.2, dividendYield: 4.0, roe: 35 },
+            { symbol: '2882', name: '國泰金', price: 45.5, change: -0.2, changePercent: -0.44, pe: 10, pb: 1.1, dividendYield: 5.5, roe: 14 },
+            { symbol: '2881', name: '富邦金', price: 62.1, change: 0.3, changePercent: 0.49, pe: 9, pb: 1.0, dividendYield: 6.2, roe: 16 },
+            { symbol: '3008', name: '大立光', price: 2150, change: -30, changePercent: -1.38, pe: 18, pb: 2.8, dividendYield: 3.5, roe: 22 },
+        ];
+
+        async function runScreener() {
+            if (!resultsBody || !emptyState || !loadingState || !resultsTable || !resultsCount || !exportBtn) return;
+
+            // 顯示載入狀態
+            emptyState.style.display = 'none';
+            loadingState.style.display = 'flex';
+            resultsTable.style.display = 'none';
+
+            // 建立請求條件
+            const criteria: any = {};
+            if (filterPE?.checked) criteria.pe = { max: parseFloat(peMax?.value || '15') };
+            if (filterPB?.checked) criteria.pb = { max: parseFloat(pbMax?.value || '1.5') };
+            if (filterYield?.checked) criteria.dividendYield = { min: parseFloat(yieldMin?.value || '5') };
+            if (filterROE?.checked) criteria.roe = { min: parseFloat(roeMin?.value || '15') };
+
+            let results: any[] = [];
+            const criteriaKey = JSON.stringify(criteria);
+            const cached = getCachedResults(criteriaKey);
+
+            if (cached) {
+                results = cached;
+            } else {
+                results = filterLocally(criteria);
+                if (results.length > 0) {
+                    setCachedResults(criteriaKey, results);
+                } else {
+                    try {
+                        const { data: actionResults, error } = await actions.screenStocks(criteria);
+                        
+                        if (!error && actionResults) {
+                            results = actionResults;
+                            setCachedResults(criteriaKey, results);
+                        }
+                    } catch (err) {
+                        console.error('Action failed:', err);
+                    }
+                }
+            }
+
+            currentResults = results;
+            loadingState.style.display = 'none';
+
+            if (results.length === 0) {
+                emptyState.style.display = 'flex';
+                emptyState.querySelector('p')!.textContent = '沒有符合條件的股票';
+                resultsCount.textContent = '0';
+                exportBtn.disabled = true;
+            } else {
+                resultsTable.style.display = 'table';
+                resultsCount.textContent = String(results.length);
+                exportBtn.disabled = false;
+                renderResults();
+            }
+        }
+
+        function filterLocally(criteria: any): any[] {
+            let results = [...fallbackData];
+            const matchedStrategies: Map<string, string[]> = new Map();
+            results.forEach(r => matchedStrategies.set(r.symbol, []));
+
+            if (criteria.pe?.max) {
+                results = results.filter(r => r.pe > 0 && r.pe <= criteria.pe.max);
+                results.forEach(r => matchedStrategies.get(r.symbol)?.push('低本益比'));
+            }
+            if (criteria.pb?.max) {
+                results = results.filter(r => r.pb <= criteria.pb.max);
+                results.forEach(r => matchedStrategies.get(r.symbol)?.push('低P/B'));
+            }
+            if (criteria.dividendYield?.min) {
+                results = results.filter(r => r.dividendYield >= criteria.dividendYield.min);
+                results.forEach(r => matchedStrategies.get(r.symbol)?.push('高殖利率'));
+            }
+            if (criteria.roe?.min) {
+                results = results.filter(r => r.roe >= criteria.roe.min);
+                results.forEach(r => matchedStrategies.get(r.symbol)?.push('高ROE'));
+            }
+
+            return results.map(r => ({
+                ...r,
+                matchedStrategies: matchedStrategies.get(r.symbol) || [],
+            }));
+        }
+
+        function renderResults() {
+            if (!resultsBody) return;
+            resultsBody.innerHTML = currentResults
+                .map(r => `
+                    <tr>
+                        <td>
+                            <div class="stock-name">
+                                <a href="/stocks/${r.symbol}" class="stock-symbol">${r.symbol}</a>
+                                <span class="stock-label">${r.name}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="strategy-tags">
+                                ${(r.matchedStrategies || []).map((s: string) => `<span class="strategy-tag">${s}</span>`).join('')}
+                            </div>
+                        </td>
+                        <td class="value-cell mono">${r.price ? r.price.toFixed(1) : '-'}</td>
+                        <td class="value-cell mono ${(r.changePercent || 0) > 0 ? 'text-pos' : (r.changePercent || 0) < 0 ? 'text-neg' : ''}">
+                            ${r.changePercent ? (r.changePercent > 0 ? '+' : '') + r.changePercent.toFixed(2) + '%' : '-'}
+                        </td>
+                        <td class="value-cell mono">${r.fundamentals?.pe?.toFixed(1) ?? r.pe?.toFixed(1) ?? '-'}</td>
+                        <td class="value-cell mono">${r.fundamentals?.pb?.toFixed(2) ?? r.pb?.toFixed(2) ?? '-'}</td>
+                        <td class="value-cell mono">${r.fundamentals?.dividendYield?.toFixed(1) ?? r.dividendYield?.toFixed(1) ?? '-'}%</td>
+                        <td class="value-cell mono">${r.fundamentals?.roe?.toFixed(1) ?? r.roe?.toFixed(1) ?? '-'}%</td>
+                    </tr>
+                `)
+                .join('');
+        }
+
+        function exportToCSV() {
+            if (currentResults.length === 0) return;
+            const headers = ['股票代號', '股票名稱', '符合策略', '本益比', '股價淨值比', '殖利率', 'ROE'];
+            const rows = currentResults.map(r => [
+                r.symbol, r.name, (r.matchedStrategies || []).join('; '),
+                r.fundamentals?.pe ?? r.pe ?? '',
+                r.fundamentals?.pb ?? r.pb ?? '',
+                r.fundamentals?.dividendYield ?? r.dividendYield ?? '',
+                r.fundamentals?.roe ?? r.roe ?? '',
+            ]);
+            const csvContent = [headers.join(','), ...rows.map(row => row.map(cell => `"${cell}"`).join(','))].join('\n');
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `選股結果_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function resetFilters() {
+            document.querySelectorAll('.filter-toggle input[type="checkbox"]').forEach(cb => ((cb as HTMLInputElement).checked = false));
+            if (peMax) peMax.value = '15';
+            if (pbMax) pbMax.value = '1.5';
+            if (yieldMin) yieldMin.value = '5';
+            if (roeMin) roeMin.value = '15';
+            if (emptyState) {
+                emptyState.style.display = 'flex';
+                emptyState.querySelector('p')!.textContent = '設定篩選條件後點擊「執行篩選」';
+            }
+            if (resultsTable) resultsTable.style.display = 'none';
+            if (resultsCount) resultsCount.textContent = '0';
+            if (exportBtn) exportBtn.disabled = true;
+            currentResults = [];
+        }
+
+        // ================== Event Bindings ==================
+        if (runBtn) runBtn.onclick = runScreener;
+        if (resetBtn) resetBtn.onclick = resetFilters;
+        if (exportBtn) exportBtn.onclick = exportToCSV;
+
+        // Templates
+        const TEMPLATES: Record<string, any> = {
+            value: { pe: { max: 15 }, pb: { max: 1.5 } },
+            dividend: { dividendYield: { min: 5 } },
+            growth: { roe: { min: 20 } },
+        };
+
+        document.querySelectorAll('.template-btn').forEach(btn => {
+            (btn as HTMLElement).onclick = () => {
+                const templateName = (btn as HTMLElement).dataset.template;
+                if (!templateName) return;
+                resetFilters();
+                const t = TEMPLATES[templateName];
+                if (t.pe) { filterPE.checked = true; peMax.value = String(t.pe.max); }
+                if (t.pb) { filterPB.checked = true; pbMax.value = String(t.pb.max); }
+                if (t.dividendYield) { filterYield.checked = true; yieldMin.value = String(t.dividendYield.min); }
+                if (t.roe) { filterROE.checked = true; roeMin.value = String(t.roe.min); }
+                document.querySelectorAll('.template-btn').forEach(b => b.classList.toggle('active', b === btn));
+                runScreener();
+            };
+        });
+
+        // Sorting
+        let sortState = { field: '', dir: 'asc' };
+        document.querySelectorAll('.sortable').forEach(th => {
+            (th as HTMLElement).onclick = () => {
+                const field = (th as HTMLElement).dataset.sort;
+                if (!field) return;
+                if (sortState.field === field) sortState.dir = sortState.dir === 'asc' ? 'desc' : 'asc';
+                else { sortState.field = field; sortState.dir = 'asc'; }
+                currentResults.sort((a, b) => {
+                    const aV = a.fundamentals?.[field] ?? a[field] ?? 0;
+                    const bV = b.fundamentals?.[field] ?? b[field] ?? 0;
+                    return sortState.dir === 'asc' ? aV - bV : bV - aV;
+                });
+                document.querySelectorAll('.sortable').forEach(s => {
+                    s.classList.remove('asc', 'desc');
+                    if ((s as HTMLElement).dataset.sort === field) s.classList.add(sortState.dir);
+                });
+                renderResults();
+            };
+        });
+
+        // Settings
+        const SETTINGS_KEY = 'tw-stock-screener-settings';
+        const saveSettings = () => {
+            const s = { filterPE: filterPE.checked, filterPB: filterPB.checked, filterYield: filterYield.checked, filterROE: filterROE.checked,
+                        peMax: peMax.value, pbMax: pbMax.value, yieldMin: yieldMin.value, roeMin: roeMin.value };
+            localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+        };
+        [filterPE, filterPB, filterYield, filterROE, peMax, pbMax, yieldMin, roeMin].forEach(el => {
+            if (el) el.onchange = saveSettings;
+        });
+
+        // Restore Settings
+        try {
+            const saved = localStorage.getItem(SETTINGS_KEY);
+            if (saved) {
+                const s = JSON.parse(saved);
+                if (s.filterPE) filterPE.checked = s.filterPE;
+                if (s.filterPB) filterPB.checked = s.filterPB;
+                if (s.filterYield) filterYield.checked = s.filterYield;
+                if (s.filterROE) filterROE.checked = s.filterROE;
+                if (s.peMax) peMax.value = s.peMax;
+                if (s.pbMax) pbMax.value = s.pbMax;
+                if (s.yieldMin) yieldMin.value = s.yieldMin;
+                if (s.roeMin) roeMin.value = s.roeMin;
+            }
+        } catch (e) {}
+
+        // ================== Sync Logic ==================
+        const refreshBtn = document.getElementById('refresh-btn');
+        const syncStatusEl = document.getElementById('sync-status');
+        const lastSyncEl = document.getElementById('last-sync');
+        const SYNC_META_KEY = 'tw-stock-sync-meta';
+        const CACHE_KEY = 'tw-stock-screener-cache';
+
+        const updateSyncDisplay = () => {
+            try {
+                const meta = localStorage.getItem(SYNC_META_KEY);
+                if (meta) {
+                    const { lastSyncTime, syncStatus } = JSON.parse(meta);
+                    if (lastSyncEl) {
+                        const diff = Date.now() - lastSyncTime;
+                        const mins = Math.floor(diff / 60000);
+                        lastSyncEl.textContent = mins < 1 ? '剛剛' : mins < 60 ? `${mins} 分鐘前` : `${Math.floor(mins/60)} 小時前`;
+                    }
+                    if (syncStatusEl) {
+                        syncStatusEl.className = `sync-status ${syncStatus}`;
+                    }
+                }
+            } catch (e) {}
+        };
+
+        if (refreshBtn) {
+            refreshBtn.onclick = async () => {
+                refreshBtn.classList.add('spinning');
+                localStorage.removeItem(CACHE_KEY);
+                try {
+                    const res = await fetch('/api/screener');
+                    if (res.ok) {
+                        localStorage.setItem(SYNC_META_KEY, JSON.stringify({ lastSyncTime: Date.now(), syncStatus: 'success' }));
+                        runScreener();
+                    }
+                } catch (e) {
+                    localStorage.setItem(SYNC_META_KEY, JSON.stringify({ lastSyncTime: Date.now(), syncStatus: 'error' }));
+                }
+                refreshBtn.classList.remove('spinning');
+                updateSyncDisplay();
+            };
+        }
+
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = window.setInterval(updateSyncDisplay, 60000);
+        updateSyncDisplay();
+    }
+
+    // Cache Helpers
+    function getCachedResults(key: string) {
+        try {
+            const c = localStorage.getItem('tw-stock-screener-cache');
+            if (!c) return null;
+            const { key: k, results, timestamp } = JSON.parse(c);
+            if (k === key && Date.now() - timestamp < 300000) return results;
+        } catch (e) {}
+        return null;
+    }
+    function setCachedResults(key: string, results: any[]) {
+        try { localStorage.setItem('tw-stock-screener-cache', JSON.stringify({ key, results, timestamp: Date.now() })); } catch (e) {}
+    }
+
+    // Initialize on page load and SPA navigations
+    document.addEventListener('astro:page-load', () => {
+        const container = document.querySelector('.stock-screener');
+        if (container && !(container as any)._initialized) {
+            initScreener();
+            (container as any)._initialized = true;
+        }
+    });
+</script>

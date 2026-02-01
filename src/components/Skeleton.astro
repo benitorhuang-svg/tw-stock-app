@@ -1,0 +1,143 @@
+---
+interface Props {
+    type?: "card" | "row" | "chart";
+    count?: number;
+}
+
+const { type = "card", count = 1 } = Astro.props;
+---
+
+{
+    Array.from({ length: count }).map(() => (
+        <div class={`skeleton skeleton-${type}`}>
+            {type === "card" && (
+                <>
+                    <div class="skeleton-line short" />
+                    <div class="skeleton-line medium" />
+                    <div class="skeleton-line long" />
+                    <div class="skeleton-line short" />
+                </>
+            )}
+            {type === "row" && (
+                <div class="skeleton-row">
+                    <div class="skeleton-cell" />
+                    <div class="skeleton-cell wide" />
+                    <div class="skeleton-cell" />
+                    <div class="skeleton-cell" />
+                </div>
+            )}
+            {type === "chart" && (
+                <div class="skeleton-chart">
+                    <div class="skeleton-bar" style="height: 60%" />
+                    <div class="skeleton-bar" style="height: 80%" />
+                    <div class="skeleton-bar" style="height: 45%" />
+                    <div class="skeleton-bar" style="height: 90%" />
+                    <div class="skeleton-bar" style="height: 70%" />
+                    <div class="skeleton-bar" style="height: 55%" />
+                </div>
+            )}
+        </div>
+    ))
+}
+
+<style>
+    .skeleton {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        overflow: hidden;
+    }
+
+    .skeleton-line {
+        height: 16px;
+        background: linear-gradient(
+            90deg,
+            var(--border) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            var(--border) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+        margin-bottom: 12px;
+    }
+
+    .skeleton-line:last-child {
+        margin-bottom: 0;
+    }
+
+    .skeleton-line.short {
+        width: 30%;
+    }
+    .skeleton-line.medium {
+        width: 60%;
+        height: 24px;
+    }
+    .skeleton-line.long {
+        width: 100%;
+    }
+
+    .skeleton-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .skeleton-cell {
+        height: 20px;
+        width: 80px;
+        background: linear-gradient(
+            90deg,
+            var(--border) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            var(--border) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+    }
+
+    .skeleton-cell.wide {
+        width: 150px;
+    }
+
+    .skeleton-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 200px;
+    }
+
+    .skeleton-bar {
+        flex: 1;
+        background: linear-gradient(
+            90deg,
+            var(--border) 0%,
+            rgba(255, 255, 255, 0.1) 50%,
+            var(--border) 100%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px 4px 0 0;
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    /* Row type specific */
+    .skeleton-row {
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .skeleton-row:last-child {
+        border-bottom: none;
+    }
+</style>

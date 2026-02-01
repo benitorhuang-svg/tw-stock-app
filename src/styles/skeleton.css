@@ -1,0 +1,203 @@
+/* Loading Skeleton 樣式 */
+
+/* 基本骨架 */
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--bg-card) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            var(--bg-card) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* 文字骨架 */
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 8px;
+}
+
+.skeleton-text.short {
+    width: 60%;
+}
+
+.skeleton-text.medium {
+    width: 80%;
+}
+
+.skeleton-text.long {
+    width: 100%;
+}
+
+/* 標題骨架 */
+.skeleton-title {
+    height: 24px;
+    width: 40%;
+    margin-bottom: 16px;
+}
+
+/* 價格骨架 */
+.skeleton-price {
+    height: 32px;
+    width: 100px;
+}
+
+/* 圖片/圖表骨架 */
+.skeleton-image {
+    aspect-ratio: 16 / 9;
+    width: 100%;
+}
+
+.skeleton-chart {
+    height: 300px;
+    width: 100%;
+}
+
+/* 頭像骨架 */
+.skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+
+/* 按鈕骨架 */
+.skeleton-button {
+    height: 44px;
+    width: 120px;
+    border-radius: 8px;
+}
+
+/* 卡片骨架 */
+.skeleton-card {
+    padding: 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+/* 表格行骨架 */
+.skeleton-row {
+    display: flex;
+    gap: 16px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.skeleton-cell {
+    height: 20px;
+    flex: 1;
+}
+
+.skeleton-cell.small {
+    flex: 0.5;
+}
+
+.skeleton-cell.large {
+    flex: 2;
+}
+
+/* 股票卡片骨架 */
+.skeleton-stock-card {
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.skeleton-stock-card .skeleton-symbol {
+    height: 20px;
+    width: 60px;
+    margin-bottom: 8px;
+}
+
+.skeleton-stock-card .skeleton-name {
+    height: 14px;
+    width: 80px;
+    margin-bottom: 12px;
+}
+
+.skeleton-stock-card .skeleton-price {
+    height: 28px;
+    width: 90px;
+}
+
+/* 網格骨架 */
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+/* 列表骨架 */
+.skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 載入容器 */
+.loading-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-out;
+}
+
+.loading-container.loaded {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+}
+
+/* 淡入內容 */
+.content-fade-in {
+    opacity: 0;
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* 脈動動畫變體 */
+.skeleton-pulse {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* 減少動畫 */
+@media (prefers-reduced-motion: reduce) {
+    .skeleton {
+        animation: none;
+        background: var(--bg-card);
+    }
+
+    .skeleton-pulse {
+        animation: none;
+    }
+}

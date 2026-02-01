@@ -1,0 +1,377 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="TWSE 即時資料">
+    <h1>📡 TWSE 即時資料</h1>
+    <p class="page-desc">從證交所 API 取得最新股票資料</p>
+
+    <!-- 日期選擇 -->
+    <div class="controls">
+        <label>
+            查詢日期：
+            <input type="date" id="date-input" />
+        </label>
+        <button id="fetch-btn" class="btn-primary">取得資料</button>
+    </div>
+
+    <!-- 載入狀態 -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <span>正在從證交所取得資料...</span>
+    </div>
+
+    <!-- 錯誤訊息 -->
+    <div id="error" class="error hidden"></div>
+
+    <!-- 資料統計 -->
+    <div id="stats" class="stats hidden">
+        <div class="stat-item">
+            <span class="stat-label">資料日期</span>
+            <span id="stat-date" class="stat-value">-</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">股票數量</span>
+            <span id="stat-count" class="stat-value">-</span>
+        </div>
+    </div>
+
+    <!-- 資料表格 -->
+    <div id="table-container" class="table-container hidden">
+        <div class="table-controls">
+            <input
+                type="text"
+                id="table-search"
+                placeholder="🔍 搜尋代號或名稱..."
+                class="search-input"
+            />
+            <select id="sort-select" class="sort-select">
+                <option value="symbol">依代號排序</option>
+                <option value="yield-desc">殖利率 高→低</option>
+                <option value="pe-asc">本益比 低→高</option>
+                <option value="pb-asc">淨值比 低→高</option>
+            </select>
+        </div>
+        <div class="table-scroll">
+            <table id="data-table">
+                <thead>
+                    <tr>
+                        <th>代號</th>
+                        <th>名稱</th>
+                        <th>殖利率 %</th>
+                        <th>本益比</th>
+                        <th>淨值比</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .page-desc {
+        color: var(--text-secondary);
+        margin-bottom: 32px;
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .controls label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-secondary);
+    }
+
+    .controls input[type="date"] {
+        padding: 10px 14px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        padding: 10px 24px;
+        background: var(--accent);
+        color: #000;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .loading {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        margin-bottom: 24px;
+    }
+
+    .spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .error {
+        padding: 16px 24px;
+        background: rgba(255, 71, 87, 0.1);
+        border: 1px solid rgba(255, 71, 87, 0.3);
+        border-radius: 12px;
+        color: #ff4757;
+        margin-bottom: 24px;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .stats {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .stat-item {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 24px;
+    }
+
+    .stat-label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .table-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .table-controls {
+        display: flex;
+        gap: 16px;
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .search-input,
+    .sort-select {
+        padding: 10px 14px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .search-input {
+        flex: 1;
+        max-width: 300px;
+    }
+
+    .table-scroll {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    th {
+        background: rgba(0, 0, 0, 0.2);
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        position: sticky;
+        top: 0;
+    }
+
+    tr:hover {
+        background: rgba(0, 212, 170, 0.05);
+    }
+
+    .symbol {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .yield-high {
+        color: var(--positive);
+        font-weight: 600;
+    }
+
+    .pe-low {
+        color: var(--positive);
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    let allData: any[] = [];
+
+    // 設定預設日期為今天
+    const dateInput = document.getElementById("date-input") as HTMLInputElement;
+    const today = new Date();
+    dateInput.value = today.toISOString().split("T")[0];
+
+    // 取得資料按鈕
+    document.getElementById("fetch-btn")?.addEventListener("click", fetchData);
+
+    async function fetchData() {
+        const dateInput = document.getElementById(
+            "date-input",
+        ) as HTMLInputElement;
+        const loading = document.getElementById("loading")!;
+        const error = document.getElementById("error")!;
+        const stats = document.getElementById("stats")!;
+        const tableContainer = document.getElementById("table-container")!;
+        const fetchBtn = document.getElementById(
+            "fetch-btn",
+        ) as HTMLButtonElement;
+
+        // 格式化日期
+        const date = dateInput.value.replace(/-/g, "");
+
+        // 顯示載入中
+        loading.classList.remove("hidden");
+        error.classList.add("hidden");
+        stats.classList.add("hidden");
+        tableContainer.classList.add("hidden");
+        fetchBtn.disabled = true;
+
+        try {
+            const res = await fetch(`/api/pe-ratios.json?date=${date}`);
+            const json = await res.json();
+
+            if (!res.ok) {
+                throw new Error(json.error || "取得資料失敗");
+            }
+
+            allData = json.data;
+
+            // 更新統計
+            document.getElementById("stat-date")!.textContent = json.date;
+            document.getElementById("stat-count")!.textContent =
+                `${json.count} 檔`;
+            stats.classList.remove("hidden");
+
+            // 渲染表格
+            renderTable(allData);
+            tableContainer.classList.remove("hidden");
+        } catch (err: any) {
+            error.textContent = `❌ 錯誤：${err.message}`;
+            error.classList.remove("hidden");
+        } finally {
+            loading.classList.add("hidden");
+            fetchBtn.disabled = false;
+        }
+    }
+
+    function renderTable(data: any[]) {
+        const tbody = document.getElementById("table-body")!;
+        tbody.innerHTML = data
+            .map(
+                (row) => `
+            <tr>
+                <td class="symbol">${row.symbol}</td>
+                <td>${row.name}</td>
+                <td class="${row.yield >= 5 ? "yield-high" : ""}">${row.yield || "-"}</td>
+                <td class="${row.pe > 0 && row.pe < 15 ? "pe-low" : ""}">${row.pe || "-"}</td>
+                <td>${row.pb || "-"}</td>
+            </tr>
+        `,
+            )
+            .join("");
+    }
+
+    // 搜尋功能
+    document.getElementById("table-search")?.addEventListener("input", (e) => {
+        const query = (e.target as HTMLInputElement).value.toLowerCase();
+        const filtered = allData.filter(
+            (row) =>
+                row.symbol.toLowerCase().includes(query) ||
+                row.name.toLowerCase().includes(query),
+        );
+        renderTable(filtered);
+    });
+
+    // 排序功能
+    document.getElementById("sort-select")?.addEventListener("change", (e) => {
+        const value = (e.target as HTMLSelectElement).value;
+        let sorted = [...allData];
+
+        switch (value) {
+            case "yield-desc":
+                sorted.sort((a, b) => (b.yield || 0) - (a.yield || 0));
+                break;
+            case "pe-asc":
+                sorted.sort((a, b) => {
+                    if (!a.pe || a.pe <= 0) return 1;
+                    if (!b.pe || b.pe <= 0) return -1;
+                    return a.pe - b.pe;
+                });
+                break;
+            case "pb-asc":
+                sorted.sort((a, b) => {
+                    if (!a.pb || a.pb <= 0) return 1;
+                    if (!b.pb || b.pb <= 0) return -1;
+                    return a.pb - b.pb;
+                });
+                break;
+            default:
+                sorted.sort((a, b) => a.symbol.localeCompare(b.symbol));
+        }
+
+        renderTable(sorted);
+    });
+</script>

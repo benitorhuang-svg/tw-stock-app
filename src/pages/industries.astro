@@ -1,0 +1,257 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { industries } from '../data/industries';
+import { getStocksWithPrices, type StockFullData } from '../utils/stockDataService';
+
+// Load real stock data
+const allStocks = await getStocksWithPrices();
+
+// Map stocks to industries based on stock code ranges (Taiwan stock classification)
+// Expanded to cover full TWSE/OTC code ranges
+function getIndustryBySymbol(symbol: string): string {
+    const code = parseInt(symbol);
+    
+    // ETF/基金/權證 (0000-0999)
+    if (code >= 0 && code < 1000) return 'etf';              // ETF、基金、權證
+    
+    // 水泥/食品/塑膠/紡織 (1100-1499)
+    if (code >= 1100 && code < 1200) return 'construction';  // 水泥
+    if (code >= 1200 && code < 1300) return 'food';          // 食品
+    if (code >= 1300 && code < 1400) return 'plastic';       // 塑膠
+    if (code >= 1400 && code < 1500) return 'textile';       // 紡織
+    
+    // 電機/電器電纜/玻璃陶瓷/造紙 (1500-1999)
+    if (code >= 1500 && code < 2000) return 'electronics';   // 電機機械/電器電纜
+    
+    // 鋼鐵/橡膠 (2000-2199)
+    if (code >= 2000 && code < 2100) return 'steel';         // 鋼鐵
+    if (code >= 2100 && code < 2200) return 'plastic';       // 橡膠
+    
+    // 汽車/電子 (2200-2499)
+    if (code >= 2200 && code < 2300) return 'electronics';   // 汽車
+    if (code >= 2300 && code < 2500) return 'semiconductor'; // 電子-半導體/零組件
+    
+    // 營建/航運 (2500-2699)
+    if (code >= 2500 && code < 2600) return 'construction';  // 營建
+    if (code >= 2600 && code < 2700) return 'shipping';      // 航運
+    
+    // 觀光/金融 (2700-2899)
+    if (code >= 2700 && code < 2800) return 'tourism';       // 觀光
+    if (code >= 2800 && code < 2900) return 'finance';       // 金融
+    
+    // 貿易百貨 (2900-2999)
+    if (code >= 2900 && code < 3000) return 'trading';       // 貿易百貨
+    
+    // 電子類 (3000-3999)
+    if (code >= 3000 && code < 3400) return 'electronics';   // 電子零組件
+    if (code >= 3400 && code < 3700) return 'optoelectronics'; // 光電/通訊網路
+    if (code >= 3700 && code < 4000) return 'electronics';   // 電子
+    
+    // 生技醫療/文化創意 (4000-4999)
+    if (code >= 4100 && code < 4200) return 'biotech';       // 生技醫療
+    if (code >= 4900 && code < 5000) return 'communication'; // 通訊網路
+    if (code >= 4000 && code < 5000) return 'biotech';       // 生技/其他
+    
+    // 其他類 (5000+)
+    if (code >= 5000 && code < 6000) return 'electronics';   // 電子
+    if (code >= 6000 && code < 7000) return 'electronics';   // 電子/生技
+    if (code >= 8000 && code < 9000) return 'trading';       // 其他/上櫃
+    if (code >= 9000 && code < 10000) return 'trading';      // 其他
+    
+    // 未分類歸入其他
+    return 'other';
+}
+
+// Build industry-to-stocks mapping
+const industryStocksMap: Record<string, StockFullData[]> = {};
+for (const industry of industries) {
+    industryStocksMap[industry.id] = [];
+}
+
+for (const stock of allStocks) {
+    const industryId = getIndustryBySymbol(stock.symbol);
+    if (industryStocksMap[industryId]) {
+        industryStocksMap[industryId].push(stock);
+    }
+}
+
+// Get stocks for an industry
+function getStocksByIndustry(industryId: string): StockFullData[] {
+    return industryStocksMap[industryId] || [];
+}
+---
+
+<Layout title="產業分類">
+    <h1>🏭 產業分類</h1>
+    <p class="page-desc">按產業瀏覽台股，找出同產業的投資標的。</p>
+
+    <!-- 產業卡片 -->
+    <div class="industry-grid">
+        {industries.map(industry => {
+            const stocks = getStocksByIndustry(industry.id);
+            return (
+                <a href={`#${industry.id}`} class="industry-card" data-id={industry.id}>
+                    <div class="industry-icon">{industry.icon}</div>
+                    <div class="industry-info">
+                        <div class="industry-name">{industry.name}</div>
+                        <div class="industry-desc">{industry.description}</div>
+                        <div class="industry-count">{stocks.length} 檔股票</div>
+                    </div>
+                </a>
+            );
+        })}
+    </div>
+
+    <!-- 產業詳情區塊 -->
+    {industries.map(industry => {
+        const stocks = getStocksByIndustry(industry.id);
+        
+        return (
+            <section id={industry.id} class="industry-section">
+                <h2>{industry.icon} {industry.name}</h2>
+                <p class="section-desc">{industry.description}</p>
+                
+                {stocks.length > 0 ? (
+                    <div class="stock-grid">
+                        {stocks.slice(0, 20).map(stock => (
+                            <a href={`/stocks/${stock.symbol}`} class="stock-card">
+                                <div class="stock-header">
+                                    <span class="stock-symbol">{stock.symbol}</span>
+                                    <span class={stock.changePercent >= 0 ? 'change positive' : 'change negative'}>
+                                        {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                                    </span>
+                                </div>
+                                <div class="stock-name">{stock.name}</div>
+                                <div class="stock-price">{stock.price.toFixed(2)}</div>
+                            </a>
+                        ))}
+                    </div>
+                ) : (
+                    <p class="no-stocks">尚無此產業股票資料</p>
+                )}
+            </section>
+        );
+    })}
+</Layout>
+
+<style>
+    .page-desc {
+        color: var(--text-secondary);
+        margin-bottom: 32px;
+    }
+
+    .industry-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 48px;
+    }
+
+    .industry-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.15s;
+    }
+
+    .industry-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+    }
+
+    .industry-icon {
+        font-size: 2rem;
+    }
+
+    .industry-name {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .industry-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .industry-count {
+        font-size: 0.75rem;
+        color: var(--accent);
+    }
+
+    .industry-section {
+        margin-bottom: 48px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+    }
+
+    .section-desc {
+        color: var(--text-secondary);
+        margin-bottom: 20px;
+    }
+
+    .stock-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+    }
+
+    .stock-card {
+        padding: 16px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.15s;
+    }
+
+    .stock-card:hover {
+        border-color: var(--accent);
+    }
+
+    .stock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .stock-symbol {
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    .change {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .positive { color: var(--positive); }
+    .negative { color: var(--negative); }
+
+    .stock-name {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+    }
+
+    .stock-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .no-stocks {
+        color: var(--text-secondary);
+        padding: 24px;
+        text-align: center;
+        background: var(--bg-card);
+        border-radius: 12px;
+    }
+</style>

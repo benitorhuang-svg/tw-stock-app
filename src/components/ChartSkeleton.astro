@@ -1,0 +1,114 @@
+---
+/**
+ * 圖表骨架
+ * 用於圖表載入中狀態
+ */
+interface Props {
+    height?: string;
+}
+
+const { height = '300px' } = Astro.props;
+---
+
+<div class="skeleton-chart-container" style={`height: ${height}`}>
+    <div class="skeleton-chart-content">
+        <div class="skeleton-y-axis">
+            {Array.from({ length: 5 }).map(() => (
+                <div class="skeleton skeleton-label"></div>
+            ))}
+        </div>
+        <div class="skeleton-chart-area">
+            <div class="skeleton-bars">
+                {Array.from({ length: 20 }).map((_, i) => (
+                    <div 
+                        class="skeleton skeleton-bar" 
+                        style={`height: ${30 + Math.random() * 50}%`}
+                    ></div>
+                ))}
+            </div>
+            <div class="skeleton-x-axis">
+                {Array.from({ length: 5 }).map(() => (
+                    <div class="skeleton skeleton-label"></div>
+                ))}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .skeleton-chart-container {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+    }
+
+    .skeleton-chart-content {
+        display: flex;
+        height: 100%;
+        gap: 12px;
+    }
+
+    .skeleton-y-axis {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 40px;
+    }
+
+    .skeleton-chart-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .skeleton-bars {
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+        padding-bottom: 12px;
+    }
+
+    .skeleton-bar {
+        flex: 1;
+        min-width: 8px;
+        border-radius: 2px 2px 0 0;
+    }
+
+    .skeleton-x-axis {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 8px;
+        border-top: 1px solid var(--border);
+    }
+
+    .skeleton-label {
+        height: 12px;
+        width: 30px;
+    }
+
+    .skeleton {
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.03) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            rgba(255, 255, 255, 0.03) 100%
+        );
+        background-size: 200% 100%;
+        animation: skeleton-shimmer 1.5s infinite;
+        border-radius: 4px;
+    }
+
+    @keyframes skeleton-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .skeleton {
+            animation: none;
+            background: rgba(255, 255, 255, 0.05);
+        }
+    }
+</style>

@@ -1,0 +1,523 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { stockList } from "../data/stocks";
+---
+
+<Layout title="股票比較">
+    <h1>⚖️ 股票比較</h1>
+    <p class="page-desc">選擇多檔股票進行並排比較。</p>
+
+    <!-- 選股區 -->
+    <div class="selector-section card">
+        <h2>📌 選擇股票（最多 4 檔）</h2>
+        <div class="stock-selector">
+            <input
+                type="text"
+                id="stock-search"
+                placeholder="🔍 搜尋並選擇股票..."
+                class="search-input"
+            />
+            <div id="search-dropdown" class="search-dropdown hidden">
+                {
+                    stockList.map((stock) => (
+                        <button
+                            class="dropdown-item"
+                            data-symbol={stock.symbol}
+                            data-name={stock.name}
+                        >
+                            <span class="item-symbol">{stock.symbol}</span>
+                            <span class="item-name">{stock.name}</span>
+                        </button>
+                    ))
+                }
+            </div>
+        </div>
+        <div id="selected-stocks" class="selected-stocks"></div>
+    </div>
+
+    <!-- 比較表格 -->
+    <div id="comparison-section" class="comparison-section hidden">
+        <h2>📊 比較結果</h2>
+        <div class="comparison-table card">
+            <table id="comparison-table">
+                <thead>
+                    <tr>
+                        <th class="metric-col">指標</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-metric="price">
+                        <td class="metric-name">股價</td>
+                    </tr>
+                    <tr data-metric="change">
+                        <td class="metric-name">漲跌幅</td>
+                    </tr>
+                    <tr data-metric="pe">
+                        <td class="metric-name">本益比 (P/E)</td>
+                    </tr>
+                    <tr data-metric="pb">
+                        <td class="metric-name">股價淨值比 (P/B)</td>
+                    </tr>
+                    <tr data-metric="yield">
+                        <td class="metric-name">殖利率 (%)</td>
+                    </tr>
+                    <tr data-metric="roe">
+                        <td class="metric-name">ROE (%)</td>
+                    </tr>
+                    <tr data-metric="eps">
+                        <td class="metric-name">EPS</td>
+                    </tr>
+                    <tr data-metric="volume">
+                        <td class="metric-name">成交量 (張)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .page-desc {
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+    }
+
+    .selector-section {
+        margin-bottom: 32px;
+    }
+
+    .stock-selector {
+        position: relative;
+        margin-bottom: 16px;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 400px;
+        padding: 14px 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .search-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        max-width: 400px;
+        max-height: 300px;
+        overflow-y: auto;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-top: 4px;
+        z-index: 100;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        padding: 12px 16px;
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .dropdown-item:hover {
+        background: var(--bg-card);
+    }
+
+    .dropdown-item.hidden {
+        display: none;
+    }
+
+    .item-symbol {
+        color: var(--accent);
+        font-weight: 600;
+        min-width: 60px;
+    }
+
+    .selected-stocks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .selected-tag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        background: rgba(0, 212, 170, 0.1);
+        border: 1px solid var(--accent);
+        border-radius: 20px;
+        color: var(--accent);
+    }
+
+    .remove-btn {
+        background: none;
+        border: none;
+        color: var(--accent);
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .comparison-section.hidden {
+        display: none;
+    }
+
+    .comparison-table {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 14px 20px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+    }
+
+    th {
+        background: rgba(0, 0, 0, 0.2);
+        font-weight: 600;
+    }
+
+    .metric-col,
+    .metric-name {
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-secondary);
+        min-width: 150px;
+    }
+
+    .stock-header {
+        min-width: 120px;
+    }
+
+    .stock-symbol {
+        display: block;
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    .stock-name {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .best {
+        background: rgba(0, 212, 170, 0.1);
+        color: var(--positive);
+        font-weight: 700;
+    }
+
+    .worst {
+        background: rgba(255, 71, 87, 0.1);
+        color: var(--negative);
+    }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
+
+<script>
+    // 股票資料
+    const stockData: Record<string, any> = {};
+    document.querySelectorAll(".dropdown-item").forEach((item) => {
+        const symbol = item.getAttribute("data-symbol")!;
+        stockData[symbol] = {
+            symbol,
+            name: item.getAttribute("data-name"),
+        };
+    });
+
+    // 補充完整資料（從 stockList）
+    const fullStockData: Record<string, any> = {
+        "2330": {
+            symbol: "2330",
+            name: "台積電",
+            price: 580,
+            change: 0.87,
+            pe: 18.5,
+            pb: 5.2,
+            yield: 2.1,
+            roe: 28.5,
+            eps: 31.36,
+            volume: 25000,
+        },
+        "2317": {
+            symbol: "2317",
+            name: "鴻海",
+            price: 105,
+            change: -1.41,
+            pe: 10.2,
+            pb: 1.3,
+            yield: 5.7,
+            roe: 12.8,
+            eps: 10.29,
+            volume: 45000,
+        },
+        "2454": {
+            symbol: "2454",
+            name: "聯發科",
+            price: 980,
+            change: 1.55,
+            pe: 14.8,
+            pb: 3.8,
+            yield: 3.2,
+            roe: 25.6,
+            eps: 66.22,
+            volume: 8000,
+        },
+        "2881": {
+            symbol: "2881",
+            name: "富邦金",
+            price: 72,
+            change: 0.7,
+            pe: 9.5,
+            pb: 1.4,
+            yield: 5.5,
+            roe: 14.7,
+            eps: 7.58,
+            volume: 32000,
+        },
+        "2882": {
+            symbol: "2882",
+            name: "國泰金",
+            price: 48,
+            change: -0.62,
+            pe: 11.2,
+            pb: 1.1,
+            yield: 4.8,
+            roe: 9.8,
+            eps: 4.29,
+            volume: 28000,
+        },
+        "2412": {
+            symbol: "2412",
+            name: "中華電",
+            price: 122,
+            change: 0.41,
+            pe: 23.8,
+            pb: 2.1,
+            yield: 4.1,
+            roe: 8.8,
+            eps: 5.13,
+            volume: 5000,
+        },
+        "2308": {
+            symbol: "2308",
+            name: "台達電",
+            price: 320,
+            change: 2.56,
+            pe: 22.5,
+            pb: 4.5,
+            yield: 2.8,
+            roe: 20.1,
+            eps: 14.22,
+            volume: 12000,
+        },
+        "3008": {
+            symbol: "3008",
+            name: "大立光",
+            price: 2100,
+            change: -1.41,
+            pe: 15.2,
+            pb: 3.2,
+            yield: 3.5,
+            roe: 21.1,
+            eps: 138.16,
+            volume: 800,
+        },
+    };
+
+    let selectedStocks: string[] = [];
+    const maxStocks = 4;
+
+    const searchInput = document.getElementById(
+        "stock-search",
+    ) as HTMLInputElement;
+    const dropdown = document.getElementById("search-dropdown")!;
+    const selectedContainer = document.getElementById("selected-stocks")!;
+    const comparisonSection = document.getElementById("comparison-section")!;
+
+    // 搜尋功能
+    searchInput.addEventListener("focus", () => {
+        dropdown.classList.remove("hidden");
+    });
+
+    searchInput.addEventListener("input", (e) => {
+        const query = (e.target as HTMLInputElement).value.toLowerCase();
+        dropdown.querySelectorAll(".dropdown-item").forEach((item) => {
+            const symbol =
+                item.getAttribute("data-symbol")?.toLowerCase() || "";
+            const name = item.getAttribute("data-name")?.toLowerCase() || "";
+            if (symbol.includes(query) || name.includes(query)) {
+                item.classList.remove("hidden");
+            } else {
+                item.classList.add("hidden");
+            }
+        });
+    });
+
+    // 點擊外部關閉
+    document.addEventListener("click", (e) => {
+        if (
+            !searchInput.contains(e.target as Node) &&
+            !dropdown.contains(e.target as Node)
+        ) {
+            dropdown.classList.add("hidden");
+        }
+    });
+
+    // 選擇股票
+    dropdown.querySelectorAll(".dropdown-item").forEach((item) => {
+        item.addEventListener("click", () => {
+            const symbol = item.getAttribute("data-symbol")!;
+            if (
+                selectedStocks.includes(symbol) ||
+                selectedStocks.length >= maxStocks
+            )
+                return;
+
+            selectedStocks.push(symbol);
+            updateSelection();
+            dropdown.classList.add("hidden");
+            searchInput.value = "";
+        });
+    });
+
+    function updateSelection() {
+        // 更新選中標籤
+        selectedContainer.innerHTML = selectedStocks
+            .map((symbol) => {
+                const stock = fullStockData[symbol] || { symbol, name: symbol };
+                return `
+                <div class="selected-tag">
+                    <span>${stock.symbol} ${stock.name}</span>
+                    <button class="remove-btn" data-symbol="${symbol}">×</button>
+                </div>
+            `;
+            })
+            .join("");
+
+        // 綁定移除事件
+        selectedContainer.querySelectorAll(".remove-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const symbol = btn.getAttribute("data-symbol")!;
+                selectedStocks = selectedStocks.filter((s) => s !== symbol);
+                updateSelection();
+            });
+        });
+
+        // 更新比較表格
+        updateComparison();
+    }
+
+    function updateComparison() {
+        if (selectedStocks.length < 2) {
+            comparisonSection.classList.add("hidden");
+            return;
+        }
+
+        comparisonSection.classList.remove("hidden");
+
+        const table = document.getElementById("comparison-table")!;
+        const headerRow = table.querySelector("thead tr")!;
+        const bodyRows = table.querySelectorAll("tbody tr");
+
+        // 清除舊的股票列
+        while (headerRow.children.length > 1) {
+            headerRow.removeChild(headerRow.lastChild!);
+        }
+        bodyRows.forEach((row) => {
+            while (row.children.length > 1) {
+                row.removeChild(row.lastChild!);
+            }
+        });
+
+        // 添加股票列
+        selectedStocks.forEach((symbol) => {
+            const stock = fullStockData[symbol];
+            if (!stock) return;
+
+            // 表頭
+            const th = document.createElement("th");
+            th.className = "stock-header";
+            th.innerHTML = `<span class="stock-symbol">${stock.symbol}</span><span class="stock-name">${stock.name}</span>`;
+            headerRow.appendChild(th);
+
+            // 資料行
+            const metrics: Record<string, any> = {
+                price: stock.price,
+                change: `${stock.change >= 0 ? "+" : ""}${stock.change}%`,
+                pe: stock.pe,
+                pb: stock.pb,
+                yield: stock.yield,
+                roe: stock.roe,
+                eps: stock.eps,
+                volume: stock.volume.toLocaleString(),
+            };
+
+            bodyRows.forEach((row) => {
+                const metric = row.getAttribute("data-metric")!;
+                const td = document.createElement("td");
+                td.textContent = metrics[metric];
+                row.appendChild(td);
+            });
+        });
+
+        // 標記最佳/最差值
+        highlightBestWorst();
+    }
+
+    function highlightBestWorst() {
+        const highIsBetter = ["yield", "roe", "eps"];
+        const lowIsBetter = ["pe", "pb"];
+
+        document
+            .querySelectorAll("#comparison-table tbody tr")
+            .forEach((row) => {
+                const metric = row.getAttribute("data-metric")!;
+                const cells = Array.from(
+                    row.querySelectorAll("td:not(.metric-name)"),
+                );
+
+                if (cells.length < 2) return;
+
+                const values = cells.map((cell) =>
+                    parseFloat(cell.textContent?.replace(/[,%+]/g, "") || "0"),
+                );
+                const max = Math.max(...values);
+                const min = Math.min(...values.filter((v) => v > 0));
+
+                cells.forEach((cell, i) => {
+                    cell.classList.remove("best", "worst");
+                    if (highIsBetter.includes(metric)) {
+                        if (values[i] === max) cell.classList.add("best");
+                        if (values[i] === min && min > 0)
+                            cell.classList.add("worst");
+                    } else if (lowIsBetter.includes(metric)) {
+                        if (values[i] === min && min > 0)
+                            cell.classList.add("best");
+                        if (values[i] === max) cell.classList.add("worst");
+                    }
+                });
+            });
+    }
+</script>

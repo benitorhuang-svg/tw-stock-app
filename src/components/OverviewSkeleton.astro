@@ -1,0 +1,72 @@
+---
+/**
+ * 概覽卡片骨架
+ * 用於摘要數據卡片載入中狀態
+ */
+interface Props {
+    count?: number;
+}
+
+const { count = 4 } = Astro.props;
+---
+
+<div class="skeleton-overview-grid">
+    {Array.from({ length: count }).map(() => (
+        <div class="skeleton-overview-card">
+            <div class="skeleton skeleton-overview-label"></div>
+            <div class="skeleton skeleton-overview-value"></div>
+        </div>
+    ))}
+</div>
+
+<style>
+    .skeleton-overview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+    }
+
+    .skeleton-overview-card {
+        padding: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        text-align: center;
+    }
+
+    .skeleton-overview-label {
+        height: 14px;
+        width: 60%;
+        margin: 0 auto 12px;
+    }
+
+    .skeleton-overview-value {
+        height: 32px;
+        width: 80%;
+        margin: 0 auto;
+    }
+
+    .skeleton {
+        background: linear-gradient(
+            90deg,
+            var(--bg-card) 0%,
+            rgba(255, 255, 255, 0.08) 50%,
+            var(--bg-card) 100%
+        );
+        background-size: 200% 100%;
+        animation: skeleton-shimmer 1.5s infinite;
+        border-radius: 6px;
+    }
+
+    @keyframes skeleton-shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .skeleton {
+            animation: none;
+            background: rgba(255, 255, 255, 0.05);
+        }
+    }
+</style>

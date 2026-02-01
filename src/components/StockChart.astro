@@ -1,0 +1,340 @@
+---
+/**
+ * StockChart Component
+ * 
+ * Interactive K-line chart using TradingView's Lightweight Charts
+ * Supports candlestick, volume, and technical indicators (MA, RSI)
+ */
+
+interface StockPriceData {
+    Date: string;
+    Open: number;
+    High: number;
+    Low: number;
+    Close: number;
+    Volume: number;
+    Turnover?: number;
+    Change?: number;
+    ChangePct?: number;
+}
+
+interface Props {
+    symbol: string;
+    height?: number;
+    showVolume?: boolean;
+    showMA?: boolean;
+    prices?: StockPriceData[];
+}
+
+const { symbol, height = 400, showVolume = true, showMA = true, prices = [] } = Astro.props;
+
+// Serialize prices for client-side access
+const pricesJson = JSON.stringify(prices);
+---
+
+<div class="stock-chart-container" data-symbol={symbol} data-prices={pricesJson}>
+    <div class="chart-header">
+        <div class="chart-title">
+            <span class="symbol">{symbol}</span>
+            <span class="timeframe">日K線</span>
+        </div>
+        <div class="chart-controls">
+            <button class="chart-btn active" data-period="3m">3個月</button>
+            <button class="chart-btn" data-period="6m">6個月</button>
+            <button class="chart-btn" data-period="1y">1年</button>
+            <button class="chart-btn" data-period="all">全部</button>
+        </div>
+    </div>
+    <div id={`chart-${symbol}`} class="chart-area" style={`height: ${height}px`}></div>
+    <div class="chart-legend">
+        <span class="legend-item ma5">MA5</span>
+        <span class="legend-item ma10">MA10</span>
+        <span class="legend-item ma20">MA20</span>
+    </div>
+</div>
+
+<style>
+    .stock-chart-container {
+        background: var(--c-bg-glass, rgba(255, 255, 255, 0.02));
+        border: 1px solid var(--c-border, rgba(255, 255, 255, 0.1));
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .chart-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .chart-title .symbol {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .chart-title .timeframe {
+        font-size: 0.85rem;
+        color: var(--c-text-muted, #888);
+        background: rgba(255, 255, 255, 0.05);
+        padding: 4px 10px;
+        border-radius: 4px;
+    }
+
+    .chart-controls {
+        display: flex;
+        gap: 8px;
+    }
+
+    .chart-btn {
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        color: var(--c-text-secondary, #888);
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .chart-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .chart-btn.active {
+        background: rgba(var(--c-accent-rgb, 0, 212, 170), 0.2);
+        border-color: var(--c-accent, #00d4aa);
+        color: var(--c-accent, #00d4aa);
+    }
+
+    .chart-area {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .chart-legend {
+        display: flex;
+        gap: 16px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--c-border, rgba(255, 255, 255, 0.1));
+    }
+
+    .legend-item {
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .legend-item::before {
+        content: '';
+        width: 20px;
+        height: 2px;
+        border-radius: 1px;
+    }
+
+    .ma5::before { background: #f59e0b; }
+    .ma10::before { background: #3b82f6; }
+    .ma20::before { background: #a855f7; }
+</style>
+
+<!-- Load Lightweight Charts from CDN -->
+<script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+
+<script>
+    // Wait for library to load
+    function initChart() {
+        const containers = document.querySelectorAll('.stock-chart-container');
+        
+        containers.forEach(async (container) => {
+            const symbol = container.getAttribute('data-symbol');
+            const chartElement = container.querySelector('.chart-area') as HTMLElement;
+            const pricesJson = container.getAttribute('data-prices');
+            
+            if (!chartElement || !symbol) return;
+            
+            let rawData = [];
+            let errorMessage = '無價格資料';
+            
+            // First, try to use server-side data
+            if (pricesJson) {
+                try {
+                    rawData = JSON.parse(pricesJson);
+                    console.log(`[StockChart] Loaded ${rawData.length} prices from server for ${symbol}`);
+                } catch (e) {
+                    console.warn(`[StockChart] Failed to parse server prices:`, e);
+                    errorMessage = '價格數據解析失敗';
+                }
+            }
+            
+            // Fallback to API if no server data
+            if (!rawData || rawData.length === 0) {
+                try {
+                    const res = await fetch(`/api/prices/${symbol}`);
+                
+                    if (res.ok) {
+                        rawData = await res.json();
+                        console.log(`[StockChart] Loaded ${rawData.length} prices from API for ${symbol}`);
+                    } else {
+                        console.warn(`[StockChart] API returned ${res.status} for ${symbol}`);
+                        errorMessage = `API 錯誤: ${res.status}`;
+                    }
+                } catch (apiError) {
+                    console.warn(`[StockChart] API fetch failed for ${symbol}:`, apiError);
+                    errorMessage = '無法載入價格數據';
+                }
+            }
+            
+            // If still no data, show error
+            if (!rawData || rawData.length === 0) {
+                chartElement.innerHTML = `<div style="padding: 40px; text-align: center; color: #888; font-size: 14px;">
+                    <div>${errorMessage}</div>
+                    <div style="font-size: 12px; margin-top: 8px; color: #666;">股票代號: ${symbol}</div>
+                </div>`;
+                console.error(`[StockChart] No data available for ${symbol}`);
+                return;
+            }
+            
+            try {
+                // Process API data (which is already JSON)
+                const data = rawData.map((d: any) => ({
+                    time: d.Date,
+                    open: d.Open,
+                    high: d.High,
+                    low: d.Low,
+                    close: d.Close,
+                    volume: d.Volume
+                })).filter((d: any) => d.open > 0 && d.close > 0);
+                
+                if (data.length === 0) {
+                    chartElement.innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">有效數據不足 (最少需要1筆)</div>';
+                    console.warn(`[StockChart] No valid candlesticks after filtering for ${symbol}`);
+                    return;
+                }
+                
+                console.log(`[StockChart] Processing ${data.length} candles for ${symbol}`);
+                
+                // Create chart
+                // @ts-ignore
+                const chart = LightweightCharts.createChart(chartElement, {
+                    layout: {
+                        background: { type: 'solid', color: 'transparent' },
+                        textColor: '#888'
+                    },
+                    grid: {
+                        vertLines: { color: 'rgba(255, 255, 255, 0.05)' },
+                        horzLines: { color: 'rgba(255, 255, 255, 0.05)' }
+                    },
+                    crosshair: {
+                        mode: 0
+                    },
+                    rightPriceScale: {
+                        borderColor: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    timeScale: {
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        timeVisible: true
+                    }
+                });
+                
+                // Candlestick series
+                const candlestickSeries = chart.addCandlestickSeries({
+                    upColor: '#10b981',
+                    downColor: '#ef4444',
+                    borderUpColor: '#10b981',
+                    borderDownColor: '#ef4444',
+                    wickUpColor: '#10b981',
+                    wickDownColor: '#ef4444'
+                });
+                
+                candlestickSeries.setData(data);
+                
+                // Calculate and add Moving Averages
+                const ma5 = calculateMA(data, 5);
+                const ma10 = calculateMA(data, 10);
+                const ma20 = calculateMA(data, 20);
+                
+                const ma5Series = chart.addLineSeries({ color: '#f59e0b', lineWidth: 1 });
+                const ma10Series = chart.addLineSeries({ color: '#3b82f6', lineWidth: 1 });
+                const ma20Series = chart.addLineSeries({ color: '#a855f7', lineWidth: 1 });
+                
+                ma5Series.setData(ma5);
+                ma10Series.setData(ma10);
+                ma20Series.setData(ma20);
+                
+                // Volume series
+                const volumeSeries = chart.addHistogramSeries({
+                    color: '#26a69a',
+                    priceFormat: { type: 'volume' },
+                    priceScaleId: '',
+                    scaleMargins: { top: 0.85, bottom: 0 }
+                });
+                
+                volumeSeries.setData(data.map(d => ({
+                    time: d.time,
+                    value: d.volume,
+                    color: d.close >= d.open ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+                })));
+                
+                chart.timeScale().fitContent();
+                
+                // Period buttons
+                const buttons = container.querySelectorAll('.chart-btn');
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        buttons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        const period = btn.getAttribute('data-period');
+                        let visibleData = data;
+                        
+                        if (period === '3m') visibleData = data.slice(-63);
+                        else if (period === '6m') visibleData = data.slice(-126);
+                        else if (period === '1y') visibleData = data.slice(-252);
+                        
+                        chart.timeScale().setVisibleRange({
+                            from: visibleData[0]?.time,
+                            to: visibleData[visibleData.length - 1]?.time
+                        });
+                    });
+                });
+                
+            } catch (e) {
+                console.error('Chart error:', e);
+                chartElement.innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">圖表載入失敗</div>';
+            }
+        });
+    }
+    
+    // Calculate Moving Average
+    function calculateMA(data: any[], period: number) {
+        const result = [];
+        for (let i = period - 1; i < data.length; i++) {
+            const sum = data.slice(i - period + 1, i + 1).reduce((acc, d) => acc + d.close, 0);
+            result.push({
+                time: data[i].time,
+                value: sum / period
+            });
+        }
+        return result;
+    }
+    
+    // Initialize on load and SPA navigations
+    document.addEventListener('astro:page-load', () => {
+        const container = document.querySelector('.stock-chart-container');
+        if (container && !(container as any)._chartInitialized) {
+            initChart();
+            (container as any)._chartInitialized = true;
+        }
+    });
+</script>

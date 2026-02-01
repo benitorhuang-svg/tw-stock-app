@@ -1,0 +1,361 @@
+---
+import type { StockData } from '../data/stocks';
+import { formatChange } from '../data/stocks';
+
+interface Props {
+    stock: StockData;
+    variant?: 'default' | 'compact' | 'detailed' | 'heatmap';
+    showWatchlistBtn?: boolean;
+}
+
+const { stock, variant = 'default', showWatchlistBtn = true } = Astro.props;
+
+// Heatmap Color Logic
+let heatClass = '';
+if (variant === 'heatmap') {
+    const p = stock.changePercent;
+    if (p > 3) heatClass = 'bg-green-dark';
+    else if (p > 1) heatClass = 'bg-green-mid';
+    else if (p > 0) heatClass = 'bg-green-soft';
+    else if (p === 0) heatClass = 'bg-gray';
+    else if (p > -1) heatClass = 'bg-red-soft';
+    else if (p > -3) heatClass = 'bg-red-mid';
+    else heatClass = 'bg-red-dark';
+}
+---
+
+<a
+    href={`/stocks/${stock.symbol}`}
+    class={`stock-card variant-${variant} ${heatClass}`}
+    data-symbol={stock.symbol}
+>
+    <!-- Info Section -->
+    <div class="info-group">
+        <span class="symbol-badge">{stock.symbol}</span>
+        <span class="stock-name">{stock.name}</span>
+    </div>
+
+    <!-- Sparkline Section -->
+    {
+        variant !== 'heatmap' && (
+            <div class="sparkline-box">
+                <div class={`sparkline-css ${stock.change >= 0 ? 'pos' : 'neg'}`} />
+            </div>
+        )
+    }
+
+    <!-- Price Section -->
+    <div class="price-group">
+        <span class="stock-price">{stock.price.toFixed ? stock.price.toFixed(2) : stock.price}</span
+        >
+        <span class={`stock-change ${stock.change >= 0 ? 'pos' : 'neg'}`}>
+            {stock.change >= 0 ? '+' : ''}{
+                stock.changePercent.toFixed ? stock.changePercent.toFixed(2) : stock.changePercent
+            }%
+        </span>
+    </div>
+
+    <!-- Watchlist Button -->
+    {
+        showWatchlistBtn && (
+            <button
+                class="watchlist-btn"
+                data-symbol={stock.symbol}
+                title="加入自選股"
+                onclick="event.preventDefault(); event.stopPropagation();"
+            >
+                <span class="star">☆</span>
+            </button>
+        )
+    }
+
+    <!-- Detailed View -->
+    {
+        variant === 'detailed' && (
+            <div class="detail-metrics">
+                <div class="metric">
+                    <span class="metric-label">PE Ratio</span>
+                    <span class="metric-value">{stock.pe}x</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Div. Yield</span>
+                    <span class="metric-value pos">{stock.yield}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">ROE</span>
+                    <span class="metric-value">{stock.roe}%</span>
+                </div>
+            </div>
+        )
+    }
+</a>
+
+<style>
+    .stock-card {
+        display: grid;
+        grid-template-columns: 140px 1fr 100px;
+        align-items: center;
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.01);
+        border-bottom: 1px solid var(--c-border);
+        text-decoration: none;
+        transition: var(--transition-premium);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stock-card:hover {
+        background: var(--c-bg-glass-hover);
+        padding-left: 20px;
+    }
+
+    /* Holographic Foil Sweep - Refined */
+    .stock-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            110deg,
+            transparent 30%,
+            rgba(var(--c-accent-rgb), 0.05) 45%,
+            rgba(255, 255, 255, 0.1) 50%,
+            rgba(var(--c-accent-rgb), 0.05) 55%,
+            transparent 70%
+        );
+        transform: translateX(-100%);
+        transition: transform 1.2s var(--ease-out);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .stock-card:hover::after {
+        transform: translateX(100%);
+    }
+
+    .stock-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--c-accent);
+        opacity: 0;
+        transition: var(--transition-premium);
+        z-index: 2;
+    }
+
+    .stock-card:hover::before {
+        opacity: 1;
+    }
+
+    /* Technical Corner Detail - Subtle */
+    .stock-card .symbol-badge {
+        position: relative;
+        z-index: 3;
+    }
+
+    .stock-card:hover .symbol-badge::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 8px;
+        height: 8px;
+        border-right: 1.5px solid var(--c-accent);
+        border-top: 1.5px solid var(--c-accent);
+        opacity: 0.6;
+    }
+    /* Info Group */
+    .info-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .symbol-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--c-accent);
+        letter-spacing: 0.5px;
+    }
+
+    .stock-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--c-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Sparkline Placeholder */
+    .sparkline-box {
+        height: 32px;
+        width: 100%;
+        max-width: 120px;
+        margin: 0 16px;
+        position: relative;
+        opacity: 0.6;
+    }
+
+    .sparkline-css {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(var(--c-accent-rgb), 0.1) 50%,
+            transparent 100%
+        );
+        border-bottom: 1px solid var(--c-border);
+        clip-path: polygon(
+            0% 80%,
+            10% 70%,
+            20% 85%,
+            30% 60%,
+            40% 65%,
+            50% 40%,
+            60% 55%,
+            70% 30%,
+            80% 45%,
+            90% 20%,
+            100% 25%,
+            100% 100%,
+            0% 100%
+        );
+    }
+
+    /* Price Group */
+    .price-group {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .stock-price {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--c-text-primary);
+    }
+
+    .stock-change {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .pos {
+        color: var(--c-success);
+    }
+    .neg {
+        color: var(--c-danger);
+    }
+
+    /* Detailed Variant */
+    .variant-detailed {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 20px;
+        border: 1px solid var(--c-border);
+        border-radius: var(--radius-md);
+        background: var(--c-bg-glass);
+        margin-bottom: 8px;
+    }
+
+    .variant-detailed:hover {
+        padding-left: 20px;
+        border-color: var(--c-border-active);
+    }
+
+    .variant-detailed .info-group {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .detail-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--c-border);
+    }
+
+    .metric {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .metric-label {
+        font-size: 9px;
+        font-weight: 800;
+        color: var(--c-text-muted);
+        text-transform: uppercase;
+    }
+
+    .metric-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* Heatmap Block Variant */
+    .variant-heatmap {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1;
+        padding: 8px;
+        border-radius: 4px;
+        transition: transform 0.2s;
+    }
+
+    .variant-heatmap:hover {
+        transform: scale(1.1);
+        z-index: 10;
+        box-shadow: var(--shadow-panel);
+    }
+</style>
+
+<script>
+    // 初始化自選股狀態
+    document.querySelectorAll('.watchlist-btn').forEach(btn => {
+        const symbol = btn.getAttribute('data-symbol');
+        const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
+
+        if (watchlist.includes(symbol)) {
+            btn.classList.add('active');
+            btn.querySelector('.star')!.textContent = '★';
+        }
+
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
+            const index = watchlist.indexOf(symbol);
+
+            if (index >= 0) {
+                watchlist.splice(index, 1);
+                btn.classList.remove('active');
+                (btn.querySelector('.star') as HTMLElement).textContent = '☆';
+            } else {
+                watchlist.push(symbol);
+                btn.classList.add('active');
+                (btn.querySelector('.star') as HTMLElement).textContent = '★';
+            }
+
+            localStorage.setItem('tw-watchlist', JSON.stringify(watchlist));
+
+            // 觸發自定義事件
+            window.dispatchEvent(new CustomEvent('watchlist-updated', { detail: watchlist }));
+        });
+    });
+</script>
