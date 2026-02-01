@@ -440,13 +440,38 @@ const currentPath = Astro.url.pathname;
         }
     });
 
-    // PWA Service Worker Registration
+    // PWA Service Worker Registration & Update Logic
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker
                 .register('/sw.js')
-                .then(reg => console.log('SW registered:', reg))
+                .then(reg => {
+                    console.log('SW registered');
+                    // Reload if a new SW is found and takes control
+                    reg.onupdatefound = () => {
+                        const newWorker = reg.installing;
+                        if (newWorker) {
+                            newWorker.onstatechange = () => {
+                                if (
+                                    newWorker.state === 'installed' &&
+                                    navigator.serviceWorker.controller
+                                ) {
+                                    window.location.reload();
+                                }
+                            };
+                        }
+                    };
+                })
                 .catch(err => console.error('SW registration failed:', err));
+        });
+
+        // Ensure we handle controller changes
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                window.location.reload();
+                refreshing = true;
+            }
         });
     }
 </script>
