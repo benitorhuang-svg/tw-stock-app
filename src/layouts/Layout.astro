@@ -1,7 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import SidebarNav from '../components/Layout/SidebarNav.astro';
-import TabBar from '../components/Layout/TabBar.astro';
 import HeaderBar from '../components/Layout/HeaderBar.astro';
 
 interface Props {
@@ -60,9 +59,6 @@ const currentPath = Astro.url.pathname;
             <div class="main-workspace">
                 <!-- Global Header with Search -->
                 <HeaderBar />
-
-                <!-- Multi-Tab Bar -->
-                <TabBar currentPath={currentPath} />
 
                 <!-- Page Content Area -->
                 <main class="main-content">
