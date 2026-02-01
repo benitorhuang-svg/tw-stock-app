@@ -19,9 +19,12 @@
     --bg-primary: #f5f7fa;
     --bg-secondary: #ffffff;
     --bg-card: rgba(0, 0, 0, 0.03);
-    --text-primary: #1a1a2e;
-    --text-secondary: #6a6a7a;
-    --border: rgba(0, 0, 0, 0.1);
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --border: rgba(0, 0, 0, 0.08);
+    --accent: #2563eb;
+    --positive: #059669;
+    --negative: #dc2626;
 }
 
 /* ===== Performance-Based CSS ===== */

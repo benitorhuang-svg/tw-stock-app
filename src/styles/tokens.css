@@ -58,6 +58,11 @@
     --shadow-glow: 0 0 30px rgba(var(--c-accent-rgb), 0.15);
     --shadow-panel: 0 20px 50px rgba(0, 0, 0, 0.7);
 
+    /* Theme-aware Background Effects */
+    --c-bg-glow-1: hsla(230, 80%, 15%, 0.12);
+    --c-bg-glow-2: hsla(280, 80%, 15%, 0.1);
+    --c-bg-vignette: rgba(3, 3, 5, 0.85);
+
     --radius-sm: 8px;
     --radius-md: 14px;
     --radius-lg: 24px;
@@ -83,6 +88,9 @@
 }
 
 [data-theme="light"] {
+    --c-bg-glow-1: hsla(210, 100%, 80%, 0.15);
+    --c-bg-glow-2: hsla(250, 100%, 80%, 0.1);
+    --c-bg-vignette: rgba(248, 250, 252, 0.2);
     --c-bg-app: #f8fafc;
     --c-bg-glass: rgba(255, 255, 255, 0.75);
     --c-bg-glass-heavy: rgba(255, 255, 255, 0.95);
