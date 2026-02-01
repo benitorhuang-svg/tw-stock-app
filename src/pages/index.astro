@@ -1,17 +1,37 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import StockCard from '../components/StockCard.astro';
-import StrategyCard from '../components/StrategyCard.astro';
-import Heatmap from '../components/Heatmap.astro';
-import { getTopGainers, getTopLosers, getStocksWithPrices } from '../utils/stockDataService';
-import { strategies } from '../data/strategies';
+import { getStocksWithPrices } from '../utils/stockDataService';
+import { industries, stockIndustryMap } from '../data/industries';
 
-// Load real data from CSV files
+/**
+ * Dashboard Index Page
+ * 3-Column Layout: Gainers | Losers | Stats (vertical stack)
+ */
+
+// 1. Data Fetching
 const allStocks = await getStocksWithPrices();
-const topGainers = await getTopGainers(8);
-const topLosers = await getTopLosers(8);
 
-// Convert to format expected by StockCard
+// 2. Sector Filtering Logic
+const url = new URL(Astro.request.url);
+const sectorId = url.searchParams.get('sector') || 'all';
+
+let displayStocks = allStocks;
+if (sectorId !== 'all') {
+    // OLD: displayStocks = allStocks.filter(s => stockIndustryMap[s.symbol] === sectorId);
+    // NEW: Use enriched sector data directly
+    displayStocks = allStocks.filter(s => s.sector === sectorId);
+}
+
+// 3. Stats Calculation (Sector-Aware)
+const statsData = {
+    total: displayStocks.length,
+    up: displayStocks.filter(s => s.change > 0).length,
+    down: displayStocks.filter(s => s.change < 0).length,
+    flat: displayStocks.filter(s => s.change === 0).length,
+};
+
+// 4. Gainers & Losers (Sector-Aware)
 const formatStock = (s: any) => ({
     symbol: s.symbol,
     name: s.name,
@@ -26,88 +46,210 @@ const formatStock = (s: any) => ({
     eps: s.eps || 0,
 });
 
-const gainersFormatted = topGainers.map(formatStock);
-const losersFormatted = topLosers.map(formatStock);
+const topGainers = displayStocks
+    .filter(s => s.changePercent > 0)
+    .sort((a, b) => b.changePercent - a.changePercent)
+    .slice(0, 10)
+    .map(formatStock);
 
-const marketIndices = [
-    {
-        name: '總股數',
-        value: allStocks.length.toLocaleString(),
-        change: '支股票資料',
-        isPositive: true,
-    },
-    {
-        name: '上漲',
-        value: allStocks.filter(s => s.change > 0).length.toString(),
-        change: '支',
-        isPositive: true,
-    },
-    {
-        name: '下跌',
-        value: allStocks.filter(s => s.change < 0).length.toString(),
-        change: '支',
-        isPositive: false,
-    },
-    {
-        name: '平盤',
-        value: allStocks.filter(s => s.change === 0).length.toString(),
-        change: '支',
-        isPositive: null,
-    },
-];
+const topLosers = displayStocks
+    .filter(s => s.changePercent < 0)
+    .sort((a, b) => a.changePercent - b.changePercent)
+    .slice(0, 10)
+    .map(formatStock);
+
+const currentIndustryName = industries.find(i => i.id === sectorId)?.name || '全市場';
+
+// 5. Treemap Logic (Server Side for Initial Render)
+// Needed for SSR HTML generation
+interface Rect { x: number; y: number; w: number; h: number; }
+interface Node { value: number; data: any; rect?: Rect; }
+
+function layoutBinary(nodes: Node[], rect: Rect) {
+    if (nodes.length === 0) return;
+    if (nodes.length === 1) {
+        nodes[0].rect = rect;
+        return;
+    }
+    const totalValue = nodes.reduce((sum, n) => sum + n.value, 0);
+    const halfValue = totalValue / 2;
+    let currentSum = 0;
+    let mid = 0;
+    for (let i = 0; i < nodes.length; i++) {
+        currentSum += nodes[i].value;
+        if (currentSum >= halfValue) {
+            mid = i;
+            break;
+        }
+    }
+    if (mid >= nodes.length - 1 && mid > 0) mid = nodes.length - 2;
+    
+    const leftNodes = nodes.slice(0, mid + 1);
+    const rightNodes = nodes.slice(mid + 1);
+    
+    const leftValue = leftNodes.reduce((sum, n) => sum + n.value, 0);
+    const leftRatio = leftValue / totalValue;
+
+    if (rect.w >= rect.h) {
+        const leftW = rect.w * leftRatio;
+        const leftRect = { x: rect.x, y: rect.y, w: leftW, h: rect.h };
+        const rightRect = { x: rect.x + leftW, y: rect.y, w: rect.w - leftW, h: rect.h };
+        layoutBinary(leftNodes, leftRect);
+        layoutBinary(rightNodes, rightRect);
+    } else {
+        const topH = rect.h * leftRatio;
+        const topRect = { x: rect.x, y: rect.y, w: rect.w, h: topH };
+        const bottomRect = { x: rect.x, y: rect.y + topH, w: rect.w, h: rect.h - topH };
+        layoutBinary(leftNodes, topRect);
+        layoutBinary(rightNodes, bottomRect);
+    }
+}
+
+function computeLayout(data: any[]) {
+    if (data.length === 0) return [];
+    const nodes: Node[] = data.map(s => ({ value: s.volume, data: s }));
+    layoutBinary(nodes, { x: 0, y: 0, w: 100, h: 100 });
+    return nodes;
+}
+
+const topVolumeForTreemap = displayStocks
+    .filter(s => s.price > 0 && s.volume > 0)
+    .sort((a, b) => b.volume - a.volume)
+    .slice(0, 60);
+
+const treemapData = computeLayout(topVolumeForTreemap);
 ---
 
 <Layout title="Dashboard">
     <div class="dashboard-container">
-        <!-- Top Stats Row -->
-        <div class="stats-row">
-            {
-                marketIndices.map(index => (
-                    <div class="stat-card">
-                        <div class="stat-label">{index.name}</div>
-                        <div class="stat-value mono">{index.value}</div>
-                        <div
-                            class={`stat-change mono ${index.isPositive ? 'text-pos' : 'text-neg'}`}
-                        >
-                            {index.change}
+        <!-- Dashboard Header Removed as per user request -->
+
+        <!-- 3-Column Main Grid: Gainers | Losers | Stats -->
+        <div class="main-grid-3col">
+            <!-- Left: Gainers -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">🔥 本日市場領漲 (Daily Gainers)</h2>
+                </div>
+                <div class="list-scroll" id="gainers-list">
+                    {topGainers.map(stock => <StockCard stock={stock} />)}
+                </div>
+            </div>
+
+            <!-- Center: Losers -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">📉 本日市場領跌 (Daily Losers)</h2>
+                </div>
+                <div class="list-scroll" id="losers-list">
+                    {topLosers.map(stock => <StockCard stock={stock} />)}
+                </div>
+            </div>
+
+            <!-- Right: Stats Panel (Vertical Stack) -->
+            <div class="stats-panel">
+                <!-- Sector Selector -->
+                <div class="stat-card">
+                    <span class="stat-label">產業分類</span>
+                    <div class="stat-value">
+                        <select id="sector-select" class="premium-select-full">
+                            <option value="all" selected={sectorId === 'all'}>全市場 (All)</option>
+                            {
+                                industries.map(ind => (
+                                    <option value={ind.id} selected={sectorId === ind.id}>
+                                        {ind.icon} {ind.name}
+                                    </option>
+                                ))
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Stats Grid (2x2) -->
+                <div class="stats-grid-2x2">
+                    <!-- Total -->
+                    <div class="stat-card neutral">
+                        <span class="stat-label">總股數</span>
+                        <div class="stat-value mono" id="stat-total">{statsData.total.toLocaleString()}</div>
+                    </div>
+
+                    <!-- Flat -->
+                    <div class="stat-card neutral">
+                        <span class="stat-label">平盤</span>
+                        <div class="stat-value mono">
+                            <span id="stat-flat">{statsData.flat}</span>
+                            <span class="unit">支</span>
                         </div>
                     </div>
-                ))
-            }
+
+                    <!-- Up -->
+                    <div class="stat-card pos">
+                        <span class="stat-label">上漲</span>
+                        <div class="stat-value mono">
+                            <span id="stat-up">{statsData.up}</span>
+                            <span class="unit">支</span>
+                        </div>
+                    </div>
+
+                    <!-- Down -->
+                    <div class="stat-card neg">
+                        <span class="stat-label">下跌</span>
+                        <div class="stat-value mono">
+                            <span id="stat-down">{statsData.down}</span>
+                            <span class="unit">支</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Heatmap -->
-        <Heatmap />
+        <!-- Bottom: Market Heatmap -->
+        <div class="heatmap-section">
+            <div class="heatmap-container reveal-grid">
+                <div class="heatmap-header">
+                    <h3>🔥 市場熱力圖 (Volume Treemap)</h3>
+                    <p>區塊大小代表交易量 (Volume)，顏色代表漲跌幅。</p>
+                </div>
+                
+                <div class="treemap-viewport" id="heatmap-viewport">
+                    {
+                        treemapData.map(node => {
+                            const stock = node.data;
+                            const pct = stock.changePercent;
+                            const r = node.rect;
+                            if (!r) return null;
+                            
+                            let colorClass = 'neutral';
+                            if (pct > 5) colorClass = 'gain-high';
+                            else if (pct > 2) colorClass = 'gain-mid';
+                            else if (pct > 0) colorClass = 'gain-low';
+                            else if (pct < -5) colorClass = 'loss-high';
+                            else if (pct < -2) colorClass = 'loss-mid';
+                            else if (pct < 0) colorClass = 'loss-low';
 
-        <!-- Main Content Grid -->
-        <div class="main-grid">
-            <!-- Column 1: Top Gainers -->
-            <div class="panel col-1 reveal-grid delay-1">
-                <div class="panel-header">
-                    <h2 class="section-title">🔥 市場領漲 (Gainers)</h2>
-                </div>
-                <div class="list-container">
-                    {gainersFormatted.map(stock => <StockCard stock={stock} />)}
-                </div>
-            </div>
+                            const showText = r.w > 4 && r.h > 4;
+                            const showDetail = r.w > 8 && r.h > 8;
 
-            <!-- Column 2: Strategies -->
-            <div class="panel col-2 reveal-grid delay-2">
-                <div class="panel-header">
-                    <h2 class="section-title">🎯 策略信號 (Signals)</h2>
-                </div>
-                <div class="list-container">
-                    {strategies.slice(0, 6).map(strategy => <StrategyCard strategy={strategy} />)}
-                </div>
-            </div>
-
-            <!-- Column 3: Top Losers -->
-            <div class="panel col-3 reveal-grid delay-3">
-                <div class="panel-header">
-                    <h2 class="section-title">� 市場領跌 (Losers)</h2>
-                </div>
-                <div class="list-container">
-                    {losersFormatted.map(stock => <StockCard stock={stock} variant="detailed" />)}
+                            return (
+                                <a 
+                                    href={`/stocks/${stock.symbol}/`}
+                                    class={`treemap-item ${colorClass}`}
+                                    style={`left: ${r.x}%; top: ${r.y}%; width: ${r.w}%; height: ${r.h}%;`}
+                                    title={`${stock.name} (${stock.symbol})\n漲跌: ${pct}%\n成交量: ${stock.volume.toLocaleString()}`}
+                                >
+                                    {showText && (
+                                        <div class="content">
+                                            <span class="symbol" style={`font-size: clamp(10px, 1.2vw, 24px)`}>
+                                                {stock.symbol}
+                                            </span>
+                                            {showDetail && <span class="name">{stock.name}</span>}
+                                            <span class="pct">{pct}%</span>
+                                        </div>
+                                    )}
+                                </a>
+                            )
+                        })
+                    }
                 </div>
             </div>
         </div>
@@ -118,110 +260,572 @@ const marketIndices = [
     .dashboard-container {
         display: flex;
         flex-direction: column;
-        gap: 20px;
-        max-width: 1600px;
+        gap: 24px;
+        max-width: 1800px;
         margin: 0 auto;
         width: 100%;
         animation: fadeIn 0.6s var(--ease-out);
     }
 
-    /* Stats Row */
-    .stats-row {
+    /* Header Row */
+    .dashboard-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .dashboard-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--c-text-primary);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .dashboard-title .subtitle {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--c-text-muted);
+        opacity: 0.7;
+    }
+
+    /* 3-Column Main Grid */
+    .main-grid-3col {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
+        grid-template-columns: 1fr 1fr 280px;
+        gap: 20px;
+        /* Force alignment to prevent stretching */
+        align-items: start;
+    }
+
+    /* Panels */
+    .panel {
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        backdrop-filter: var(--glass-blur);
+        height: 320px; /* Reduced height to show approx 4 rows */
+    }
+
+    .panel-header {
+        padding: 12px 16px; /* Compact header */
+        border-bottom: 1px solid var(--c-border);
+        background: rgba(255, 255, 255, 0.02);
+        flex-shrink: 0;
+    }
+
+    .panel-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--c-text-primary);
+    }
+
+    .list-scroll {
+        padding: 0;
+        overflow-y: auto;
+        flex: 1;
+        /* Custom Scrollbar */
+        scrollbar-width: thin;
+        scrollbar-color: var(--c-border) transparent;
+    }
+
+    .list-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    .list-scroll::-webkit-scrollbar-thumb {
+        background-color: var(--c-border);
+        border-radius: 3px;
+    }
+
+    /* Stats Panel (Right Column) - Optimized for Height */
+    .stats-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        height: 320px; /* Force match with .panel height */
+    }
+
+    /* Grid for the count stats to save vertical space */
+    .stats-grid-2x2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr; /* Force 2 equal rows to fill space */
+        gap: 10px;
+        flex: 1; /* Grow to fill remaining vertical space */
+        min-height: 0;
     }
 
     .stat-card {
         background: var(--c-bg-glass);
         border: 1px solid var(--c-border);
-        padding: 20px;
-        border-radius: var(--radius);
-        backdrop-filter: var(--glass-blur);
-        transition: var(--transition-premium);
+        border-radius: 12px;
+        padding: 12px;
         display: flex;
         flex-direction: column;
+        gap: 4px;
+        backdrop-filter: var(--glass-blur);
+        transition: var(--transition-premium);
         justify-content: center;
-        min-height: 100px;
+    }
+
+    /* Only grid items should fill their cell height */
+    .stats-grid-2x2 .stat-card {
+        height: 100%;
     }
 
     .stat-card:hover {
-        transform: translateY(-4px);
-        border-color: var(--c-border-active);
-        box-shadow: var(--shadow-panel);
+        transform: translateY(-2px);
+        border-color: rgba(var(--c-accent-rgb), 0.3);
+    }
+
+    .stat-card.pos {
+        border-left: 3px solid var(--c-success);
+    }
+    .stat-card.neg {
+        border-left: 3px solid var(--c-danger);
+    }
+    .stat-card.neutral {
+        border-left: 3px solid var(--c-text-muted);
     }
 
     .stat-label {
-        font-family: 'Outfit', sans-serif;
-        font-size: 11px;
-        font-weight: 800;
+        font-size: 10px;
+        font-weight: 700;
         color: var(--c-text-muted);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 4px;
+        letter-spacing: 0.5px;
     }
 
     .stat-value {
-        font-family: 'Outfit', sans-serif;
-        font-size: 28px;
+        font-size: 20px; /* Slightly smaller */
         font-weight: 800;
         color: var(--c-text-primary);
-        line-height: 1.2;
     }
 
-    .stat-change {
-        font-family: 'JetBrains Mono', monospace;
+    .stat-value .unit {
         font-size: 11px;
-        font-weight: 700;
-        margin-top: 4px;
+        font-weight: 500;
+        color: var(--c-text-muted);
+        margin-left: 2px;
     }
 
-    /* Main Grid Layout */
-    .main-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        margin-top: 10px;
-    }
-
-    .panel {
-        background: var(--c-bg-glass);
+    .premium-select-full {
+        width: 100%;
+        background: #ffffff; /* Explicit White Background */
         border: 1px solid var(--c-border);
-        border-radius: var(--radius);
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        backdrop-filter: var(--glass-blur);
-        box-shadow: var(--panel-shadow);
-        transition: var(--transition-premium);
+        color: #0f172a; /* Explicit Dark Text */
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        appearance: none; /* Remove default arrow to control styling if needed, but keeping default for robust OS dropdown */
     }
 
-    .panel-header {
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--c-border);
-        background: rgba(255, 255, 255, 0.02);
+    .premium-select-full option {
+        background: #ffffff;
+        color: #0f172a;
+        padding: 8px;
     }
 
-    .list-container {
-        padding: 12px;
-        max-height: 500px;
-        overflow-y: auto;
+    .premium-select-full:hover {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 0 3px rgba(var(--c-accent-rgb), 0.1);
+    }
+
+    /* Heatmap Section */
+    .heatmap-section {
+        width: 100%;
+    }
+
+    /* Transitions */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Responsive */
-    @media (max-width: 1280px) {
-        .stats-row {
-            grid-template-columns: repeat(2, 1fr);
+    @media (max-width: 1024px) {
+        .main-grid-3col {
+            grid-template-columns: 1fr 1fr;
         }
-        .main-grid {
-            grid-template-columns: repeat(2, 1fr);
+        .stats-panel {
+            grid-column: span 2;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            flex: 1 1 calc(50% - 12px);
+            min-width: 150px;
         }
     }
 
     @media (max-width: 768px) {
-        .stats-row,
-        .main-grid {
+        .main-grid-3col {
             grid-template-columns: 1fr;
         }
+        .stats-panel {
+            grid-column: span 1;
+            flex-direction: column;
+        }
+        .stat-card {
+            flex: 1 1 100%;
+        }
     }
+
+    /* Treemap Styles (from Heatmap.astro) */
+    .heatmap-container {
+        background: var(--c-bg-glass);
+        border: 1px solid var(--c-border);
+        border-radius: 16px;
+        padding: 24px;
+        backdrop-filter: var(--glass-blur);
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+    }
+
+    .heatmap-header {
+        margin-bottom: 16px;
+        flex-shrink: 0;
+    }
+
+    .heatmap-header h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: var(--c-text-primary);
+    }
+
+    .heatmap-header p {
+        font-size: 0.9rem;
+        color: var(--c-text-secondary);
+    }
+
+    .treemap-viewport {
+        position: relative;
+        flex: 1;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .treemap-item {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        text-decoration: none;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        overflow: hidden;
+        transition: transform 0.2s, z-index 0.2s;
+    }
+
+    .treemap-item:hover {
+        z-index: 10;
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        border-color: #fff;
+    }
+
+    .treemap-item .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        line-height: 1.2;
+        padding: 2px;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .treemap-item .symbol {
+        font-weight: 800;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: clamp(10px, 1.2vw, 24px);
+    }
+
+    .treemap-item .name {
+        font-size: clamp(9px, 0.9vw, 14px);
+        white-space: nowrap;
+        opacity: 0.9;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90%;
+    }
+
+    .treemap-item .pct {
+        font-size: clamp(9px, 0.9vw, 16px);
+        font-weight: 700;
+        margin-top: 2px;
+    }
+
+    /* Treemap Colors */
+    .treemap-item.gain-high { background: #10b981; }
+    .treemap-item.gain-mid { background: #059669; }
+    .treemap-item.gain-low { background: #047857; }
+    .treemap-item.loss-high { background: #ef4444; }
+    .treemap-item.loss-mid { background: #dc2626; }
+    .treemap-item.loss-low { background: #b91c1c; }
+    .treemap-item.neutral { background: #64748b; }
 </style>
+
+<script>
+    // Client-Side Logic for Dashboard Filtering
+
+    // Interfaces for Type Safety
+    interface StockData {
+        symbol: string;
+        name: string;
+        price: number;
+        change: number;
+        changePercent: number;
+        volume: number;
+        sector?: string;
+    }
+
+    // 1. Data Definitions
+    
+    // Fallback map: ONLY used if server data is missing sector
+    const fallbackSectorMap: Record<string, string> = {
+        // Key stocks that MUST have correct sectors
+        '2330': 'semiconductor', '2454': 'semiconductor', '3034': 'semiconductor',
+        '2317': 'electronics', '2308': 'electronics', '2382': 'electronics',
+        '2881': 'finance', '2882': 'finance', '2884': 'finance', '2891': 'finance', 
+        '2886': 'finance', '2885': 'finance', '2892': 'finance', '2880': 'finance',
+        '2412': 'communication', '3008': 'optoelectronics', '3481': 'optoelectronics', 
+        '2409': 'optoelectronics', '2105': 'food', '1301': 'plastic', '2002': 'steel', 
+        '2603': 'shipping', '2609': 'shipping'
+    };
+
+    let allStocks: StockData[] = [];
+    try {
+        const el = document.getElementById('stock-data');
+        if (el && el.textContent) {
+            allStocks = JSON.parse(el.textContent);
+            
+            // Only fill in missing sectors (trust server data)
+            allStocks.forEach(s => {
+                if (!s.sector) {
+                    s.sector = fallbackSectorMap[s.symbol] || 'other';
+                }
+            });
+            
+            console.log(`Loaded ${allStocks.length} stocks. Sample:`, allStocks.slice(0, 3).map(s => ({symbol: s.symbol, sector: s.sector})));
+        }
+    } catch (e) {
+        console.error('Failed to load stock data', e);
+    }
+
+    // 2. DOM Elements
+    const sectorSelect = document.getElementById('sector-select') as HTMLSelectElement | null;
+    const containerGainers = document.getElementById('gainers-list');
+    const containerLosers = document.getElementById('losers-list');
+    const containerHeatmap = document.getElementById('heatmap-viewport');
+    
+    const statTotal = document.getElementById('stat-total');
+    const statUp = document.getElementById('stat-up');
+    const statDown = document.getElementById('stat-down');
+    const statFlat = document.getElementById('stat-flat');
+
+    // 3. Helper: Treemap Layout (Binary Partition) - Client-side definition
+    interface ClientRect { x: number; y: number; w: number; h: number; }
+    interface ClientNode { value: number; data: StockData; rect?: ClientRect; }
+
+    function layoutBinaryClient(nodes: ClientNode[], rect: ClientRect) {
+        if (nodes.length === 0) return;
+        if (nodes.length === 1) {
+            nodes[0].rect = rect;
+            return;
+        }
+        const totalValue = nodes.reduce((sum, n) => sum + n.value, 0);
+        if (totalValue <= 0) return; // Prevent divide by zero
+
+        const halfValue = totalValue / 2;
+        let currentSum = 0;
+        let mid = 0;
+        for (let i = 0; i < nodes.length; i++) {
+            currentSum += nodes[i].value;
+            if (currentSum >= halfValue) {
+                mid = i;
+                break;
+            }
+        }
+        if (mid >= nodes.length - 1 && mid > 0) mid = nodes.length - 2;
+        
+        const leftNodes = nodes.slice(0, mid + 1);
+        const rightNodes = nodes.slice(mid + 1);
+        const leftValue = leftNodes.reduce((sum, n) => sum + n.value, 0);
+        const leftRatio = leftValue / totalValue; 
+
+        if (rect.w >= rect.h) {
+            const leftW = rect.w * leftRatio;
+            const leftRect = { x: rect.x, y: rect.y, w: leftW, h: rect.h };
+            const rightRect = { x: rect.x + leftW, y: rect.y, w: rect.w - leftW, h: rect.h };
+            layoutBinaryClient(leftNodes, leftRect);
+            layoutBinaryClient(rightNodes, rightRect);
+        } else {
+            const topH = rect.h * leftRatio;
+            const topRect = { x: rect.x, y: rect.y, w: rect.w, h: topH };
+            const bottomRect = { x: rect.x, y: rect.y + topH, w: rect.w, h: rect.h - topH };
+            layoutBinaryClient(leftNodes, topRect);
+            layoutBinaryClient(rightNodes, bottomRect);
+        }
+    }
+
+    // 4. Create Stock Card HTML (Client-Side implementation of StockCard.astro)
+    function createStockCardHTML(stock: StockData) {
+        const isPos = (stock.changePercent || 0) >= 0;
+        const colorClass = isPos ? 'pos' : 'neg';
+        const sign = isPos ? '+' : '';
+        const price = typeof stock.price === 'number' ? stock.price.toFixed(2) : stock.price;
+        const pct = typeof stock.changePercent === 'number' ? stock.changePercent.toFixed(2) : stock.changePercent;
+        
+        return `
+        <a href="/stocks/${stock.symbol}/" class="stock-card" data-symbol="${stock.symbol}">
+            <button class="watchlist-btn" data-symbol="${stock.symbol}" onclick="event.preventDefault(); event.stopPropagation();">
+                <span class="star">☆</span>
+            </button>
+            <div class="info-group">
+                <span class="symbol-badge">${stock.symbol}</span>
+                <span class="stock-name">${stock.name}</span>
+            </div>
+            <div class="sparkline-box">
+                ${isPos ? `
+                    <div class="spark-bar pos" style="height: 40%; left: 0"></div>
+                    <div class="spark-bar pos" style="height: 50%; left: 20%"></div>
+                    <div class="spark-bar pos" style="height: 45%; left: 40%"></div>
+                    <div class="spark-bar pos" style="height: 70%; left: 60%"></div>
+                    <div class="spark-bar pos" style="height: 90%; left: 80%"></div>
+                ` : `
+                    <div class="spark-bar neg" style="height: 80%; left: 0"></div>
+                    <div class="spark-bar neg" style="height: 60%; left: 20%"></div>
+                    <div class="spark-bar neg" style="height: 70%; left: 40%"></div>
+                    <div class="spark-bar neg" style="height: 40%; left: 60%"></div>
+                    <div class="spark-bar neg" style="height: 30%; left: 80%"></div>
+                `}
+            </div>
+            <div class="price-group">
+                <span class="stock-price">${price}</span>
+                <span class="stock-change ${colorClass}">${sign}${pct}%</span>
+            </div>
+        </a>`;
+    }
+
+    // 5. Update Dashboard Logic
+    function updateDashboard(sectorId: string) {
+        // A. Filter Stocks
+        let filteredStocks = allStocks;
+        if (sectorId !== 'all') {
+            filteredStocks = allStocks.filter(s => s.sector === sectorId);
+        }
+
+        // B. Update Output Stats
+        if(statTotal) statTotal.textContent = filteredStocks.length.toLocaleString();
+        if(statUp) statUp.textContent = filteredStocks.filter(s => s.change > 0).length.toString();
+        if(statDown) statDown.textContent = filteredStocks.filter(s => s.change < 0).length.toString();
+        if(statFlat) statFlat.textContent = filteredStocks.filter(s => s.change === 0).length.toString();
+
+        // C. Update Lists (Gainers / Losers)
+        const topGainers = [...filteredStocks].filter(s => s.changePercent > 0).sort((a,b) => b.changePercent - a.changePercent).slice(0, 10);
+        const topLosers = [...filteredStocks].filter(s => s.changePercent < 0).sort((a,b) => a.changePercent - b.changePercent).slice(0, 10); 
+        
+        if (containerGainers) containerGainers.innerHTML = topGainers.map(createStockCardHTML).join('');
+        if (containerLosers) containerLosers.innerHTML = topLosers.map(createStockCardHTML).join('');
+
+        // D. Update Heatmap
+        const topVolume = [...filteredStocks]
+            .filter(s => s.price > 0 && s.volume > 0)
+            .sort((a,b) => b.volume - a.volume)
+            .slice(0, 60);
+        
+        const nodes: ClientNode[] = topVolume.map(s => ({ value: s.volume, data: s }));
+        
+        if (nodes.length > 0) {
+            layoutBinaryClient(nodes, { x: 0, y: 0, w: 100, h: 100 });
+
+            if (containerHeatmap) {
+                containerHeatmap.innerHTML = nodes.map(node => {
+                    const stock = node.data;
+                    const pct = stock.changePercent;
+                    const r = node.rect;
+                    // Strict Validation for Rect
+                    if (!r || isNaN(r.x) || isNaN(r.y) || isNaN(r.w) || isNaN(r.h)) return ''; 
+
+                    let colorClass = 'neutral';
+                    if (pct > 5) colorClass = 'gain-high';
+                    else if (pct > 2) colorClass = 'gain-mid';
+                    else if (pct > 0) colorClass = 'gain-low';
+                    else if (pct < -5) colorClass = 'loss-high';
+                    else if (pct < -2) colorClass = 'loss-mid';
+                    else if (pct < 0) colorClass = 'loss-low';
+
+                    const showText = r.w > 4 && r.h > 4;
+                    const showDetail = r.w > 8 && r.h > 8;
+                    
+                    const style = `left: ${r.x}%; top: ${r.y}%; width: ${r.w}%; height: ${r.h}%;`;
+                    const title = `${stock.name} (${stock.symbol})\n漲跌: ${pct}%\n成交量: ${stock.volume.toLocaleString()}`;
+                    const symbolSize = `font-size: clamp(10px, 1.2vw, 24px)`;
+
+                    return `
+                    <a href="/stocks/${stock.symbol}/" class="treemap-item ${colorClass}" style="${style}" title="${title}">
+                        ${showText ? `
+                        <div class="content">
+                            <span class="symbol" style="${symbolSize}">${stock.symbol}</span>
+                            ${showDetail ? `<span class="name">${stock.name}</span>` : ''}
+                            <span class="pct">${pct.toFixed(2)}%</span>
+                        </div>` : ''}
+                    </a>`;
+                }).join('');
+            }
+        } else {
+            // Empty State for Heatmap
+            if (containerHeatmap) containerHeatmap.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100%;color:#888;">無資料 (No Data)</div>';
+        }
+    }
+
+    // 6. Bind Event
+    if (sectorSelect) {
+        sectorSelect.addEventListener('change', (e: Event) => {
+            const target = e.target as HTMLSelectElement; 
+            const val = target.value;
+            
+            updateDashboard(val);
+            
+            // Update URL State
+            const url = new URL(window.location.href);
+            if(val === 'all') url.searchParams.delete('sector');
+            else url.searchParams.set('sector', val);
+            window.history.replaceState({}, '', url);
+        });
+    }
+
+    // Initial Load? The server rendered "All".
+    // If URL has param, we might want to trigger update, but server SSR should handle initial load?
+    // We are switching to CLIENT ONLY filtering updates.
+    // Ideally, Server renders INITIAL state (e.g. if ?sector=semi, Server filters it).
+    // Client takes over for subsequent changes.
+    // This provides best of both worlds: Deep Links work + Fast Client Switching.
+</script>
+
+<!-- Inject Data -->
+<script id="stock-data" type="application/json">
+    {JSON.stringify(allStocks)}
+</script>

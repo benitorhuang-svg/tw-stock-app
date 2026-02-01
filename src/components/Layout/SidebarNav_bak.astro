@@ -37,7 +37,7 @@ const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }]
         <div class="utility-row">
             <button class="action-btn" id="sidebar-notifications-btn" title="系統通知">
                 🔔
-                <span class="badge" id="sidebar-notification-badge" style="display: none;"></span>
+                <span class="badge" id="sidebar-notification-badge">3</span>
             </button>
             <div class="search-input-wrapper">
                 <span class="search-icon">🔍</span>
@@ -246,12 +246,12 @@ const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }]
         position: absolute;
         top: 60px;
         left: 250px;
-        width: 320px;
-        background: #ffffff;
-        color: #1e293b;
+        width: 280px;
+        background: var(--c-bg-glass-heavy);
+        backdrop-filter: var(--glass-blur);
         border: 1px solid var(--c-border);
         border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         display: none;
         flex-direction: column;
         z-index: 1000;
@@ -260,47 +260,6 @@ const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }]
 
     .notifications-panel.visible {
         display: flex;
-    }
-
-    .notifications-panel .panel-header {
-        border-bottom: 1px solid #e2e8f0;
-        padding: 16px;
-    }
-
-    .notifications-panel .panel-title {
-        color: #0f172a;
-        font-size: 14px;
-    }
-
-    .notifications-panel .clear-all-btn {
-        color: #64748b;
-    }
-    .notifications-panel .clear-all-btn:hover {
-        background: #f1f5f9;
-        color: #0f172a;
-    }
-
-    .notifications-panel .notification-item-row {
-        border-bottom: 1px solid #f1f5f9;
-        padding: 16px;
-        transition: background 0.2s;
-    }
-
-    .notifications-panel .notification-item-row:hover {
-        background: #f8fafc;
-    }
-
-    .notifications-panel .notification-text {
-        font-size: 13px;
-        color: #334155;
-        line-height: 1.5;
-    }
-
-    .notifications-panel .remove-notify {
-        color: #94a3b8;
-    }
-    .notifications-panel .remove-notify:hover {
-        color: #ef4444;
     }
 
     @keyframes slideIn {
@@ -313,6 +272,7 @@ const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }]
             transform: translateX(0);
         }
     }
+
     .panel-header {
         padding: 12px 16px;
         border-bottom: 1px solid var(--c-border);
@@ -482,62 +442,38 @@ const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }]
     refreshTime();
     setInterval(refreshTime, 60000);
 
-    // 3. Notifications Logic (Persisted)
-    const MOCK_NOTIFS = [
+    // 3. Notifications Logic
+    let notifications = [
         { id: Date.now() + 1, text: '🚀 數據更新成功：台股即時成交清單已同步' },
         { id: Date.now() + 2, text: '⚠️ 預警通知：您的自選股 2330 突破支撐位' },
         { id: Date.now() + 3, text: '✅ 組合調整：投資組合比例已重新計算' },
     ];
-
-    let notifications = [];
-    const storedNotifs = localStorage.getItem('tw-stock-notifications');
-
-    if (storedNotifs) {
-        notifications = JSON.parse(storedNotifs);
-    } else {
-        notifications = MOCK_NOTIFS;
-        localStorage.setItem('tw-stock-notifications', JSON.stringify(notifications));
-    }
-
-    // New: Check if user has "seen" current notifications
-    const lastSeenCount = parseInt(localStorage.getItem('tw-notif-seen-count') || '0');
-    let hasUnread = notifications.length > lastSeenCount;
-
-    function saveNotifications() {
-        localStorage.setItem('tw-stock-notifications', JSON.stringify(notifications));
-        renderNotifications();
-    }
 
     function renderNotifications() {
         if (!notifyList) return;
 
         if (notifications.length === 0) {
             notifyList.innerHTML =
-                '<div style="padding: 30px; text-align: center; color: #94a3b8; font-size: 13px;">目前沒有任何通知</div>';
+                '<div style="padding: 20px; text-align: center; color: var(--c-text-muted); font-size: 11px;">目前沒有任何通知</div>';
             if (badge) badge.style.display = 'none';
             return;
         }
 
-        // Show badge only if there are unread items
         if (badge) {
-            if (hasUnread) {
-                badge.style.display = 'block';
-                badge.textContent = notifications.length.toString();
-            } else {
-                badge.style.display = 'none';
-            }
+            badge.style.display = 'block';
+            badge.textContent = notifications.length.toString();
         }
 
         notifyList.innerHTML = notifications
             .map(
                 n => `
-            <div class="notification-item-row" style="padding: 16px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start;">
-                <span class="notification-text" style="font-size: 13px; flex: 1; color: #334155; line-height: 1.5; font-weight: 500;">${n.text}</span>
-                <button class="remove-notify" data-id="${n.id}" style="background: transparent; border: none; color: #cbd5e1; cursor: pointer; padding: 4px; border-radius: 4px;">✕</button>
+            <div class="notification-item-row" style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.02); display: flex; gap: 10px; align-items: flex-start;">
+                <span style="font-size: 11px; flex: 1; color: var(--c-text-secondary); line-height: 1.4;">${n.text}</span>
+                <button class="remove-notify" data-id="${n.id}" style="background: transparent; border: none; color: var(--c-text-muted); cursor: pointer; padding: 2px;">✕</button>
             </div>
         `
             )
-            .reverse() // Newest first
+            .reverse()
             .join('');
 
         // Attach delete events
@@ -546,38 +482,20 @@ const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }]
                 e.stopPropagation();
                 const id = parseInt((btn as HTMLElement).dataset.id || '0');
                 notifications = notifications.filter(n => n.id !== id);
-                saveNotifications();
+                renderNotifications();
             });
         });
     }
 
-    // Toggle Panel & Mark as Read
     notifyBtn?.addEventListener('click', e => {
         e.stopPropagation();
-        const isVisible = notifyPanel?.classList.contains('visible');
-
-        if (!isVisible) {
-            notifyPanel?.classList.add('visible');
-            // Mark as read when opening
-            if (hasUnread) {
-                hasUnread = false;
-                localStorage.setItem('tw-notif-seen-count', notifications.length.toString());
-                if (badge) badge.style.display = 'none';
-            }
-        } else {
-            notifyPanel?.classList.remove('visible');
-        }
+        notifyPanel?.classList.toggle('visible');
     });
 
     clearBtn?.addEventListener('click', e => {
         e.stopPropagation();
         notifications = [];
-        hasUnread = false;
-        saveNotifications();
-        localStorage.setItem('tw-notif-seen-count', '0');
-        if (badge) {
-            badge.style.display = 'none';
-        }
+        renderNotifications();
         toast.success('已清空所有通知紀錄');
     });
 

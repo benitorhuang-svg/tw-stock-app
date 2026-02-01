@@ -29,17 +29,49 @@ if (variant === 'heatmap') {
     class={`stock-card variant-${variant} ${heatClass}`}
     data-symbol={stock.symbol}
 >
+    <!-- Watchlist Button (Star) -->
+    {
+        showWatchlistBtn && (
+            <button
+                class="watchlist-btn"
+                data-symbol={stock.symbol}
+                title="加入自選股"
+                onclick="event.preventDefault(); event.stopPropagation();"
+            >
+                <span class="star">☆</span>
+            </button>
+        )
+    }
+
     <!-- Info Section -->
     <div class="info-group">
         <span class="symbol-badge">{stock.symbol}</span>
         <span class="stock-name">{stock.name}</span>
     </div>
 
-    <!-- Sparkline Section -->
+    <!-- Sparkline Section (Trend Visual) -->
     {
         variant !== 'heatmap' && (
             <div class="sparkline-box">
-                <div class={`sparkline-css ${stock.change >= 0 ? 'pos' : 'neg'}`} />
+                {stock.change >= 0 ? (
+                    /* Gainer: Trend Up visual */
+                    <>
+                        <div class="spark-bar pos" style="height: 40%; left: 0" />
+                        <div class="spark-bar pos" style="height: 50%; left: 20%" />
+                        <div class="spark-bar pos" style="height: 45%; left: 40%" />
+                        <div class="spark-bar pos" style="height: 70%; left: 60%" />
+                        <div class="spark-bar pos" style="height: 90%; left: 80%" />
+                    </>
+                ) : (
+                    /* Loser: Trend Down visual */
+                    <>
+                        <div class="spark-bar neg" style="height: 80%; left: 0" />
+                        <div class="spark-bar neg" style="height: 60%; left: 20%" />
+                        <div class="spark-bar neg" style="height: 70%; left: 40%" />
+                        <div class="spark-bar neg" style="height: 40%; left: 60%" />
+                        <div class="spark-bar neg" style="height: 30%; left: 80%" />
+                    </>
+                )}
             </div>
         )
     }
@@ -55,21 +87,7 @@ if (variant === 'heatmap') {
         </span>
     </div>
 
-    <!-- Watchlist Button -->
-    {
-        showWatchlistBtn && (
-            <button
-                class="watchlist-btn"
-                data-symbol={stock.symbol}
-                title="加入自選股"
-                onclick="event.preventDefault(); event.stopPropagation();"
-            >
-                <span class="star">☆</span>
-            </button>
-        )
-    }
-
-    <!-- Detailed View -->
+    <!-- Detailed View Metrics -->
     {
         variant === 'detailed' && (
             <div class="detail-metrics">
@@ -93,16 +111,17 @@ if (variant === 'heatmap') {
 <style>
     .stock-card {
         display: grid;
-        grid-template-columns: 140px 1fr 100px;
+        grid-template-columns: 32px 1fr 100px 90px; /* Star | Info | Spark | Price */
         align-items: center;
         width: 100%;
-        padding: 12px 16px;
+        padding: 10px 12px;
         background: rgba(255, 255, 255, 0.01);
         border-bottom: 1px solid var(--c-border);
         text-decoration: none;
         transition: var(--transition-premium);
         position: relative;
         overflow: hidden;
+        height: 64px;
     }
 
     .stock-card:hover {
@@ -110,7 +129,7 @@ if (variant === 'heatmap') {
         padding-left: 20px;
     }
 
-    /* Holographic Foil Sweep - Refined */
+    /* Holographic Foil Sweep */
     .stock-card::after {
         content: '';
         position: absolute;
@@ -150,23 +169,6 @@ if (variant === 'heatmap') {
         opacity: 1;
     }
 
-    /* Technical Corner Detail - Subtle */
-    .stock-card .symbol-badge {
-        position: relative;
-        z-index: 3;
-    }
-
-    .stock-card:hover .symbol-badge::after {
-        content: '';
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        width: 8px;
-        height: 8px;
-        border-right: 1.5px solid var(--c-accent);
-        border-top: 1.5px solid var(--c-accent);
-        opacity: 0.6;
-    }
     /* Info Group */
     .info-group {
         display: flex;
@@ -183,7 +185,7 @@ if (variant === 'heatmap') {
     }
 
     .stock-name {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         color: var(--c-text-primary);
         white-space: nowrap;
@@ -191,41 +193,32 @@ if (variant === 'heatmap') {
         text-overflow: ellipsis;
     }
 
-    /* Sparkline Placeholder */
+    /* Sparkline - Bar Chart Style for Visibility */
     .sparkline-box {
-        height: 32px;
+        height: 24px;
         width: 100%;
-        max-width: 120px;
+        max-width: 80px;
         margin: 0 16px;
         position: relative;
-        opacity: 0.6;
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
     }
 
-    .sparkline-css {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(var(--c-accent-rgb), 0.1) 50%,
-            transparent 100%
-        );
-        border-bottom: 1px solid var(--c-border);
-        clip-path: polygon(
-            0% 80%,
-            10% 70%,
-            20% 85%,
-            30% 60%,
-            40% 65%,
-            50% 40%,
-            60% 55%,
-            70% 30%,
-            80% 45%,
-            90% 20%,
-            100% 25%,
-            100% 100%,
-            0% 100%
-        );
+    .spark-bar {
+        width: 16%;
+        position: absolute;
+        bottom: 0;
+        background: currentColor;
+        opacity: 0.4;
+        border-radius: 2px 2px 0 0;
+    }
+
+    .spark-bar.pos {
+        background: var(--c-success);
+    }
+    .spark-bar.neg {
+        background: var(--c-danger);
     }
 
     /* Price Group */
@@ -238,7 +231,7 @@ if (variant === 'heatmap') {
 
     .stock-price {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--c-text-primary);
     }
@@ -256,34 +249,56 @@ if (variant === 'heatmap') {
         color: var(--c-danger);
     }
 
+    /* Watchlist Button */
+    .watchlist-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 0;
+        z-index: 10;
+        opacity: 0.5;
+        transition: all 0.2s;
+        margin-right: 8px;
+    }
+
+    .watchlist-btn:hover,
+    .watchlist-btn.active {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    .star {
+        font-size: 16px;
+        line-height: 1;
+        color: #ddd; /* Visible white/grey */
+    }
+
+    .watchlist-btn.active .star {
+        color: #fbbf24; /* Gold */
+        text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    }
+
     /* Detailed Variant */
     .variant-detailed {
-        grid-template-columns: 1fr;
-        gap: 16px;
-        padding: 20px;
-        border: 1px solid var(--c-border);
-        border-radius: var(--radius-md);
-        background: var(--c-bg-glass);
-        margin-bottom: 8px;
-    }
-
-    .variant-detailed:hover {
-        padding-left: 20px;
-        border-color: var(--c-border-active);
-    }
-
-    .variant-detailed .info-group {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+        grid-template-columns: 32px 1fr 100px 90px;
+        gap: 8px 16px;
+        height: auto;
+        padding: 16px;
     }
 
     .detail-metrics {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+        grid-column: 1 / -1;
         gap: 12px;
         padding-top: 12px;
         border-top: 1px solid var(--c-border);
+        margin-top: 8px;
     }
 
     .metric {
@@ -325,37 +340,40 @@ if (variant === 'heatmap') {
 </style>
 
 <script>
-    // 初始化自選股狀態
     document.querySelectorAll('.watchlist-btn').forEach(btn => {
         const symbol = btn.getAttribute('data-symbol');
+        if (!symbol) return;
+
         const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
 
         if (watchlist.includes(symbol)) {
             btn.classList.add('active');
-            btn.querySelector('.star')!.textContent = '★';
+            const star = btn.querySelector('.star');
+            if (star) star.textContent = '★';
         }
 
         btn.addEventListener('click', e => {
             e.preventDefault();
             e.stopPropagation();
 
-            const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
-            const index = watchlist.indexOf(symbol);
+            const currentWatchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
+            const index = currentWatchlist.indexOf(symbol);
+            const star = btn.querySelector('.star');
 
             if (index >= 0) {
-                watchlist.splice(index, 1);
+                currentWatchlist.splice(index, 1);
                 btn.classList.remove('active');
-                (btn.querySelector('.star') as HTMLElement).textContent = '☆';
+                if (star) star.textContent = '☆';
             } else {
-                watchlist.push(symbol);
+                currentWatchlist.push(symbol);
                 btn.classList.add('active');
-                (btn.querySelector('.star') as HTMLElement).textContent = '★';
+                if (star) star.textContent = '★';
             }
 
-            localStorage.setItem('tw-watchlist', JSON.stringify(watchlist));
-
-            // 觸發自定義事件
-            window.dispatchEvent(new CustomEvent('watchlist-updated', { detail: watchlist }));
+            localStorage.setItem('tw-watchlist', JSON.stringify(currentWatchlist));
+            window.dispatchEvent(
+                new CustomEvent('watchlist-updated', { detail: currentWatchlist })
+            );
         });
     });
 </script>
