@@ -168,6 +168,26 @@ tw-stock-app/
 
 ---
 
+## 📤 維護者：上傳數據包到 GitHub Releases
+
+當需要更新 `tw-stock-data.zip` 時：
+
+### 1. 建立壓縮包
+```powershell
+Compress-Archive -Path "public/data/*" -DestinationPath "tw-stock-data.zip" -Force
+```
+
+### 2. 上傳到 GitHub Releases
+1. 前往 https://github.com/benitorhuang-svg/tw-stock-app/releases/new
+2. Tag: `v1.x.x`（依版本遞增）
+3. Title: `v1.x.x - [更新說明]`
+4. 拖曳 `tw-stock-data.zip` 到 **Attach binaries** 區域
+5. 點擊 **Publish release**
+
+> 💡 協作者執行 `.\scripts\setup-data.ps1` 會自動下載最新版本
+
+---
+
 ## 📄 授權
 
 MIT License
