@@ -1,10 +1,9 @@
 ---
 /**
- * 專業金融風格側邊導航欄 - 自動展開優化版
+ * 專業金融風格側邊導航欄 - 整合導航版
  */
 
 const navItems = [
-    // 移除首頁，由 Logo 承擔功能
     { label: '個股分析', icon: '📊', href: '/stocks' },
     { label: '智能篩選', icon: '🔍', href: '/filter' },
     { label: '策略中心', icon: '🎯', href: '/strategies' },
@@ -13,11 +12,29 @@ const navItems = [
     { label: '投資組合', icon: '💼', href: '/portfolio' },
 ];
 
-const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
+const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }];
 ---
 
 <nav class="sidebar-nav" id="sidebar-nav">
-    <!-- Logo Section -->
+    <!-- Top Actions: Theme & Time -->
+    <div class="sidebar-top">
+        <div class="top-row">
+            <button
+                class="action-btn theme-toggle-btn"
+                id="sidebar-theme-toggle"
+                title="切換亮/暗模式"
+            >
+                <span class="theme-icon">🌙</span>
+            </button>
+            <div class="status-container" id="sidebar-status">
+                <span class="status-dot"></span>
+                <span class="status-text">--:--</span>
+            </div>
+        </div>
+        <hr class="sidebar-divider" />
+    </div>
+
+    <!-- Logo Section - Now below Divider -->
     <div class="nav-header">
         <a href="/" class="logo">
             <span class="logo-icon">📈</span>
@@ -37,8 +54,14 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         }
     </div>
 
-    <!-- Bottom Settings -->
+    <!-- Bottom Actions: Search & User -->
     <div class="nav-bottom">
+        <div class="sidebar-search-container">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="sidebar-search-input" placeholder="搜尋股票..." />
+            </div>
+        </div>
         {
             bottomItems.map(item => (
                 <a href={item.href} class="nav-item">
@@ -52,14 +75,14 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
 
 <style>
     .sidebar-nav {
-        width: 70px; /* 預設收合狀態 */
+        width: 70px;
         height: 100vh;
         background: var(--c-bg-glass);
         backdrop-filter: var(--glass-blur);
         border-right: 1px solid var(--c-border);
         display: flex;
         flex-direction: column;
-        padding: 16px 12px;
+        padding: 12px;
         position: fixed;
         left: 0;
         top: 0;
@@ -70,40 +93,86 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         overflow: hidden;
     }
 
-    /* 滑鼠靠近或強制展開時 */
-    .sidebar-nav:hover,
-    .sidebar-nav.expanded {
+    .sidebar-nav:hover {
         width: 240px;
         box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
     }
 
-    /* Logo Text & Item Labels 隱藏與顯示 */
-    .logo-text,
-    .item-label {
+    /* Top Actions */
+    .sidebar-top {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .top-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        height: 32px;
+        overflow: hidden;
+    }
+
+    .action-btn {
+        width: 46px;
+        min-width: 46px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        color: var(--c-text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--c-accent);
+    }
+
+    .status-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         opacity: 0;
-        white-space: nowrap;
-        pointer-events: none;
         transition: opacity 0.2s;
+        white-space: nowrap;
     }
 
-    .sidebar-nav:hover .logo-text,
-    .sidebar-nav.expanded .logo-text,
-    .sidebar-nav:hover .item-label,
-    .sidebar-nav.expanded .item-label {
+    .sidebar-nav:hover .status-container {
         opacity: 1;
-        pointer-events: auto;
-        transition: opacity 0.3s 0.1s; /* 延遲顯示文字 */
     }
 
-    /* Header */
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--c-success);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--c-success);
+    }
+
+    .status-text {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        color: var(--c-text-muted);
+    }
+
+    .sidebar-divider {
+        border: none;
+        border-top: 1px solid var(--c-border);
+        margin: 4px 0;
+    }
+
+    /* Header & Logo */
     .nav-header {
         display: flex;
         align-items: center;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--c-border);
-        margin-bottom: 16px;
+        margin-bottom: 20px;
         height: 40px;
-        overflow: hidden;
     }
 
     .logo {
@@ -114,14 +183,25 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         font-weight: 800;
         text-decoration: none;
         font-size: 16px;
-        width: 100%;
     }
 
     .logo-icon {
         font-size: 20px;
-        min-width: 46px; /* 居中圖示 */
+        min-width: 46px;
         display: flex;
         justify-content: center;
+    }
+
+    .logo-text,
+    .item-label {
+        opacity: 0;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+    }
+
+    .sidebar-nav:hover .logo-text,
+    .sidebar-nav:hover .item-label {
+        opacity: 1;
     }
 
     /* Nav Items */
@@ -142,7 +222,7 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         text-decoration: none;
         font-size: 14px;
         font-weight: 500;
-        transition: all 0.2s var(--ease-out);
+        transition: all 0.2s;
         height: 48px;
     }
 
@@ -159,45 +239,107 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
 
     .item-icon {
         font-size: 18px;
-        min-width: 46px; /* 與標題圖示寬度一致，確保對齊 */
-        text-align: center;
+        min-width: 46px;
         display: flex;
         justify-content: center;
-        align-items: center;
     }
 
+    /* Bottom Actions */
     .nav-bottom {
         border-top: 1px solid var(--c-border);
-        padding-top: 16px;
+        padding-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
 
-    /* 緊湊模式優化 */
-    .sidebar-nav:not(:hover):not(.expanded) .nav-item {
+    .sidebar-search-container {
+        padding: 0 4px;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .search-icon {
+        min-width: 46px;
+        display: flex;
+        justify-content: center;
+        font-size: 14px;
+        color: var(--c-text-muted);
+    }
+
+    #sidebar-search-input {
+        background: transparent;
+        border: none;
+        color: var(--c-text-primary);
+        font-size: 12px;
+        outline: none;
+        width: 100%;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .sidebar-nav:hover #sidebar-search-input {
+        opacity: 1;
+    }
+
+    .sidebar-nav:not(:hover) .nav-item {
         padding: 12px 0;
     }
 </style>
 
 <script>
     const sidebarNav = document.getElementById('sidebar-nav');
+    const updateText = sidebarNav?.querySelector('.status-text');
+    const themeBtn = document.getElementById('sidebar-theme-toggle');
+    const themeIcon = themeBtn?.querySelector('.theme-icon');
 
-    // 初始化：首頁預設展開（但滑鼠移開後仍會收合）
-    const currentPath = window.location.pathname;
-    if (currentPath === '/') {
-        sidebarNav?.classList.add('expanded');
-
-        // 滑鼠第一次進入後取消 "強制展開" 狀態，切換為純 hover 邏輯
-        const handleFirstEntry = () => {
-            sidebarNav?.classList.remove('expanded');
-            sidebarNav?.removeEventListener('mouseenter', handleFirstEntry);
-        };
-        sidebarNav?.addEventListener('mouseenter', handleFirstEntry);
+    // Theme Logic
+    function setTheme(theme: string) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('tw-stock-theme', theme);
+        if (themeIcon) {
+            themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+        }
     }
 
-    // 標記 active 項目
+    themeBtn?.addEventListener('click', () => {
+        const nextStyle =
+            document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        setTheme(nextStyle);
+        // Dispatch event for toast feedback if needed
+        window.dispatchEvent(new CustomEvent('tw-theme-change', { detail: nextStyle }));
+    });
+
+    // Time Update Logic
+    function refreshTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+        if (updateText) updateText.textContent = timeStr;
+    }
+    refreshTime();
+    setInterval(refreshTime, 60000);
+
+    // Initial Path Marking
+    const currentPath = window.location.pathname;
     document.querySelectorAll('.nav-item').forEach(item => {
         const href = item.getAttribute('href') || '';
         if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
             item.classList.add('active');
         }
+    });
+
+    // Sidebar search focus handling
+    const searchInput = document.getElementById('sidebar-search-input');
+    searchInput?.addEventListener('focus', () => {
+        sidebarNav?.classList.add('expanded');
     });
 </script>

@@ -1,107 +1,21 @@
 ---
 /**
- * 頂部Header欄組件 - Phase 1實現
- *
- * 功能：
- * - 全局搜索框 (支持股票、策略、組合)
- * - 快速通知和操作按鈕
- * - 時間戳和數據更新狀態
- * - 用戶菜單
- *
- * @module HeaderBar
- * @version 1.0.0
+ * 頂部Header欄組件 - 極簡版
  */
 ---
 
 <header class="header-bar" id="header-bar">
-    <!-- Left: 標籤頁欄 -->
     <div class="header-left">
-        <!-- 標籤動態插入 -->
+        <!-- 空間保留 -->
     </div>
 
-    <!-- Center: 全局搜索 -->
-    <div class="header-center">
-        <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
-            <input
-                type="text"
-                class="global-search"
-                id="global-search-input"
-                placeholder="搜索股票、策略、組合…"
-                aria-label="全局搜索"
-            />
-            <div class="search-suggestions" id="search-suggestions"></div>
-        </div>
-    </div>
-
-    <!-- Right: 操作區 -->
     <div class="header-right">
-        <!-- 數據更新狀態 -->
-        <div class="data-status" id="data-status">
-            <span class="status-dot"></span>
-            <span class="status-text">最後更新: --:--</span>
-        </div>
-
-        <!-- 主題切換 -->
-        <button
-            class="header-btn theme-toggle-btn"
-            id="theme-toggle"
-            title="切換亮/暗模式"
-            aria-label="切換亮/暗模式"
-        >
-            <span class="theme-icon">🌙</span>
-        </button>
-
-        <!-- 通知鈴 -->
+        <!-- 通知鈴 - 改為點擊後觸發氣泡通知 -->
         <div class="notifications-wrapper">
-            <button class="header-btn" id="notifications-btn" title="通知" aria-label="通知">
+            <button class="header-btn" id="notifications-btn" title="系統通知" aria-label="通知">
                 🔔
                 <span class="badge" id="notification-badge">3</span>
             </button>
-            <div class="notifications-dropdown" id="notifications-dropdown">
-                <div class="dropdown-header">系統通知</div>
-                <div class="notification-list">
-                    <div class="notification-item unread">
-                        <span class="item-icon">🚀</span>
-                        <div class="item-content">
-                            <div class="item-title">數據已更新</div>
-                            <div class="item-time">剛剛</div>
-                        </div>
-                    </div>
-                    <div class="notification-item unread">
-                        <span class="item-icon">⚠️</span>
-                        <div class="item-content">
-                            <div class="item-title">台積電達到預警價格</div>
-                            <div class="item-time">10 分鐘前</div>
-                        </div>
-                    </div>
-                    <div class="notification-item">
-                        <span class="item-icon">✅</span>
-                        <div class="item-content">
-                            <div class="item-title">投資組合同步成功</div>
-                            <div class="item-time">1 小時前</div>
-                        </div>
-                    </div>
-                </div>
-                <a href="/notifications" class="view-all">查看全部通知</a>
-            </div>
-        </div>
-
-        <!-- 設置 -->
-        <button class="header-btn" id="settings-btn" title="設定" aria-label="設定"> ⚙️ </button>
-
-        <!-- 用戶菜單 -->
-        <div class="user-menu">
-            <button class="user-avatar" id="user-menu-btn" title="用戶菜單">
-                <span class="avatar-icon">👤</span>
-            </button>
-            <div class="user-menu-dropdown" id="user-menu-dropdown">
-                <a href="/settings" class="menu-item">👤 個人資料</a>
-                <a href="/settings" class="menu-item">⚙️ 偏好設置</a>
-                <a href="/doc/PHASE1_QUICK_START.md" class="menu-item">❓ 幫助</a>
-                <div class="menu-divider"></div>
-                <a href="#" class="menu-item logout-btn">🚪 登出</a>
-            </div>
         </div>
     </div>
 </header>
@@ -111,169 +25,25 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 56px;
-        background: var(--c-bg-glass);
+        height: 40px; /* 壓縮高度 */
+        background: transparent;
         border-bottom: 1px solid var(--c-border);
         padding: 0 20px;
-        gap: 20px;
         position: sticky;
         top: 0;
         z-index: 90;
-    }
-
-    .header-left {
-        flex: 0 0 auto;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 200px;
-    }
-
-    .header-center {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        max-width: 500px;
-        min-width: 250px;
+        backdrop-filter: var(--glass-blur);
     }
 
     .header-right {
-        flex: 0 0 auto;
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
     }
 
-    /* 全局搜索 */
-    .search-wrapper {
-        position: relative;
-        width: 100%;
-        display: flex;
-        align-items: center;
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 12px;
-        color: var(--c-text-muted);
-        font-size: 14px;
-        pointer-events: none;
-    }
-
-    .global-search {
-        width: 100%;
-        height: 36px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--c-border);
-        border-radius: 6px;
-        color: var(--c-text-primary);
-        padding: 0 12px 0 36px;
-        font-size: 12px;
-        outline: none;
-        transition: all 0.2s var(--ease-out);
-    }
-
-    .global-search::placeholder {
-        color: var(--c-text-muted);
-    }
-
-    .global-search:focus {
-        border-color: rgba(var(--c-accent-rgb), 0.5);
-        background: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 0 12px rgba(var(--c-accent-rgb), 0.15);
-    }
-
-    .search-suggestions {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-top: none;
-        border-radius: 0 0 6px 6px;
-        max-height: 300px;
-        overflow-y: auto;
-        display: none;
-        z-index: 100;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-
-    .search-suggestions.visible {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .suggestion-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        color: var(--c-text-secondary);
-        font-size: 12px;
-        cursor: pointer;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.02);
-        transition: all 0.2s;
-    }
-
-    .suggestion-item:last-child {
-        border-bottom: none;
-    }
-
-    .suggestion-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--c-accent);
-    }
-
-    .suggestion-icon {
-        font-size: 14px;
-        min-width: 16px;
-    }
-
-    .suggestion-text {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .suggestion-count {
-        font-size: 10px;
-        color: var(--c-text-muted);
-    }
-
-    /* 數據狀態 */
-    .data-status {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 11px;
-        color: var(--c-text-muted);
-    }
-
-    .status-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #10b981;
-        box-shadow: 0 0 8px #10b981;
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0%,
-        100% {
-            opacity: 0.6;
-        }
-        50% {
-            opacity: 1;
-        }
-    }
-
-    /* Header按鈕 */
     .header-btn {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -282,383 +52,75 @@
         border-radius: 6px;
         color: var(--c-text-secondary);
         cursor: pointer;
-        font-size: 16px;
-        transition: all 0.2s var(--ease-out);
+        font-size: 14px;
+        transition: all 0.2s;
         position: relative;
     }
 
     .header-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.1);
         color: var(--c-accent);
-        border-color: rgba(var(--c-accent-rgb), 0.3);
+        border-color: var(--c-accent);
     }
 
     .badge {
         position: absolute;
         top: -4px;
         right: -4px;
-        background: #ef4444;
+        background: var(--c-danger);
         color: white;
-        font-size: 9px;
-        font-weight: 700;
-        padding: 2px 4px;
+        font-size: 8px;
+        font-weight: 800;
+        padding: 1px 4px;
         border-radius: 10px;
-        min-width: 16px;
+        min-width: 14px;
         text-align: center;
-    }
-
-    /* 用戶菜單 */
-    .user-menu {
-        position: relative;
-    }
-
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(var(--c-accent-rgb), 0.1);
-        border: 1px solid rgba(var(--c-accent-rgb), 0.2);
-        border-radius: 50%;
-        color: var(--c-accent);
-        cursor: pointer;
-        font-size: 16px;
-        transition: all 0.2s var(--ease-out);
-    }
-
-    .user-avatar:hover {
-        background: rgba(var(--c-accent-rgb), 0.2);
-        box-shadow: 0 0 12px rgba(var(--c-accent-rgb), 0.2);
-    }
-
-    .user-menu-dropdown {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 6px;
-        min-width: 160px;
-        padding: 4px;
-        display: none;
-        flex-direction: column;
-        gap: 2px;
-        z-index: 100;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        margin-top: 4px;
-    }
-
-    .user-menu-dropdown.visible {
-        display: flex;
-    }
-
-    .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        color: var(--c-text-secondary);
-        font-size: 12px;
-        text-decoration: none;
-        border-radius: 4px;
-        transition: all 0.2s;
-    }
-
-    .menu-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--c-text-primary);
-    }
-
-    .menu-divider {
-        height: 1px;
-        background: var(--c-border);
-        margin: 2px 0;
-    }
-
-    /* Notifications Dropdown */
-    .notifications-wrapper {
-        position: relative;
-    }
-
-    .notifications-dropdown {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: var(--c-bg-glass-heavy);
-        backdrop-filter: var(--glass-blur);
-        border: 1px solid var(--c-border);
-        border-radius: var(--radius-md);
-        min-width: 280px;
-        margin-top: 12px;
-        display: none;
-        flex-direction: column;
-        z-index: 100;
-        box-shadow: var(--shadow-panel);
-        overflow: hidden;
-        animation: fadeIn 0.3s var(--ease-out);
-    }
-
-    .notifications-dropdown.visible {
-        display: flex;
-    }
-
-    .dropdown-header {
-        padding: 12px 16px;
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--c-text-primary);
-        border-bottom: 1px solid var(--c-border);
-    }
-
-    .notification-list {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-
-    .notification-item {
-        display: flex;
-        gap: 12px;
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--c-border);
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-
-    .notification-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .notification-item.unread {
-        background: rgba(var(--c-accent-rgb), 0.05);
-    }
-
-    .notification-item .item-icon {
-        font-size: 16px;
-    }
-
-    .item-title {
-        font-size: 12px;
-        color: var(--c-text-primary);
-        margin-bottom: 2px;
-    }
-
-    .item-time {
-        font-size: 10px;
-        color: var(--c-text-muted);
-    }
-
-    .view-all {
-        padding: 10px;
-        text-align: center;
-        font-size: 11px;
-        color: var(--c-accent);
-        text-decoration: none;
-        background: rgba(var(--c-accent-rgb), 0.05);
-    }
-
-    .theme-toggle-btn:hover {
-        color: #fbbf24;
-        box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
-    }
-
-    /* 響應式 */
-    @media (max-width: 1024px) {
-        .header-bar {
-            padding: 0 12px;
-            gap: 12px;
-        }
-
-        .header-left {
-            min-width: 150px;
-        }
-
-        .header-center {
-            max-width: 350px;
-            min-width: 200px;
-        }
-
-        .data-status {
-            display: none;
-        }
+        box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
     }
 
     @media (max-width: 768px) {
         .header-bar {
-            height: 48px;
-            padding: 0 8px;
-            flex-wrap: wrap;
-        }
-
-        .header-left {
-            display: none;
-        }
-
-        .header-center {
-            order: 2;
-            width: 100%;
-            max-width: 100%;
-            margin-top: 8px;
-        }
-
-        .header-right {
-            order: 1;
-            gap: 8px;
-        }
-
-        .global-search {
-            font-size: 11px;
+            height: 36px;
         }
     }
 </style>
 
 <script>
-    /**
-     * 全局搜索功能
-     * 支持股票、策略、組合搜索
-     */
+    import { toast } from '../../lib/toast';
 
-    const searchInput = document.getElementById('global-search-input');
-    const suggestionsPanel = document.getElementById('search-suggestions');
+    const notificationsBtn = document.getElementById('notifications-btn');
+    const badge = document.getElementById('notification-badge');
 
-    // 模擬搜索數據
-    const searchData = [
-        { type: 'stock', icon: '📈', label: '2330 台積電', href: '/stocks/2330' },
-        { type: 'stock', icon: '📈', label: '2317 鴻海', href: '/stocks/2317' },
-        { type: 'strategy', icon: '🎯', label: '低本益比', href: '/strategies/low-pe' },
-        { type: 'strategy', icon: '🎯', label: '高殖利率', href: '/strategies/high-dividend' },
-        { type: 'portfolio', icon: '💼', label: '主要組合', href: '/portfolio' },
+    const sampleNotifications = [
+        { id: 1, title: '🚀 數據更新成功', message: '台股即時成交清單已同步' },
+        { id: 2, title: '⚠️ 預警通知', message: '您的自選股 2330 突破支撐位' },
+        { id: 3, title: '✅ 組合調整', message: '投資組合比例已重新計算' },
     ];
 
-    searchInput?.addEventListener('input', e => {
-        const query = (e.target as HTMLInputElement).value.toLowerCase();
-
-        if (!query) {
-            suggestionsPanel?.classList.remove('visible');
-            return;
-        }
-
-        const results = searchData
-            .filter(item => item.label.toLowerCase().includes(query))
-            .slice(0, 8);
-
-        if (results.length > 0) {
-            suggestionsPanel!.innerHTML = results
-                .map(
-                    result => `
-        <a href="${result.href}" class="suggestion-item">
-          <span class="suggestion-icon">${result.icon}</span>
-          <span class="suggestion-text">${result.label}</span>
-        </a>
-      `
-                )
-                .join('');
-            suggestionsPanel?.classList.add('visible');
-        } else {
-            suggestionsPanel?.classList.remove('visible');
-        }
-    });
-
-    // 點擊外部隱藏建議
-    document.addEventListener('click', e => {
-        if (
-            !searchInput?.contains(e.target as Node) &&
-            !suggestionsPanel?.contains(e.target as Node)
-        ) {
-            suggestionsPanel?.classList.remove('visible');
-        }
-    });
-
-    // Import Toast (client-side)
-    let toast: any;
-    import('../../lib/toast').then(mod => {
-        toast = mod.toast;
-    });
-
-    // 用戶菜單
-    const userMenuBtn = document.getElementById('user-menu-btn');
-    const userMenuDropdown = document.getElementById('user-menu-dropdown');
-
-    userMenuBtn?.addEventListener('click', () => {
-        userMenuDropdown?.classList.toggle('visible');
-        notificationsDropdown?.classList.remove('visible');
-    });
-
-    // 通知菜單
-    const notificationsBtn = document.getElementById('notifications-btn');
-    const notificationsDropdown = document.getElementById('notifications-dropdown');
-    const notificationBadge = document.getElementById('notification-badge');
-
     notificationsBtn?.addEventListener('click', () => {
-        notificationsDropdown?.classList.toggle('visible');
-        userMenuDropdown?.classList.remove('visible');
-        if (notificationBadge) notificationBadge.style.display = 'none';
-    });
+        // 點擊後逐個顯示通知，並減少標記數量
+        if (sampleNotifications.length > 0) {
+            const notice = sampleNotifications.shift();
+            if (notice) {
+                toast.info(`${notice.title}: ${notice.message}`, 4000);
+            }
 
-    // 主題切換
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = themeToggle?.querySelector('.theme-icon');
-
-    function setTheme(theme: string) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('tw-stock-theme', theme);
-        if (themeIcon) {
-            themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
-        }
-    }
-
-    // 初始化主題
-    const savedTheme = localStorage.getItem('tw-stock-theme') || 'dark';
-    setTheme(savedTheme);
-
-    themeToggle?.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        setTheme(next);
-        toast?.info(`已切換至 ${next === 'dark' ? '深色' : '亮色'} 模式`);
-    });
-
-    // 設定與登出模擬
-    document.getElementById('settings-btn')?.addEventListener('click', () => {
-        toast?.success('正在開啟設定頁面...', 1000);
-        setTimeout(() => {
-            window.location.href = '/settings';
-        }, 500);
-    });
-
-    document.querySelectorAll('.notification-item').forEach(item => {
-        item.addEventListener('click', () => {
-            toast?.info('通知功能詳情：' + item.querySelector('.item-title')?.textContent);
-            item.classList.remove('unread');
-        });
-    });
-
-    document.querySelector('.logout-btn')?.addEventListener('click', e => {
-        e.preventDefault();
-        toast?.warning('登出功能目前僅供展示');
-    });
-
-    // 點擊外部隱藏所有下拉菜單
-    document.addEventListener('click', e => {
-        const target = e.target as Node;
-        if (!userMenuBtn?.contains(target) && !userMenuDropdown?.contains(target)) {
-            userMenuDropdown?.classList.remove('visible');
-        }
-        if (!notificationsBtn?.contains(target) && !notificationsDropdown?.contains(target)) {
-            notificationsDropdown?.classList.remove('visible');
+            if (badge) {
+                const count = sampleNotifications.length;
+                if (count > 0) {
+                    badge.textContent = count.toString();
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        } else {
+            toast.success('目前沒有新通知');
         }
     });
 
-    // 更新時間戳
-    function updateDataStatus() {
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
-        const statusText = document.querySelector('.status-text');
-        if (statusText) {
-            statusText.textContent = `最後更新: ${timeStr}`;
-        }
-    }
-
-    updateDataStatus();
-    setInterval(updateDataStatus, 60000);
+    // Listen for theme changes from sidebar to show feedback
+    window.addEventListener('tw-theme-change', (e: any) => {
+        const theme = e.detail;
+        toast.info(`已切換至 ${theme === 'dark' ? '深色' : '亮色'} 模式`);
+    });
 </script>
