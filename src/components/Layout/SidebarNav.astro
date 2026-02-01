@@ -1,10 +1,10 @@
 ---
 /**
- * 簡化版側邊導航欄 - 專業金融風格
+ * 專業金融風格側邊導航欄 - 自動展開優化版
  */
 
 const navItems = [
-    { label: '首頁', icon: '🏠', href: '/' },
+    // 移除首頁，由 Logo 承擔功能
     { label: '個股分析', icon: '📊', href: '/stocks' },
     { label: '智能篩選', icon: '🔍', href: '/filter' },
     { label: '策略中心', icon: '🎯', href: '/strategies' },
@@ -23,9 +23,6 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
             <span class="logo-icon">📈</span>
             <span class="logo-text">TW Stock</span>
         </a>
-        <button class="nav-toggle-btn" id="sidebar-toggle" title="收合側邊欄">
-            <span>«</span>
-        </button>
     </div>
 
     <!-- Main Navigation -->
@@ -55,38 +52,58 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
 
 <style>
     .sidebar-nav {
-        width: 240px;
+        width: 70px; /* 預設收合狀態 */
         height: 100vh;
         background: var(--c-bg-glass);
         backdrop-filter: var(--glass-blur);
         border-right: 1px solid var(--c-border);
         display: flex;
         flex-direction: column;
-        padding: 16px;
+        padding: 16px 12px;
         position: fixed;
         left: 0;
         top: 0;
         z-index: 100;
-        transition: width 0.3s var(--ease-out);
+        transition:
+            width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s;
+        overflow: hidden;
     }
 
-    .sidebar-nav.collapsed {
-        width: 70px;
+    /* 滑鼠靠近或強制展開時 */
+    .sidebar-nav:hover,
+    .sidebar-nav.expanded {
+        width: 240px;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
     }
 
-    .sidebar-nav.collapsed .logo-text,
-    .sidebar-nav.collapsed .item-label {
-        display: none;
+    /* Logo Text & Item Labels 隱藏與顯示 */
+    .logo-text,
+    .item-label {
+        opacity: 0;
+        white-space: nowrap;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+
+    .sidebar-nav:hover .logo-text,
+    .sidebar-nav.expanded .logo-text,
+    .sidebar-nav:hover .item-label,
+    .sidebar-nav.expanded .item-label {
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity 0.3s 0.1s; /* 延遲顯示文字 */
     }
 
     /* Header */
     .nav-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
         padding-bottom: 16px;
         border-bottom: 1px solid var(--c-border);
         margin-bottom: 16px;
+        height: 40px;
+        overflow: hidden;
     }
 
     .logo {
@@ -97,29 +114,14 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         font-weight: 800;
         text-decoration: none;
         font-size: 16px;
+        width: 100%;
     }
 
     .logo-icon {
         font-size: 20px;
-    }
-
-    .nav-toggle-btn {
-        width: 28px;
-        height: 28px;
+        min-width: 46px; /* 居中圖示 */
         display: flex;
-        align-items: center;
         justify-content: center;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--c-border);
-        border-radius: 6px;
-        color: var(--c-text-muted);
-        cursor: pointer;
-        transition: all 0.3s var(--ease-out);
-    }
-
-    .nav-toggle-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: var(--c-accent);
     }
 
     /* Nav Items */
@@ -141,6 +143,7 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         font-size: 14px;
         font-weight: 500;
         transition: all 0.2s var(--ease-out);
+        height: 48px;
     }
 
     .nav-item:hover {
@@ -156,8 +159,11 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
 
     .item-icon {
         font-size: 18px;
-        min-width: 24px;
+        min-width: 46px; /* 與標題圖示寬度一致，確保對齊 */
         text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .nav-bottom {
@@ -165,30 +171,29 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         padding-top: 16px;
     }
 
-    .sidebar-nav.collapsed .nav-item {
-        justify-content: center;
+    /* 緊湊模式優化 */
+    .sidebar-nav:not(:hover):not(.expanded) .nav-item {
         padding: 12px 0;
     }
 </style>
 
 <script>
-    // Sidebar Toggle
-    const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebarNav = document.getElementById('sidebar-nav');
 
-    sidebarToggle?.addEventListener('click', () => {
-        sidebarNav?.classList.toggle('collapsed');
-        const isCollapsed = sidebarNav?.classList.contains('collapsed');
-        localStorage.setItem('tw-sidebar-collapsed', String(isCollapsed));
-    });
+    // 初始化：首頁預設展開（但滑鼠移開後仍會收合）
+    const currentPath = window.location.pathname;
+    if (currentPath === '/') {
+        sidebarNav?.classList.add('expanded');
 
-    // Restore sidebar state
-    if (localStorage.getItem('tw-sidebar-collapsed') === 'true') {
-        sidebarNav?.classList.add('collapsed');
+        // 滑鼠第一次進入後取消 "強制展開" 狀態，切換為純 hover 邏輯
+        const handleFirstEntry = () => {
+            sidebarNav?.classList.remove('expanded');
+            sidebarNav?.removeEventListener('mouseenter', handleFirstEntry);
+        };
+        sidebarNav?.addEventListener('mouseenter', handleFirstEntry);
     }
 
-    // Mark active nav items
-    const currentPath = window.location.pathname;
+    // 標記 active 項目
     document.querySelectorAll('.nav-item').forEach(item => {
         const href = item.getAttribute('href') || '';
         if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {

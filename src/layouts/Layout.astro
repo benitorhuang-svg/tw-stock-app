@@ -217,14 +217,15 @@ const currentPath = Astro.url.pathname;
         background: transparent;
         position: relative;
         min-width: 0;
-        margin-left: 240px; /* Sidebar width offset */
+        margin-left: 70px; /* Sidebar default collapsed width */
         transition: margin-left 0.3s var(--ease-out);
     }
 
-    /* When sidebar is collapsed */
-    :global(.sidebar-nav.collapsed) ~ .main-workspace {
-        margin-left: 70px;
-    }
+    /* 
+       Note: We no longer shift the margin-left on hover (240px) 
+       because the sidebar now floats above the content when expanded 
+       to provide a more premium feel and avoid layout jumping.
+    */
 
     /* Main Content Area - scrollable page content */
     .main-content {
