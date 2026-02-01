@@ -123,18 +123,28 @@ npm run test:coverage # 覆蓋率
 ## 📦 快速開始
 
 ```bash
-# 安裝
+# 1. 安裝依賴
 npm install
 
-# 開發
+# 2. 下載數據包 (首次運行必須)
+# Windows PowerShell:
+.\scripts\setup-data.ps1
+
+# 或手動下載：從 GitHub Releases 下載 tw-stock-data.zip
+# 解壓縮到 public/data/ 目錄
+
+# 3. 開發模式
 npm run dev
 
-# 建置
+# 4. 建置
 npm run build
 
-# 測試
+# 5. 測試
 npm test
 ```
+
+> ⚠️ **注意**：`public/data/` 目錄未包含在 Git 中（約 185MB）。
+> 首次 clone 後必須執行數據設置步驟。
 
 ---
 

@@ -22,6 +22,7 @@ Thumbs.db
 
 # Large data files (local data, not for version control)
 public/data/
+tw-stock-data.zip
 
 # Cache
 .cache/
