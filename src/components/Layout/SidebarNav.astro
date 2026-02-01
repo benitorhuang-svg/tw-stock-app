@@ -20,114 +20,42 @@ interface MenuItem {
     children?: MenuItem[];
 }
 
-// 三大工作區架構
-const workspaces: Array<{ label: string; icon: string; items: MenuItem[] }> = [
-    {
-        label: '🔍 Analysis',
-        icon: '🔍',
-        items: [
-            { label: 'Stock Screener', icon: '🔎', href: '/screener', active: false },
-            { label: 'Quick Filter', icon: '⚡', href: '/filter', active: false },
-            { label: 'Strategy Lab', icon: '🧪', href: '/strategies', active: false },
-            { label: 'Holdings Overview', icon: '📊', href: '/portfolio', active: false },
-        ],
-    },
-    {
-        label: '📊 Research',
-        icon: '📊',
-        items: [
-            { label: 'Stock Profile', icon: '📈', href: '/stocks', active: false },
-            { label: 'Technical Analysis', icon: '📉', href: '/stocks', active: false },
-            { label: 'Fundamental', icon: '📋', href: '/stocks', active: false },
-            { label: 'Dividend & Events', icon: '📅', href: '/dividends', active: false },
-            { label: 'News & Sentiment', icon: '📰', href: '/news', active: false },
-        ],
-    },
-    {
-        label: '💼 Portfolio',
-        icon: '💼',
-        items: [
-            { label: 'Dashboard', icon: '📊', href: '/portfolio', active: false },
-            { label: 'Holdings', icon: '🏦', href: '/portfolio', active: false },
-            { label: 'Allocation', icon: '⚖️', href: '/portfolio', active: false },
-            { label: 'Risk & Performance', icon: '📈', href: '/portfolio', active: false },
-            { label: 'Transactions', icon: '📝', href: '/portfolio', active: false },
-        ],
-    },
+// 簡化版導航 - 單層式架構
+const navItems = [
+    { label: '首頁', icon: '🏠', href: '/' },
+    { label: '個股分析', icon: '📊', href: '/stocks' },
+    { label: '智能篩選', icon: '🔍', href: '/filter' },
+    { label: '策略中心', icon: '🎯', href: '/strategies' },
+    { label: '股利查詢', icon: '💰', href: '/dividends' },
+    { label: '自選股', icon: '⭐', href: '/watchlist' },
+    { label: '投資組合', icon: '💼', href: '/portfolio' },
 ];
 
-const quickAccess = [
-    { label: 'Watchlist', icon: '⭐', href: '/watchlist' },
-    { label: 'Industries', icon: '🏭', href: '/industries' },
-    { label: 'Live Data', icon: '📡', href: '/live' },
-];
-
-const settings = [
-    { label: 'Settings', icon: '⚙️', href: '/settings' },
-    { label: 'Help', icon: '❓', href: '/help' },
-    { label: 'Logout', icon: '🚪', href: '/logout' },
-];
+const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
 ---
 
 <nav class="sidebar-nav" id="sidebar-nav">
-    <!-- Logo Section -->
+    <!-- Logo Section with Theme Toggle -->
     <div class="nav-header">
         <a href="/" class="logo">
             <span class="logo-icon">📈</span>
             <span class="logo-text">TW Stock</span>
         </a>
         <div class="nav-actions">
-            <button class="nav-toggle-btn" id="sidebar-toggle" title="Collapse sidebar">
+            <button class="theme-toggle-btn" id="theme-toggle" title="切換亮/暗模式">
+                <span class="theme-icon">🌙</span>
+            </button>
+            <button class="nav-toggle-btn" id="sidebar-toggle" title="收合側邊欄">
                 <span>«</span>
             </button>
         </div>
     </div>
 
-    <!-- Global Search -->
-    <div class="search-section">
-        <input
-            type="text"
-            class="search-input"
-            id="global-search"
-            placeholder="搜索股票、策略..."
-            aria-label="全局搜索"
-        />
-        <span class="search-icon">🔍</span>
-    </div>
-
-    <!-- Workspaces -->
-    <div class="workspaces-section">
+    <!-- Main Navigation -->
+    <div class="nav-items">
         {
-            workspaces.map(workspace => (
-                <div
-                    class="workspace"
-                    data-workspace={workspace.label.split(' ')[1]?.toLowerCase()}
-                >
-                    <button class="workspace-header" type="button">
-                        <span class="workspace-icon">{workspace.icon}</span>
-                        <span class="workspace-label">{workspace.label}</span>
-                        <span class="workspace-toggle">▼</span>
-                    </button>
-
-                    <div class="workspace-items">
-                        {workspace.items.map(item => (
-                            <a href={item.href} class="workspace-item">
-                                <span class="item-icon">{item.icon}</span>
-                                <span class="item-label">{item.label}</span>
-                            </a>
-                        ))}
-                    </div>
-                </div>
-            ))
-        }
-    </div>
-
-    <!-- Quick Access -->
-    <div class="quick-access-section">
-        <div class="section-label">⭐ Quick Access</div>
-        {
-            quickAccess.map(item => (
-                <a href={item.href} class="quick-access-item">
+            navItems.map(item => (
+                <a href={item.href} class="nav-item">
                     <span class="item-icon">{item.icon}</span>
                     <span class="item-label">{item.label}</span>
                 </a>
@@ -135,11 +63,11 @@ const settings = [
         }
     </div>
 
-    <!-- Settings -->
-    <div class="settings-section">
+    <!-- Bottom Settings -->
+    <div class="nav-bottom">
         {
-            settings.map(item => (
-                <a href={item.href} class="settings-item">
+            bottomItems.map(item => (
+                <a href={item.href} class="nav-item">
                     <span class="item-icon">{item.icon}</span>
                     <span class="item-label">{item.label}</span>
                 </a>
@@ -240,7 +168,80 @@ const settings = [
         box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.2);
     }
 
-    /* Search */
+    /* Theme Toggle */
+    .theme-toggle-btn {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--c-border);
+        border-radius: 6px;
+        color: var(--c-text-muted);
+        cursor: pointer;
+        transition: all 0.3s var(--ease-out);
+        font-size: 14px;
+    }
+
+    .theme-toggle-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fbbf24;
+        box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+
+    [data-theme='light'] .theme-icon::after {
+        content: '☀️';
+    }
+
+    /* Simplified Nav Items */
+    .nav-items {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        padding-top: 16px;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: var(--c-text-secondary);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s var(--ease-out);
+        border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover {
+        background: rgba(var(--c-accent-rgb), 0.08);
+        color: var(--c-text-primary);
+        border-left-color: rgba(var(--c-accent-rgb), 0.5);
+    }
+
+    .nav-item.active {
+        background: rgba(var(--c-accent-rgb), 0.1);
+        color: var(--c-accent);
+        border-left-color: var(--c-accent);
+        font-weight: 600;
+    }
+
+    .nav-item .item-icon {
+        font-size: 16px;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    .nav-bottom {
+        border-top: 1px solid var(--c-border);
+        padding-top: 12px;
+        margin-top: auto;
+    }
+
     .search-section {
         position: relative;
         display: flex;
@@ -504,19 +505,33 @@ const settings = [
         sidebarNav?.classList.add('collapsed');
     }
 
-    // Global Search
-    const searchInput = document.getElementById('global-search');
-    searchInput?.addEventListener('input', e => {
-        const query = (e.target as HTMLInputElement).value.toLowerCase();
-        // TODO: Implement search functionality in Phase 2
-        console.log('Search:', query);
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle?.querySelector('.theme-icon');
+
+    function setTheme(theme: string) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('tw-theme', theme);
+        if (themeIcon) {
+            themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+        }
+    }
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('tw-theme') || 'dark';
+    setTheme(savedTheme);
+
+    themeToggle?.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        setTheme(next);
     });
 
-    // Mark active items
+    // Mark active nav items
     const currentPath = window.location.pathname;
-    document.querySelectorAll('.workspace-item').forEach(item => {
+    document.querySelectorAll('.nav-item').forEach(item => {
         const href = item.getAttribute('href') || '';
-        if (href === currentPath || currentPath.startsWith(href + '/')) {
+        if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
             item.classList.add('active');
         }
     });
