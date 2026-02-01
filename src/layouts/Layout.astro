@@ -402,29 +402,7 @@ const currentPath = Astro.url.pathname;
      * For Phase 1, focusing on desktop layout
      */
 
-    // Theme toggle (keeping existing)
-    const themeBtn = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('tw-stock-theme') || 'dark';
-
-    if (savedTheme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        if (themeBtn) themeBtn.textContent = '☀️';
-    }
-
-    themeBtn?.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        if (current === 'light') {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('tw-stock-theme', 'dark');
-            themeBtn.textContent = '🌙';
-        } else {
-            document.documentElement.setAttribute('data-theme', 'light');
-            localStorage.setItem('tw-stock-theme', 'light');
-            themeBtn.textContent = '☀️';
-        }
-    });
-
-    // Mark active nav item
+    // PWA Service Worker Registration
     const currentPath = window.location.pathname;
     document.querySelectorAll('.nav-item').forEach(item => {
         if (item.getAttribute('href') === currentPath) {

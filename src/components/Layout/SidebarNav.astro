@@ -1,26 +1,8 @@
 ---
 /**
- * 新版左側導航欄組件 - Phase 1實現
- *
- * 功能：
- * - 三大工作區分類 (Analysis, Research, Portfolio)
- * - 可折疊子菜單
- * - 全局搜索框
- * - 用戶菜單
- *
- * @module SidebarNav
- * @version 1.0.0
+ * 簡化版側邊導航欄 - 專業金融風格
  */
 
-interface MenuItem {
-    label: string;
-    icon: string;
-    href: string;
-    active?: boolean;
-    children?: MenuItem[];
-}
-
-// 簡化版導航 - 單層式架構
 const navItems = [
     { label: '首頁', icon: '🏠', href: '/' },
     { label: '個股分析', icon: '📊', href: '/stocks' },
@@ -35,20 +17,15 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
 ---
 
 <nav class="sidebar-nav" id="sidebar-nav">
-    <!-- Logo Section with Theme Toggle -->
+    <!-- Logo Section -->
     <div class="nav-header">
         <a href="/" class="logo">
             <span class="logo-icon">📈</span>
             <span class="logo-text">TW Stock</span>
         </a>
-        <div class="nav-actions">
-            <button class="theme-toggle-btn" id="theme-toggle" title="切換亮/暗模式">
-                <span class="theme-icon">🌙</span>
-            </button>
-            <button class="nav-toggle-btn" id="sidebar-toggle" title="收合側邊欄">
-                <span>«</span>
-            </button>
-        </div>
+        <button class="nav-toggle-btn" id="sidebar-toggle" title="收合側邊欄">
+            <span>«</span>
+        </button>
     </div>
 
     <!-- Main Navigation -->
@@ -81,12 +58,11 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         width: 240px;
         height: 100vh;
         background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
         border-right: 1px solid var(--c-border);
         display: flex;
         flex-direction: column;
-        gap: 16px;
         padding: 16px;
-        overflow-y: auto;
         position: fixed;
         left: 0;
         top: 0;
@@ -99,13 +75,7 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
     }
 
     .sidebar-nav.collapsed .logo-text,
-    .sidebar-nav.collapsed .workspace-label,
-    .sidebar-nav.collapsed .item-label,
-    .sidebar-nav.collapsed .section-label {
-        display: none;
-    }
-
-    .sidebar-nav.collapsed .workspace-toggle {
+    .sidebar-nav.collapsed .item-label {
         display: none;
     }
 
@@ -114,37 +84,23 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-bottom: 12px;
+        padding-bottom: 16px;
         border-bottom: 1px solid var(--c-border);
-        height: 50px;
+        margin-bottom: 16px;
     }
 
     .logo {
         display: flex;
         align-items: center;
-        gap: 8px;
-        color: #fff;
+        gap: 12px;
+        color: var(--c-text-primary);
         font-weight: 800;
         text-decoration: none;
-        font-size: 14px;
-        letter-spacing: 0.5px;
+        font-size: 16px;
     }
 
     .logo-icon {
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(var(--c-accent-rgb), 0.15);
-        border-radius: 6px;
-        font-size: 18px;
-        border: 1px solid rgba(var(--c-accent-rgb), 0.2);
-    }
-
-    .nav-actions {
-        display: flex;
-        gap: 8px;
+        font-size: 20px;
     }
 
     .nav-toggle-btn {
@@ -159,337 +115,63 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
         color: var(--c-text-muted);
         cursor: pointer;
         transition: all 0.3s var(--ease-out);
-        font-size: 16px;
     }
 
     .nav-toggle-btn:hover {
         background: rgba(255, 255, 255, 0.1);
         color: var(--c-accent);
-        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.2);
     }
 
-    /* Theme Toggle */
-    .theme-toggle-btn {
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--c-border);
-        border-radius: 6px;
-        color: var(--c-text-muted);
-        cursor: pointer;
-        transition: all 0.3s var(--ease-out);
-        font-size: 14px;
-    }
-
-    .theme-toggle-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fbbf24;
-        box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
-    }
-
-    [data-theme='light'] .theme-icon::after {
-        content: '☀️';
-    }
-
-    /* Simplified Nav Items */
+    /* Nav Items */
     .nav-items {
         display: flex;
         flex-direction: column;
         gap: 4px;
         flex: 1;
-        padding-top: 16px;
     }
 
     .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 10px 12px;
+        padding: 12px;
         border-radius: 8px;
         color: var(--c-text-secondary);
         text-decoration: none;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
         transition: all 0.2s var(--ease-out);
-        border-left: 3px solid transparent;
     }
 
     .nav-item:hover {
-        background: rgba(var(--c-accent-rgb), 0.08);
+        background: rgba(var(--c-accent-rgb), 0.1);
         color: var(--c-text-primary);
-        border-left-color: rgba(var(--c-accent-rgb), 0.5);
     }
 
     .nav-item.active {
-        background: rgba(var(--c-accent-rgb), 0.1);
+        background: rgba(var(--c-accent-rgb), 0.15);
         color: var(--c-accent);
-        border-left-color: var(--c-accent);
-        font-weight: 600;
+        font-weight: 700;
     }
 
-    .nav-item .item-icon {
-        font-size: 16px;
-        min-width: 20px;
+    .item-icon {
+        font-size: 18px;
+        min-width: 24px;
         text-align: center;
     }
 
     .nav-bottom {
         border-top: 1px solid var(--c-border);
-        padding-top: 12px;
-        margin-top: auto;
+        padding-top: 16px;
     }
 
-    .search-section {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .search-input {
-        width: 100%;
-        height: 36px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--c-border);
-        border-radius: 6px;
-        color: var(--c-text-primary);
-        padding: 0 12px 0 32px;
-        font-size: 12px;
-        outline: none;
-        transition: all 0.2s var(--ease-out);
-    }
-
-    .search-input::placeholder {
-        color: var(--c-text-muted);
-    }
-
-    .search-input:focus {
-        border-color: rgba(var(--c-accent-rgb), 0.5);
-        background: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 0 12px rgba(var(--c-accent-rgb), 0.15);
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 10px;
-        color: var(--c-text-muted);
-        font-size: 14px;
-    }
-
-    /* Workspaces */
-    .workspaces-section {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .workspace {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .workspace-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        height: 40px;
-        padding: 0 10px;
-        background: transparent;
-        border: 1px solid transparent;
-        border-radius: 6px;
-        cursor: pointer;
-        color: var(--c-text-secondary);
-        font-weight: 600;
-        font-size: 12px;
-        transition: all 0.2s var(--ease-out);
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-    }
-
-    .workspace-header:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--c-accent);
-    }
-
-    .workspace-icon {
-        font-size: 16px;
-        min-width: 18px;
-    }
-
-    .workspace-label {
-        flex: 1;
-        text-align: left;
-    }
-
-    .workspace-toggle {
-        font-size: 12px;
-        transition: transform 0.3s var(--ease-out);
-    }
-
-    .workspace.collapsed .workspace-toggle {
-        transform: rotate(-90deg);
-    }
-
-    /* Workspace Items */
-    .workspace-items {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        max-height: 500px;
-        overflow: hidden;
-        transition:
-            max-height 0.3s var(--ease-out),
-            opacity 0.2s;
-        opacity: 1;
-    }
-
-    .workspace.collapsed .workspace-items {
-        max-height: 0;
-        opacity: 0;
-    }
-
-    .workspace-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        height: 36px;
-        padding: 0 10px 0 24px;
-        background: transparent;
-        border: 1px solid transparent;
-        border-radius: 6px;
-        color: var(--c-text-secondary);
-        font-size: 12px;
-        text-decoration: none;
-        transition: all 0.2s var(--ease-out);
-    }
-
-    .workspace-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--c-accent);
-        border-color: rgba(var(--c-accent-rgb), 0.2);
-    }
-
-    .workspace-item.active {
-        background: rgba(var(--c-accent-rgb), 0.08);
-        color: var(--c-accent);
-        border-left: 3px solid var(--c-accent);
-        font-weight: 600;
-    }
-
-    .item-icon {
-        font-size: 14px;
-        min-width: 16px;
-    }
-
-    .item-label {
-        white-space: nowrap;
-    }
-
-    /* Quick Access & Settings */
-    .quick-access-section,
-    .settings-section {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        padding-top: 12px;
-        border-top: 1px solid var(--c-border);
-    }
-
-    .section-label {
-        font-size: 11px;
-        color: var(--c-text-muted);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        padding: 0 10px;
-        margin-bottom: 4px;
-    }
-
-    .quick-access-item,
-    .settings-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        height: 36px;
-        padding: 0 10px;
-        background: transparent;
-        border: 1px solid transparent;
-        border-radius: 6px;
-        color: var(--c-text-secondary);
-        font-size: 12px;
-        text-decoration: none;
-        transition: all 0.2s var(--ease-out);
-    }
-
-    .quick-access-item:hover,
-    .settings-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-        color: #fff;
-    }
-
-    /* Scrollbar */
-    .sidebar-nav::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .sidebar-nav::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .sidebar-nav::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-    }
-
-    .sidebar-nav::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Collapsed State */
-    .sidebar-nav.collapsed {
-        width: 70px;
-    }
-
-    .sidebar-nav.collapsed .search-section {
-        display: none;
-    }
-
-    .sidebar-nav.collapsed .workspace-header,
-    .sidebar-nav.collapsed .quick-access-item,
-    .sidebar-nav.collapsed .settings-item {
+    .sidebar-nav.collapsed .nav-item {
         justify-content: center;
-        padding: 0;
+        padding: 12px 0;
     }
 </style>
 
 <script>
-    // Workspace Collapse Toggle
-    document.querySelectorAll('.workspace-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const workspace = header.closest('.workspace');
-            workspace?.classList.toggle('collapsed');
-
-            // Save state
-            const workspaceName = workspace?.getAttribute('data-workspace');
-            if (workspaceName) {
-                const collapsed = workspace?.classList.contains('collapsed');
-                localStorage.setItem(`tw-workspace-${workspaceName}-collapsed`, String(collapsed));
-            }
-        });
-    });
-
-    // Restore workspace state from localStorage
-    document.querySelectorAll('.workspace').forEach(workspace => {
-        const name = workspace.getAttribute('data-workspace');
-        const isSaved = localStorage.getItem(`tw-workspace-${name}-collapsed`);
-        if (isSaved === 'true') {
-            workspace.classList.add('collapsed');
-        }
-    });
-
     // Sidebar Toggle
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebarNav = document.getElementById('sidebar-nav');
@@ -504,28 +186,6 @@ const bottomItems = [{ label: '設定', icon: '⚙️', href: '/settings' }];
     if (localStorage.getItem('tw-sidebar-collapsed') === 'true') {
         sidebarNav?.classList.add('collapsed');
     }
-
-    // Theme Toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = themeToggle?.querySelector('.theme-icon');
-
-    function setTheme(theme: string) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('tw-theme', theme);
-        if (themeIcon) {
-            themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
-        }
-    }
-
-    // Initialize theme
-    const savedTheme = localStorage.getItem('tw-theme') || 'dark';
-    setTheme(savedTheme);
-
-    themeToggle?.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        setTheme(next);
-    });
 
     // Mark active nav items
     const currentPath = window.location.pathname;

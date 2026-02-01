@@ -75,11 +75,24 @@ const allStocks = await getStocksWithPrices();
                 </div>
                 <div class="form-group">
                     <label>持股數量（股）</label>
-                    <input type="number" id="input-shares" placeholder="例: 1000" min="1" required />
+                    <input
+                        type="number"
+                        id="input-shares"
+                        placeholder="例: 1000"
+                        min="1"
+                        required
+                    />
                 </div>
                 <div class="form-group">
                     <label>平均成本</label>
-                    <input type="number" id="input-cost" placeholder="例: 580" step="0.01" min="0" required />
+                    <input
+                        type="number"
+                        id="input-cost"
+                        placeholder="例: 580"
+                        step="0.01"
+                        min="0"
+                        required
+                    />
                 </div>
                 <div class="form-group">
                     <label>買入日期</label>
@@ -178,13 +191,15 @@ const allStocks = await getStocksWithPrices();
         border-collapse: collapse;
     }
 
-    th, td {
+    th,
+    td {
         padding: 14px 16px;
         text-align: right;
         border-bottom: 1px solid var(--border);
     }
 
-    th:first-child, td:first-child {
+    th:first-child,
+    td:first-child {
         text-align: left;
     }
 
@@ -260,7 +275,8 @@ const allStocks = await getStocksWithPrices();
         color: var(--text-secondary);
     }
 
-    .form-group input, .form-group textarea {
+    .form-group input,
+    .form-group textarea {
         width: 100%;
         padding: 12px;
         background: rgba(0, 0, 0, 0.2);
@@ -321,20 +337,24 @@ const allStocks = await getStocksWithPrices();
         let totalCost = 0;
         let totalValue = 0;
 
-        tbody.innerHTML = items.map(item => {
-            const stockInfo = stockMap[item.symbol] || { name: item.name || item.symbol, price: item.avgCost };
-            const currentPrice = stockInfo.price;
-            const cost = item.shares * item.avgCost;
-            const value = item.shares * currentPrice;
-            const pl = value - cost;
-            const plPercent = cost > 0 ? ((pl / cost) * 100).toFixed(2) : '0.00';
+        tbody.innerHTML = items
+            .map(item => {
+                const stockInfo = stockMap[item.symbol] || {
+                    name: item.name || item.symbol,
+                    price: item.avgCost,
+                };
+                const currentPrice = stockInfo.price;
+                const cost = item.shares * item.avgCost;
+                const value = item.shares * currentPrice;
+                const pl = value - cost;
+                const plPercent = cost > 0 ? ((pl / cost) * 100).toFixed(2) : '0.00';
 
-            totalCost += cost;
-            totalValue += value;
+                totalCost += cost;
+                totalValue += value;
 
-            const plClass = pl >= 0 ? 'positive' : 'negative';
+                const plClass = pl >= 0 ? 'positive' : 'negative';
 
-            return `
+                return `
                 <tr>
                     <td class="symbol">${item.symbol}</td>
                     <td>${stockInfo.name}</td>
@@ -352,7 +372,8 @@ const allStocks = await getStocksWithPrices();
                     </td>
                 </tr>
             `;
-        }).join('');
+            })
+            .join('');
 
         updateOverview(totalCost, totalValue);
 
@@ -376,10 +397,10 @@ const allStocks = await getStocksWithPrices();
 
         const costEl = document.getElementById('total-cost');
         if (costEl) costEl.textContent = `$${totalCost.toLocaleString()}`;
-        
+
         const valueEl = document.getElementById('total-value');
         if (valueEl) valueEl.textContent = `$${totalValue.toLocaleString()}`;
-        
+
         const plElement = document.getElementById('total-pl');
         if (plElement) {
             plElement.textContent = `${pl >= 0 ? '+' : ''}$${pl.toLocaleString()}`;
@@ -410,9 +431,9 @@ const allStocks = await getStocksWithPrices();
         modal.classList.add('hidden');
     });
 
-    addForm?.addEventListener('submit', (e) => {
+    addForm?.addEventListener('submit', e => {
         e.preventDefault();
-        
+
         const symbol = document.getElementById('input-symbol').value.trim();
         const shares = parseInt(document.getElementById('input-shares').value);
         const avgCost = parseFloat(document.getElementById('input-cost').value);
@@ -427,7 +448,7 @@ const allStocks = await getStocksWithPrices();
             shares,
             avgCost,
             buyDate: buyDate || undefined,
-            notes: notes || undefined
+            notes: notes || undefined,
         });
 
         savePortfolio(items);
@@ -450,12 +471,12 @@ const allStocks = await getStocksWithPrices();
             item.shares,
             item.avgCost,
             item.buyDate || '',
-            item.notes || ''
+            item.notes || '',
         ]);
 
         const BOM = '\uFEFF';
         const csv = BOM + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-        
+
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -466,5 +487,25 @@ const allStocks = await getStocksWithPrices();
     });
 
     // 初始化
+    if (getPortfolio().length === 0) {
+        savePortfolio([
+            {
+                id: '1',
+                symbol: '2330',
+                name: '台積電',
+                shares: 1000,
+                avgCost: 580,
+                buyDate: '2023-10-01',
+            },
+            {
+                id: '2',
+                symbol: '2317',
+                name: '鴻海',
+                shares: 2000,
+                avgCost: 105,
+                buyDate: '2023-11-15',
+            },
+        ]);
+    }
     renderPortfolio();
 </script>
