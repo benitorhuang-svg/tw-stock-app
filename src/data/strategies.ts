@@ -9,6 +9,7 @@ export interface Strategy {
     description: string;
     conditions: string[];
     icon: string;
+    sql?: string; // Optional SQL query to count matching stocks
 }
 
 export const strategies: Strategy[] = [
@@ -18,24 +19,27 @@ export const strategies: Strategy[] = [
         name: "低本益比",
         category: "fundamental",
         description: "篩選本益比低於 15 的低估值股票",
-        conditions: ["P/E < 15", "P/E > 0", "近4季EPS > 0"],
-        icon: "💰"
+        conditions: ["P/E < 15", "P/E > 0"],
+        icon: "💰",
+        sql: "SELECT count(*) as count FROM latest_prices WHERE pe < 15 AND pe > 0"
     },
     {
         id: "low-pb",
         name: "低股價淨值比",
         category: "fundamental",
         description: "篩選股價低於淨值的潛力股",
-        conditions: ["P/B < 1.5", "每股淨值 > 10", "ROE > 8%"],
-        icon: "📊"
+        conditions: ["P/B < 1.5"],
+        icon: "📊",
+        sql: "SELECT count(*) as count FROM latest_prices WHERE pb < 1.5 AND pb > 0"
     },
     {
         id: "high-dividend",
         name: "高股息殖利率",
         category: "fundamental",
         description: "篩選配息穩定且殖利率高的存股標的",
-        conditions: ["殖利率 > 5%", "連續5年配息", "配息率 < 80%"],
-        icon: "💵"
+        conditions: ["殖利率 > 5%"],
+        icon: "💵",
+        sql: "SELECT count(*) as count FROM latest_prices WHERE yield > 5"
     },
     {
         id: "high-roe",

@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import SidebarNav from '../components/Layout/SidebarNav.astro';
+import ProSidebarNav from '../components/Layout/ProSidebarNav.astro';
+import ProTopHeader from '../components/Layout/ProTopHeader.astro';
 
 interface Props {
     title: string;
@@ -14,7 +15,7 @@ const currentPath = Astro.url.pathname;
 <html lang="zh-TW">
     <head>
         <meta charset="UTF-8" />
-        <meta name="description" content="台灣股票分析與選股策略平台" />
+        <meta name="description" content="台灣股票 analysis 與選股策略平台" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -52,10 +53,12 @@ const currentPath = Astro.url.pathname;
 
         <div class="app-layout">
             <!-- New Professional Sidebar Navigation -->
-            <SidebarNav />
+            <ProSidebarNav />
 
-            <!-- Main Workspace with Content (Header is now in Sidebar) -->
+            <!-- Main Workspace -->
             <div class="main-workspace">
+                <ProTopHeader />
+
                 <!-- Page Content Area -->
                 <main class="main-content">
                     <slot />
@@ -76,6 +79,7 @@ const currentPath = Astro.url.pathname;
 
         --c-bg-app: #030305;
         --c-bg-glass: hsla(var(--h-main), var(--s-main), 12%, 0.75);
+        --c-bg-glass-heavy: hsla(var(--h-main), var(--s-main), 15%, 0.9);
         --c-bg-glass-hover: hsla(var(--h-main), var(--s-main), 20%, 0.6);
 
         --c-border: hsla(0, 0%, 100%, 0.1);
@@ -97,8 +101,8 @@ const currentPath = Astro.url.pathname;
         --glow-shadow: 0 0 30px rgba(var(--c-accent-rgb), 0.25);
         --panel-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
 
-        --w-sidebar: 260px;
-        --nav-h: 0px; /* Header is fully consolidated into Sidebar */
+        --w-sidebar: 70px;
+        --nav-h: 64px;
         --radius: 14px;
         --radius-sm: 8px;
 
@@ -168,19 +172,6 @@ const currentPath = Astro.url.pathname;
         z-index: -1;
     }
 
-    /* Breathing Animation for Mesh */
-    @keyframes mesh-pulse {
-        0%,
-        100% {
-            transform: scale(1);
-            opacity: 0.5;
-        }
-        50% {
-            transform: scale(1.2);
-            opacity: 0.8;
-        }
-    }
-
     a {
         text-decoration: none;
         color: inherit;
@@ -213,12 +204,6 @@ const currentPath = Astro.url.pathname;
         transition: margin-left 0.3s var(--ease-out);
     }
 
-    /* 
-       Note: We no longer shift the margin-left on hover (240px) 
-       because the sidebar now floats above the content when expanded 
-       to provide a more premium feel and avoid layout jumping.
-    */
-
     /* Main Content Area - scrollable page content */
     .main-content {
         flex: 1;
@@ -227,10 +212,9 @@ const currentPath = Astro.url.pathname;
         min-width: 0;
         display: flex;
         flex-direction: column;
-        padding: 24px; /* Clean padding without header offset */
+        padding: 24px;
     }
 
-    /* Custom scrollbar for main content */
     .main-content::-webkit-scrollbar {
         width: 6px;
     }
@@ -255,26 +239,11 @@ const currentPath = Astro.url.pathname;
     }
     .text-pos {
         color: var(--c-success);
-        text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
     }
     .text-neg {
         color: var(--c-danger);
-        text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
     }
 
-    .section-title {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--c-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    /* Animations */
     @keyframes fadeIn {
         from {
             opacity: 0;
@@ -286,59 +255,12 @@ const currentPath = Astro.url.pathname;
         }
     }
 
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    @keyframes shimmer {
-        0% {
-            background-position: -200% 0;
-        }
-        100% {
-            background-position: 200% 0;
-        }
-    }
-
-    @keyframes pulse {
-        0%,
-        100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.6;
-        }
-    }
-
-    @keyframes glow {
-        0%,
-        100% {
-            box-shadow: 0 0 5px rgba(var(--c-accent-rgb), 0.2);
-        }
-        50% {
-            box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.4);
-        }
-    }
-
     @media (max-width: 768px) {
-        .app-layout {
-            flex-direction: column;
-        }
-
         .main-workspace {
             margin-left: 0 !important;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
         }
 
-        :global(.sidebar-nav) {
+        :global(.pro-sidebar-nav) {
             position: fixed;
             left: -100%;
             top: 0;
@@ -349,7 +271,7 @@ const currentPath = Astro.url.pathname;
             transition: left 0.3s var(--ease-out);
         }
 
-        :global(.sidebar-nav.mobile-open) {
+        :global(.pro-sidebar-nav.mobile-open) {
             left: 0;
         }
 
@@ -367,22 +289,6 @@ const currentPath = Astro.url.pathname;
             background: var(--c-bg-glass);
             border: 1px solid var(--c-border);
             color: var(--c-text-primary);
-        }
-
-        .hamburger {
-            width: 24px;
-            height: 18px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-        }
-
-        .hamburger span {
-            width: 100%;
-            height: 2px;
-            background: currentColor;
-            border-radius: 2px;
-            transition: 0.3s;
         }
 
         .mobile-overlay {
@@ -403,39 +309,9 @@ const currentPath = Astro.url.pathname;
             pointer-events: all;
         }
     }
-
-    @media (max-width: 480px) {
-        body {
-            font-size: 12px;
-        }
-
-        .main-content {
-            padding: 15px;
-        }
-    }
 </style>
 
 <script>
-    // Dynamic mobile menu (keeping original for now)
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileOverlay = document.getElementById('mobile-overlay');
-    const sidebar = document.getElementById('sidebar');
-    const closeSidebarBtn = document.getElementById('close-sidebar');
-
-    // Keep existing mobile functionality...
-    /**
-     * TODO Phase 2: Integrate with new SidebarNav for mobile responsiveness
-     * For Phase 1, focusing on desktop layout
-     */
-
-    // PWA Service Worker Registration
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(item => {
-        if (item.getAttribute('href') === currentPath) {
-            item.classList.add('active');
-        }
-    });
-
     // PWA Service Worker Registration & Update Logic
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -443,7 +319,6 @@ const currentPath = Astro.url.pathname;
                 .register('/sw.js')
                 .then(reg => {
                     console.log('SW registered');
-                    // Reload if a new SW is found and takes control
                     reg.onupdatefound = () => {
                         const newWorker = reg.installing;
                         if (newWorker) {
@@ -461,7 +336,6 @@ const currentPath = Astro.url.pathname;
                 .catch(err => console.error('SW registration failed:', err));
         });
 
-        // Ensure we handle controller changes
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             if (!refreshing) {
@@ -470,4 +344,19 @@ const currentPath = Astro.url.pathname;
             }
         });
     }
+
+    // Mobile Menu Logic
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const overlay = document.getElementById('mobile-overlay');
+    const sidebar = document.querySelector('.pro-sidebar-nav');
+
+    mobileBtn?.addEventListener('click', () => {
+        sidebar?.classList.add('mobile-open');
+        overlay?.classList.add('active');
+    });
+
+    overlay?.addEventListener('click', () => {
+        sidebar?.classList.remove('mobile-open');
+        overlay?.classList.remove('active');
+    });
 </script>

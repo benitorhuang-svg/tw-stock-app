@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import StockCard from '../components/StockCard.astro';
 import { getStocksWithPrices } from '../utils/stockDataService';
-import { industries, stockIndustryMap } from '../data/industries';
+import { industries } from '../data/industries';
 
 /**
  * Dashboard Index Page
@@ -13,8 +13,7 @@ import { industries, stockIndustryMap } from '../data/industries';
 const allStocks = await getStocksWithPrices();
 
 // 2. Sector Filtering Logic
-const url = new URL(Astro.request.url);
-const sectorId = url.searchParams.get('sector') || 'all';
+const sectorId = Astro.url.searchParams.get('sector') || 'all';
 
 let displayStocks = allStocks;
 if (sectorId !== 'all') {
@@ -62,8 +61,17 @@ const currentIndustryName = industries.find(i => i.id === sectorId)?.name || '�
 
 // 5. Treemap Logic (Server Side for Initial Render)
 // Needed for SSR HTML generation
-interface Rect { x: number; y: number; w: number; h: number; }
-interface Node { value: number; data: any; rect?: Rect; }
+interface Rect {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+}
+interface Node {
+    value: number;
+    data: any;
+    rect?: Rect;
+}
 
 function layoutBinary(nodes: Node[], rect: Rect) {
     if (nodes.length === 0) return;
@@ -83,10 +91,10 @@ function layoutBinary(nodes: Node[], rect: Rect) {
         }
     }
     if (mid >= nodes.length - 1 && mid > 0) mid = nodes.length - 2;
-    
+
     const leftNodes = nodes.slice(0, mid + 1);
     const rightNodes = nodes.slice(mid + 1);
-    
+
     const leftValue = leftNodes.reduce((sum, n) => sum + n.value, 0);
     const leftRatio = leftValue / totalValue;
 
@@ -170,7 +178,9 @@ const treemapData = computeLayout(topVolumeForTreemap);
                     <!-- Total -->
                     <div class="stat-card neutral">
                         <span class="stat-label">總股數</span>
-                        <div class="stat-value mono" id="stat-total">{statsData.total.toLocaleString()}</div>
+                        <div class="stat-value mono" id="stat-total">
+                            {statsData.total.toLocaleString()}
+                        </div>
                     </div>
 
                     <!-- Flat -->
@@ -210,7 +220,7 @@ const treemapData = computeLayout(topVolumeForTreemap);
                     <h3>🔥 市場熱力圖 (Volume Treemap)</h3>
                     <p>區塊大小代表交易量 (Volume)，顏色代表漲跌幅。</p>
                 </div>
-                
+
                 <div class="treemap-viewport" id="heatmap-viewport">
                     {
                         treemapData.map(node => {
@@ -218,7 +228,7 @@ const treemapData = computeLayout(topVolumeForTreemap);
                             const pct = stock.changePercent;
                             const r = node.rect;
                             if (!r) return null;
-                            
+
                             let colorClass = 'neutral';
                             if (pct > 5) colorClass = 'gain-high';
                             else if (pct > 2) colorClass = 'gain-mid';
@@ -231,7 +241,7 @@ const treemapData = computeLayout(topVolumeForTreemap);
                             const showDetail = r.w > 8 && r.h > 8;
 
                             return (
-                                <a 
+                                <a
                                     href={`/stocks/${stock.symbol}/`}
                                     class={`treemap-item ${colorClass}`}
                                     style={`left: ${r.x}%; top: ${r.y}%; width: ${r.w}%; height: ${r.h}%;`}
@@ -239,7 +249,10 @@ const treemapData = computeLayout(topVolumeForTreemap);
                                 >
                                     {showText && (
                                         <div class="content">
-                                            <span class="symbol" style={`font-size: clamp(10px, 1.2vw, 24px)`}>
+                                            <span
+                                                class="symbol"
+                                                style={`font-size: clamp(10px, 1.2vw, 24px)`}
+                                            >
                                                 {stock.symbol}
                                             </span>
                                             {showDetail && <span class="name">{stock.name}</span>}
@@ -247,7 +260,7 @@ const treemapData = computeLayout(topVolumeForTreemap);
                                         </div>
                                     )}
                                 </a>
-                            )
+                            );
                         })
                     }
                 </div>
@@ -256,7 +269,7 @@ const treemapData = computeLayout(topVolumeForTreemap);
     </div>
 </Layout>
 
-<style>
+<style is:global>
     .dashboard-container {
         display: flex;
         flex-direction: column;
@@ -535,7 +548,9 @@ const treemapData = computeLayout(topVolumeForTreemap);
         border: 1px solid rgba(0, 0, 0, 0.1);
         box-sizing: border-box;
         overflow: hidden;
-        transition: transform 0.2s, z-index 0.2s;
+        transition:
+            transform 0.2s,
+            z-index 0.2s;
     }
 
     .treemap-item:hover {
@@ -578,13 +593,175 @@ const treemapData = computeLayout(topVolumeForTreemap);
     }
 
     /* Treemap Colors */
-    .treemap-item.gain-high { background: #10b981; }
-    .treemap-item.gain-mid { background: #059669; }
-    .treemap-item.gain-low { background: #047857; }
-    .treemap-item.loss-high { background: #ef4444; }
-    .treemap-item.loss-mid { background: #dc2626; }
-    .treemap-item.loss-low { background: #b91c1c; }
-    .treemap-item.neutral { background: #64748b; }
+    .treemap-item.gain-high {
+        background: #10b981;
+    }
+    .treemap-item.gain-mid {
+        background: #059669;
+    }
+    .treemap-item.gain-low {
+        background: #047857;
+    }
+    .treemap-item.loss-high {
+        background: #ef4444;
+    }
+    .treemap-item.loss-mid {
+        background: #dc2626;
+    }
+    .treemap-item.loss-low {
+        background: #b91c1c;
+    }
+    .treemap-item.neutral {
+        background: #64748b;
+    }
+
+    /* StockCard Global Styles (for hydration) */
+    .stock-card {
+        display: grid;
+        grid-template-columns: 32px 1fr 100px 90px; /* Star | Info | Spark | Price */
+        align-items: center;
+        width: 100%;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.01);
+        border-bottom: 1px solid var(--c-border);
+        text-decoration: none;
+        transition: var(--transition-premium);
+        position: relative;
+        overflow: hidden;
+        height: 64px;
+    }
+
+    .stock-card:hover {
+        background: var(--c-bg-glass-hover);
+        padding-left: 20px;
+    }
+
+    .stock-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--c-accent);
+        opacity: 0;
+        transition: var(--transition-premium);
+        z-index: 2;
+    }
+
+    .stock-card:hover::before {
+        opacity: 1;
+    }
+
+    .info-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .symbol-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--c-accent);
+        letter-spacing: 0.5px;
+    }
+
+    .stock-name {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--c-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sparkline-box {
+        height: 24px;
+        width: 100%;
+        max-width: 80px;
+        margin: 0 16px;
+        position: relative;
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+    }
+
+    .spark-bar {
+        width: 16%;
+        position: absolute;
+        bottom: 0;
+        background: currentColor;
+        opacity: 0.4;
+        border-radius: 2px 2px 0 0;
+    }
+
+    .spark-bar.pos {
+        background: var(--c-success);
+    }
+    .spark-bar.neg {
+        background: var(--c-danger);
+    }
+
+    .price-group {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .stock-price {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--c-text-primary);
+    }
+
+    .stock-change {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .stock-change.pos {
+        color: var(--c-success);
+    }
+    .stock-change.neg {
+        color: var(--c-danger);
+    }
+
+    .watchlist-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        padding: 0;
+        z-index: 10;
+        opacity: 0.5;
+        transition: all 0.2s;
+        margin-right: 8px;
+    }
+
+    .watchlist-btn:hover,
+    .watchlist-btn.active {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    .star {
+        font-size: 16px;
+        line-height: 1;
+        color: #ddd;
+    }
+
+    .watchlist-btn.active .star {
+        color: #fbbf24;
+        text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    }
 </style>
 
 <script>
@@ -602,34 +779,25 @@ const treemapData = computeLayout(topVolumeForTreemap);
     }
 
     // 1. Data Definitions
-    
-    // Fallback map: ONLY used if server data is missing sector
-    const fallbackSectorMap: Record<string, string> = {
-        // Key stocks that MUST have correct sectors
-        '2330': 'semiconductor', '2454': 'semiconductor', '3034': 'semiconductor',
-        '2317': 'electronics', '2308': 'electronics', '2382': 'electronics',
-        '2881': 'finance', '2882': 'finance', '2884': 'finance', '2891': 'finance', 
-        '2886': 'finance', '2885': 'finance', '2892': 'finance', '2880': 'finance',
-        '2412': 'communication', '3008': 'optoelectronics', '3481': 'optoelectronics', 
-        '2409': 'optoelectronics', '2105': 'food', '1301': 'plastic', '2002': 'steel', 
-        '2603': 'shipping', '2609': 'shipping'
-    };
 
     let allStocks: StockData[] = [];
     try {
         const el = document.getElementById('stock-data');
-        if (el && el.textContent) {
+        if (el && el.textContent && el.textContent.trim().startsWith('[')) {
             allStocks = JSON.parse(el.textContent);
-            
-            // Only fill in missing sectors (trust server data)
-            allStocks.forEach(s => {
-                if (!s.sector) {
-                    s.sector = fallbackSectorMap[s.symbol] || 'other';
-                }
-            });
-            
-            console.log(`Loaded ${allStocks.length} stocks. Sample:`, allStocks.slice(0, 3).map(s => ({symbol: s.symbol, sector: s.sector})));
+        } else {
+            console.warn(
+                'Stock data element missing or invalid content:',
+                el?.textContent?.substring(0, 100)
+            );
         }
+
+        // All sectors are now pre-populated by stockDataService.ts
+
+        console.log(
+            `Loaded ${allStocks.length} stocks. Sample:`,
+            allStocks.slice(0, 3).map(s => ({ symbol: s.symbol, sector: s.sector }))
+        );
     } catch (e) {
         console.error('Failed to load stock data', e);
     }
@@ -639,15 +807,24 @@ const treemapData = computeLayout(topVolumeForTreemap);
     const containerGainers = document.getElementById('gainers-list');
     const containerLosers = document.getElementById('losers-list');
     const containerHeatmap = document.getElementById('heatmap-viewport');
-    
+
     const statTotal = document.getElementById('stat-total');
     const statUp = document.getElementById('stat-up');
     const statDown = document.getElementById('stat-down');
     const statFlat = document.getElementById('stat-flat');
 
     // 3. Helper: Treemap Layout (Binary Partition) - Client-side definition
-    interface ClientRect { x: number; y: number; w: number; h: number; }
-    interface ClientNode { value: number; data: StockData; rect?: ClientRect; }
+    interface ClientRect {
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+    }
+    interface ClientNode {
+        value: number;
+        data: StockData;
+        rect?: ClientRect;
+    }
 
     function layoutBinaryClient(nodes: ClientNode[], rect: ClientRect) {
         if (nodes.length === 0) return;
@@ -669,11 +846,11 @@ const treemapData = computeLayout(topVolumeForTreemap);
             }
         }
         if (mid >= nodes.length - 1 && mid > 0) mid = nodes.length - 2;
-        
+
         const leftNodes = nodes.slice(0, mid + 1);
         const rightNodes = nodes.slice(mid + 1);
         const leftValue = leftNodes.reduce((sum, n) => sum + n.value, 0);
-        const leftRatio = leftValue / totalValue; 
+        const leftRatio = leftValue / totalValue;
 
         if (rect.w >= rect.h) {
             const leftW = rect.w * leftRatio;
@@ -696,31 +873,44 @@ const treemapData = computeLayout(topVolumeForTreemap);
         const colorClass = isPos ? 'pos' : 'neg';
         const sign = isPos ? '+' : '';
         const price = typeof stock.price === 'number' ? stock.price.toFixed(2) : stock.price;
-        const pct = typeof stock.changePercent === 'number' ? stock.changePercent.toFixed(2) : stock.changePercent;
-        
+        const pct =
+            typeof stock.changePercent === 'number'
+                ? stock.changePercent.toFixed(2)
+                : stock.changePercent;
+
+        // Watchlist Check
+        const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
+        const isInWatchlist = watchlist.includes(stock.symbol);
+        const starChar = isInWatchlist ? '★' : '☆';
+        const activeClass = isInWatchlist ? 'active' : '';
+
         return `
         <a href="/stocks/${stock.symbol}/" class="stock-card" data-symbol="${stock.symbol}">
-            <button class="watchlist-btn" data-symbol="${stock.symbol}" onclick="event.preventDefault(); event.stopPropagation();">
-                <span class="star">☆</span>
+            <button class="watchlist-btn ${activeClass}" data-symbol="${stock.symbol}" onclick="event.preventDefault(); event.stopPropagation();">
+                <span class="star">${starChar}</span>
             </button>
             <div class="info-group">
                 <span class="symbol-badge">${stock.symbol}</span>
                 <span class="stock-name">${stock.name}</span>
             </div>
             <div class="sparkline-box">
-                ${isPos ? `
+                ${
+                    isPos
+                        ? `
                     <div class="spark-bar pos" style="height: 40%; left: 0"></div>
                     <div class="spark-bar pos" style="height: 50%; left: 20%"></div>
                     <div class="spark-bar pos" style="height: 45%; left: 40%"></div>
                     <div class="spark-bar pos" style="height: 70%; left: 60%"></div>
                     <div class="spark-bar pos" style="height: 90%; left: 80%"></div>
-                ` : `
+                `
+                        : `
                     <div class="spark-bar neg" style="height: 80%; left: 0"></div>
                     <div class="spark-bar neg" style="height: 60%; left: 20%"></div>
                     <div class="spark-bar neg" style="height: 70%; left: 40%"></div>
                     <div class="spark-bar neg" style="height: 40%; left: 60%"></div>
                     <div class="spark-bar neg" style="height: 30%; left: 80%"></div>
-                `}
+                `
+                }
             </div>
             <div class="price-group">
                 <span class="stock-price">${price}</span>
@@ -738,94 +928,142 @@ const treemapData = computeLayout(topVolumeForTreemap);
         }
 
         // B. Update Output Stats
-        if(statTotal) statTotal.textContent = filteredStocks.length.toLocaleString();
-        if(statUp) statUp.textContent = filteredStocks.filter(s => s.change > 0).length.toString();
-        if(statDown) statDown.textContent = filteredStocks.filter(s => s.change < 0).length.toString();
-        if(statFlat) statFlat.textContent = filteredStocks.filter(s => s.change === 0).length.toString();
+        if (statTotal) statTotal.textContent = filteredStocks.length.toLocaleString();
+        if (statUp) statUp.textContent = filteredStocks.filter(s => s.change > 0).length.toString();
+        if (statDown)
+            statDown.textContent = filteredStocks.filter(s => s.change < 0).length.toString();
+        if (statFlat)
+            statFlat.textContent = filteredStocks.filter(s => s.change === 0).length.toString();
 
         // C. Update Lists (Gainers / Losers)
-        const topGainers = [...filteredStocks].filter(s => s.changePercent > 0).sort((a,b) => b.changePercent - a.changePercent).slice(0, 10);
-        const topLosers = [...filteredStocks].filter(s => s.changePercent < 0).sort((a,b) => a.changePercent - b.changePercent).slice(0, 10); 
-        
-        if (containerGainers) containerGainers.innerHTML = topGainers.map(createStockCardHTML).join('');
-        if (containerLosers) containerLosers.innerHTML = topLosers.map(createStockCardHTML).join('');
+        const topGainers = [...filteredStocks]
+            .filter(s => s.changePercent > 0)
+            .sort((a, b) => b.changePercent - a.changePercent)
+            .slice(0, 10);
+        const topLosers = [...filteredStocks]
+            .filter(s => s.changePercent < 0)
+            .sort((a, b) => a.changePercent - b.changePercent)
+            .slice(0, 10);
+
+        if (containerGainers)
+            containerGainers.innerHTML = topGainers.map(createStockCardHTML).join('');
+        if (containerLosers)
+            containerLosers.innerHTML = topLosers.map(createStockCardHTML).join('');
 
         // D. Update Heatmap
         const topVolume = [...filteredStocks]
             .filter(s => s.price > 0 && s.volume > 0)
-            .sort((a,b) => b.volume - a.volume)
+            .sort((a, b) => b.volume - a.volume)
             .slice(0, 60);
-        
+
         const nodes: ClientNode[] = topVolume.map(s => ({ value: s.volume, data: s }));
-        
+
         if (nodes.length > 0) {
             layoutBinaryClient(nodes, { x: 0, y: 0, w: 100, h: 100 });
 
             if (containerHeatmap) {
-                containerHeatmap.innerHTML = nodes.map(node => {
-                    const stock = node.data;
-                    const pct = stock.changePercent;
-                    const r = node.rect;
-                    // Strict Validation for Rect
-                    if (!r || isNaN(r.x) || isNaN(r.y) || isNaN(r.w) || isNaN(r.h)) return ''; 
+                containerHeatmap.innerHTML = nodes
+                    .map(node => {
+                        const stock = node.data;
+                        const pct = stock.changePercent;
+                        const r = node.rect;
+                        // Strict Validation for Rect
+                        if (!r || isNaN(r.x) || isNaN(r.y) || isNaN(r.w) || isNaN(r.h)) return '';
 
-                    let colorClass = 'neutral';
-                    if (pct > 5) colorClass = 'gain-high';
-                    else if (pct > 2) colorClass = 'gain-mid';
-                    else if (pct > 0) colorClass = 'gain-low';
-                    else if (pct < -5) colorClass = 'loss-high';
-                    else if (pct < -2) colorClass = 'loss-mid';
-                    else if (pct < 0) colorClass = 'loss-low';
+                        let colorClass = 'neutral';
+                        if (pct > 5) colorClass = 'gain-high';
+                        else if (pct > 2) colorClass = 'gain-mid';
+                        else if (pct > 0) colorClass = 'gain-low';
+                        else if (pct < -5) colorClass = 'loss-high';
+                        else if (pct < -2) colorClass = 'loss-mid';
+                        else if (pct < 0) colorClass = 'loss-low';
 
-                    const showText = r.w > 4 && r.h > 4;
-                    const showDetail = r.w > 8 && r.h > 8;
-                    
-                    const style = `left: ${r.x}%; top: ${r.y}%; width: ${r.w}%; height: ${r.h}%;`;
-                    const title = `${stock.name} (${stock.symbol})\n漲跌: ${pct}%\n成交量: ${stock.volume.toLocaleString()}`;
-                    const symbolSize = `font-size: clamp(10px, 1.2vw, 24px)`;
+                        const showText = r.w > 4 && r.h > 4;
+                        const showDetail = r.w > 8 && r.h > 8;
 
-                    return `
+                        const style = `left: ${r.x}%; top: ${r.y}%; width: ${r.w}%; height: ${r.h}%;`;
+                        const title = `${stock.name} (${stock.symbol})\n漲跌: ${pct}%\n成交量: ${stock.volume.toLocaleString()}`;
+                        const symbolSize = `font-size: clamp(10px, 1.2vw, 24px)`;
+
+                        return `
                     <a href="/stocks/${stock.symbol}/" class="treemap-item ${colorClass}" style="${style}" title="${title}">
-                        ${showText ? `
+                        ${
+                            showText
+                                ? `
                         <div class="content">
                             <span class="symbol" style="${symbolSize}">${stock.symbol}</span>
                             ${showDetail ? `<span class="name">${stock.name}</span>` : ''}
                             <span class="pct">${pct.toFixed(2)}%</span>
-                        </div>` : ''}
+                        </div>`
+                                : ''
+                        }
                     </a>`;
-                }).join('');
+                    })
+                    .join('');
             }
         } else {
             // Empty State for Heatmap
-            if (containerHeatmap) containerHeatmap.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100%;color:#888;">無資料 (No Data)</div>';
+            if (containerHeatmap)
+                containerHeatmap.innerHTML =
+                    '<div style="display:flex;justify-content:center;align-items:center;height:100%;color:#888;">無資料 (No Data)</div>';
         }
     }
 
     // 6. Bind Event
     if (sectorSelect) {
         sectorSelect.addEventListener('change', (e: Event) => {
-            const target = e.target as HTMLSelectElement; 
+            const target = e.target as HTMLSelectElement;
             const val = target.value;
-            
+
             updateDashboard(val);
-            
+
             // Update URL State
             const url = new URL(window.location.href);
-            if(val === 'all') url.searchParams.delete('sector');
+            if (val === 'all') url.searchParams.delete('sector');
             else url.searchParams.set('sector', val);
             window.history.replaceState({}, '', url);
         });
     }
 
-    // Initial Load? The server rendered "All".
-    // If URL has param, we might want to trigger update, but server SSR should handle initial load?
-    // We are switching to CLIENT ONLY filtering updates.
-    // Ideally, Server renders INITIAL state (e.g. if ?sector=semi, Server filters it).
-    // Client takes over for subsequent changes.
-    // This provides best of both worlds: Deep Links work + Fast Client Switching.
+    // 7. Watchlist Click Delegation (for hydrated cards)
+    document.addEventListener('click', e => {
+        const btn = (e.target as HTMLElement).closest('.watchlist-btn');
+        if (!btn) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const symbol = btn.getAttribute('data-symbol');
+        if (!symbol) return;
+
+        const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
+        const index = watchlist.indexOf(symbol);
+        const star = btn.querySelector('.star');
+
+        if (index >= 0) {
+            watchlist.splice(index, 1);
+            btn.classList.remove('active');
+            if (star) star.textContent = '☆';
+        } else {
+            watchlist.push(symbol);
+            btn.classList.add('active');
+            if (star) star.textContent = '★';
+        }
+
+        localStorage.setItem('tw-watchlist', JSON.stringify(watchlist));
+    });
+
+    // Initial Load
+    const initialUrl = new URL(window.location.href);
+    const initialSector = initialUrl.searchParams.get('sector') || 'all';
+
+    if (initialSector !== 'all') {
+        if (sectorSelect) {
+            sectorSelect.value = initialSector;
+            updateDashboard(initialSector);
+        }
+    }
 </script>
 
 <!-- Inject Data -->
-<script id="stock-data" type="application/json">
-    {JSON.stringify(allStocks)}
-</script>
+<script id="stock-data" type="application/json" set:html={JSON.stringify(allStocks)} />

@@ -8,7 +8,7 @@
  */
 
 import type { StockPriceRecord } from './priceService';
-import { industries, stockIndustryMap } from '../data/industries';
+import { industries } from '../data/industries';
 
 export interface StockBasicInfo {
     symbol: string;
@@ -112,67 +112,134 @@ export async function loadLatestPrices(): Promise<Record<string, LatestPriceData
  * - 9xxx: 存託憑證
  */
 function getSectorBySymbol(symbol: string): string {
-    // Check manual override first
-    if (stockIndustryMap[symbol]) return stockIndustryMap[symbol];
+    // 1. Manual Overrides for Major Stocks (Ensure accuracy for high-weight items)
+    const overrides: Record<string, string> = {
+        '2330': 'semiconductor', // TSMC
+        '2454': 'semiconductor', // MediaTek
+        '3034': 'semiconductor', // Novatek
+        '2317': 'electronics',   // Hon Hai
+        '2308': 'electronics',   // Delta
+        '2382': 'electronics',   // Quanta
+        '2412': 'communication', // Chunghwa Telecom
+        '3008': 'optoelectronics', // Largan
+        '1301': 'plastic',       // Formosa Plastic
+        '2002': 'steel',         // China Steel
+        '2603': 'shipping',      // Evergreen
+        '2609': 'shipping',      // Yang Ming
+        '7722': 'finance',       // LINEPAY (Digital finance)
+        '7705': 'tourism',       // Tri-Sans Food
+        // 99xx Overrides (The big ones)
+        '9910': 'sports-leisure', // Feng Tay (Shoes)
+        '9914': 'sports-leisure', // Merida (Bicycle)
+        '9921': 'sports-leisure', // Giant (Bicycle)
+        '9938': 'sports-leisure', // Paiho (Shoes)
+        '9802': 'sports-leisure', // Fulgent (Shoes)
+        '9917': 'household',      // SECOM (Security)
+        '9925': 'household',      // SKS (Security)
+        '9911': 'household',      // Sakura (Home)
+        '9934': 'household',      // Chen Lin (Home)
+        '9942': 'household',      // Maw Soon (Auto related but household)
+        '9908': 'energy',         // Great Taipei Gas
+        '9918': 'energy',         // Shin Hai Gas
+        '9926': 'energy',         // Shin Gas
+        '9931': 'energy',         // Hsin Kao Gas
+        '9937': 'energy',         // National Gas
+        '9939': 'household',      // Hon Chuan (Packaging)
+        '9958': 'energy',         // Century Iron (Offshore wind steel)
+        '9930': 'steel',          // CHC Resources
+        '9940': 'construction',   // Sinyi
+        '9945': 'construction',   // Ruentex
+        '9946': 'construction',   // San Far
+    };
+
+    if (overrides[symbol]) return overrides[symbol];
 
     const prefix = symbol.substring(0, 2);
-    const prefix3 = symbol.substring(0, 3);
-    const prefix4 = symbol.length >= 4 ? parseInt(symbol.substring(0, 4)) : 0;
+    const num = parseInt(symbol);
 
-    // ETF (00xx)
-    if (prefix === '00') return 'etf';
+    // 2. ETFs and Funds
+    if (prefix === '00' || prefix === '01' || prefix === '03' || prefix === '04') return 'etf';
 
-    // Traditional Industries by Prefix
-    if (prefix === '11') return 'construction'; // 水泥 -> mapped to construction
+    // 3. Main Industry Sectors
+    if (prefix === '11') return 'construction'; // Cement
     if (prefix === '12') return 'food';
     if (prefix === '13') return 'plastic';
     if (prefix === '14') return 'textile';
-    if (prefix === '15' || prefix === '16') return 'electronics'; // 電機機械
-    if (prefix === '17') return 'other'; // 造紙
-    if (prefix === '18') return 'construction';
+    if (prefix === '15' || prefix === '16') return 'electronics'; // Machinery/Cable
+    if (prefix === '17') return 'chemical';
+    if (prefix === '18') return 'construction'; // Glass/Ceramic
+    if (prefix === '19') return 'paper';
     if (prefix === '20') return 'steel';
-    if (prefix === '21') return 'other'; // 橡膠
-    if (prefix === '22') return 'other'; // 汽車
-
-    // Electronics (23xx-39xx core electronics)
-    if (prefix === '23' || prefix === '24') return 'semiconductor';
-    if (prefix === '25') return 'electronics';
+    if (prefix === '21') return 'rubber';
+    if (prefix === '22') return 'auto';
+    if (prefix === '23') return 'semiconductor';
+    if (prefix === '24') return 'computer';
+    if (prefix === '25') return 'construction';
     if (prefix === '26') return 'shipping';
     if (prefix === '27') return 'tourism';
     if (prefix === '28') return 'finance';
     if (prefix === '29') return 'trading';
 
-    // 30xx-39xx: Various Electronics
-    if (prefix === '30' || prefix === '31') return 'optoelectronics'; // 面板、光電
-    if (prefix === '32' || prefix === '33') return 'electronics';
-    if (prefix === '34' || prefix === '35') return 'semiconductor';
-    if (prefix === '36' || prefix === '37') return 'communication';
-    if (prefix === '38' || prefix === '39') return 'electronics';
+    // 4. Technology & Special OTC Ranges
+    if (prefix === '30') return 'electronics';   // Components
+    if (prefix === '31') return 'communication';
+    if (prefix === '32') return 'electronics';
+    if (prefix === '33') return 'computer';
+    if (prefix === '34') return 'optoelectronics';
+    if (prefix === '35') return 'semiconductor';
+    if (prefix === '36') return 'communication';
+    if (prefix === '37') return 'other-tech';    // Distribution
+    if (prefix === '38') return 'other-tech';
+    if (prefix === '39') return 'other';
 
-    // OTC (4xxx, 5xxx, 6xxx)
-    if (prefix === '40' || prefix === '41' || prefix === '42' || prefix === '43') return 'biotech';
-    if (prefix === '44' || prefix === '45' || prefix === '46' || prefix === '47') return 'electronics';
-    if (prefix === '48' || prefix === '49') return 'other';
-    if (prefix === '50' || prefix === '51' || prefix === '52') return 'construction';
-    if (prefix === '53' || prefix === '54' || prefix === '55') return 'trading';
-    if (prefix === '56' || prefix === '57' || prefix === '58') return 'other';
-    if (prefix === '59') return 'other';
+    if (prefix === '41') return 'biotech';
+    if (prefix === '45') return 'electronics';   // Machinery
+    if (prefix === '47') return 'chemical';
+    if (prefix === '49') return 'semiconductor';
 
-    // 6xxx OTC Electronics/Biotech
-    if (prefix === '60' || prefix === '61' || prefix === '62') return 'biotech';
-    if (prefix === '63' || prefix === '64' || prefix === '65') return 'electronics';
-    if (prefix === '66' || prefix === '67') return 'semiconductor';
-    if (prefix === '68' || prefix === '69') return 'electronics';
+    if (prefix === '52') return 'semiconductor'; // IC Design
+    if (prefix === '53') return 'electronics';
+    if (prefix === '54') return 'semiconductor';
+    if (prefix === '55') return 'construction';  // OTC Construction
+    if (prefix === '56') return 'shipping';      // OTC Shipping
+    if (prefix === '57') return 'tourism';       // OTC Tourism
+    if (prefix === '58') return 'finance';       // OTC Bank
+    if (prefix === '59') return 'trading';       // OTC Trading
 
-    // 8xxx
-    if (prefix === '80' || prefix === '81' || prefix === '82') return 'other';
-    if (prefix === '83' || prefix === '84') return 'finance';
-    if (prefix === '85' || prefix === '86' || prefix === '87' || prefix === '88' || prefix === '89') return 'other';
+    if (prefix === '60') return 'finance';       // Securities
+    if (prefix === '61') return 'electronics';
+    if (prefix === '62') return 'semiconductor';
+    if (prefix === '64') return 'semiconductor';
+    if (prefix === '65') return 'biotech';
+    if (prefix === '66') return 'semiconductor';
+    if (prefix === '67' || prefix === '68' || prefix === '69') return 'other-tech';
 
-    // 9xxx (存託憑證)
-    if (prefix.startsWith('9')) return 'other';
+    if (prefix === '80') return 'semiconductor';
+    if (prefix === '81') return 'electronics';
+    if (prefix === '82') return 'other-tech';
+    if (prefix === '83') return 'energy';        // Environment/Various
+    if (prefix === '84') return 'biotech';       // Life Science
+    if (prefix === '89') return 'trading';
 
-    // Fallback
+    // Energy series (Specific 6xxx-7xxx stocks)
+    if (prefix === '68' || prefix === '69' || prefix === '77') {
+        const energyStocks = ['6806', '6869', '6873', '6994', '7740', '7786'];
+        if (energyStocks.includes(symbol)) return 'energy';
+    }
+
+    // 5. 99xx Range (Comprehensive)
+    if (prefix === '99') {
+        if (num >= 9940 && num <= 9946) return 'construction';
+        if (num === 9958 || num === 9930) return 'steel';
+        if (num >= 9917 && num <= 9925) return 'household'; // Security/Bicycle/Home
+        if (num === 9943) return 'tourism';
+        if (num >= 9908 && num <= 9937) return 'energy'; // Gas Utilities
+        return 'other';
+    }
+
+    // DR / KY and others
+    if (prefix === '91') return 'other';
+
     return 'other';
 }
 

@@ -1,24 +1,27 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="TWSE 即時資料">
     <h1>📡 TWSE 即時資料</h1>
     <p class="page-desc">從證交所 API 取得最新股票資料</p>
 
-    <!-- 日期選擇 -->
-    <div class="controls">
-        <label>
-            查詢日期：
-            <input type="date" id="date-input" />
-        </label>
-        <button id="fetch-btn" class="btn-primary">取得資料</button>
-    </div>
+    <!-- 結果顯示區 -->
 
-    <!-- 載入狀態 -->
-    <div id="loading" class="loading hidden">
-        <div class="spinner"></div>
-        <span>正在從證交所取得資料...</span>
+    <!-- 結果顯示區 -->
+    <div id="result" class="result-container hidden">
+        <div class="stock-header">
+            <h2 id="stock-name">--</h2>
+            <div class="price-group">
+                <span id="stock-price" class="price">--</span>
+                <span id="stock-change" class="change">--</span>
+            </div>
+            <div id="update-time" class="update-time">--</div>
+        </div>
+
+        <div id="info-grid" class="info-grid">
+            <!-- Dynamic Content -->
+        </div>
     </div>
 
     <!-- 錯誤訊息 -->
@@ -89,7 +92,7 @@ import Layout from "../layouts/Layout.astro";
         color: var(--text-secondary);
     }
 
-    .controls input[type="date"] {
+    .controls input[type='date'] {
         padding: 10px 14px;
         background: var(--bg-card);
         border: 1px solid var(--border);
@@ -100,7 +103,7 @@ import Layout from "../layouts/Layout.astro";
 
     .btn-primary {
         padding: 10px 24px;
-        background: var(--accent);
+        background: var(--accent, #00d4aa);
         color: #000;
         border: none;
         border-radius: 8px;
@@ -257,121 +260,144 @@ import Layout from "../layouts/Layout.astro";
 </style>
 
 <script>
-    let allData: any[] = [];
+    // Get Elements
+    // const symbolInput = document.getElementById('symbol-input') as HTMLInputElement; // Removed
+    // const fetchBtn = document.getElementById('fetch-btn'); // Removed
+    const resultEl = document.getElementById('result');
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
 
-    // 設定預設日期為今天
-    const dateInput = document.getElementById("date-input") as HTMLInputElement;
-    const today = new Date();
-    dateInput.value = today.toISOString().split("T")[0];
+    // Initialize
+    if (loadingEl) loadingEl.classList.add('hidden');
+    if (errorEl) errorEl.classList.add('hidden');
 
-    // 取得資料按鈕
-    document.getElementById("fetch-btn")?.addEventListener("click", fetchData);
+    // Auto-fetch from URL param
+    const urlParams = new URLSearchParams(window.location.search);
+    const symbolParam = urlParams.get('symbol');
 
-    async function fetchData() {
-        const dateInput = document.getElementById(
-            "date-input",
-        ) as HTMLInputElement;
-        const loading = document.getElementById("loading")!;
-        const error = document.getElementById("error")!;
-        const stats = document.getElementById("stats")!;
-        const tableContainer = document.getElementById("table-container")!;
-        const fetchBtn = document.getElementById(
-            "fetch-btn",
-        ) as HTMLButtonElement;
+    if (symbolParam) {
+        fetchData(symbolParam.trim());
+    } else {
+        // Show empty state or instructions
+        if (resultEl) {
+            resultEl.innerHTML =
+                '<div style="text-align:center; padding:60px 20px; color:var(--text-secondary);"><div style="font-size:48px; margin-bottom:16px;">🔍</div><div style="font-size:18px;">請使用上方導航列輸入代號<br>查詢即時股價</div></div>';
+            resultEl.classList.remove('hidden');
+        }
+    }
 
-        // 格式化日期
-        const date = dateInput.value.replace(/-/g, "");
+    /*
+    // Event Listeners - Removed
+    fetchBtn?.addEventListener('click', () => handleSearch());
+    symbolInput?.addEventListener('keypress', e => {
+        if (e.key === 'Enter') handleSearch();
+    });
 
-        // 顯示載入中
-        loading.classList.remove("hidden");
-        error.classList.add("hidden");
-        stats.classList.add("hidden");
-        tableContainer.classList.add("hidden");
-        fetchBtn.disabled = true;
+    function handleSearch() {
+        const symbol = symbolInput?.value.trim();
+        if (symbol) {
+            fetchData(symbol);
+        }
+    }
+    */
+
+    async function fetchData(symbol: string) {
+        showLoading(true);
+        showError(null); // Clear error
+        if (resultEl) resultEl.classList.add('hidden');
 
         try {
-            const res = await fetch(`/api/pe-ratios.json?date=${date}`);
-            const json = await res.json();
+            // Add timestamp to prevent caching
+            const response = await fetch(`/api/live-quote.json?symbol=${symbol}&t=${Date.now()}`);
+            const data = await response.json();
 
-            if (!res.ok) {
-                throw new Error(json.error || "取得資料失敗");
+            if (!response.ok) {
+                throw new Error(data.error || '無法取得資料');
             }
 
-            allData = json.data;
-
-            // 更新統計
-            document.getElementById("stat-date")!.textContent = json.date;
-            document.getElementById("stat-count")!.textContent =
-                `${json.count} 檔`;
-            stats.classList.remove("hidden");
-
-            // 渲染表格
-            renderTable(allData);
-            tableContainer.classList.remove("hidden");
+            renderData(data);
         } catch (err: any) {
-            error.textContent = `❌ 錯誤：${err.message}`;
-            error.classList.remove("hidden");
+            showError(`${err.message} (Symbol: ${symbol})`);
         } finally {
-            loading.classList.add("hidden");
-            fetchBtn.disabled = false;
+            showLoading(false);
         }
     }
 
-    function renderTable(data: any[]) {
-        const tbody = document.getElementById("table-body")!;
-        tbody.innerHTML = data
-            .map(
-                (row) => `
-            <tr>
-                <td class="symbol">${row.symbol}</td>
-                <td>${row.name}</td>
-                <td class="${row.yield >= 5 ? "yield-high" : ""}">${row.yield || "-"}</td>
-                <td class="${row.pe > 0 && row.pe < 15 ? "pe-low" : ""}">${row.pe || "-"}</td>
-                <td>${row.pb || "-"}</td>
-            </tr>
-        `,
-            )
-            .join("");
-    }
+    function renderData(data: any) {
+        if (!resultEl) return;
 
-    // 搜尋功能
-    document.getElementById("table-search")?.addEventListener("input", (e) => {
-        const query = (e.target as HTMLInputElement).value.toLowerCase();
-        const filtered = allData.filter(
-            (row) =>
-                row.symbol.toLowerCase().includes(query) ||
-                row.name.toLowerCase().includes(query),
-        );
-        renderTable(filtered);
-    });
+        const nameEl = document.getElementById('stock-name');
+        const priceEl = document.getElementById('stock-price');
+        const changeEl = document.getElementById('stock-change');
+        const updateTimeEl = document.getElementById('update-time');
+        const infoGridEl = document.getElementById('info-grid');
 
-    // 排序功能
-    document.getElementById("sort-select")?.addEventListener("change", (e) => {
-        const value = (e.target as HTMLSelectElement).value;
-        let sorted = [...allData];
+        if (nameEl) nameEl.textContent = `${data.symbol} 即時行情`;
+        if (priceEl) priceEl.textContent = data.price.toFixed(2);
 
-        switch (value) {
-            case "yield-desc":
-                sorted.sort((a, b) => (b.yield || 0) - (a.yield || 0));
-                break;
-            case "pe-asc":
-                sorted.sort((a, b) => {
-                    if (!a.pe || a.pe <= 0) return 1;
-                    if (!b.pe || b.pe <= 0) return -1;
-                    return a.pe - b.pe;
-                });
-                break;
-            case "pb-asc":
-                sorted.sort((a, b) => {
-                    if (!a.pb || a.pb <= 0) return 1;
-                    if (!b.pb || b.pb <= 0) return -1;
-                    return a.pb - b.pb;
-                });
-                break;
-            default:
-                sorted.sort((a, b) => a.symbol.localeCompare(b.symbol));
+        if (changeEl) {
+            const changeSign = data.change > 0 ? '+' : '';
+            const changeClass = data.change > 0 ? 'up' : data.change < 0 ? 'down' : '';
+            changeEl.textContent = `${changeSign}${data.change.toFixed(2)} (${changeSign}${data.changePercent.toFixed(2)}%)`;
+            changeEl.className = `stock-change ${changeClass}`;
         }
 
-        renderTable(sorted);
-    });
+        if (updateTimeEl) {
+            updateTimeEl.textContent = `資料時間: ${new Date(data.time).toLocaleString('zh-TW')}`;
+        }
+
+        if (infoGridEl) {
+            infoGridEl.innerHTML = `
+                <div class="info-item">
+                    <span class="label">開盤</span>
+                    <span class="value">${formatNumber(data.open)}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">最高</span>
+                    <span class="value">${formatNumber(data.high)}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">最低</span>
+                    <span class="value">${formatNumber(data.low)}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">昨收</span>
+                    <span class="value">${formatNumber(data.previousClose)}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">成交量</span>
+                    <span class="value">${formatVolume(data.volume)} 張</span>
+                </div>
+            `;
+        }
+
+        resultEl.classList.remove('hidden');
+    }
+
+    function showLoading(show: boolean) {
+        // Since fetchBtn is removed, we could add a global loading indicator here if needed.
+        // For now, the previous content is hidden and we just wait.
+        if (loadingEl) {
+            if (show) loadingEl.classList.remove('hidden');
+            else loadingEl.classList.add('hidden');
+        }
+    }
+
+    function showError(message: string | null) {
+        if (!errorEl) return;
+        if (message) {
+            errorEl.textContent = `❌ ${message}`;
+            errorEl.classList.remove('hidden');
+        } else {
+            errorEl.classList.add('hidden');
+        }
+    }
+
+    function formatNumber(num: number) {
+        return num ? num.toFixed(2) : '-';
+    }
+
+    function formatVolume(vol: number) {
+        return vol ? (vol / 1000).toFixed(0) : '0';
+    }
 </script>
