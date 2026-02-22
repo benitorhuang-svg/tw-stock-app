@@ -6,9 +6,51 @@
 // API 基礎 URL
 const TWSE_BASE = 'https://www.twse.com.tw';
 
+// 設定
+const REQUEST_TIMEOUT = 10000;  // 10 秒超時
+const MAX_RETRIES = 3;
+const BASE_DELAY = 1000;  // 首次重試等待 1 秒
+
 // 延遲函式 (避免請求過於頻繁)
 function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * 帶超時與重試的 fetch
+ * - AbortController 控制超時
+ * - 指數退避重試 (1s → 2s → 4s)
+ */
+async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
+    for (let attempt = 0; attempt < retries; attempt++) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (response.ok) return response;
+
+            // 429 Too Many Requests — 等待後重試
+            if (response.status === 429 && attempt < retries - 1) {
+                clearTimeout(timeoutId);
+                await delay(BASE_DELAY * Math.pow(2, attempt));
+                continue;
+            }
+
+            return response;  // 其他 HTTP 錯誤直接回傳
+        } catch (error: any) {
+            clearTimeout(timeoutId);
+
+            // 最後一次嘗試仍失敗 → 拋出
+            if (attempt === retries - 1) throw error;
+
+            // 超時或網路錯誤 → 等待後重試
+            await delay(BASE_DELAY * Math.pow(2, attempt));
+        }
+    }
+    throw new Error('Max retries exceeded');
 }
 
 /**
@@ -20,7 +62,7 @@ export async function getPERatio(date: string, stockNo: string) {
     const url = `${TWSE_BASE}/exchangeReport/BWIBBU_d?response=json&date=${date}&stockNo=${stockNo}`;
 
     try {
-        const res = await fetch(url);
+        const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
@@ -54,7 +96,7 @@ export async function getStockDay(date: string, stockNo: string) {
     const url = `${TWSE_BASE}/exchangeReport/STOCK_DAY?response=json&date=${date}01&stockNo=${stockNo}`;
 
     try {
-        const res = await fetch(url);
+        const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
@@ -89,7 +131,7 @@ export async function getAllPERatios(date: string) {
     const url = `${TWSE_BASE}/exchangeReport/BWIBBU_ALL?response=json&date=${date}`;
 
     try {
-        const res = await fetch(url);
+        const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();
@@ -121,7 +163,7 @@ export async function getDailyQuotes(date: string) {
     const url = `${TWSE_BASE}/exchangeReport/MI_INDEX?response=json&date=${date}&type=ALLBUT0999`;
 
     try {
-        const res = await fetch(url);
+        const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const data = await res.json();

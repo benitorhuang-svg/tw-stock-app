@@ -39,8 +39,8 @@ describe('Technical Indicators', () => {
         it('應計算指數移動平均', () => {
             const result = EMA(prices, 3);
             expect(result).toHaveLength(prices.length);
-            expect(result[0]).toBeNull();
-            expect(result[1]).toBeNull();
+            expect(result[0]).toBe(0);  // EMA 前 period-1 個值回傳 0
+            expect(result[1]).toBe(0);
             expect(result[2]).not.toBeNull();
         });
 

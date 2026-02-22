@@ -1,0 +1,174 @@
+---
+/**
+ * 專業金融風格側邊導航欄 - 全整合版 (純導航版)
+ */
+
+const navItems = [
+    { label: '個股分析', icon: '📊', href: '/stocks' },
+    { label: '智能篩選', icon: '🔍', href: '/filter' },
+    { label: '策略中心', icon: '🎯', href: '/strategies' },
+    { label: '股利查詢', icon: '💰', href: '/dividends' },
+    { label: '自選股', icon: '⭐', href: '/watchlist' },
+    { label: '投資組合', icon: '💼', href: '/portfolio' },
+];
+
+const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }];
+---
+
+<nav class="pro-sidebar-nav" id="sidebar-nav">
+    <!-- Logo Section -->
+    <div class="nav-header">
+        <a href="/" class="logo">
+            <span class="logo-icon">📈</span>
+            <span class="logo-text">TW Stock</span>
+        </a>
+    </div>
+
+    <!-- Main Navigation -->
+    <div class="nav-items">
+        {
+            navItems.map(item => (
+                <a href={item.href} class="nav-item">
+                    <span class="item-icon">{item.icon}</span>
+                    <span class="item-label">{item.label}</span>
+                </a>
+            ))
+        }
+    </div>
+
+    <!-- User Menu (Bottom) -->
+    <div class="nav-bottom">
+        {
+            bottomItems.map(item => (
+                <a href={item.href} class="nav-item">
+                    <span class="item-icon">{item.icon}</span>
+                    <span class="item-label">{item.label}</span>
+                </a>
+            ))
+        }
+    </div>
+</nav>
+
+<style>
+    .pro-sidebar-nav {
+        width: 70px;
+        height: 100vh;
+        height: 100dvh;
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        border-right: 1px solid var(--c-border);
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 100;
+        transition:
+            width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s;
+    }
+
+    .pro-sidebar-nav:hover {
+        width: 240px;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Logo Section */
+    .nav-header {
+        display: flex;
+        align-items: center;
+        margin: 12px 0 20px 0;
+        height: 48px;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--c-text-primary);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .logo-icon {
+        font-size: 20px;
+        min-width: 46px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .logo-text,
+    .item-label {
+        opacity: 0;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+    }
+
+    .pro-sidebar-nav:hover .logo-text,
+    .pro-sidebar-nav:hover .item-label {
+        opacity: 1;
+    }
+
+    /* Nav Items */
+    .nav-items {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        color: var(--c-text-secondary);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        height: 48px;
+    }
+
+    .nav-item:hover {
+        background: rgba(var(--c-accent-rgb), 0.1);
+        color: var(--c-text-primary);
+    }
+
+    .nav-item.active {
+        background: rgba(var(--c-accent-rgb), 0.15);
+        color: var(--c-accent);
+        font-weight: 700;
+    }
+
+    .item-icon {
+        font-size: 18px;
+        min-width: 46px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .nav-bottom {
+        border-top: 1px solid var(--c-border);
+        padding-top: 12px;
+    }
+
+    /* Global item style for small screens hack */
+    .pro-sidebar-nav:not(:hover) .nav-item {
+        padding: 12px 0;
+    }
+</style>
+
+<script>
+    // Path Marking
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.nav-item').forEach(item => {
+        const href = item.getAttribute('href') || '';
+        if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
+            item.classList.add('active');
+        }
+    });
+</script>

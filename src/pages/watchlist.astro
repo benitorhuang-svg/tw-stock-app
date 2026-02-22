@@ -1,7 +1,7 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { getStocksWithPrices } from "../utils/stockDataService";
-import StockCard from "../components/StockCard.astro";
+import Layout from '../layouts/Layout.astro';
+import { getStocksWithPrices } from '../utils/stockDataService';
+import StockCard from '../components/organisms/StockCard.astro';
 
 // Load real stock data
 const allStocks = await getStocksWithPrices();
@@ -39,7 +39,7 @@ const stockList = allStocks.map(s => ({
     <!-- 自選股列表 -->
     <div id="watchlist-grid" class="stock-grid hidden">
         {
-            stockList.map((stock) => (
+            stockList.map(stock => (
                 <div class="watchlist-item" data-symbol={stock.symbol}>
                     <StockCard stock={stock} variant="detailed" />
                 </div>
@@ -51,15 +51,9 @@ const stockList = allStocks.map(s => ({
     <div id="quick-actions" class="quick-actions hidden">
         <h2>🎯 快速篩選</h2>
         <div class="filter-buttons">
-            <button class="filter-btn" data-filter="high-yield"
-                >高殖利率 (&gt;5%)</button
-            >
-            <button class="filter-btn" data-filter="low-pe"
-                >低本益比 (&lt;15)</button
-            >
-            <button class="filter-btn" data-filter="high-roe"
-                >高 ROE (&gt;15%)</button
-            >
+            <button class="filter-btn" data-filter="high-yield">高殖利率 (&gt;5%)</button>
+            <button class="filter-btn" data-filter="low-pe">低本益比 (&lt;15)</button>
+            <button class="filter-btn" data-filter="high-roe">高 ROE (&gt;15%)</button>
         </div>
     </div>
 </Layout>
@@ -170,36 +164,34 @@ const stockList = allStocks.map(s => ({
 </style>
 
 <script>
-    const watchlistGrid = document.getElementById("watchlist-grid")!;
-    const emptyState = document.getElementById("empty-state")!;
-    const quickActions = document.getElementById("quick-actions")!;
-    const clearAllBtn = document.getElementById("clear-all-btn")!;
+    const watchlistGrid = document.getElementById('watchlist-grid')!;
+    const emptyState = document.getElementById('empty-state')!;
+    const quickActions = document.getElementById('quick-actions')!;
+    const clearAllBtn = document.getElementById('clear-all-btn')!;
 
     // 初始渲染
     function renderWatchlist() {
-        const watchlist = JSON.parse(
-            localStorage.getItem("tw-watchlist") || "[]",
-        ) as string[];
+        const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]') as string[];
 
         // 隱藏所有項目
-        document.querySelectorAll(".watchlist-item").forEach((item) => {
-            const symbol = item.getAttribute("data-symbol");
+        document.querySelectorAll('.watchlist-item').forEach(item => {
+            const symbol = item.getAttribute('data-symbol');
             if (watchlist.includes(symbol!)) {
-                item.classList.remove("hidden");
+                item.classList.remove('hidden');
             } else {
-                item.classList.add("hidden");
+                item.classList.add('hidden');
             }
         });
 
         // 顯示/隱藏空狀態
         if (watchlist.length === 0) {
-            emptyState.classList.remove("hidden");
-            watchlistGrid.classList.add("hidden");
-            quickActions.classList.add("hidden");
+            emptyState.classList.remove('hidden');
+            watchlistGrid.classList.add('hidden');
+            quickActions.classList.add('hidden');
         } else {
-            emptyState.classList.add("hidden");
-            watchlistGrid.classList.remove("hidden");
-            quickActions.classList.remove("hidden");
+            emptyState.classList.add('hidden');
+            watchlistGrid.classList.remove('hidden');
+            quickActions.classList.remove('hidden');
         }
     }
 
@@ -207,55 +199,51 @@ const stockList = allStocks.map(s => ({
     renderWatchlist();
 
     // 監聽自選股更新事件
-    window.addEventListener("watchlist-updated", () => {
+    window.addEventListener('watchlist-updated', () => {
         renderWatchlist();
     });
 
     // 清空全部
-    clearAllBtn.addEventListener("click", () => {
-        if (confirm("確定要清空所有自選股嗎？")) {
-            localStorage.setItem("tw-watchlist", "[]");
+    clearAllBtn.addEventListener('click', () => {
+        if (confirm('確定要清空所有自選股嗎？')) {
+            localStorage.setItem('tw-watchlist', '[]');
             renderWatchlist();
 
             // 更新所有星星按鈕
-            document.querySelectorAll(".watchlist-btn").forEach((btn) => {
-                btn.classList.remove("active");
-                (btn.querySelector(".star") as HTMLElement).textContent = "☆";
+            document.querySelectorAll('.watchlist-btn').forEach(btn => {
+                btn.classList.remove('active');
+                (btn.querySelector('.star') as HTMLElement).textContent = '☆';
             });
         }
     });
 
     // 快速篩選
-    document.querySelectorAll(".filter-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const filter = btn.getAttribute("data-filter");
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.getAttribute('data-filter');
 
             // 切換 active 狀態
-            if (btn.classList.contains("active")) {
-                btn.classList.remove("active");
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
                 renderWatchlist(); // 恢復原狀
                 return;
             }
 
-            document
-                .querySelectorAll(".filter-btn")
-                .forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
 
-            const watchlist = JSON.parse(
-                localStorage.getItem("tw-watchlist") || "[]",
-            ) as string[];
+            const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]') as string[];
 
-            document.querySelectorAll(".watchlist-item").forEach((item) => {
-                const symbol = item.getAttribute("data-symbol");
+            document.querySelectorAll('.watchlist-item').forEach(item => {
+                const symbol = item.getAttribute('data-symbol');
                 if (!watchlist.includes(symbol!)) {
-                    item.classList.add("hidden");
+                    item.classList.add('hidden');
                     return;
                 }
 
                 // 這裡需要從 DOM 或資料取得股票資訊來篩選
                 // 簡化版本：顯示所有
-                item.classList.remove("hidden");
+                item.classList.remove('hidden');
             });
         });
     });

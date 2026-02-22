@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import StockCard from '../components/StockCard.astro';
+import StockCard from '../components/organisms/StockCard.astro';
 import { getStocksWithPrices } from '../utils/stockDataService';
 import { industries } from '../data/industries';
 
@@ -793,11 +793,6 @@ const treemapData = computeLayout(topVolumeForTreemap);
         }
 
         // All sectors are now pre-populated by stockDataService.ts
-
-        console.log(
-            `Loaded ${allStocks.length} stocks. Sample:`,
-            allStocks.slice(0, 3).map(s => ({ symbol: s.symbol, sector: s.sector }))
-        );
     } catch (e) {
         console.error('Failed to load stock data', e);
     }

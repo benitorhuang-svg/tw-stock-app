@@ -1,0 +1,106 @@
+---
+/**
+ * 新聞列表元件
+ */
+import { getLatestNews, formatNewsForDisplay, type NewsItem } from '../../data/news';
+
+interface Props {
+    limit?: number;
+    symbol?: string;
+}
+
+const { limit = 5, symbol } = Astro.props;
+
+// 取得新聞
+const news = symbol
+    ? getLatestNews(20)
+          .filter(n => n.symbol === symbol)
+          .slice(0, limit)
+    : getLatestNews(limit);
+---
+
+<div class="news-list">
+    {
+        news.length === 0 ? (
+            <div class="no-news">暫無相關新聞</div>
+        ) : (
+            news.map(item => {
+                const formatted = formatNewsForDisplay(item);
+                return (
+                    <a href={item.url} class="news-item" target="_blank" rel="noopener">
+                        <span
+                            class="news-category"
+                            style={`background: ${formatted.categoryColor}20; color: ${formatted.categoryColor}`}
+                        >
+                            {formatted.categoryLabel}
+                        </span>
+                        <h4 class="news-title">{formatted.title}</h4>
+                        <p class="news-summary">{formatted.summary}</p>
+                        <span class="news-meta">{formatted.meta}</span>
+                    </a>
+                );
+            })
+        )
+    }
+</div>
+
+<style>
+    .news-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .news-item {
+        display: block;
+        padding: 16px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.15s;
+    }
+
+    .news-item:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+    }
+
+    .news-category {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .news-title {
+        font-size: 1rem;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+    .news-summary {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .news-meta {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+
+    .no-news {
+        padding: 24px;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+</style>
