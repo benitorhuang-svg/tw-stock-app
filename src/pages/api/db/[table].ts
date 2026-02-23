@@ -32,6 +32,22 @@ export const GET: APIRoute = async ({ params, url }) => {
             }
         );
     } catch (error) {
+        const message = (error as Error).message;
+        if (message.startsWith('Invalid table name:')) {
+            return new Response(
+                JSON.stringify({
+                    error: message,
+                    availableTables: dbService.getTables(),
+                }),
+                {
+                    status: 404,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+        }
+
         return new Response(JSON.stringify({ error: (error as Error).message }), {
             status: 500,
             headers: {

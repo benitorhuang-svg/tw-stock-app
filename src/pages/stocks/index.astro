@@ -1,123 +1,363 @@
 ---
 /**
  * stocks/index.astro — Stock Listing / Analysis Hub
- * Lists all available stocks with search and filtering.
+ * Premium data table with real-time search and sorting.
  */
 import MainTerminal from '../../layouts/MainTerminal.astro';
-import PageHero from '../../components/molecules/PageHero.astro';
-import StockCard from '../../components/organisms/StockCard.astro';
-
-// SSR: Load stock list
 import type { StockFullData } from '../../utils/stockDataService';
 
-const fmtVol = (v: number) => (v > 0 ? v.toLocaleString('zh-TW') : '—');
+const fmtVol = (v: number) => {
+    if (v >= 10000) return `${(v / 10000).toFixed(1)}萬`;
+    if (v > 0) return v.toLocaleString('zh-TW');
+    return '—';
+};
+const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
+const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 
 let stocks: StockFullData[] = [];
+let loadError = '';
 
 try {
-    const { getTopStocksByVolume } = await import('../../utils/stockDataService');
-    stocks = (await getTopStocksByVolume?.(30)) ?? [];
-} catch {
-    // Fallback demo data
-    stocks = [
-        {
-            symbol: '2330',
-            name: '台積電',
-            market: 'TWSE',
-            price: 892.0,
-            change: 15.0,
-            changePercent: 1.71,
-            volume: 32456,
-            high: 895,
-            low: 880,
-            open: 885,
-            pe: 22.5,
-            pb: 6.1,
-            yield: 1.8,
-            roe: 0,
-            eps: 0,
-            sector: 'semiconductor',
-        },
-        {
-            symbol: '2454',
-            name: '聯發科',
-            market: 'TWSE',
-            price: 1280.0,
-            change: 25.0,
-            changePercent: 1.99,
-            volume: 8234,
-            high: 1290,
-            low: 1260,
-            open: 1265,
-            pe: 18.2,
-            pb: 4.5,
-            yield: 2.1,
-            roe: 0,
-            eps: 0,
-            sector: 'semiconductor',
-        },
-        {
-            symbol: '2317',
-            name: '鴻海',
-            market: 'TWSE',
-            price: 156.0,
-            change: 3.5,
-            changePercent: 2.29,
-            volume: 45678,
-            high: 158,
-            low: 153,
-            open: 154,
-            pe: 11.5,
-            pb: 1.4,
-            yield: 5.2,
-            roe: 0,
-            eps: 0,
-            sector: 'electronics',
-        },
-    ];
+    const svc = await import('../../utils/stockDataService');
+    const all = await svc.getStocksWithPrices();
+    stocks = all.filter(s => s.price > 0).sort((a, b) => b.volume - a.volume);
+} catch (e) {
+    console.error('Stock list load error:', e);
+    loadError = e instanceof Error ? e.message : '未知錯誤';
 }
 ---
 
 <MainTerminal title="Analysis 分析">
-    <PageHero title="Stock Analysis" subtitle="個股分析中心 — 點擊進入個股診斷頁">
-        <span class="terminal-label">
-            {stocks.length} 檔
-        </span>
-    </PageHero>
-
-    <!-- Filter Bar -->
-    <div class="flex items-center gap-3 mb-6">
-        <input
-            type="text"
-            placeholder="🔍 搜尋代號或名稱..."
-            class="bg-glass border border-border rounded-lg px-4 py-2 text-sm font-mono text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all w-full max-w-xs"
-            id="stock-list-search"
-        />
-        <select
-            class="bg-glass border border-border text-text-secondary text-xs font-medium px-3 py-2 rounded-md outline-none cursor-pointer transition-colors hover:border-accent"
-        >
-            <option>全部</option>
-            <option>上漲</option>
-            <option>下跌</option>
-        </select>
+    <!-- Page Header -->
+    <div class="flex items-end justify-between mb-5 animate-fade-up">
+        <div>
+            <h1 class="text-xl lg:text-2xl font-bold tracking-tight text-text-primary">個股分析</h1>
+            <p class="text-xs text-text-muted mt-1 font-mono">
+                {stocks.length} 檔 · 依成交量排序
+            </p>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="tag-chip">{stocks.length} 檔</span>
+        </div>
     </div>
 
-    <!-- Stock Cards Grid -->
-    <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children"
-        id="stock-list-grid"
-    >
-        {
-            stocks.map(stock => (
-                <StockCard
-                    symbol={stock.symbol}
-                    name={stock.name}
-                    price={stock.price}
-                    change={stock.change}
-                    changePercent={stock.changePercent}
-                    volume={fmtVol(stock.volume)}
-                />
-            ))
-        }
+    <!-- Split Layout: Sidebar Filter (desktop) + Main Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 relative">
+        <!-- Filter Sidebar (hidden by default on mobile, visible on lg+) -->
+        <aside id="filter-sidebar" class="lg:col-span-3 glass-card p-4 h-fit sticky top-4 hidden lg:block animate-fade-up" style="animation-delay: 50ms">
+            <div class="border-b border-border pb-3 mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="terminal-label text-xs">進階篩選</div>
+                    <button id="reset-filters" class="text-[10px] text-accent hover:text-accent/80 transition-colors font-mono">重置</button>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <!-- Industry Filter -->
+                <div>
+                    <label class="block text-text-muted mb-2 font-semibold">產業分類</label>
+                    <select id="filter-sector" class="w-full bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent">
+                        <option value="">全部產業</option>
+                        <option value="semiconductor">半導體</option>
+                        <option value="optoelectronics">光電</option>
+                        <option value="electronics">電子</option>
+                        <option value="finance">金融</option>
+                        <option value="biotech">生技醫療</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+
+                <!-- PE Ratio Filter -->
+                <div>
+                    <label class="block text-text-muted mb-2 font-semibold">本益比 (PE)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="filter-pe-min" type="number" placeholder="最小" class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent" min="0" step="1">
+                        <input id="filter-pe-max" type="number" placeholder="最大" class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent" min="0" step="1">
+                    </div>
+                </div>
+
+                <!-- Dividend Yield Filter -->
+                <div>
+                    <label class="block text-text-muted mb-2 font-semibold">殖利率 (%)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="filter-yield-min" type="number" placeholder="最小" class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent" min="0" step="0.1">
+                        <input id="filter-yield-max" type="number" placeholder="最大" class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent" min="0" step="0.1">
+                    </div>
+                </div>
+
+                <!-- Change Percent Filter -->
+                <div>
+                    <label class="block text-text-muted mb-2 font-semibold">漲跌幅 (%)</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="filter-change-min" type="number" placeholder="最小" class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent" step="0.1">
+                        <input id="filter-change-max" type="number" placeholder="最大" class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent" step="0.1">
+                    </div>
+                </div>
+
+                <!-- Apply Button -->
+                <button id="apply-filters" class="btn-cyber w-full text-xs py-2">套用篩選</button>
+            </div>
+        </aside>
+
+        <!-- Main Content: Search + Stock Table -->
+        <div class="lg:col-span-9 space-y-4">
+            <!-- Search Bar -->
+            <div class="glass-card overflow-hidden animate-fade-up" style="animation-delay: 100ms">
+                <div class="terminal-toolbar">
+                    <div class="terminal-toolbar-left">
+                        <span class="terminal-toolbar-title">Stock Filter</span>
+                        <span id="visible-count" class="terminal-toolbar-meta">{stocks.length} visible</span>
+                    </div>
+                    <div class="terminal-toolbar-right w-full max-w-sm">
+                        <div class="relative flex-1">
+                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <input
+                                type="text"
+                                placeholder="搜尋代號或名稱..."
+                                id="stock-list-search"
+                                class="w-full bg-glass border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm font-mono text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Table -->
+            <div class="glass-card overflow-hidden animate-fade-up" style="animation-delay: 150ms">
+                <div class="grid grid-cols-12 gap-2 px-5 py-3 border-b border-border bg-surface/30 text-[11px] font-bold text-text-muted uppercase tracking-wider sticky top-0 z-10">
+                    <div class="col-span-3 lg:col-span-3">股票</div>
+                    <div class="col-span-2 text-right">股價</div>
+                    <div class="col-span-2 text-right">漲跌%</div>
+                    <div class="col-span-2 text-right hidden md:block">成交量</div>
+                    <div class="col-span-1 text-right hidden lg:block">PE</div>
+                    <div class="col-span-1 text-right hidden lg:block">殖利率</div>
+                    <div class="col-span-1 text-right hidden lg:block">PB</div>
+                </div>
+
+                <div class="divide-y divide-border/20 max-h-[calc(100dvh-300px)] overflow-y-auto" id="stock-list-grid">
+                    {stocks.map((s, i) => {
+                        const bull = s.changePercent > 0;
+                        const bear = s.changePercent < 0;
+                        return (
+                            <a
+                                href={`/stocks/${s.symbol}`}
+                                class="grid grid-cols-12 gap-2 px-5 py-3 hover:bg-glass-hover transition-colors group no-underline items-center stock-row"
+                                data-symbol={s.symbol}
+                                data-name={s.name}
+                                data-sector={s.sector}
+                                data-pe={s.pe}
+                                data-yield={s.yield}
+                                data-change-pct={s.changePercent}
+                                data-astro-prefetch
+                            >
+                                <div class="col-span-3 lg:col-span-3 flex items-center gap-2 min-w-0">
+                                    <span class="text-[11px] font-mono text-text-muted w-5 text-right flex-shrink-0">{i + 1}</span>
+                                    <div class="min-w-0">
+                                        <div class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors truncate">{s.name}</div>
+                                        <div class="text-[11px] font-mono text-text-muted">{s.symbol}</div>
+                                    </div>
+                                </div>
+                                <div class="col-span-2 text-right data-value text-sm">{fmtPrice(s.price)}</div>
+                                <div class:list={["col-span-2 text-right text-xs font-mono font-bold", bull && "text-bullish", bear && "text-bearish", !bull && !bear && "text-text-muted"]}>
+                                    {fmtPct(s.changePercent)}
+                                </div>
+                                <div class="col-span-2 text-right text-xs font-mono text-text-secondary hidden md:block">{fmtVol(s.volume)}</div>
+                                <div class="col-span-1 text-right text-xs font-mono text-text-secondary hidden lg:block">{s.pe > 0 ? s.pe.toFixed(1) : '—'}</div>
+                                <div class="col-span-1 text-right text-xs font-mono text-text-secondary hidden lg:block">{s.yield > 0 ? `${s.yield.toFixed(2)}%` : '—'}</div>
+                                <div class="col-span-1 text-right text-xs font-mono text-text-secondary hidden lg:block">{s.pb > 0 ? s.pb.toFixed(2) : '—'}</div>
+                            </a>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Floating Filter Button (mobile only, bottom-right FAB) -->
+    <button id="mobile-filter-fab" class="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent hover:bg-accent/90 shadow-lg shadow-accent/30 flex items-center justify-center transition-all z-50 hover:scale-110">
+        <svg class="w-6 h-6 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+        </svg>
+    </button>
+
+    {/* Error State */}
+    {loadError && (
+        <div class="glass-card p-8 text-center animate-fade-up border border-bearish/20 mt-4">
+            <div class="text-4xl mb-3">⚠️</div>
+            <h3 class="text-lg font-bold text-bearish mb-2">資料載入錯誤</h3>
+            <p class="text-sm text-text-muted mb-2">無法載入股票資料，請確認資料是否已建構。</p>
+            <p class="text-xs font-mono text-text-muted mb-4">{loadError}</p>
+            <button onclick="location.reload()" class="btn-cyber text-xs">重新載入</button>
+        </div>
+    )}
+
+    {/* Empty State */}
+    {!loadError && stocks.length === 0 && (
+        <div class="glass-card p-8 text-center animate-fade-up mt-4">
+            <div class="text-4xl mb-3">📊</div>
+            <h3 class="text-lg font-bold text-text-primary mb-2">暫無股票資料</h3>
+            <p class="text-sm text-text-muted">資料尚未載入，請確認 <span class="font-mono">public/data/</span> 目錄下的 JSON 已建構完成。</p>
+        </div>
+    )}
 </MainTerminal>
+
+<script>
+    function initSearch() {
+        const input = document.getElementById('stock-list-search') as HTMLInputElement;
+        const rows = document.querySelectorAll('.stock-row');
+        const visibleCount = document.getElementById('visible-count');
+        if (!input) return;
+
+        input.addEventListener('input', () => {
+            const q = input.value.toLowerCase().trim();
+
+            requestAnimationFrame(() => {
+                let visible = 0;
+                rows.forEach(row => {
+                    const el = row as HTMLElement;
+                    const symbol = el.dataset.symbol?.toLowerCase() || '';
+                    const name = el.dataset.name?.toLowerCase() || '';
+                    const match = !q || symbol.includes(q) || name.includes(q);
+                    
+                    // Only show if it matches search AND filter criteria
+                    const isFilteredOut = el.classList.contains('filter-hidden');
+                    el.style.display = match && !isFilteredOut ? '' : 'none';
+                    if (match && !isFilteredOut) visible++;
+                });
+                if (visibleCount) visibleCount.textContent = `${visible} visible`;
+            });
+        });
+    }
+
+    function initFilters() {
+        const applyBtn = document.getElementById('apply-filters');
+        const resetBtn = document.getElementById('reset-filters');
+        const rows = document.querySelectorAll('.stock-row');
+        const visibleCount = document.getElementById('visible-count');
+        const searchInput = document.getElementById('stock-list-search') as HTMLInputElement;
+
+        const getFilterValues = () => ({
+            sector: (document.getElementById('filter-sector') as HTMLSelectElement)?.value || '',
+            peMin: parseFloat((document.getElementById('filter-pe-min') as HTMLInputElement)?.value) || null,
+            peMax: parseFloat((document.getElementById('filter-pe-max') as HTMLInputElement)?.value) || null,
+            yieldMin: parseFloat((document.getElementById('filter-yield-min') as HTMLInputElement)?.value) || null,
+            yieldMax: parseFloat((document.getElementById('filter-yield-max') as HTMLInputElement)?.value) || null,
+            changeMin: parseFloat((document.getElementById('filter-change-min') as HTMLInputElement)?.value) || null,
+            changeMax: parseFloat((document.getElementById('filter-change-max') as HTMLInputElement)?.value) || null,
+        });
+
+        const applyFilters = () => {
+            const filters = getFilterValues();
+            const searchQuery = searchInput?.value.toLowerCase().trim() || '';
+            let visible = 0;
+
+            rows.forEach(row => {
+                const el = row as HTMLElement;
+                const sector = el.dataset.sector || '';
+                const pe = parseFloat(el.dataset.pe || '0');
+                const yieldVal = parseFloat(el.dataset.yield || '0');
+                const changePct = parseFloat(el.dataset.changePct || '0');
+
+                let match = true;
+
+                // Apply sector filter
+                if (filters.sector && sector !== filters.sector) match = false;
+
+                // Apply PE filter
+                if (filters.peMin !== null && pe < filters.peMin) match = false;
+                if (filters.peMax !== null && pe > filters.peMax) match = false;
+
+                // Apply yield filter
+                if (filters.yieldMin !== null && yieldVal < filters.yieldMin) match = false;
+                if (filters.yieldMax !== null && yieldVal > filters.yieldMax) match = false;
+
+                // Apply change percent filter
+                if (filters.changeMin !== null && changePct < filters.changeMin) match = false;
+                if (filters.changeMax !== null && changePct > filters.changeMax) match = false;
+
+                // Mark as filtered hidden
+                if (match) {
+                    el.classList.remove('filter-hidden');
+                } else {
+                    el.classList.add('filter-hidden');
+                }
+
+                // Apply search query
+                const symbol = el.dataset.symbol?.toLowerCase() || '';
+                const name = el.dataset.name?.toLowerCase() || '';
+                const searchMatch = !searchQuery || symbol.includes(searchQuery) || name.includes(searchQuery);
+
+                // Final visibility
+                const isVisible = match && searchMatch;
+                el.style.display = isVisible ? '' : 'none';
+                if (isVisible) visible++;
+            });
+
+            if (visibleCount) visibleCount.textContent = `${visible} visible`;
+        };
+
+        const resetFilters = () => {
+            (document.getElementById('filter-sector') as HTMLSelectElement).value = '';
+            (document.getElementById('filter-pe-min') as HTMLInputElement).value = '';
+            (document.getElementById('filter-pe-max') as HTMLInputElement).value = '';
+            (document.getElementById('filter-yield-min') as HTMLInputElement).value = '';
+            (document.getElementById('filter-yield-max') as HTMLInputElement).value = '';
+            (document.getElementById('filter-change-min') as HTMLInputElement).value = '';
+            (document.getElementById('filter-change-max') as HTMLInputElement).value = '';
+            
+            rows.forEach(row => {
+                (row as HTMLElement).classList.remove('filter-hidden');
+                (row as HTMLElement).style.display = '';
+            });
+
+            if (visibleCount) visibleCount.textContent = `${rows.length} visible`;
+        };
+
+        applyBtn?.addEventListener('click', applyFilters);
+        resetBtn?.addEventListener('click', resetFilters);
+
+        // Mobile FAB toggle
+        const fab = document.getElementById('mobile-filter-fab');
+        const sidebar = document.getElementById('filter-sidebar');
+
+        fab?.addEventListener('click', () => {
+            sidebar?.classList.toggle('hidden');
+            sidebar?.classList.toggle('fixed');
+            sidebar?.classList.toggle('top-4');
+            sidebar?.classList.toggle('left-4');
+            sidebar?.classList.toggle('right-4');
+            sidebar?.classList.toggle('z-50');
+            sidebar?.classList.toggle('shadow-2xl');
+
+            // Add backdrop
+            if (!sidebar?.classList.contains('hidden')) {
+                const backdrop = document.createElement('div');
+                backdrop.id = 'filter-backdrop';
+                backdrop.className = 'fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden';
+                backdrop.addEventListener('click', () => {
+                    sidebar?.classList.add('hidden');
+                    sidebar?.classList.remove('fixed', 'top-4', 'left-4', 'right-4', 'z-50', 'shadow-2xl');
+                    backdrop.remove();
+                });
+                document.body.appendChild(backdrop);
+            } else {
+                document.getElementById('filter-backdrop')?.remove();
+            }
+        });
+    }
+
+    // Initialize on page load and after Astro transitions
+    function init() {
+        initSearch();
+        initFilters();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    document.addEventListener('astro:page-load', init);
+</script>

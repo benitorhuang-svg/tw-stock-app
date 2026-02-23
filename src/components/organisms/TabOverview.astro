@@ -220,3 +220,44 @@ const insights = [
         </div>
     </div>
 </div>
+
+<script define:vars={{ symbol }}>
+    // Fetch live quote for the current stock and update the price display
+    async function fetchLiveQuote() {
+        try {
+            const res = await fetch(`/api/live-quote.json?symbol=${encodeURIComponent(symbol)}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data.price) return;
+
+            // Update all price displays in the parent page
+            const priceTag = document.querySelector('[data-tab-content="overview"] .data-value');
+            if (priceTag) {
+                priceTag.textContent = data.price.toFixed(2);
+            }
+
+            // Update the floating price tag in the chart
+            const floatingPrice = document.querySelector('#chart-area .font-mono.font-bold');
+            if (floatingPrice) {
+                floatingPrice.textContent = data.price.toFixed(2);
+            }
+
+            // Update LIVE indicator timestamp
+            const liveLabel = document.querySelector('[data-tab-content="overview"] .terminal-label');
+            if (liveLabel && liveLabel.textContent?.includes('日內走勢')) {
+                const timeStr = new Date(data.time).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+                const statusEl = liveLabel.parentElement?.querySelector('.text-text-muted');
+                if (statusEl) statusEl.textContent = `LIVE ${timeStr}`;
+            }
+        } catch {
+            // silently fail - SSR data is still shown
+        }
+    }
+
+    // Fetch once on tab visibility, then every 60s
+    if (document.querySelector('[data-tab-content="overview"]:not(.hidden)')) {
+        fetchLiveQuote();
+    }
+    const refreshInterval = setInterval(fetchLiveQuote, 60000);
+    document.addEventListener('astro:before-swap', () => clearInterval(refreshInterval), { once: true });
+</script>

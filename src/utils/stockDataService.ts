@@ -28,6 +28,11 @@ export interface LatestPriceData {
     pe?: number;
     pb?: number;
     yield?: number;
+    revenueYoY?: number;
+    eps?: number;
+    grossMargin?: number;
+    operatingMargin?: number;
+    netMargin?: number;
 }
 
 export interface StockFullData extends StockBasicInfo {
@@ -39,13 +44,16 @@ export interface StockFullData extends StockBasicInfo {
     low: number;
     open: number;
     date?: string;
-    // These fields require additional data sources (set to placeholder values)
     pe: number;
     pb: number;
     yield: number;
     roe: number;
     eps: number;
-    sector: string; // New enriched field
+    revenueYoY: number;
+    grossMargin: number;
+    operatingMargin: number;
+    netMargin: number;
+    sector: string;
 }
 
 /**
@@ -269,12 +277,15 @@ export async function loadAllStocksWithPrices(): Promise<StockFullData[]> {
             low: priceData?.low || 0,
             open: priceData?.open || 0,
             date: priceData?.date,
-            // Enhanced data from snapshot
             pe: priceData?.pe || 0,
             pb: priceData?.pb || 0,
             yield: priceData?.yield || 0,
             roe: 0,
-            eps: 0,
+            eps: priceData?.eps || 0,
+            revenueYoY: priceData?.revenueYoY || 0,
+            grossMargin: priceData?.grossMargin || 0,
+            operatingMargin: priceData?.operatingMargin || 0,
+            netMargin: priceData?.netMargin || 0,
             sector: sectorId,
         });
     }

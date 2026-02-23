@@ -93,6 +93,11 @@ db.exec(`
         pe REAL DEFAULT 0,
         pb REAL DEFAULT 0,
         yield REAL DEFAULT 0,
+        revenue_yoy REAL DEFAULT 0,
+        eps REAL DEFAULT 0,
+        gross_margin REAL DEFAULT 0,
+        operating_margin REAL DEFAULT 0,
+        net_margin REAL DEFAULT 0,
         ma5 REAL DEFAULT 0,
         ma20 REAL DEFAULT 0,
         rsi REAL DEFAULT 0,
@@ -142,6 +147,12 @@ db.exec(`
     CREATE INDEX idx_history_symbol_date ON price_history(symbol, date DESC);
     CREATE INDEX idx_latest_change_pct ON latest_prices(change_pct DESC);
     CREATE INDEX idx_latest_volume ON latest_prices(volume DESC);
+    CREATE INDEX idx_latest_pe ON latest_prices(pe);
+    CREATE INDEX idx_latest_pb ON latest_prices(pb);
+    CREATE INDEX idx_latest_yield ON latest_prices(yield DESC);
+    CREATE INDEX idx_latest_revenue_yoy ON latest_prices(revenue_yoy DESC);
+    CREATE INDEX idx_chips_date_symbol ON chips(date DESC, symbol);
+    CREATE INDEX idx_chips_symbol_date_desc ON chips(symbol, date DESC);
 `);
 
 // 載入股票清單
@@ -213,8 +224,8 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
 
     const insertLatest = db.prepare(`
         INSERT OR REPLACE INTO latest_prices 
-        (symbol, date, open, high, low, close, volume, turnover, change, change_pct, pe, pb, yield)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (symbol, date, open, high, low, close, volume, turnover, change, change_pct, pe, pb, yield, revenue_yoy, eps, gross_margin, operating_margin, net_margin)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const insertLatestBatch = db.transaction(prices => {
@@ -232,7 +243,12 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
                 data.changePct || 0,
                 data.pe || 0,
                 data.pb || 0,
-                data.yield || 0
+                data.yield || 0,
+                data.revenueYoY || 0,
+                data.eps || 0,
+                data.grossMargin || 0,
+                data.operatingMargin || 0,
+                data.netMargin || 0
             );
         }
     });
@@ -250,7 +266,7 @@ if (fs.existsSync(MONTHLY_STATS_JSON)) {
     );
     const updateBatch = db.transaction(list => {
         for (const item of list) {
-            updateStats.run(item.peRatio, item.pbRatio, item.dividendYield, item.symbol);
+            updateStats.run(item.peRatio || 0, item.pbRatio || 0, item.dividendYield || 0, item.symbol);
         }
     });
     updateBatch(stats);

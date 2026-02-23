@@ -9,12 +9,38 @@ import fs from 'fs';
 export class SqliteService {
     private static instance: SqliteService;
     private db: InstanceType<typeof Database>;
+    private dbPath: string;
+    private cachedTables: Set<string>;
 
     private constructor() {
-        const dbPath = path.resolve(process.cwd(), 'stocks.db');
-        this.db = new Database(dbPath, { readonly: true, fileMustExist: false });
-        // 同樣維持 WAL 以利並發讀取
-        this.db.pragma('journal_mode = WAL');
+        this.dbPath = this.resolveHealthyDbPath();
+        this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
+        this.cachedTables = new Set(this.loadTableNames());
+    }
+
+    private resolveHealthyDbPath(): string {
+        const candidates = [
+            path.resolve(process.cwd(), 'stocks.db'),
+            path.resolve(process.cwd(), 'public', 'data', 'stocks.db'),
+        ];
+
+        for (const candidate of candidates) {
+            if (!fs.existsSync(candidate)) continue;
+
+            try {
+                const probe = new Database(candidate, { readonly: true, fileMustExist: true });
+                const integrity = probe.prepare('PRAGMA integrity_check').pluck().get() as string;
+                probe.close();
+
+                if (integrity === 'ok') {
+                    return candidate;
+                }
+            } catch {
+                continue;
+            }
+        }
+
+        throw new Error('No healthy SQLite database found (checked stocks.db and public/data/stocks.db)');
     }
 
     public static getInstance(): SqliteService {
@@ -46,11 +72,10 @@ export class SqliteService {
      * T004: 獲取資料庫統計資訊
      */
     public getDbStats() {
-        const dbPath = path.resolve(process.cwd(), 'stocks.db');
-        if (!fs.existsSync(dbPath)) {
+        if (!fs.existsSync(this.dbPath)) {
             return { sizeBytes: 0, sizeMB: '0.00', totalRecords: 0 };
         }
-        const stats = fs.statSync(dbPath);
+        const stats = fs.statSync(this.dbPath);
         const stockCount = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'").get()
             ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number }).count
             : 0;
@@ -65,18 +90,33 @@ export class SqliteService {
     /**
      * Get list of all user tables
      */
-    public getTables(): string[] {
+    private loadTableNames(): string[] {
         const tables = this.db
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
             .all() as { name: string }[];
         return tables.map(t => t.name);
     }
 
+    public getTables(): string[] {
+        return Array.from(this.cachedTables);
+    }
+
+    /**
+     * Validate table name against known tables to prevent injection
+     */
+    private validateTableName(table: string): string {
+        if (!this.cachedTables.has(table)) {
+            throw new Error(`Invalid table name: ${table}`);
+        }
+        return table;
+    }
+
     /**
      * Get column info for a table
      */
     public getTableColumns(table: string): { name: string; type: string }[] {
-        const columns = this.db.prepare(`PRAGMA table_info(${table})`).all() as {
+        const safe = this.validateTableName(table);
+        const columns = this.db.prepare(`PRAGMA table_info("${safe}")`).all() as {
             name: string;
             type: string;
         }[];
@@ -87,7 +127,8 @@ export class SqliteService {
      * Get paginated table data
      */
     public getTableData(table: string, options: { limit: number; offset: number }): any[] {
-        const sql = `SELECT * FROM ${table} LIMIT ? OFFSET ?`;
+        const safe = this.validateTableName(table);
+        const sql = `SELECT * FROM "${safe}" LIMIT ? OFFSET ?`;
         return this.db.prepare(sql).all(options.limit, options.offset);
     }
 
@@ -95,7 +136,8 @@ export class SqliteService {
      * Get row count for a specific table
      */
     public getTableRowCount(table: string): number {
-        const result = this.db.prepare(`SELECT count(*) as count FROM ${table}`).get() as {
+        const safe = this.validateTableName(table);
+        const result = this.db.prepare(`SELECT count(*) as count FROM "${safe}"`).get() as {
             count: number;
         };
         return result.count;

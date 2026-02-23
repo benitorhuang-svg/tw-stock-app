@@ -1,16 +1,16 @@
 ---
 /**
- * StockCard.astro — Individual stock info card
- * Used in stock listings, screener results, watchlists.
+ * StockCard.astro — Compact stock info card with price & change
+ * Used in grids like volume leaders, high yield, etc.
  */
 interface Props {
     symbol: string;
     name: string;
-    price?: number;
-    change?: number;
-    changePercent?: number;
-    volume?: string;
+    price: number;
+    changePercent: number;
+    volume?: number;
     pe?: number;
+    yield_?: number;
     class?: string;
 }
 
@@ -18,82 +18,66 @@ const {
     symbol,
     name,
     price,
-    change = 0,
-    changePercent = 0,
-    volume,
-    pe,
+    changePercent,
+    volume = 0,
+    pe = 0,
+    yield_: yieldVal = 0,
     class: className = '',
 } = Astro.props;
 
-const isPositive = change > 0;
-const isNegative = change < 0;
+const bull = changePercent > 0;
+const bear = changePercent < 0;
+
+const fmtVol = (v: number) => {
+    if (v >= 10000) return `${(v / 10000).toFixed(1)}萬`;
+    if (v > 0) return v.toLocaleString('zh-TW');
+    return '—';
+};
+const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
+const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 ---
 
 <a
     href={`/stocks/${symbol}`}
     class:list={[
-        'glass-card glow-interactive block p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-elevated group no-underline',
+        'stock-card glass-card glow-interactive block p-4 no-underline hover:scale-[1.02] transition-all group relative overflow-hidden',
         className,
     ]}
     data-astro-prefetch
 >
-    <!-- Top: Name & Symbol -->
-    <div class="flex items-start justify-between mb-3">
-        <div>
-            <h3
-                class="text-base font-bold text-text-primary group-hover:text-accent transition-colors"
-            >
+    <!-- Top accent line -->
+    <div class:list={[
+        'absolute top-0 left-0 right-0 h-[2px]',
+        bull && 'bg-gradient-to-r from-transparent via-bullish/50 to-transparent',
+        bear && 'bg-gradient-to-r from-transparent via-bearish/50 to-transparent',
+        !bull && !bear && 'bg-gradient-to-r from-transparent via-accent/20 to-transparent',
+    ]}></div>
+
+    <!-- Header: Name + Change Badge -->
+    <div class="flex items-start justify-between mb-2">
+        <div class="min-w-0">
+            <div class="text-sm font-bold text-text-primary group-hover:text-accent transition-colors truncate">
                 {name}
-            </h3>
-            <span class="font-mono text-xs text-text-muted">{symbol}</span>
-        </div>
-        {
-            pe !== undefined && (
-                <span class="terminal-label px-2 py-0.5 rounded bg-surface">
-                    PE {pe?.toFixed(1) ?? '—'}
-                </span>
-            )
-        }
-    </div>
-
-    <!-- Middle: Price -->
-    <div class="flex items-baseline gap-2 mb-2">
-        <span class="data-value text-2xl">
-            {price?.toFixed(2) ?? '—'}
-        </span>
-        <span
-            class:list={[
-                'data-value text-sm',
-                isPositive && 'text-bullish',
-                isNegative && 'text-bearish',
-                !isPositive && !isNegative && 'text-text-muted',
-            ]}
-        >
-            {isPositive ? '▲' : isNegative ? '▼' : '—'}
-            {changePercent !== 0 ? `${Math.abs(changePercent).toFixed(2)}%` : ''}
-        </span>
-    </div>
-
-    <!-- Bottom: Volume -->
-    {
-        volume && (
-            <div class="flex items-center justify-between pt-2 border-t border-border/50">
-                <span class="terminal-label">成交量</span>
-                <span class="text-xs font-mono text-text-secondary">{volume} 張</span>
             </div>
-        )
-    }
+            <div class="text-[11px] font-mono text-text-muted">{symbol}</div>
+        </div>
+        <span class:list={[
+            'text-[11px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ml-2',
+            bull && 'bg-bullish/10 text-bullish',
+            bear && 'bg-bearish/10 text-bearish',
+            !bull && !bear && 'bg-surface text-text-muted',
+        ]}>
+            {fmtPct(changePercent)}
+        </span>
+    </div>
 
-    <!-- Accent top border glow -->
-    <div
-        class:list={[
-            'absolute top-0 left-0 right-0 h-[2px]',
-            isPositive && 'bg-gradient-to-r from-transparent via-bullish/60 to-transparent',
-            isNegative && 'bg-gradient-to-r from-transparent via-bearish/60 to-transparent',
-            !isPositive &&
-                !isNegative &&
-                'bg-gradient-to-r from-transparent via-accent/30 to-transparent',
-        ]}
-    >
+    <!-- Price -->
+    <div class="data-value text-xl mb-1">{fmtPrice(price)}</div>
+
+    <!-- Footer Meta -->
+    <div class="flex items-center justify-between text-[11px] text-text-muted font-mono">
+        <span>量 {fmtVol(volume)}</span>
+        {pe > 0 && <span>PE {pe.toFixed(1)}</span>}
+        {yieldVal > 0 && <span class="text-warning">{yieldVal.toFixed(1)}%</span>}
     </div>
 </a>

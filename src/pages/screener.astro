@@ -4,17 +4,31 @@
  * Spec: 005-ui-layout, connected to M3 screening-scoring module
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
-import PageHero from '../components/molecules/PageHero.astro';
 import StockScreener from '../components/organisms/StockScreener.astro';
 ---
 
-<MainTerminal title="Screener 選股">
-    <PageHero title="Stock Screener" subtitle="多面向智能選股篩選器">
-        <div class="flex items-center gap-2">
-            <span class="terminal-label px-2 py-1 bg-surface rounded"> 📦 Local SQLite </span>
-            <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
+<MainTerminal title="Screener 選股" fullWidth={true}>
+    <section class="px-4 lg:px-6 pt-4 lg:pt-5 pb-3 border-b border-border bg-base-deep/50 backdrop-blur-sm">
+        <div class="max-w-[1600px] mx-auto w-full flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+                <h1 class="text-xl lg:text-2xl font-bold text-text-primary tracking-tight">
+                    選股引擎
+                </h1>
+                <p class="text-xs text-text-secondary mt-1">
+                    以 SQLite 索引查詢篩選，策略條件即時運算
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="tag-chip">SQLite</span>
+                <span class="tag-chip">LOCAL DB</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-bullish ring-pulse"></span>
+            </div>
         </div>
-    </PageHero>
+    </section>
 
-    <StockScreener />
+    <div class="px-4 lg:px-6 py-4">
+        <div class="max-w-[1600px] mx-auto w-full">
+            <StockScreener />
+        </div>
+    </div>
 </MainTerminal>

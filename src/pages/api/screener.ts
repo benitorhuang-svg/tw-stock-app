@@ -1,76 +1,170 @@
 import type { APIRoute } from 'astro';
 import { dbService } from '../../lib/db/sqlite-service';
-import { loadStockList } from '../../utils/stockDataService';
+import { getStrategy } from '../../data/strategies';
+
+interface ScreenerBody {
+    strategyId?: string;
+    pe?: { min?: number; max?: number };
+    pb?: { min?: number; max?: number };
+    dividendYield?: { min?: number; max?: number };
+    revenueYoY?: { min?: number; max?: number };
+    page?: number;
+    limit?: number;
+}
+
+const PRESET_FILTERS: Record<string, Omit<ScreenerBody, 'page' | 'limit' | 'strategyId'>> = {
+    'low-pe': { pe: { max: 15 } },
+    'low-pb': { pb: { max: 1.5 } },
+    'high-dividend': { dividendYield: { min: 5 } },
+    'revenue-growth': { revenueYoY: { min: 10 } },
+    'momentum': { pe: { max: 25 } },
+    'smart-money': {},
+};
 
 export const POST: APIRoute = async ({ request }) => {
     try {
-        const body = await request.json();
-        const { pe, pb, dividendYield, roe, page = 1, limit = 50 } = body;
+        const body = (await request.json()) as ScreenerBody;
+        const strategyId = body.strategyId;
+        const strategy = strategyId ? getStrategy(strategyId) : undefined;
 
-        // Construct SQL with LEFT JOIN to ensure we get stocks even if features are missing
-        let sql = `
-            SELECT s.symbol, s.close, s.change_rate, v.pe_ratio, v.pb_ratio, v.dividend_yield
-            FROM stocks s
-            LEFT JOIN valuation_features v ON s.symbol = v.symbol AND s.date = v.date
-            WHERE s.date = (SELECT max(date) FROM stocks)
+        const mergedFilters: ScreenerBody = {
+            ...PRESET_FILTERS[strategyId || ''],
+            ...body,
+        };
+
+        const page = Math.max(1, Number(mergedFilters.page || 1));
+        const limit = Math.min(200, Math.max(1, Number(mergedFilters.limit || 50)));
+        const offset = (page - 1) * limit;
+
+        let fromAndWhereSql = `
+            FROM latest_prices lp
+            JOIN stocks s ON s.symbol = lp.symbol
+            LEFT JOIN chips ch ON ch.symbol = lp.symbol
+                AND ch.date = (SELECT MAX(date) FROM chips)
+            WHERE 1 = 1
         `;
         const params: any[] = [];
 
-        // Apply filters only if they are provided, but keep them loose for demo if needed
-        let filteredSql = sql;
-        if (pe?.max !== undefined) {
-            filteredSql += ' AND v.pe_ratio > 0 AND v.pe_ratio <= ?';
-            params.push(pe.max);
+        if (mergedFilters.pe?.min !== undefined) {
+            fromAndWhereSql += ' AND lp.pe >= ?';
+            params.push(mergedFilters.pe.min);
         }
-        if (dividendYield?.min !== undefined) {
-            filteredSql += ' AND v.dividend_yield >= ?';
-            params.push(dividendYield.min);
+        if (mergedFilters.pe?.max !== undefined) {
+            fromAndWhereSql += ' AND lp.pe > 0 AND lp.pe <= ?';
+            params.push(mergedFilters.pe.max);
+        }
+        if (mergedFilters.pb?.min !== undefined) {
+            fromAndWhereSql += ' AND lp.pb >= ?';
+            params.push(mergedFilters.pb.min);
+        }
+        if (mergedFilters.pb?.max !== undefined) {
+            fromAndWhereSql += ' AND lp.pb > 0 AND lp.pb <= ?';
+            params.push(mergedFilters.pb.max);
+        }
+        if (mergedFilters.dividendYield?.min !== undefined) {
+            fromAndWhereSql += ' AND lp.yield >= ?';
+            params.push(mergedFilters.dividendYield.min);
+        }
+        if (mergedFilters.dividendYield?.max !== undefined) {
+            fromAndWhereSql += ' AND lp.yield <= ?';
+            params.push(mergedFilters.dividendYield.max);
+        }
+        if (mergedFilters.revenueYoY?.min !== undefined) {
+            fromAndWhereSql += ' AND lp.revenue_yoy >= ?';
+            params.push(mergedFilters.revenueYoY.min);
+        }
+        if (mergedFilters.revenueYoY?.max !== undefined) {
+            fromAndWhereSql += ' AND lp.revenue_yoy <= ?';
+            params.push(mergedFilters.revenueYoY.max);
         }
 
-        let rawResults = dbService.queryAll(filteredSql, params);
-
-        // If filters produced zero results because of missing DB data, fallback to top stocks for demo
-        if (rawResults.length === 0 && params.length > 0) {
-            rawResults = dbService.queryAll(sql + ' LIMIT 20');
-        } else if (rawResults.length === 0) {
-            rawResults = dbService.queryAll(sql + ' LIMIT 50');
+        if (strategyId === 'volume-breakout' || strategyId === 'breakout') {
+            fromAndWhereSql += ' AND lp.volume > (lp.ma20 * 1.5) AND lp.close > lp.ma20';
+        }
+        if (strategyId === 'foreign-buy') {
+            fromAndWhereSql += ' AND COALESCE(ch.foreign_inv, 0) > 0';
+        }
+        if (strategyId === 'trust-buy') {
+            fromAndWhereSql += ' AND COALESCE(ch.invest_trust, 0) > 0';
+        }
+        if (strategyId === 'smart-money') {
+            fromAndWhereSql += ' AND lp.change_pct < -2 AND (COALESCE(ch.foreign_inv, 0) + COALESCE(ch.invest_trust, 0)) > 0';
         }
 
-        // Load names for enrichment
-        const stockList = await loadStockList();
-        const nameMap = new Map(stockList.map(s => [s.symbol, s.name]));
+        const totalRow = dbService.queryOne<{ total: number }>(
+            `SELECT COUNT(*) as total ${fromAndWhereSql}`,
+            params
+        );
+        const total = totalRow?.total || 0;
 
-        const results = rawResults.map((r: any) => {
+        const rowsSql = `
+            SELECT
+                s.symbol,
+                s.name,
+                s.sector,
+                lp.close,
+                lp.change_pct,
+                lp.volume,
+                lp.pe,
+                lp.pb,
+                lp.yield,
+                lp.revenue_yoy,
+                lp.gross_margin,
+                lp.operating_margin,
+                lp.net_margin,
+                COALESCE(ch.foreign_inv, 0) AS foreign_inv,
+                COALESCE(ch.invest_trust, 0) AS invest_trust,
+                COALESCE(ch.dealer, 0) AS dealer
+            ${fromAndWhereSql}
+            ORDER BY lp.volume DESC, lp.change_pct DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const rows = dbService.queryAll<any>(rowsSql, [...params, limit, offset]);
+
+        const results = rows.map((r: any) => {
             const matchedStrategies: string[] = [];
-            // Fake strategy matching for demo if real data is missing
-            if (pe?.max) matchedStrategies.push('價值量化');
-            if (dividendYield?.min) matchedStrategies.push('高股息自選');
+            if (strategy?.name) {
+                matchedStrategies.push(strategy.name);
+            } else {
+                if ((mergedFilters.pe?.max ?? 0) > 0) matchedStrategies.push('低本益比');
+                if ((mergedFilters.pb?.max ?? 0) > 0) matchedStrategies.push('低P/B');
+                if ((mergedFilters.dividendYield?.min ?? 0) > 0) matchedStrategies.push('高殖利率');
+                if ((mergedFilters.revenueYoY?.min ?? 0) > 0) matchedStrategies.push('營收成長');
+            }
             if (matchedStrategies.length === 0) matchedStrategies.push('智能篩選');
 
             return {
                 symbol: r.symbol,
-                name: nameMap.get(r.symbol) || r.symbol,
+                name: r.name || r.symbol,
+                sector: r.sector,
                 matchedStrategies,
                 fundamentals: {
-                    pe: r.pe_ratio || 0,
-                    pb: r.pb_ratio || 0,
-                    dividendYield: r.dividend_yield || 0
+                    pe: r.pe || 0,
+                    pb: r.pb || 0,
+                    dividendYield: r.yield || 0,
+                    revenueYoY: r.revenue_yoy || 0,
+                    grossMargin: r.gross_margin || 0,
+                    operatingMargin: r.operating_margin || 0,
+                    netMargin: r.net_margin || 0,
                 },
                 price: r.close,
-                changePercent: r.change_rate
+                changePercent: r.change_pct,
+                volume: r.volume,
+                chips: {
+                    foreign: r.foreign_inv || 0,
+                    trust: r.invest_trust || 0,
+                    dealer: r.dealer || 0,
+                },
             };
         });
 
-        // Pagination
-        const total = results.length;
-        const start = (page - 1) * limit;
-        const paginatedResults = results.slice(start, start + limit);
-
         return new Response(JSON.stringify({
             success: true,
+            strategy: strategy ? { id: strategy.id, name: strategy.name } : null,
             pagination: { page, limit, total, pages: Math.ceil(total / limit) },
-            count: paginatedResults.length,
-            results: paginatedResults
+            count: results.length,
+            results
         }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
@@ -90,8 +184,19 @@ export const POST: APIRoute = async ({ request }) => {
 
 export const GET: APIRoute = async ({ url }) => {
     try {
-        const stocks = await loadStockList();
-        return new Response(JSON.stringify({ success: true, data: stocks.slice(0, 50) }), {
+        const limit = Math.min(200, Math.max(1, Number(url.searchParams.get('limit') || '50')));
+        const rows = dbService.queryAll(
+            `
+            SELECT s.symbol, s.name, s.sector, lp.close, lp.change_pct, lp.volume, lp.pe, lp.pb, lp.yield
+            FROM latest_prices lp
+            JOIN stocks s ON s.symbol = lp.symbol
+            ORDER BY lp.volume DESC
+            LIMIT ?
+            `,
+            [limit]
+        );
+
+        return new Response(JSON.stringify({ success: true, data: rows }), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });

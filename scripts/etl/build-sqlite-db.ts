@@ -68,11 +68,25 @@ async function main() {
                 continue;
             }
 
+            const highs = history.map((h: any) => h.high || parseFloat(h[4] || h.最高價));
+            const lows = history.map((h: any) => h.low || parseFloat(h[5] || h.最低價));
             const closes = history.map((h: any) => h.close || parseFloat(h[6] || h.收盤價));
 
             // Calculate technical indicators
             const ma5 = technicalETL.calculateMA(closes, 5);
             const ma20 = technicalETL.calculateMA(closes, 20);
+            const ma60 = technicalETL.calculateMA(closes, 60);
+            const rsi14 = technicalETL.calculateRSI(closes, 14);
+            const kd = technicalETL.calculateKD(highs, lows, closes);
+            const macd = technicalETL.calculateMACD(closes);
+
+            // Padding for MACD (starts from index 25)
+            const macdPadding = new Array(closes.length - macd.length).fill({
+                MACD: null,
+                signal: null,
+                histogram: null,
+            });
+            const fullMACD = [...macdPadding, ...macd];
 
             // Write to tech_features table
             const techData = [
@@ -81,6 +95,12 @@ async function main() {
                     date: today,
                     ma5: ma5[ma5.length - 1],
                     ma20: ma20[ma20.length - 1],
+                    ma60: ma60[ma60.length - 1],
+                    macd_diff: fullMACD[fullMACD.length - 1]?.histogram,
+                    macd_dea: fullMACD[fullMACD.length - 1]?.signal,
+                    rsi14: rsi14[rsi14.length - 1],
+                    kd_k: kd.k[kd.k.length - 1],
+                    kd_d: kd.d[kd.d.length - 1],
                 },
             ];
 

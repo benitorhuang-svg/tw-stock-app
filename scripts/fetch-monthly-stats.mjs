@@ -54,15 +54,13 @@ async function main() {
         return;
     }
 
-    // 格式: 證券代號, 證券名稱, 殖利率(%), 股利年度, 本益比, 股價淨值比, 財報年/季
+    // 格式: 股票代號, 股票名稱, 本益比, 殖利率(%), 股價淨值比
     const stats = data.data.map(row => ({
         symbol: row[0],
         name: row[1],
-        dividendYield: parseFloat(row[2]) || 0,
-        dividendYear: row[3],
-        peRatio: parseFloat(row[4]) || 0,
-        pbRatio: parseFloat(row[5]) || 0,
-        fiscalPeriod: row[6],
+        peRatio: parseFloat(row[2]) || 0,
+        dividendYield: parseFloat(row[3]) || 0,
+        pbRatio: parseFloat(row[4]) || 0,
     }));
 
     if (!fs.existsSync(path.dirname(OUTPUT_FILE)))

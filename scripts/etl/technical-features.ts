@@ -1,4 +1,4 @@
-import { MACD, SMA } from 'technicalindicators';
+import { MACD, SMA, RSI, Stochastic } from 'technicalindicators';
 
 /**
  * M1: Technical Features ETL
@@ -42,6 +42,49 @@ export class TechnicalETL {
         // 補齊前面的空值，確保長度一致
         const padding = new Array(period - 1).fill(null);
         return [...padding, ...sma];
+    }
+
+    /**
+     * T011: 計算 RSI
+     */
+    public calculateRSI(data: number[], period: number = 14) {
+        if (data.length < period) return new Array(data.length).fill(null);
+
+        const rsi = RSI.calculate({ period, values: data });
+        const padding = new Array(period).fill(null);
+        return [...padding, ...rsi];
+    }
+
+    /**
+     * T012: 計算 KD (Stochastic)
+     */
+    public calculateKD(
+        high: number[],
+        low: number[],
+        close: number[]
+    ): { k: (number | null)[]; d: (number | null)[] } {
+        const period = 9;
+        const signalPeriod = 3;
+        if (close.length < period)
+            return {
+                k: new Array(close.length).fill(null),
+                d: new Array(close.length).fill(null),
+            };
+
+        const kd = Stochastic.calculate({
+            high,
+            low,
+            close,
+            period,
+            signalPeriod,
+        });
+
+        const padding = new Array(period - 1).fill(null);
+        // kd result is an array of objects { k: number, d: number }
+        const kValues = [...padding, ...kd.map((v) => v.k)];
+        const dValues = [...padding, ...kd.map((v) => v.d)];
+
+        return { k: kValues, d: dValues };
     }
 }
 

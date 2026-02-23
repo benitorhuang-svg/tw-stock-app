@@ -1,136 +1,240 @@
 ---
 /**
  * index.astro — Dashboard / 總覽
- * Spec: 005-ui-layout/002-tab-overview.md (adapted for market-wide dashboard)
- *
- * Features:
- * - Market breadth overview (TAIEX, advances/declines)
- * - Top gainers & losers panels
- * - Quick stock cards grid
+ * Professional market data dashboard with market breadth, top movers,
+ * volume leaders, and high yield stocks.
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
-import PageHero from '../components/molecules/PageHero.astro';
-import StatCard from '../components/molecules/StatCard.astro';
 import MarketBreadth from '../components/organisms/MarketBreadth.astro';
 import MoversPanel from '../components/organisms/MoversPanel.astro';
 import StockCard from '../components/organisms/StockCard.astro';
-
-// SSR: Try loading real data from services
+import StatCard from '../components/molecules/StatCard.astro';
 import type { StockFullData } from '../utils/stockDataService';
 
-const fmtVol = (v: number) => (v > 0 ? v.toLocaleString('zh-TW') : '—');
+const fmtVol = (v: number) => {
+    if (v >= 1_0000_0000) return `${(v / 1_0000_0000).toFixed(1)}億`;
+    if (v >= 10000) return `${(v / 10000).toFixed(1)}萬`;
+    if (v > 0) return v.toLocaleString('zh-TW');
+    return '—';
+};
 
-let topStocks: StockFullData[] = [];
+let gainers: StockFullData[] = [];
+let losers: StockFullData[] = [];
+let topVolume: StockFullData[] = [];
+let highYield: StockFullData[] = [];
+let totalStocks = 0;
+let upCount = 0;
+let downCount = 0;
+let flatCount = 0;
+let dataDate = '';
+let totalVolume = 0;
+let avgChange = 0;
 
 try {
-    const { getTopStocksByVolume } = await import('../utils/stockDataService');
-    topStocks = (await getTopStocksByVolume?.(6)) ?? [];
-} catch {
-    // Fallback demo data
-    topStocks = [
-        {
-            symbol: '2330',
-            name: '台積電',
-            market: 'TWSE',
-            price: 892.0,
-            change: 15.0,
-            changePercent: 1.71,
-            volume: 32456,
-            high: 895,
-            low: 880,
-            open: 885,
-            pe: 22.5,
-            pb: 6.1,
-            yield: 1.8,
-            roe: 0,
-            eps: 0,
-            sector: 'semiconductor',
-        },
-        {
-            symbol: '2454',
-            name: '聯發科',
-            market: 'TWSE',
-            price: 1280.0,
-            change: 25.0,
-            changePercent: 1.99,
-            volume: 8234,
-            high: 1290,
-            low: 1260,
-            open: 1265,
-            pe: 18.2,
-            pb: 4.5,
-            yield: 2.1,
-            roe: 0,
-            eps: 0,
-            sector: 'semiconductor',
-        },
-        {
-            symbol: '2317',
-            name: '鴻海',
-            market: 'TWSE',
-            price: 156.0,
-            change: 3.5,
-            changePercent: 2.29,
-            volume: 45678,
-            high: 158,
-            low: 153,
-            open: 154,
-            pe: 11.5,
-            pb: 1.4,
-            yield: 5.2,
-            roe: 0,
-            eps: 0,
-            sector: 'electronics',
-        },
-    ];
+    const svc = await import('../utils/stockDataService');
+    const all = await svc.getStocksWithPrices();
+    totalStocks = all.length;
+    dataDate = all.find(s => s.date)?.date || '';
+
+    const withPrice = all.filter(s => s.price > 0);
+    upCount = withPrice.filter(s => s.changePercent > 0).length;
+    downCount = withPrice.filter(s => s.changePercent < 0).length;
+    flatCount = withPrice.filter(s => s.changePercent === 0).length;
+    totalVolume = withPrice.reduce((sum, s) => sum + s.volume, 0);
+    avgChange = withPrice.length > 0
+        ? withPrice.reduce((sum, s) => sum + s.changePercent, 0) / withPrice.length
+        : 0;
+
+    gainers = withPrice
+        .filter(s => s.changePercent > 0)
+        .sort((a, b) => b.changePercent - a.changePercent)
+        .slice(0, 10);
+    losers = withPrice
+        .filter(s => s.changePercent < 0)
+        .sort((a, b) => a.changePercent - b.changePercent)
+        .slice(0, 10);
+    topVolume = withPrice
+        .sort((a, b) => b.volume - a.volume)
+        .slice(0, 10);
+    highYield = withPrice
+        .filter(s => s.yield > 0 && s.pe > 0)
+        .sort((a, b) => b.yield - a.yield)
+        .slice(0, 8);
+} catch (e) {
+    console.error('Dashboard data load error:', e);
 }
 ---
 
 <MainTerminal title="Dashboard">
-    <!-- Page Hero -->
-    <PageHero title="Market Dashboard" subtitle="台股即時市場概覽" />
+    {totalStocks === 0 ? (
+        <div class="empty-state py-20 animate-fade-up">
+            <div class="empty-state-icon animate-glow-pulse">📡</div>
+            <h2 class="text-xl font-bold text-text-primary mb-2">暫無市場資料</h2>
+            <p class="text-sm text-text-muted max-w-sm mb-6">
+                尚未載入股票資料，請確認 <code class="font-mono text-accent">public/data/</code> 目錄下的 JSON 資料已建構完成。
+            </p>
+            <button onclick="location.reload()" class="btn-cyber text-xs">重新載入</button>
+        </div>
+    ) : (
+    <Fragment>
 
-    <!-- Stats Row -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 stagger-children">
-        <StatCard label="加權指數" value="22,156.78" change={0.57} />
-        <StatCard label="櫃買指數" value="237.45" change={-0.32} />
-        <StatCard label="成交量" value="3,421" unit="億" />
-        <StatCard label="漲跌比" value="523 / 401" />
+    <!-- ═══ Dashboard Header ═══ -->
+    <div class="flex items-end justify-between mb-6 animate-fade-up">
+        <div>
+            <h1 class="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">市場總覽</h1>
+            <p class="text-sm text-text-muted mt-1 font-mono">
+                {dataDate || '—'} · {totalStocks.toLocaleString()} 檔股票
+            </p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2 stat-pill">
+                <span class="stat-label">Total Vol</span>
+                <span class="stat-value text-accent">{fmtVol(totalVolume)}</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-bullish ring-pulse"></span>
+                <span class="text-[10px] font-mono text-text-muted tracking-widest uppercase">
+                    data ready
+                </span>
+            </div>
+        </div>
     </div>
 
-    <!-- Main Dashboard Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 stagger-children">
-        <!-- Left: Market Breadth -->
-        <div class="lg:col-span-5">
-            <MarketBreadth />
-        </div>
-
-        <!-- Right: Top Movers -->
-        <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <MoversPanel type="gainers" />
-            <MoversPanel type="losers" />
+    <!-- ═══ Market Stats Row ═══ -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 stagger-children">
+        <StatCard
+            label="上漲"
+            value={upCount}
+            change={totalStocks > 0 ? (upCount / totalStocks) * 100 : 0}
+            class="border-l-2 border-l-bullish/60"
+        />
+        <StatCard
+            label="下跌"
+            value={downCount}
+            change={totalStocks > 0 ? -(downCount / totalStocks) * 100 : 0}
+            class="border-l-2 border-l-bearish/60"
+        />
+        <StatCard
+            label="平盤"
+            value={flatCount}
+            class="border-l-2 border-l-text-muted/30"
+        />
+        <div class="glass-card glow-interactive p-4">
+            <span class="terminal-label">市場廣度</span>
+            <MarketBreadth
+                up={upCount}
+                down={downCount}
+                flat={flatCount}
+                total={totalStocks}
+                class="mt-3"
+            />
         </div>
     </div>
 
-    <!-- Stock Cards Grid -->
-    <section class="mt-8">
+    <!-- ═══ Top Gainers / Losers ═══ -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        <MoversPanel
+            title="漲幅排行"
+            stocks={gainers}
+            variant="bullish"
+            class="animate-fade-up"
+        />
+        <MoversPanel
+            title="跌幅排行"
+            stocks={losers}
+            variant="bearish"
+            class="animate-fade-up"
+        />
+    </div>
+
+    <!-- ═══ Volume Leaders ═══ -->
+    <section class="mb-6 animate-fade-up">
+        <div class="section-divider">
+            <span class="divider-label">成交量排行</span>
+        </div>
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-bold text-text-primary">🏷️ 熱門個股</h2>
-            <a href="/screener" class="btn-ghost text-xs" data-astro-prefetch> 查看更多 → </a>
+            <p class="text-xs text-text-muted">依當日成交量由高至低排序</p>
+            <a href="/stocks" class="btn-ghost text-xs" data-astro-prefetch>查看全部 →</a>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
-            {
-                topStocks.map(stock => (
-                    <StockCard
-                        symbol={stock.symbol}
-                        name={stock.name}
-                        price={stock.price}
-                        change={stock.change}
-                        changePercent={stock.changePercent}
-                        volume={fmtVol(stock.volume)}
-                    />
-                ))
-            }
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 stagger-children">
+            {topVolume.map((s) => (
+                <StockCard
+                    symbol={s.symbol}
+                    name={s.name}
+                    price={s.price}
+                    changePercent={s.changePercent}
+                    volume={s.volume}
+                    pe={s.pe}
+                />
+            ))}
         </div>
     </section>
+
+    <!-- ═══ High Yield Table ═══ -->
+    <section class="mb-6 animate-fade-up">
+        <div class="section-divider">
+            <span class="divider-label">高殖利率精選</span>
+        </div>
+        <div class="flex items-center justify-between mb-4">
+            <p class="text-xs text-text-muted">殖利率由高至低，排除虧損股</p>
+            <a href="/screener" class="btn-ghost text-xs" data-astro-prefetch>篩選更多 →</a>
+        </div>
+
+        <div class="glass-card overflow-hidden">
+            <!-- Table Header -->
+            <div class="hidden md:grid grid-cols-12 gap-2 px-5 py-2.5 border-b border-border text-[10px] font-bold text-text-muted uppercase tracking-wider bg-surface/20">
+                <div class="col-span-3">股票</div>
+                <div class="col-span-2 text-right">股價</div>
+                <div class="col-span-2 text-right">漲跌%</div>
+                <div class="col-span-2 text-right">殖利率</div>
+                <div class="col-span-1 text-right">PE</div>
+                <div class="col-span-2 text-right">PB</div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="divide-y divide-border/30">
+                {highYield.map((s) => {
+                    const bull = s.changePercent > 0;
+                    const bear = s.changePercent < 0;
+                    return (
+                        <a
+                            href={`/stocks/${s.symbol}`}
+                            class="grid grid-cols-12 gap-2 px-5 py-3 hover:bg-glass-hover transition-colors group no-underline items-center"
+                            data-astro-prefetch
+                        >
+                            <div class="col-span-6 md:col-span-3 flex items-center gap-2 min-w-0">
+                                <span class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors truncate">
+                                    {s.name}
+                                </span>
+                                <span class="text-[11px] text-text-muted font-mono shrink-0">{s.symbol}</span>
+                            </div>
+                            <div class="col-span-3 md:col-span-2 text-right data-value text-sm">
+                                {s.price > 0 ? s.price.toFixed(2) : '—'}
+                            </div>
+                            <div class:list={[
+                                'col-span-3 md:col-span-2 text-right text-xs font-mono font-bold',
+                                bull && 'text-bullish',
+                                bear && 'text-bearish',
+                                !bull && !bear && 'text-text-muted',
+                            ]}>
+                                {s.changePercent > 0 ? '+' : ''}{s.changePercent.toFixed(2)}%
+                            </div>
+                            <div class="hidden md:block col-span-2 text-right text-sm font-mono font-bold text-warning">
+                                {s.yield.toFixed(2)}%
+                            </div>
+                            <div class="hidden md:block col-span-1 text-right text-xs font-mono text-text-secondary">
+                                {s.pe > 0 ? s.pe.toFixed(1) : '—'}
+                            </div>
+                            <div class="hidden md:block col-span-2 text-right text-xs font-mono text-text-secondary">
+                                {s.pb > 0 ? s.pb.toFixed(2) : '—'}
+                            </div>
+                        </a>
+                    );
+                })}
+            </div>
+        </div>
+    </section>
+
+    </Fragment>
+    )}
 </MainTerminal>

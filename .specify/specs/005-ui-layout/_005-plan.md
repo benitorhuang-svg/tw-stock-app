@@ -1,59 +1,64 @@
-# Implementation Plan: 005-ui-layout
+# 實作計畫: 005-ui-layout — UI/UX 優化與修復
 
-**Branch**: `005-ui-layout` | **Date**: 2026-02-23 | **Spec**: [001-layout-overview.md](./001-layout-overview.md), [002-tab-overview.md](./002-tab-overview.md)
+**分支**: `005-ui-optimization` | **日期**: 2026-02-23 | **規格書**: `.specify/specs/005-ui-layout/`
+**輸入**: 來自 `_005-clarification.md` 的問題清單 + 全站 UI 審查
 
-## Summary
+## 摘要
 
-本階段 (`M5: UI Layout & Micro-Animations`) 負責將 M1~M4 所計算、快取的高速資料 ( $O(1)$ 或 $O(\log N)$ ) 完美地映射為「Glassmorphism (玻璃擬態)」風格的金融終端機。本階段不會參雜冗贅的運算迴圈，專注於利用 Astro 的 SSR、View Transitions、與 `ChartGPU` 來渲染 10 萬點級別的法人的散布圖，並搭配流暢無阻的 `<a data-astro-prefetch>` 提供「點擊瞬移」的魔術體驗。這將是與使用者最靠近的一塊拼圖。
+針對目前 TWStock PRO 應用程式執行全面 UI/UX 修復與優化，涵蓋：
+1. **安全修復** — DB Explorer XSS 漏洞
+2. **功能補全** — 非功能性按鈕、分頁、Tab 狀態保存
+3. **無障礙改善** — 鍵盤導覽、Focus 樣式、色彩對比
+4. **使用者體驗** — 空狀態 UI、Error 回饋、Mobile 適配
+5. **程式碼品質** — ErrorBoundary 整合、未使用元件清理
 
-## Technical Context
+## 技術脈絡
 
-**Language/Version**: Astro 5.0+ / React / TailwindCSS (如果使用者決議套用)\~ / CSS Vanilla
-**Primary Dependencies**: `ChartGPU` ( WebGL 渲染), `astro:transitions`, `framer-motion` (微動效)
-**Storage**: N/A (純展示端)
-**Testing**: Vitest (`test/m5-ui-components.test.ts` 驗證 DOM, a11y, 與 ErrorBoundary 保護網)
-**Target Platform**: Browser / Server-Side Rendering
-**Project Type**: Astro Web Application
-**Performance Goals**: LCP < 1.0s, CLS 趨近於 0 (防版面跳動)，全站轉場切換均不得讓主執行緒阻塞。10萬點的 WebGL 圖表必須確保 > 55 FPS。
-**Constraints**: 面對 HTTP 404 或資料來源崩潰，絕對不能引發全頁白畫面 (White Screen Object Array Mapping Crash)，所有 Organisms (元件群) 必須實作 `ErrorBoundary` 加上深色骨架屏 (`Shimmer Skeleton`) 作為 Fallback。
-**Scale/Scope**: 5 大分析分頁 (技術、籌碼、營收、估值、智慧)，支援響應式 (Desktop, Mobile) 與系統主題。
+**語言/版本**: TypeScript 5.9 + Astro 5.16  
+**主要依賴**: Tailwind CSS v4, better-sqlite3, vanilla JS (無前端框架)  
+**儲存**: SQLite (stocks.db) + JSON snapshots (public/data/)  
+**測試**: vitest + happy-dom  
+**目標平台**: 現代瀏覽器 (Chrome 90+, Safari 15+, Firefox 90+)  
+**效能目標**: LCP < 2s, FID < 100ms, CLS < 0.1  
+**約束條件**: 100% Astro components (無 React island), SSR-only mode
 
-## Constitution Check
+## 修復範圍與優先級
 
-_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
+### P0: 安全 (必須立即修復)
+1. **DB Explorer XSS** — `database.astro` 的 `innerHTML` 渲染未 escape 的 cell value
 
-- **Premium Web App Design**: ✅ 完全依循玻璃擬態、Hover 光暈跟隨的高級視角。
-- **Atomic Design**: ✅ 組件明確將 Atoms/Molecules/Organisms 抽離。
-- **Performance Standards**: ✅ Astro Island Architecture (部分水合) 與 SSR 搭配 View Transitions，符合嚴格限速，防堵過多的 `mousemove` DOM 操作。
+### P1: 功能完整性
+2. **非功能性按鈕** — 「⭐ 加入自選」與「🤖 AI 分析報告」需有實際行為或改為 disabled 提示
+3. **Stock list 分頁** — 移除 `.slice(0, 100)` 硬限，改用 Load More 或無限捲動
+4. **Tab 狀態 URL Hash** — 從 URL hash 讀取/寫入 active tab，支援瀏覽器前進/後退
 
-## Project Structure
+### P2: 無障礙與體驗
+5. **鍵盤 Focus 樣式** — 所有互動元素加 `focus-visible` outline
+6. **色彩對比提升** — `text-text-muted` HSL 40% → 55% 以通過 WCAG AA
+7. **空狀態 Fallback** — Dashboard、Stock list 加空資料提示
+8. **Mobile DB Explorer** — sidebar 改為 collapsible drawer
 
-### Documentation (this feature)
+### P3: 程式碼品質
+9. **ErrorBoundary 整合** — 在所有頁面 layout 內包裝
+10. **未使用元件標記** — 加 `@deprecated` 註解或移除
+
+## 專案結構
+
+### 原始碼修改清單
 
 ```text
-.specify/specs/005-ui-layout/
-├── [prefix]-clarification.md
-└── 005-plan.md             # 本檔案
+src/
+├── pages/
+│   ├── database.astro          # P0: XSS fix + P2: mobile sidebar
+│   ├── index.astro             # P2: 空狀態 fallback
+│   ├── stocks/
+│   │   ├── index.astro         # P1: 分頁 / Load More
+│   │   └── [symbol].astro      # P1: 按鈕行為 + Tab hash
+├── layouts/
+│   └── MainTerminal.astro      # P2: focus styles
+├── styles/
+│   └── global.css              # P2: 色彩對比 + focus-visible
+└── components/
+    └── organisms/
+        └── TabBar.astro        # P1: hash-based tab switching
 ```
-
-### Source Code
-
-```text
-src/                            # M5: 全站頁面與佈局引擎
-├── layouts/                    # (A) 版面外殼 (Shell)
-│   ├── MainTerminal.astro      # 全局包含 Sidebar, Header 的終端機
-│   └── BaseHead.astro          # SEO, View Transitions, Prefetch 設置
-├── components/                 # (B) 原子化設計元件群
-│   ├── atoms/                  # Badge, Skeleton, Button
-│   ├── molecules/              # DataRow, SearchBar
-│   └── organisms/              # (最重要) StockHero, ChartCanvas, RealtimeToast
-├── pages/                      # (C) 路由進入點
-│   ├── index.astro             # 總覽 / 大盤 Dashboard
-│   ├── screener.astro          # M3 篩選器介面
-│   └── stock/[symbol].astro    # M1~M2 個股細節 5 大分頁
-└── styles/                     # (D) 設計系統
-    ├── index.css               # 玻璃擬態與動態變量定義區
-    └── design-tokens.css       # 顏色/間距 (HSL)
-```
-
-**Structure Decision**: 這是最標準的 Astro 架構，完全捨棄 SPA 架構以獲取極致的初始化速度。`Organisms` 等重型組件必須配置 `client:visible` 或 `client:idle` ( Island Architecture )，讓使用者不需要等待 1MB 的 JS 載入就能看到首屏數據。

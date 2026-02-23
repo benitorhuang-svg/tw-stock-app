@@ -23,6 +23,7 @@ const tabs = [
     class="flex items-center gap-1 px-2 py-1 glass-panel rounded-xl mb-6"
     id="stock-tab-bar"
     aria-label="分析分頁"
+    role="tablist"
 >
     {
         tabs.map(tab => (
@@ -46,34 +47,69 @@ const tabs = [
 </nav>
 
 <script>
-    document.querySelectorAll('#stock-tab-bar [data-tab]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabId = (btn as HTMLElement).dataset.tab;
-            const symbol = (btn as HTMLElement).dataset.symbol;
+    function initTabBar() {
+        const tabBar = document.getElementById('stock-tab-bar');
+        if (!tabBar) return;
+        const tabBtns = Array.from(tabBar.querySelectorAll('[data-tab]')) as HTMLElement[];
 
-            // Update active state
-            document.querySelectorAll('#stock-tab-bar [data-tab]').forEach(b => {
-                b.classList.remove('bg-accent/15', 'text-accent');
-                b.classList.add('text-text-secondary');
-                b.setAttribute('aria-selected', 'false');
+        function switchTab(tabId: string) {
+            tabBtns.forEach(b => {
+                const isActive = b.dataset.tab === tabId;
+                b.classList.toggle('bg-accent/15', isActive);
+                b.classList.toggle('text-accent', isActive);
+                b.classList.toggle('text-text-secondary', !isActive);
+                b.setAttribute('aria-selected', String(isActive));
+                b.setAttribute('tabindex', isActive ? '0' : '-1');
             });
-            btn.classList.add('bg-accent/15', 'text-accent');
-            btn.classList.remove('text-text-secondary');
-            btn.setAttribute('aria-selected', 'true');
 
-            // Show/hide tab content panels
             document.querySelectorAll('[data-tab-content]').forEach(panel => {
-                const panelId = (panel as HTMLElement).dataset.tabContent;
-                if (panelId === tabId) {
-                    panel.classList.remove('hidden');
-                    (panel as HTMLElement).style.animation =
-                        'fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both';
+                const panelEl = panel as HTMLElement;
+                if (panelEl.dataset.tabContent === tabId) {
+                    panelEl.classList.remove('hidden');
+                    panelEl.style.animation = 'fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both';
                 } else {
-                    panel.classList.add('hidden');
+                    panelEl.classList.add('hidden');
                 }
             });
 
-            console.log(`[TabBar] Switch to: ${tabId} for ${symbol}`);
+            history.replaceState(null, '', `#${tabId}`);
+        }
+
+        // Initialize from URL hash
+        const hash = location.hash.replace('#', '');
+        if (hash && tabBtns.some(b => b.dataset.tab === hash)) {
+            switchTab(hash);
+        }
+
+        // Click handler
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+                if (tabId) switchTab(tabId);
+            });
         });
-    });
+
+        // Keyboard navigation (arrow keys)
+        tabBar.addEventListener('keydown', (e: Event) => {
+            const event = e as KeyboardEvent;
+            const currentIdx = tabBtns.findIndex(b => b.getAttribute('aria-selected') === 'true');
+            let nextIdx = currentIdx;
+
+            if (event.key === 'ArrowRight') nextIdx = (currentIdx + 1) % tabBtns.length;
+            else if (event.key === 'ArrowLeft') nextIdx = (currentIdx - 1 + tabBtns.length) % tabBtns.length;
+            else if (event.key === 'Home') nextIdx = 0;
+            else if (event.key === 'End') nextIdx = tabBtns.length - 1;
+            else return;
+
+            event.preventDefault();
+            const tabId = tabBtns[nextIdx].dataset.tab;
+            if (tabId) {
+                switchTab(tabId);
+                tabBtns[nextIdx].focus();
+            }
+        });
+    }
+
+    initTabBar();
+    document.addEventListener('astro:page-load', initTabBar);
 </script>

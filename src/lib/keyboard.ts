@@ -192,6 +192,7 @@ class KeyboardShortcuts {
         input?.focus();
         input.value = '';
         this.updateSearchResults('');
+        this.loadStockList();
     }
 
     closeSearchModal(): void {
@@ -199,57 +200,67 @@ class KeyboardShortcuts {
         this.searchModal.style.display = 'none';
     }
 
+    private stockList: Array<{ symbol: string; name: string }> = [];
+
+    private async loadStockList(): Promise<void> {
+        if (this.stockList.length > 0) return;
+        try {
+            const res = await fetch('/data/stocks.json');
+            if (res.ok) {
+                const data = await res.json();
+                this.stockList = Array.isArray(data)
+                    ? data.map((s: any) => ({ symbol: String(s.symbol || s.code || ''), name: String(s.name || '') })).filter((s: any) => s.symbol)
+                    : [];
+            }
+        } catch {
+            // fallback: empty list
+        }
+    }
+
     private updateSearchResults(query: string): void {
         const results = this.searchModal?.querySelector('#search-results');
         if (!results) return;
 
-        // 這裡可以從 stocks 資料中搜尋
-        // 簡化版本：顯示提示訊息
         if (!query) {
             results.innerHTML = `
                 <div style="padding: 20px; text-align: center; color: var(--text-secondary, #a0a0b0);">
-                    輸入股票代號或名稱開始搜尋
+                    輸入股票代號或名稱開始搜尋 <kbd style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:0.75rem;margin-left:4px">Ctrl+K</kbd>
+                </div>
+            `;
+            return;
+        }
+
+        const q = query.toLowerCase();
+        const filtered = this.stockList
+            .filter(s => s.symbol.toLowerCase().includes(q) || s.name.includes(query))
+            .slice(0, 20);
+
+        if (filtered.length === 0) {
+            results.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: var(--text-secondary, #a0a0b0);">
+                    找不到符合「${query}」的股票
                 </div>
             `;
         } else {
-            // 模擬搜尋結果
-            const mockStocks = [
-                { symbol: '2330', name: '台積電' },
-                { symbol: '2317', name: '鴻海' },
-                { symbol: '2454', name: '聯發科' },
-            ];
-
-            const filtered = mockStocks.filter(
-                s => s.symbol.includes(query) || s.name.includes(query)
-            );
-
-            if (filtered.length === 0) {
-                results.innerHTML = `
-                    <div style="padding: 20px; text-align: center; color: var(--text-secondary, #a0a0b0);">
-                        找不到符合的股票
-                    </div>
-                `;
-            } else {
-                results.innerHTML = filtered
-                    .map(
-                        s => `
-                    <a href="/stocks/${s.symbol}" style="
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        padding: 12px 16px;
-                        color: var(--text-primary, #f0f0f0);
-                        text-decoration: none;
-                        border-radius: 8px;
-                        margin-bottom: 4px;
-                    " onmouseover="this.style.background='var(--bg-card, rgba(255,255,255,0.05))'" onmouseout="this.style.background='transparent'">
-                        <span style="color: var(--accent, #00d4aa); font-weight: 600;">${s.symbol}</span>
-                        <span>${s.name}</span>
-                    </a>
-                `
-                    )
-                    .join('');
-            }
+            results.innerHTML = filtered
+                .map(
+                    s => `
+                <a href="/stocks/${s.symbol}" style="
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 12px 16px;
+                    color: var(--text-primary, #f0f0f0);
+                    text-decoration: none;
+                    border-radius: 8px;
+                    margin-bottom: 4px;
+                " onmouseover="this.style.background='var(--bg-card, rgba(255,255,255,0.05))'" onmouseout="this.style.background='transparent'">
+                    <span style="color: var(--accent, #00d4aa); font-weight: 600; min-width: 50px;">${s.symbol}</span>
+                    <span>${s.name}</span>
+                </a>
+            `
+                )
+                .join('');
         }
     }
 

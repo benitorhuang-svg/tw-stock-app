@@ -2,37 +2,57 @@
 /**
  * TabTechnical.astro — Technical Analysis Tab (004-tab-technical)
  * K-line chart, MACD, KDJ, RSI sub-indicators with floating toolbar
+ * Now uses real price data when available via priceData prop
  */
+
+interface PriceRecord {
+    Date: string;
+    Open: number;
+    High: number;
+    Low: number;
+    Close: number;
+    Volume: number;
+}
+
 interface Props {
     symbol: string;
     price: number;
     change: number;
+    priceData?: PriceRecord[];
 }
 
-const { symbol, price, change } = Astro.props;
+const { symbol, price, change, priceData } = Astro.props;
 
 const timeframes = ['15M', '60M', '1D', '1W', '1M'];
 const overlays = ['均線 (MAs)', '波浪 (Wave)', '撐壓線 (S/R)'];
 const subIndicators = ['MACD', 'KDJ', 'RSI'];
 
-// Generate simulated candlestick data
-const baseP = price > 0 ? price : 100;
-const candles = Array.from({ length: 30 }, (_, i) => {
-    const drift = (i - 15) * 0.3 + (Math.random() - 0.5) * 5;
-    const o = baseP + drift + (Math.random() - 0.5) * 3;
-    const c = o + (Math.random() - 0.5) * 4;
-    const h = Math.max(o, c) + Math.random() * 2;
-    const l = Math.min(o, c) - Math.random() * 2;
-    const vol = Math.floor(Math.random() * 30000) + 5000;
-    return {
-        o: +o.toFixed(2),
-        c: +c.toFixed(2),
-        h: +h.toFixed(2),
-        l: +l.toFixed(2),
-        vol,
-        bull: c >= o,
-    };
-});
+// Use real price data or fallback to simulation
+const hasRealData = priceData && priceData.length > 0;
+const displayCount = 60;
+
+const candles = hasRealData
+    ? priceData.slice(-displayCount).map(r => ({
+          o: r.Open,
+          c: r.Close,
+          h: r.High,
+          l: r.Low,
+          vol: r.Volume,
+          bull: r.Close >= r.Open,
+          date: r.Date,
+      }))
+    : (() => {
+          const baseP = price > 0 ? price : 100;
+          return Array.from({ length: 30 }, (_, i) => {
+              const drift = (i - 15) * 0.3 + (Math.random() - 0.5) * 5;
+              const o = baseP + drift + (Math.random() - 0.5) * 3;
+              const c = o + (Math.random() - 0.5) * 4;
+              const h = Math.max(o, c) + Math.random() * 2;
+              const l = Math.min(o, c) - Math.random() * 2;
+              const vol = Math.floor(Math.random() * 30000) + 5000;
+              return { o: +o.toFixed(2), c: +c.toFixed(2), h: +h.toFixed(2), l: +l.toFixed(2), vol, bull: c >= o, date: '' };
+          });
+      })();
 
 const priceMax = Math.max(...candles.map(c => c.h));
 const priceMin = Math.min(...candles.map(c => c.l));
@@ -60,12 +80,40 @@ const ma5Points = candles
     .filter(Boolean);
 const ma5Path = ma5Points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p!.x},${p!.y}`).join(' ');
 
-// MACD simulation
+// MA20 line
+const ma20Points = candles
+    .map((_, i) => {
+        if (i < 19) return null;
+        const avg = candles.slice(i - 19, i + 1).reduce((s, c) => s + c.c, 0) / 20;
+        return { x: i * gap + gap / 2, y: pToY(avg) };
+    })
+    .filter(Boolean);
+const ma20Path = ma20Points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p!.x},${p!.y}`).join(' ');
+
+// MACD calculation from real close prices (EMA12 - EMA26)
+function calcEMA(data: number[], period: number): number[] {
+    const k = 2 / (period + 1);
+    const ema: number[] = [data[0]];
+    for (let i = 1; i < data.length; i++) {
+        ema.push(data[i] * k + ema[i - 1] * (1 - k));
+    }
+    return ema;
+}
+
+const closes = candles.map(c => c.c);
+const ema12 = calcEMA(closes, 12);
+const ema26 = calcEMA(closes, 26);
 const macdData = candles.map((_, i) => {
-    const dif = Math.sin(i * 0.3) * 2 + (Math.random() - 0.5);
-    const dea = Math.sin(i * 0.25) * 1.5;
-    return { dif, dea, hist: dif - dea };
+    const dif = ema12[i] - ema26[i];
+    return { dif, dea: 0, hist: 0 };
 });
+// Calculate DEA (signal line = EMA9 of DIF)
+const difValues = macdData.map(d => d.dif);
+const deaValues = calcEMA(difValues, 9);
+for (let i = 0; i < macdData.length; i++) {
+    macdData[i].dea = deaValues[i];
+    macdData[i].hist = macdData[i].dif - macdData[i].dea;
+}
 const macdMax = Math.max(
     ...macdData.map(d => Math.max(Math.abs(d.dif), Math.abs(d.dea), Math.abs(d.hist))),
     0.1
@@ -211,6 +259,11 @@ const showNoData = price <= 0;
             <!-- MA5 line -->
             <path d={ma5Path} fill="none" stroke="hsl(48,100%,60%)" stroke-width="1.2" opacity="0.7"
             ></path>
+            <!-- MA20 line -->
+            {ma20Path && (
+                <path d={ma20Path} fill="none" stroke="hsl(280,80%,65%)" stroke-width="1.2" opacity="0.5"
+                ></path>
+            )}
         </svg>
     </div>
 

@@ -1,126 +1,77 @@
 ---
 /**
- * MoversPanel.astro — Top gainers/losers ranking organism
- * Shows strongest and weakest stocks for the day.
+ * MoversPanel.astro — Top movers (gainers/losers) panel
+ * Shows a ranked list of stocks with change indicators.
  */
-
-interface MoverItem {
-    symbol: string;
-    name: string;
-    price: number;
-    change: number;
-    changePercent: number;
-    volume: string;
-}
-
 interface Props {
-    title?: string;
-    type?: 'gainers' | 'losers';
-    items?: MoverItem[];
+    title: string;
+    stocks: Array<{
+        symbol: string;
+        name: string;
+        price: number;
+        changePercent: number;
+        volume: number;
+    }>;
+    variant?: 'bullish' | 'bearish';
     class?: string;
 }
 
-const { title, type = 'gainers', items = [], class: className = '' } = Astro.props;
-const isGainer = type === 'gainers';
-const displayTitle = title ?? (isGainer ? '🚀 強勢股排行' : '📉 弱勢股排行');
+const { title, stocks, variant = 'bullish', class: className = '' } = Astro.props;
+const isBull = variant === 'bullish';
+const accentColor = isBull ? 'bullish' : 'bearish';
 
-// Fallback demo data
-const displayItems: MoverItem[] =
-    items.length > 0
-        ? items
-        : [
-              {
-                  symbol: '2330',
-                  name: '台積電',
-                  price: 892.0,
-                  change: 15.0,
-                  changePercent: 1.71,
-                  volume: '32,456',
-              },
-              {
-                  symbol: '2454',
-                  name: '聯發科',
-                  price: 1280.0,
-                  change: 25.0,
-                  changePercent: 1.99,
-                  volume: '8,234',
-              },
-              {
-                  symbol: '2317',
-                  name: '鴻海',
-                  price: 156.0,
-                  change: 3.5,
-                  changePercent: 2.29,
-                  volume: '45,678',
-              },
-              {
-                  symbol: '2382',
-                  name: '廣達',
-                  price: 312.0,
-                  change: 8.0,
-                  changePercent: 2.63,
-                  volume: '12,345',
-              },
-              {
-                  symbol: '3711',
-                  name: '日月光投控',
-                  price: 178.5,
-                  change: 4.5,
-                  changePercent: 2.58,
-                  volume: '9,876',
-              },
-          ];
+const fmtVol = (v: number) => {
+    if (v >= 10000) return `${(v / 10000).toFixed(1)}萬`;
+    if (v > 0) return v.toLocaleString('zh-TW');
+    return '—';
+};
+const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
+const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 ---
 
-<section
-    class:list={['glass-card glow-interactive flex flex-col', className]}
-    id={`movers-${type}`}
->
+<section class:list={['glass-card overflow-hidden', className]}>
     <!-- Header -->
-    <div class="flex items-center justify-between px-5 py-3 border-b border-border">
-        <h2 class="text-sm font-bold tracking-wide text-text-primary">{displayTitle}</h2>
-        <span class="text-xs text-text-muted font-mono">{displayItems.length} 檔</span>
+    <div class:list={[
+        'flex items-center justify-between px-5 py-3 border-b border-border',
+        isBull ? 'bg-bullish/[0.03]' : 'bg-bearish/[0.03]',
+    ]}>
+        <h2 class:list={['text-sm font-bold tracking-wide flex items-center gap-2', `text-${accentColor}`]}>
+            <span class:list={['w-1.5 h-1.5 rounded-full', `bg-${accentColor}`]}></span>
+            {title}
+        </h2>
+        <span class="text-[11px] text-text-muted font-mono">{stocks.length} 檔</span>
     </div>
 
-    <!-- Stock List -->
-    <div class="flex-1 divide-y divide-border/50">
-        {
-            displayItems.map((stock, i) => (
-                <a
-                    href={`/stocks/${stock.symbol}`}
-                    class="flex items-center justify-between px-5 py-3 transition-colors hover:bg-glass-hover group"
-                    data-astro-prefetch
-                >
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-mono text-text-muted w-5 text-right">
-                            {i + 1}
-                        </span>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
-                                    {stock.name}
-                                </span>
-                                <span class="text-xs text-text-muted font-mono">
-                                    {stock.symbol}
-                                </span>
-                            </div>
-                            <span class="text-xs text-text-muted font-mono">{stock.volume} 張</span>
+    <!-- Stock Rows -->
+    <div class="divide-y divide-border/30">
+        {stocks.map((s, i) => (
+            <a
+                href={`/stocks/${s.symbol}`}
+                class="flex items-center justify-between px-5 py-2.5 hover:bg-glass-hover transition-colors group no-underline"
+                data-astro-prefetch
+            >
+                <div class="flex items-center gap-3">
+                    <span class="text-[11px] font-mono text-text-muted w-5 text-right">{i + 1}</span>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class:list={['text-sm font-semibold text-text-primary transition-colors', `group-hover:text-${accentColor}`]}>
+                                {s.name}
+                            </span>
+                            <span class="text-[11px] text-text-muted font-mono">{s.symbol}</span>
                         </div>
+                        <span class="text-[10px] text-text-muted font-mono">量 {fmtVol(s.volume)}</span>
                     </div>
-                    <div class="text-right">
-                        <div class="data-value text-sm">{stock.price.toFixed(1)}</div>
-                        <span
-                            class:list={[
-                                'text-xs font-mono font-semibold',
-                                isGainer ? 'text-bullish' : 'text-bearish',
-                            ]}
-                        >
-                            {isGainer ? '+' : ''}
-                            {stock.changePercent.toFixed(2)}%
-                        </span>
-                    </div>
-                </a>
-            ))
-        }
+                </div>
+                <div class="text-right">
+                    <div class="data-value text-sm">{fmtPrice(s.price)}</div>
+                    <span class:list={['text-xs font-mono font-bold', `text-${accentColor}`]}>
+                        {fmtPct(s.changePercent)}
+                    </span>
+                </div>
+            </a>
+        ))}
+        {stocks.length === 0 && (
+            <div class="px-5 py-8 text-center text-sm text-text-muted">暫無資料</div>
+        )}
     </div>
 </section>

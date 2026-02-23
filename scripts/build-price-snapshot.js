@@ -51,6 +51,38 @@ async function buildPriceSnapshot() {
 
     console.log(`📊 Processing ${symbols.length} stocks...`);
 
+    // Load real fundamental data
+    const MONTHLY_STATS_FILE = path.join(__dirname, '../public/data/monthly_stats.json');
+    const REVENUE_FILE = path.join(__dirname, '../public/data/revenue.json');
+    const FINANCIALS_FILE = path.join(__dirname, '../public/data/financials.json');
+
+    const statsMap = {};
+    if (fs.existsSync(MONTHLY_STATS_FILE)) {
+        const stats = JSON.parse(fs.readFileSync(MONTHLY_STATS_FILE, 'utf-8'));
+        for (const s of stats) {
+            statsMap[s.symbol] = s;
+        }
+        console.log(`  📈 Loaded ${stats.length} monthly stats (PE/PB/Yield)`);
+    }
+
+    const revenueMap = {};
+    if (fs.existsSync(REVENUE_FILE)) {
+        const rev = JSON.parse(fs.readFileSync(REVENUE_FILE, 'utf-8'));
+        for (const r of rev) {
+            revenueMap[r.symbol] = r;
+        }
+        console.log(`  💰 Loaded ${rev.length} revenue records`);
+    }
+
+    const financialsMap = {};
+    if (fs.existsSync(FINANCIALS_FILE)) {
+        const fin = JSON.parse(fs.readFileSync(FINANCIALS_FILE, 'utf-8'));
+        for (const f of fin) {
+            financialsMap[f.symbol] = f;
+        }
+        console.log(`  📊 Loaded ${fin.length} financial records`);
+    }
+
     const latestPrices = {};
     let processed = 0;
     let errors = 0;
@@ -65,11 +97,9 @@ async function buildPriceSnapshot() {
                 const latestRecord = parseCSV(csvText);
 
                 if (latestRecord) {
-                    // Generate realistic dummy data for demonstration
-                    // In a real app, this would come from a financial API or fundamental data CSV
-                    const pe = parseFloat((Math.random() * 20 + 10).toFixed(2));
-                    const pb = parseFloat((Math.random() * 3 + 0.5).toFixed(2));
-                    const dy = parseFloat((Math.random() * 5 + 1).toFixed(2));
+                    const stat = statsMap[symbol];
+                    const rev = revenueMap[symbol];
+                    const fin = financialsMap[symbol];
 
                     latestPrices[symbol] = {
                         date: latestRecord.Date,
@@ -80,9 +110,14 @@ async function buildPriceSnapshot() {
                         volume: latestRecord.Volume,
                         change: latestRecord.Change,
                         changePct: latestRecord.ChangePct || 0,
-                        pe: pe,
-                        pb: pb,
-                        yield: dy,
+                        pe: stat?.peRatio || 0,
+                        pb: stat?.pbRatio || 0,
+                        yield: stat?.dividendYield || 0,
+                        revenueYoY: rev?.revenueYoY || 0,
+                        eps: fin?.eps || 0,
+                        grossMargin: fin?.grossMargin || 0,
+                        operatingMargin: fin?.operatingMargin || 0,
+                        netMargin: fin?.netMargin || 0,
                     };
                     processed++;
                 }
@@ -91,7 +126,6 @@ async function buildPriceSnapshot() {
             errors++;
         }
 
-        // Progress indicator
         if (processed % 100 === 0) {
             process.stdout.write(`\r  Processed: ${processed}/${symbols.length}`);
         }

@@ -35,6 +35,9 @@ const navItems = [
         <ClientRouter />
     </head>
     <body class="flex flex-col h-[100dvh] overflow-hidden bg-base text-text-primary">
+        <!-- Skip to main content (accessibility) -->
+        <a href="#main-workspace" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-accent focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-bold">跳到主要內容</a>
+
         <!-- ═══ Top Navigation Bar ═══ -->
         <header class="top-nav-bar flex-shrink-0 z-50" id="top-header">
             <div
@@ -54,7 +57,7 @@ const navItems = [
                             TWStock
                         </span>
                         <span
-                            class="text-[8px] lg:text-[9px] font-black tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm bg-accent/20 text-accent"
+                            class="text-[9px] lg:text-[10px] font-black tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm bg-accent/20 text-accent"
                         >
                             PRO
                         </span>
@@ -84,50 +87,21 @@ const navItems = [
                     </nav>
                 </div>
 
-                <!-- Right: Search + Market Selector + Status -->
+                <!-- Right: System Status -->
                 <div class="flex items-center gap-3">
-                    <!-- Search Bar -->
-                    <div class="hidden lg:flex items-center">
-                        <div class="search-input-wrapper">
-                            <svg
-                                class="w-3.5 h-3.5 text-text-muted mr-2 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <input
-                                type="text"
-                                placeholder="搜尋代號或名稱..."
-                                class="bg-transparent border-none outline-none text-sm text-text-primary placeholder:text-text-muted w-full font-mono"
-                                id="global-search-input"
-                            />
-                            <kbd
-                                class="hidden xl:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-text-muted border border-border rounded"
-                            >
-                                ⌘K
-                            </kbd>
-                        </div>
-                    </div>
-
-                    <!-- Market Type Selector -->
-                    <select class="market-type-select" id="market-type-select">
-                        <option value="TWSE">上市 TWSE</option>
-                        <option value="OTC">上櫃 OTC</option>
-                        <option value="ETF">ETF</option>
-                    </select>
-
-                    <!-- System Status Indicator -->
-                    <div
-                        class="hidden md:flex items-center gap-2 text-xs text-text-muted pl-3 border-l border-border/50"
+                    <!-- Search shortcut hint -->
+                    <button
+                        class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-glass border border-border hover:border-accent/30 text-text-muted hover:text-text-secondary transition-all cursor-pointer text-xs"
+                        id="search-trigger"
+                        aria-label="搜尋股票"
                     >
+                        <span>🔍</span>
+                        <span class="font-mono text-[11px]">搜尋股票...</span>
+                        <kbd class="text-[9px] font-mono bg-surface px-1.5 py-0.5 rounded border border-border ml-1">Ctrl+K</kbd>
+                    </button>
+                    <div class="hidden md:flex items-center gap-2 text-xs text-text-muted">
                         <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
-                        <span class="font-mono text-[10px] tracking-wider">LIVE</span>
+                        <span class="font-mono text-[11px] tracking-wider">LIVE</span>
                     </div>
                 </div>
             </div>
@@ -163,7 +137,7 @@ const navItems = [
                         data-astro-prefetch
                     >
                         <span class="text-lg">{item.icon}</span>
-                        <span class="text-[10px] font-semibold tracking-wider">{item.zh}</span>
+                        <span class="text-[11px] font-semibold tracking-wider">{item.zh}</span>
                     </a>
                 ))
             }
@@ -171,6 +145,23 @@ const navItems = [
 
         <!-- ═══ Global Scripts ═══ -->
         <script>
+            import { keyboard } from '../lib/keyboard';
+            import { registerServiceWorker } from '../lib/pwa';
+            import { initPerformanceMode } from '../lib/performance-mode';
+
+            // Initialize keyboard shortcuts (Ctrl+K search)
+            keyboard.initSearchModal();
+
+            // Search trigger button click
+            document.getElementById('search-trigger')?.addEventListener('click', () => {
+                keyboard.openSearchModal();
+            });
+
+            // PWA Service Worker registration
+            registerServiceWorker();
+
+            // Performance mode detection
+            initPerformanceMode();
             // Tab indicator positioning
             function updateTabIndicator() {
                 const activeTab = document.querySelector('.top-nav-tab.active') as HTMLElement;
@@ -209,31 +200,20 @@ const navItems = [
             });
 
             // Interactive Glow Tracker — follows cursor on .glow-interactive elements
+            let ticking = false;
             document.addEventListener('mousemove', (e: MouseEvent) => {
-                const elements = document.querySelectorAll<HTMLElement>('.glow-interactive');
-                elements.forEach(el => {
-                    const rect = el.getBoundingClientRect();
-                    el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-                    el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                if (ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const elements = document.querySelectorAll<HTMLElement>('.glow-interactive');
+                    elements.forEach(el => {
+                        const rect = el.getBoundingClientRect();
+                        el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                        el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                    });
+                    ticking = false;
                 });
             });
-
-            // Keyboard shortcut: Cmd/Ctrl+K → focus search
-            document.addEventListener('keydown', (e: KeyboardEvent) => {
-                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                    e.preventDefault();
-                    const search = document.getElementById(
-                        'global-search-input'
-                    ) as HTMLInputElement;
-                    search?.focus();
-                }
-            });
-
-            console.log(
-                '%c TWStock Quantum Terminal %c v4.0 — Top Nav ',
-                'background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px 0 0 4px; font-weight: bold;',
-                'background: #1e293b; color: #94a3b8; padding: 4px 8px; border-radius: 0 4px 4px 0;'
-            );
         </script>
     </body>
 </html>
