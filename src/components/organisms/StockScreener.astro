@@ -199,7 +199,7 @@ const categoryLabel: Record<string, string> = {
         resultsGrid.innerHTML = stocks
             .map(
                 stock => `
-            <tr class="hover:bg-accent/5 transition-colors cursor-pointer" data-link="/stocks/${stock.symbol}">
+            <tr class="hover:bg-accent/5 transition-colors cursor-pointer" data-link="/stocks/${stock.symbol}" data-symbol="${stock.symbol}">
                 <td class="px-3 py-2 text-xs font-mono text-text-secondary">${stock.symbol}</td>
                 <td class="px-3 py-2 text-sm font-semibold text-text-primary">${stock.name || '—'}</td>
                 <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.price)}</td>
@@ -329,4 +329,23 @@ const categoryLabel: Record<string, string> = {
         URL.revokeObjectURL(url);
         toast.show({ message: `已匯出 ${lastResults.length} 筆結果`, type: 'success', duration: 2000 });
     });
+
+    // real-time price updates for screener results
+    if (typeof EventSource !== 'undefined') {
+        const es = new EventSource('/api/sse/stream');
+        es.addEventListener('tick', e => {
+            try {
+                const ticks = JSON.parse(e.data);
+                ticks.forEach((t: any) => {
+                    const row = document.querySelector(`tr[data-symbol="${t.symbol}"]`);
+                    if (row) {
+                        const priceCell = row.querySelector('td:nth-child(3)');
+                        if (priceCell) priceCell.textContent = t.price.toFixed(2);
+                        row.classList.add('flash');
+                        setTimeout(() => row.classList.remove('flash'), 800);
+                    }
+                });
+            } catch {}
+        });
+    }
 </script>

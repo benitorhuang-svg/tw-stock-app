@@ -157,7 +157,7 @@ const isStockNotFound = stockData.price === 0 && stockData.name === symbol;
                 </svg>
                 <!-- Floating price tag (top-right) -->
                 <div class:list={[
-                    'absolute right-3 top-6 px-3 py-1.5 rounded-md font-mono text-base font-bold',
+<div id="chart-price" class="absolute right-3 top-6 px-3 py-1.5 rounded-md font-mono text-base font-bold",
                     isBullish ? 'bg-bullish/15 text-bullish' : isBearish ? 'bg-bearish/15 text-bearish' : 'bg-surface text-text-muted'
                 ]}>
                     {stockData.price > 0 ? stockData.price.toFixed(2) : '—'}
@@ -171,12 +171,12 @@ const isStockNotFound = stockData.price === 0 && stockData.name === symbol;
             <div class="glass-card p-4">
                 <div class="text-[10px] text-text-muted mb-1.5 uppercase tracking-wider font-bold">即時價格</div>
                 <div class="flex items-baseline gap-2 mb-2">
-                    <span class="data-value text-3xl">{stockData.price > 0 ? stockData.price.toFixed(2) : '—'}</span>
-                    <span class:list={['text-sm font-mono font-semibold', isBullish && 'text-bullish', isBearish && 'text-bearish', !isBullish && !isBearish && 'text-text-muted']}>
+                    <span id="current-price" class="data-value text-3xl">{stockData.price > 0 ? stockData.price.toFixed(2) : '—'}</span>
+                    <span id="current-change" class:list={["text-sm font-mono font-semibold", isBullish && 'text-bullish', isBearish && 'text-bearish', !isBullish && !isBearish && 'text-text-muted']}>
                         {isBullish ? '▲' : isBearish ? '▼' : '—'}
                     </span>
                 </div>
-                <div class:list={['text-sm font-mono', isBullish && 'text-bullish', isBearish && 'text-bearish', !isBullish && !isBearish && 'text-text-muted']}>
+                <div id="current-change-percent" class:list={["text-sm font-mono", isBullish && 'text-bullish', isBearish && 'text-bearish', !isBullish && !isBearish && 'text-text-muted']}>
                     {isBullish ? '+' : ''}{stockData.change !== 0 ? stockData.change.toFixed(2) : '0.00'} ({isBullish ? '+' : ''}{stockData.changePercent.toFixed(2)}%)
                 </div>
             </div>
@@ -281,4 +281,40 @@ const isStockNotFound = stockData.price === 0 && stockData.name === symbol;
             changePercent={stockData.changePercent}
         />
     </div>
+
+    <!-- real‑time price updates via SSE -->
+    <script>
+        const currentSymbol = ${JSON.stringify(symbol)};
+        if (typeof EventSource !== 'undefined') {
+            const es = new EventSource('/api/sse/stream');
+            es.addEventListener('tick', e => {
+                try {
+                    const ticks = JSON.parse(e.data);
+                    ticks.forEach(t => {
+                        if (t.symbol === currentSymbol) {
+                            const price = t.price.toFixed(2);
+                            [
+                                document.getElementById('chart-price'),
+                                document.getElementById('current-price'),
+                            ].forEach(el => {
+                                if (el) {
+                                    el.textContent = price;
+                                    el.classList.add('flash');
+                                    setTimeout(() => el.classList.remove('flash'), 800);
+                                }
+                            });
+                            const chEl = document.getElementById('current-change');
+                            const cpEl = document.getElementById('current-change-percent');
+                            if (chEl && typeof t.change === 'number') {
+                                chEl.textContent = `${t.change >= 0 ? '+' : ''}${t.change.toFixed(2)}`;
+                            }
+                            if (cpEl && typeof t.changePercent === 'number') {
+                                cpEl.textContent = `${t.changePercent >= 0 ? '+' : ''}${t.changePercent.toFixed(2)}%`;
+                            }
+                        }
+                    });
+                } catch {}
+            });
+        }
+    </script>
 </MainTerminal>

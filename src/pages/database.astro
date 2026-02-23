@@ -284,6 +284,21 @@ const dbStats = dbService.getDbStats();
             currentPage = 1;
             loadTable(activeTable);
         });
+
+        // keyboard navigation (up/down arrows) between tables
+        tableList.addEventListener('keydown', e => {
+            const active = document.activeElement as HTMLElement;
+            if (!active || active.tagName !== 'BUTTON') return;
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const buttons = Array.from(tableList.querySelectorAll('button')) as HTMLElement[];
+                const idx = buttons.indexOf(active);
+                if (idx !== -1) {
+                    const next = buttons[e.key === 'ArrowDown' ? idx + 1 : idx - 1];
+                    if (next) next.focus();
+                }
+            }
+        });
     }
 
     // Pagination
