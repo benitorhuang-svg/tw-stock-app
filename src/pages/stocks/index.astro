@@ -1,566 +1,260 @@
 ---
 /**
- * stocks/index.astro — Stock Listing / Analysis Hub
- * Premium data table with real-time search and sorting.
+ * stocks/index.astro — Analysis Hub (Landing Page for Deep Dive)
+ * Focuses on selecting or searching for a specific stock to analyze.
  */
 import MainTerminal from '../../layouts/MainTerminal.astro';
-import type { StockFullData } from '../../utils/stockDataService';
 
-const fmtVol = (v: number) => {
-    if (v >= 10000) return `${(v / 10000).toFixed(1)}萬`;
-    if (v > 0) return v.toLocaleString('zh-TW');
-    return '—';
-};
-const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
-const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
-
-let stocks: StockFullData[] = [];
-let loadError = '';
-
-try {
-    const svc = await import('../../utils/stockDataService');
-    const all = await svc.getStocksWithPrices();
-    stocks = all.filter(s => s.price > 0).sort((a, b) => b.volume - a.volume);
-} catch (e) {
-    console.error('Stock list load error:', e);
-    loadError = e instanceof Error ? e.message : '未知錯誤';
-}
+// SSR: Quick list for "Recently Viewed" or "Suggested"
+const suggestedStocks = [
+    { symbol: '2330', name: '台積電', sector: '半導體' },
+    { symbol: '2317', name: '鴻海', sector: '電子' },
+    { symbol: '2454', name: '聯發科', sector: '半導體' },
+    { symbol: '3481', name: '群創', sector: '光電' },
+    { symbol: '2303', name: '聯電', sector: '半導體' },
+];
 ---
 
-<MainTerminal title="個股分析中心">
-    <!-- Page Header -->
-    <div class="flex items-end justify-between mb-5 animate-fade-up">
-        <div>
-            <h1 class="text-xl lg:text-2xl font-bold tracking-tight text-text-primary">個股分析</h1>
-            <p class="text-xs text-text-muted mt-1 font-mono">
-                {stocks.length} 檔 · 依成交量排序
+<MainTerminal title="分析中心">
+    <div class="max-w-[1000px] mx-auto pt-10 lg:pt-20 px-4">
+        <!-- Centerpiece Header -->
+        <div class="text-center mb-12 animate-fade-up">
+            <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-text-primary mb-4">
+                個股數據分析中心
+            </h1>
+            <p class="text-text-muted text-sm lg:text-base max-w-xl mx-auto">
+                輸入代號或名稱，開啟深度視覺化分析。包含技術指標、法人籌碼、基本面診斷及 AI 警示。
             </p>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="tag-chip">{stocks.length} 檔</span>
-        </div>
-    </div>
 
-    <!-- Split Layout: Sidebar Filter (desktop) + Main Content -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 relative">
-        <!-- Filter Sidebar (hidden by default on mobile, visible on lg+) -->
-        <aside
-            id="filter-sidebar"
-            class="lg:col-span-3 glass-card p-4 h-fit sticky top-4 hidden lg:block animate-fade-up"
-            style="animation-delay: 50ms"
+        <!-- Hero Search Bar -->
+        <div
+            class="relative max-w-2xl mx-auto mb-16 animate-fade-up"
+            style="animation-delay: 100ms"
         >
-            <div class="border-b border-border pb-3 mb-4">
-                <div class="flex items-center justify-between">
-                    <div class="terminal-label text-xs">進階篩選</div>
-                    <button
-                        id="reset-filters"
-                        class="text-[10px] text-accent hover:text-accent/80 transition-colors font-mono"
-                        >重置</button
+            <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                <svg
+                    class="w-5 h-5 text-text-muted"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            <input
+                type="text"
+                id="analysis-hub-search"
+                placeholder="搜尋代號或名稱，例如 2330 或 台積電..."
+                class="w-full bg-glass-deep border-2 border-border/80 focus:border-accent/60 rounded-2xl pl-14 pr-6 py-5 text-lg font-mono placeholder:text-text-muted/50 outline-none transition-all shadow-2xl shadow-accent/5"
+            />
+
+            <!-- Quick Search Results (Popovers) -->
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-0 right-0 mt-3 glass-card overflow-hidden z-50 border-accent/20 shadow-2xl"
+            >
+                <div class="p-2 divide-y divide-border/20" id="results-container">
+                    <!-- Dynamic Items -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Access Sections -->
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-up"
+            style="animation-delay: 200ms"
+        >
+            <!-- Recently Viewed -->
+            <div class="glass-card p-6 border-border/40">
+                <div class="flex items-center justify-between mb-5">
+                    <h3
+                        class="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2"
                     >
+                        <span class="text-accent">⌚</span> 最近瀏覽
+                    </h3>
+                    <button class="text-[10px] text-text-muted hover:text-accent transition-colors"
+                        >清除記錄</button
+                    >
+                </div>
+                <div class="space-y-3" id="recent-analyses">
+                    <div
+                        class="text-center py-6 text-xs text-text-muted border border-dashed border-border/30 rounded-lg italic"
+                    >
+                        尚無瀏覽記錄
+                    </div>
                 </div>
             </div>
 
-            <div class="space-y-4 text-xs">
-                <!-- Industry Filter -->
-                <div>
-                    <label class="block text-text-muted mb-2 font-semibold">產業分類</label>
-                    <select
-                        id="filter-sector"
-                        class="w-full bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent"
+            <!-- High Dividend Yield Wall (Intelligence Component) -->
+            <div class="glass-card p-6 border-border/40 flex flex-col">
+                <div class="flex items-center justify-between mb-5">
+                    <h3
+                        class="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2"
                     >
-                        <option value="">全部產業</option>
-                        <option value="semiconductor">半導體</option>
-                        <option value="optoelectronics">光電</option>
-                        <option value="electronics">電子</option>
-                        <option value="finance">金融</option>
-                        <option value="biotech">生技醫療</option>
-                        <option value="other">其他</option>
-                    </select>
+                        <span class="text-accent">💎</span> 高殖利率情報牆
+                    </h3>
+                    <span
+                        class="text-[9px] px-1.5 py-0.5 rounded bg-bullish/10 text-bullish border border-bullish/20 font-bold"
+                        >Top 8 殖利率</span
+                    >
                 </div>
-
-                <!-- PE Ratio Filter -->
-                <div>
-                    <label class="block text-text-muted mb-2 font-semibold">本益比 (PE)</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input
-                            id="filter-pe-min"
-                            type="number"
-                            placeholder="最小"
-                            class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent"
-                            min="0"
-                            step="1"
-                        />
-                        <input
-                            id="filter-pe-max"
-                            type="number"
-                            placeholder="最大"
-                            class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent"
-                            min="0"
-                            step="1"
-                        />
-                    </div>
-                </div>
-
-                <!-- Dividend Yield Filter -->
-                <div>
-                    <label class="block text-text-muted mb-2 font-semibold">殖利率 (%)</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input
-                            id="filter-yield-min"
-                            type="number"
-                            placeholder="最小"
-                            class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent"
-                            min="0"
-                            step="0.1"
-                        />
-                        <input
-                            id="filter-yield-max"
-                            type="number"
-                            placeholder="最大"
-                            class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent"
-                            min="0"
-                            step="0.1"
-                        />
-                    </div>
-                </div>
-
-                <!-- Change Percent Filter -->
-                <div>
-                    <label class="block text-text-muted mb-2 font-semibold">漲跌幅 (%)</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input
-                            id="filter-change-min"
-                            type="number"
-                            placeholder="最小"
-                            class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent"
-                            step="0.1"
-                        />
-                        <input
-                            id="filter-change-max"
-                            type="number"
-                            placeholder="最大"
-                            class="bg-surface border border-border rounded px-2 py-2 text-xs font-mono text-text-primary outline-none focus:border-accent"
-                            step="0.1"
-                        />
-                    </div>
-                </div>
-
-                <!-- Apply Button -->
-                <button id="apply-filters" class="btn-cyber w-full text-xs py-2">套用篩選</button>
-            </div>
-        </aside>
-
-        <!-- Main Content: Search + Stock Table -->
-        <div class="lg:col-span-9 space-y-4">
-            <!-- Search Bar -->
-            <div class="glass-card overflow-hidden animate-fade-up" style="animation-delay: 100ms">
-                <div class="terminal-toolbar">
-                    <div class="terminal-toolbar-left">
-                        <span class="terminal-toolbar-title">股票快速搜尋</span>
-                        <span id="visible-count" class="terminal-toolbar-meta"
-                            >{stocks.length} 檔符合條件</span
+                <div class="space-y-2 flex-1" id="dividend-wall">
+                    <div class="flex items-center justify-center h-full py-10 opacity-30">
+                        <div
+                            class="animate-spin h-5 w-5 border-2 border-accent border-t-transparent rounded-full"
                         >
-                    </div>
-                    <div class="terminal-toolbar-right w-full max-w-sm">
-                        <div class="relative flex-1">
-                            <svg
-                                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <input
-                                type="text"
-                                placeholder="搜尋代號或名稱..."
-                                id="stock-list-search"
-                                class="w-full bg-glass border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm font-mono text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all"
-                            />
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Stock Table -->
-            <div class="glass-card overflow-hidden animate-fade-up" style="animation-delay: 150ms">
-                <div
-                    class="grid grid-cols-12 gap-2 px-5 py-3 border-b border-border bg-surface/30 text-[11px] font-bold text-text-muted uppercase tracking-wider sticky top-0 z-10"
-                >
-                    <div class="col-span-3 lg:col-span-3">股票</div>
-                    <div class="col-span-2 text-right">股價</div>
-                    <div class="col-span-2 text-right">漲跌%</div>
-                    <div class="col-span-2 text-right hidden md:block">成交量</div>
-                    <div class="col-span-1 text-right hidden lg:block">PE</div>
-                    <div class="col-span-1 text-right hidden lg:block">殖利率</div>
-                    <div class="col-span-1 text-right hidden lg:block">PB</div>
-                </div>
-
-                <div
-                    class="divide-y divide-border/20 max-h-[calc(100dvh-300px)] overflow-y-auto"
-                    id="stock-list-grid"
-                >
-                    {
-                        stocks.map((s, i) => {
-                            const bull = s.changePercent > 0;
-                            const bear = s.changePercent < 0;
-                            return (
-                                <a
-                                    href={`/stocks/${s.symbol}`}
-                                    class="grid grid-cols-12 gap-2 px-5 py-3 hover:bg-glass-hover transition-colors group no-underline items-center stock-row"
-                                    data-symbol={s.symbol}
-                                    data-name={s.name}
-                                    data-sector={s.sector}
-                                    data-pe={s.pe}
-                                    data-yield={s.yield}
-                                    data-change-pct={s.changePercent}
-                                    data-astro-prefetch
-                                >
-                                    <div class="col-span-3 lg:col-span-3 flex items-center gap-2 min-w-0">
-                                        <span class="text-[11px] font-mono text-text-muted w-5 text-right flex-shrink-0">
-                                            {i + 1}
-                                        </span>
-                                        <div class="min-w-0">
-                                            <div class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors truncate">
-                                                {s.name}
-                                            </div>
-                                            <div class="text-[11px] font-mono text-text-muted">
-                                                {s.symbol}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-span-2 text-right data-value text-sm">
-                                        {fmtPrice(s.price)}
-                                    </div>
-                                    <div
-                                        class:list={[
-                                            'col-span-2 text-right text-xs font-mono font-bold',
-                                            bull && 'text-bullish',
-                                            bear && 'text-bearish',
-                                            !bull && !bear && 'text-text-muted',
-                                        ]}
-                                    >
-                                        {fmtPct(s.changePercent)}
-                                    </div>
-                                    <div class="col-span-2 text-right text-xs font-mono text-text-secondary hidden md:block">
-                                        {fmtVol(s.volume)}
-                                    </div>
-                                    <div class="col-span-1 text-right text-xs font-mono text-text-secondary hidden lg:block">
-                                        {s.pe > 0 ? s.pe.toFixed(1) : '—'}
-                                    </div>
-                                    <div class="col-span-1 text-right text-xs font-mono text-text-secondary hidden lg:block">
-                                        {s.yield > 0 ? `${s.yield.toFixed(2)}%` : '—'}
-                                    </div>
-                                    <div class="col-span-1 text-right text-xs font-mono text-text-secondary hidden lg:block">
-                                        {s.pb > 0 ? s.pb.toFixed(2) : '—'}
-                                    </div>
-                                </a>
-                            );
-                        })
-                    }
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Floating Filter Button (mobile only, bottom-right FAB) -->
-    <button
-        id="mobile-filter-fab"
-        class="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-accent hover:bg-accent/90 shadow-lg shadow-accent/30 flex items-center justify-center transition-all z-50 hover:scale-110"
-    >
-        <svg class="w-6 h-6 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-            ></path>
-        </svg>
-    </button>
-
-    {/* Error State */}
-    {
-        loadError && (
-            <div class="glass-card p-8 text-center animate-fade-up border border-bearish/20 mt-4">
-                <div class="text-4xl mb-3">⚠️</div>
-                <h3 class="text-lg font-bold text-bearish mb-2">資料載入錯誤</h3>
-                <p class="text-sm text-text-muted mb-2">無法載入股票資料，請確認資料是否已建構。</p>
-                <p class="text-xs font-mono text-text-muted mb-4">{loadError}</p>
-                <button onclick="location.reload()" class="btn-cyber text-xs">
-                    重新載入
-                </button>
-            </div>
-        )
-    }
-
-    {/* Empty State */}
-    {
-        !loadError && stocks.length === 0 && (
-            <div class="glass-card p-8 text-center animate-fade-up mt-4">
-                <div class="text-4xl mb-3">📊</div>
-                <h3 class="text-lg font-bold text-text-primary mb-2">暫無股票資料</h3>
-                <p class="text-sm text-text-muted">
-                    資料尚未載入，請確認 <span class="font-mono">public/data/</span> 目錄下的 JSON
-                    已建構完成。
+    <!-- Features Overview -->
+    <div class="max-w-[1200px] mx-auto mt-24 mb-20 px-4 stagger-fade-up">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div
+                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
+            >
+                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">📈</div>
+                <h4 class="text-sm font-bold text-text-primary mb-2">多維度走勢</h4>
+                <p class="text-xs text-text-muted leading-relaxed">
+                    即時報價、K線及多週期技術分析圖表
                 </p>
             </div>
-        )
-    }
-    <!-- Load more button placeholder -->
-    <div class="text-center mt-4">
-        <button id="load-more-btn" class="btn-cyber text-xs" style="display:none">載入更多</button>
+            <div
+                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
+            >
+                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">💎</div>
+                <h4 class="text-sm font-bold text-text-primary mb-2">法人籌碼</h4>
+                <p class="text-xs text-text-muted leading-relaxed">
+                    外資、投信買賣超及大戶持股結構
+                </p>
+            </div>
+            <div
+                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
+            >
+                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">🏦</div>
+                <h4 class="text-sm font-bold text-text-primary mb-2">基本面分析</h4>
+                <p class="text-xs text-text-muted leading-relaxed">
+                    營收成長、獲利能力及完整財務數據
+                </p>
+            </div>
+            <div
+                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
+            >
+                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">🤖</div>
+                <h4 class="text-sm font-bold text-text-primary mb-2">AI 智能警報</h4>
+                <p class="text-xs text-text-muted leading-relaxed">
+                    自動化趨勢判別與異常波動即時提醒
+                </p>
+            </div>
+        </div>
     </div>
-    <script>
-        let rows: NodeListOf<Element>;
-        let displayLimit = 200;
-        function updateVisibilityLimit() {
-            if (!rows) return;
-            let visible = 0;
-            rows.forEach(row => {
-                const el = row as HTMLElement;
-                if (el.classList.contains('filter-hidden') || el.style.display === 'none') {
-                    el.style.display = 'none';
-                    return;
-                }
-                if (visible < displayLimit) {
-                    el.style.display = '';
-                } else {
-                    el.style.display = 'none';
-                }
-                visible++;
-            });
-            const vc = document.getElementById('visible-count');
-            if (vc) vc.textContent = `${visible} 檔符合條件`;
+</MainTerminal>
+
+<script lang="ts">
+    import { getStocksWithPrices } from '../../utils/stockDataService';
+
+    async function initAnalysisSearch() {
+        const input = document.getElementById('analysis-hub-search') as HTMLInputElement;
+        const results = document.getElementById('search-results');
+        const container = document.getElementById('results-container');
+
+        if (!input || !results || !container) return;
+
+        let allStocks = [];
+        try {
+            allStocks = await getStocksWithPrices();
+        } catch (e) {
+            console.error('Failed to load stock list for search', e);
         }
 
-        function initSearch() {
-            const input = document.getElementById('stock-list-search') as HTMLInputElement;
-            rows = document.querySelectorAll('.stock-row');
-            const vc = document.getElementById('visible-count');
-            if (!input) return;
-
-            input.addEventListener('input', () => {
-                const q = input.value.toLowerCase().trim();
-
-                requestAnimationFrame(() => {
-                    let visible = 0;
-                    rows.forEach(row => {
-                        const el = row as HTMLElement;
-                        const symbol = el.dataset.symbol?.toLowerCase() || '';
-                        const name = el.dataset.name?.toLowerCase() || '';
-                        const match = !q || symbol.includes(q) || name.includes(q);
-
-                        // Only show if it matches search AND filter criteria
-                        const isFilteredOut = el.classList.contains('filter-hidden');
-                        el.style.display = match && !isFilteredOut ? '' : 'none';
-                        if (match && !isFilteredOut) visible++;
-                    });
-                    if (vc) vc.textContent = `${visible} 檔符合條件`;
-                });
-            });
-        }
-
-        function initFilters() {
-            const applyBtn = document.getElementById('apply-filters');
-            const resetBtn = document.getElementById('reset-filters');
-            // rows is global (populated by initSearch)
-            const visibleCount = document.getElementById('visible-count');
-            const searchInput = document.getElementById('stock-list-search') as HTMLInputElement;
-
-            const getFilterValues = () => ({
-                sector:
-                    (document.getElementById('filter-sector') as HTMLSelectElement)?.value || '',
-                peMin:
-                    parseFloat(
-                        (document.getElementById('filter-pe-min') as HTMLInputElement)?.value
-                    ) || null,
-                peMax:
-                    parseFloat(
-                        (document.getElementById('filter-pe-max') as HTMLInputElement)?.value
-                    ) || null,
-                yieldMin:
-                    parseFloat(
-                        (document.getElementById('filter-yield-min') as HTMLInputElement)?.value
-                    ) || null,
-                yieldMax:
-                    parseFloat(
-                        (document.getElementById('filter-yield-max') as HTMLInputElement)?.value
-                    ) || null,
-                changeMin:
-                    parseFloat(
-                        (document.getElementById('filter-change-min') as HTMLInputElement)?.value
-                    ) || null,
-                changeMax:
-                    parseFloat(
-                        (document.getElementById('filter-change-max') as HTMLInputElement)?.value
-                    ) || null,
-            });
-
-            const applyFilters = () => {
-                const filters = getFilterValues();
-                const searchQuery = searchInput?.value.toLowerCase().trim() || '';
-                let visible = 0;
-
-                rows.forEach(row => {
-                    const el = row as HTMLElement;
-                    const sector = el.dataset.sector || '';
-                    const pe = parseFloat(el.dataset.pe || '0');
-                    const yieldVal = parseFloat(el.dataset.yield || '0');
-                    const changePct = parseFloat(el.dataset.changePct || '0');
-
-                    let match = true;
-
-                    // Apply sector filter
-                    if (filters.sector && sector !== filters.sector) match = false;
-
-                    // Apply PE filter
-                    if (filters.peMin !== null && pe < filters.peMin) match = false;
-                    if (filters.peMax !== null && pe > filters.peMax) match = false;
-
-                    // Apply yield filter
-                    if (filters.yieldMin !== null && yieldVal < filters.yieldMin) match = false;
-                    if (filters.yieldMax !== null && yieldVal > filters.yieldMax) match = false;
-
-                    // Apply change percent filter
-                    if (filters.changeMin !== null && changePct < filters.changeMin) match = false;
-                    if (filters.changeMax !== null && changePct > filters.changeMax) match = false;
-
-                    // Mark as filtered hidden
-                    if (match) {
-                        el.classList.remove('filter-hidden');
-                    } else {
-                        el.classList.add('filter-hidden');
-                    }
-
-                    // Apply search query
-                    const symbol = el.dataset.symbol?.toLowerCase() || '';
-                    const name = el.dataset.name?.toLowerCase() || '';
-                    const searchMatch =
-                        !searchQuery || symbol.includes(searchQuery) || name.includes(searchQuery);
-
-                    // Final visibility
-                    const isVisible = match && searchMatch;
-                    el.style.display = isVisible ? '' : 'none';
-                    if (isVisible) visible++;
-                });
-
-                if (visibleCount) visibleCount.textContent = `${visible} 檔符合條件`;
-            };
-
-            const resetFilters = () => {
-                (document.getElementById('filter-sector') as HTMLSelectElement).value = '';
-                (document.getElementById('filter-pe-min') as HTMLInputElement).value = '';
-                (document.getElementById('filter-pe-max') as HTMLInputElement).value = '';
-                (document.getElementById('filter-yield-min') as HTMLInputElement).value = '';
-                (document.getElementById('filter-yield-max') as HTMLInputElement).value = '';
-                (document.getElementById('filter-change-min') as HTMLInputElement).value = '';
-                (document.getElementById('filter-change-max') as HTMLInputElement).value = '';
-
-                rows.forEach(row => {
-                    (row as HTMLElement).classList.remove('filter-hidden');
-                    (row as HTMLElement).style.display = '';
-                });
-
-                if (visibleCount) visibleCount.textContent = `${rows.length} 檔符合條件`;
-            };
-
-            applyBtn?.addEventListener('click', () => {
-                applyFilters();
-                updateVisibilityLimit();
-            });
-            resetBtn?.addEventListener('click', () => {
-                resetFilters();
-                updateVisibilityLimit();
-            });
-
-            // initialize limit
-            updateVisibilityLimit();
-
-            // load more button
-            const loadMoreBtn = document.getElementById('load-more-btn');
-            if (loadMoreBtn) {
-                loadMoreBtn.style.display = 'inline-block';
-                loadMoreBtn.addEventListener('click', () => {
-                    displayLimit += 200;
-                    updateVisibilityLimit();
-                });
+        input.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            if (q.length < 1) {
+                results.classList.add('hidden');
+                return;
             }
 
-            // Mobile FAB toggle
-            const fab = document.getElementById('mobile-filter-fab');
-            const sidebar = document.getElementById('filter-sidebar');
+            const matches = allStocks
+                .filter(s => s.symbol.includes(q) || s.name.toLowerCase().includes(q))
+                .slice(0, 8);
 
-            fab?.addEventListener('click', () => {
-                sidebar?.classList.toggle('hidden');
-                sidebar?.classList.toggle('fixed');
-                sidebar?.classList.toggle('top-4');
-                sidebar?.classList.toggle('left-4');
-                sidebar?.classList.toggle('right-4');
-                sidebar?.classList.toggle('z-50');
-                sidebar?.classList.toggle('shadow-2xl');
+            if (matches.length > 0) {
+                container.innerHTML = matches
+                    .map(
+                        s => `
+                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-3 hover:bg-accent/5 transition-colors no-underline group">
+                        <div class="flex items-center gap-3">
+                            <span class="font-mono text-sm font-bold text-accent">${s.symbol}</span>
+                            <span class="text-sm text-text-primary font-medium group-hover:text-accent transition-colors">${s.name}</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="text-xs font-mono text-text-secondary">${s.price.toFixed(2)}</span>
+                            <span class="text-[10px] text-text-muted uppercase tracking-tighter">${s.sector || ''}</span>
+                        </div>
+                    </a>
+                `
+                    )
+                    .join('');
+                results.classList.remove('hidden');
+            } else {
+                container.innerHTML =
+                    '<div class="p-6 text-center text-xs text-text-muted">查無搜尋標的</div>';
+                results.classList.remove('hidden');
+            }
+        });
 
-                // Add backdrop
-                if (!sidebar?.classList.contains('hidden')) {
-                    const backdrop = document.createElement('div');
-                    backdrop.id = 'filter-backdrop';
-                    backdrop.className =
-                        'fixed inset-0 bg-background/80 backdrop-blur-sm z-40 lg:hidden';
-                    backdrop.addEventListener('click', () => {
-                        sidebar?.classList.add('hidden');
-                        sidebar?.classList.remove(
-                            'fixed',
-                            'top-4',
-                            'left-4',
-                            'right-4',
-                            'z-50',
-                            'shadow-2xl'
-                        );
-                        backdrop.remove();
-                    });
-                    document.body.appendChild(backdrop);
-                } else {
-                    document.getElementById('filter-backdrop')?.remove();
-                }
-            });
+        // Close search on click outside
+        document.addEventListener('click', e => {
+            if (!input.contains(e.target as Node) && !results.contains(e.target as Node)) {
+                results.classList.add('hidden');
+            }
+        });
+
+        // Initialize Dividend Wall
+        function updateDividendWall() {
+            const wallContainer = document.getElementById('dividend-wall');
+            if (!wallContainer || allStocks.length === 0) return;
+
+            const highYield = [...allStocks]
+                .filter(s => s.yield > 0)
+                .sort((a, b) => b.yield - a.yield)
+                .slice(0, 8);
+
+            wallContainer.innerHTML = highYield
+                .map(
+                    s => `
+                <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-bullish/5 transition-all border border-transparent hover:border-bullish/20 group no-underline">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-mono font-bold bg-surface px-1.5 py-0.5 rounded text-accent tracking-tighter">${s.symbol}</span>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium text-text-primary group-hover:text-bullish transition-colors">${s.name}</span>
+                            <span class="text-[9px] text-text-muted hidden sm:block">${s.sector || ''}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono font-bold text-bullish">${s.yield.toFixed(2)}%</span>
+                        <div class="w-8 h-1 bg-surface rounded-full overflow-hidden">
+                            <div class="bg-bullish h-full rounded-full" style="width: ${Math.min(s.yield * 10, 100)}%"></div>
+                        </div>
+                    </div>
+                </a>
+            `
+                )
+                .join('');
         }
 
-        // Initialize on page load and after Astro transitions
-        function init() {
-            initSearch();
-            initFilters();
-        }
+        updateRecent();
+        updateDividendWall();
+    }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-        document.addEventListener('astro:page-load', init);
-
-        // ═══ Real-time updates via SSE ═══
-        if (typeof EventSource !== 'undefined') {
-            const es = new EventSource('/api/sse/stream');
-            es.addEventListener('tick', e => {
-                try {
-                    const ticks = JSON.parse(e.data);
-                    ticks.forEach((t: any) => {
-                        const sym = t.symbol;
-                        const row = document.querySelector(
-                            `.stock-row[data-symbol="${sym}"]`
-                        ) as HTMLElement;
-                        if (row) {
-                            const priceCell = row.querySelector('.data-value');
-                            if (priceCell) priceCell.textContent = t.price.toFixed(2);
-                            row.classList.add('flash');
-                            setTimeout(() => row.classList.remove('flash'), 800);
-                        }
-                    });
-                } catch {}
-            });
-        }
-    </script>
-</MainTerminal>
+    document.addEventListener('DOMContentLoaded', initAnalysisSearch);
+    document.addEventListener('astro:page-load', initAnalysisSearch);
+</script>

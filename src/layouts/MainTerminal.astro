@@ -21,11 +21,11 @@ const isActive = (path: string) =>
     currentPath === path || (path !== '/' && currentPath.startsWith(path));
 
 const navItems = [
-    { label: '市場總覽', path: '/', icon: '📊' },
-    { label: '智慧選股', path: '/screener', icon: '🔍' },
-    { label: '我的自選', path: '/watchlist', icon: '⭐' },
-    { label: '個股分析', path: '/stocks', icon: '📈' },
-    { label: '數據觀測', path: '/database', icon: '🗃️' },
+    { label: 'DASHBOARD 總覽', path: '/', icon: '📊' },
+    { label: 'SCREENER 選股', path: '/screener', icon: '🔍' },
+    { label: 'ANALYSIS 分析', path: '/stocks', icon: '📈' },
+    { label: 'WATCHLIST 自選', path: '/watchlist', icon: '⭐' },
+    { label: 'EXPLORER 數據觀測', path: '/database', icon: '🗃️' },
 ];
 ---
 
@@ -53,26 +53,18 @@ const navItems = [
                     <!-- Brand -->
                     <a
                         href="/"
-                        class="flex items-center gap-2 no-underline mr-4 lg:mr-6 flex-shrink-0"
+                        class="flex items-center gap-2 no-underline mr-4 lg:mr-6 flex-shrink-0 group"
                         data-astro-prefetch
                     >
-                        <span
-                            class="font-mono text-base lg:text-lg font-extrabold tracking-tight text-text-primary"
-                        >
-                            TWStock
-                        </span>
-                        <!-- Connection Status -->
-                        <div
-                            class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface/40 border border-border/10 ml-2"
-                        >
-                            <div
-                                id="connection-status-led"
-                                class="w-1.5 h-1.5 rounded-full bg-bearish animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.4)]"
-                            >
-                            </div>
+                        <div class="flex items-baseline gap-1">
                             <span
-                                class="text-[9px] font-black tracking-widest uppercase text-text-muted"
-                                >連線</span
+                                class="font-mono text-base lg:text-lg font-extrabold tracking-tight text-text-primary"
+                            >
+                                TWStock
+                            </span>
+                            <span
+                                class="text-[9px] font-black bg-accent/20 text-accent px-1.5 py-0.5 rounded border border-accent/20 tracking-tighter"
+                                >PRO</span
                             >
                         </div>
                     </a>
