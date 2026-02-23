@@ -28,6 +28,9 @@
 - [x] T019 SSE 嵌入股票詳情頁
   - 檔案: `src/pages/stocks/[symbol].astro`
   - 當前頁面啟用 EventSource，只更新價格/漲跌並加入閃光動畫
+- [x] T022 AI 報告後端串接
+  - 檔案: `src/pages/api/ai-report/[symbol].ts`, `src/components/organisms/TabAlerts.astro`
+  - 建立 API 端點並於 TabAlerts 客戶端 fetch 實時報告
 - [x] T012 啟用動態價格 API
   - 檔案: `src/pages/api/prices/[symbol].ts`
   - 解除註解並支援 `prices` 客戶端回退
@@ -89,6 +92,9 @@
 - [x] T020 Screener表格可排序與鍵盤連結
   - 檔案: `src/components/organisms/StockScreener.astro`
   - 結果行 `tabindex="0"` 並支援 Enter 鍵；點選欄位標題排序價格、漲幅等
+- [x] T021 自選股功能
+  - 檔案: `src/pages/stocks/[symbol].astro`, `src/pages/watchlist.astro`, `src/layouts/MainTerminal.astro`
+  - 詳情頁新增 ⭐ 加入/移除自選按鈕；新增 /watchlist 頁面顯示自選股列表；頂欄 tab 加入自選連結
 - [x] T017 初始化 PWA 註冊 (`pwa.ts`) 及 performance-mode (`performance-mode.ts`) 在 MainTerminal
 - [x] T018 TabOverview 新增即時報價 fetch，週期 60s 呼叫 `/api/live-quote.json`
 
