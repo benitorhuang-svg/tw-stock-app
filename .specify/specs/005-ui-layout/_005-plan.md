@@ -28,6 +28,8 @@
 1. 真實財報 & 籌碼資料接線
 2. 技術圖改用歷史價格 + MACD
 3. Ctrl+K 搜尋、Toast 通知、CSV 匯出、PWA、效能偵測、即時報價
+4. 增加 Stock List Load More 與 SSE 實時更新
+5. 啟用 prices API (`/api/prices/[symbol]`)
 
 
 ### P0: 安全 (必須立即修復)

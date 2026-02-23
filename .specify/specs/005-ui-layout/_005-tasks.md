@@ -21,7 +21,13 @@
 
 - [x] T003 Stock list 加 Load More 分頁
   - 檔案: `src/pages/stocks/index.astro`
-  - 初始載入 50 筆，點擊 "載入更多" 每次增加 50 筆
+  - 初始載入 200 筆，再點擊"載入更多"一次增加 200筆
+- [x] T011 SSE 實時更新列表與 Dashboard 統計
+  - 檔案: `src/pages/stocks/index.astro`, `src/pages/index.astro`
+  - 利用 `/api/sse/stream` 導入 EventSource 實時刷新價格與上下統計
+- [x] T012 啟用動態價格 API
+  - 檔案: `src/pages/api/prices/[symbol].ts`
+  - 解除註解並支援 `prices` 客戶端回退
 
 - [x] T004 Tab 狀態保存到 URL Hash
   - 檔案: `src/components/organisms/TabBar.astro`
