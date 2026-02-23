@@ -58,3 +58,19 @@
 - [x] T010 TabBar 鍵盤導覽 (Arrow keys)
   - 檔案: `src/components/organisms/TabBar.astro`
   - 支援左右方向鍵切換 tab + `aria-selected`
+
+---
+
+## 第五階段：資料接線與功能擴充 (P0+)  
+> 於 2026-02-23 實作完畢
+
+- [x] T011 將 `financials.ts` 改為讀取 `public/data/financials.json`/`revenue.json`，TabFundamentals 現在顯示全市場真實財報資料
+- [x] T012 將 `institutional.ts` 改為讀取 `public/data/chips/*.json`，TabChips 顯示全市場法人買賣超
+- [x] T013 TabTechnical 使用 `priceService.fetchStockPrices()` 傳入真實 OHLCV 資料並計算 MACD/MA5/MA20
+- [x] T014 為整站啟用 Ctrl+K 快速搜尋：`src/lib/keyboard.ts` + MainTerminal 搜尋按鈕
+- [x] T015 加入 Toast 通知系統 (`toast.ts`)，在篩選、匯出、錯誤時顯示訊息
+- [x] T016 Screener 結果頁面加入「📥 匯出 CSV」按鈕與匯出邏輯
+- [x] T017 初始化 PWA 註冊 (`pwa.ts`) 及 performance-mode (`performance-mode.ts`) 在 MainTerminal
+- [x] T018 TabOverview 新增即時報價 fetch，週期 60s 呼叫 `/api/live-quote.json`
+
+(未來可新增：啟用 SSE、prices API、AI 報告等)

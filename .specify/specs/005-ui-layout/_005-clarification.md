@@ -9,8 +9,10 @@
   - `latest_prices`、`stocks`、`revenue`、`financials`、`chips_daily` — 皆已存在於 `stocks.db`
   - Dashboard / stocks 列表使用 `stockDataService.ts` 從 `public/data/` JSON 快照載入
   - Screener / Database Explorer 使用 `better-sqlite3` 的 `SqliteService` singleton
+  - TabFundamentals/Chips 現在直接讀取 `public/data/financials.json`、`chips/*.json`，不再依賴模擬資料
 - [x] 是否需要串接新的外部 API？
   - 否。SSE stream (`/api/sse/stream`) 已實作但未被任何頁面使用 — 可暫不動
+  - `/api/live-quote.json` 用於即時報價，不需外部配置
   - 未來可整合 `chartgpu` 替換模擬 SVG 圖表
 - [x] 是否依賴其他尚未完成的功能或模組？
   - Tab 內容（Overview/Technical/Chips/Fundamentals/Alerts）部分使用模擬數據，非本次修復範圍

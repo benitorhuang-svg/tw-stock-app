@@ -24,6 +24,12 @@
 
 ## 修復範圍與優先級
 
+### P0+：資料接線與功能擴充（2026-02-23完成）
+1. 真實財報 & 籌碼資料接線
+2. 技術圖改用歷史價格 + MACD
+3. Ctrl+K 搜尋、Toast 通知、CSV 匯出、PWA、效能偵測、即時報價
+
+
 ### P0: 安全 (必須立即修復)
 1. **DB Explorer XSS** — `database.astro` 的 `innerHTML` 渲染未 escape 的 cell value
 
