@@ -25,6 +25,9 @@
 - [x] T011 SSE 實時更新列表與 Dashboard 統計
   - 檔案: `src/pages/stocks/index.astro`, `src/pages/index.astro`
   - 利用 `/api/sse/stream` 導入 EventSource 實時刷新價格與上下統計
+- [x] T019 SSE 嵌入股票詳情頁
+  - 檔案: `src/pages/stocks/[symbol].astro`
+  - 當前頁面啟用 EventSource，只更新價格/漲跌並加入閃光動畫
 - [x] T012 啟用動態價格 API
   - 檔案: `src/pages/api/prices/[symbol].ts`
   - 解除註解並支援 `prices` 客戶端回退
@@ -52,6 +55,9 @@
 - [x] T008 Mobile DB Explorer sidebar
   - 檔案: `src/pages/database.astro`
   - mobile 時 sidebar 加 toggle button，預設收合
+- [x] T022 Database table sorting & keyboard navigation
+  - 檔案: `src/pages/database.astro`
+  - table headers可點擊排序，加入上下鍵在 table list 中移動焦點
 
 ---
 
@@ -67,7 +73,11 @@
 
 ---
 
-## 第五階段：資料接線與功能擴充 (P0+)  
+## 第五階段：資料接線與功能擴充 (P0+)
+
+- [x] T023 主題切換按鈕 & light/dark 支援
+  - 檔案: `src/layouts/MainTerminal.astro`, `src/layouts/BaseHead.astro`
+  - 使用 localStorage 記錄，按鈕在頂欄顯示月亮/太陽  
 > 於 2026-02-23 實作完畢
 
 - [x] T011 將 `financials.ts` 改為讀取 `public/data/financials.json`/`revenue.json`，TabFundamentals 現在顯示全市場真實財報資料
@@ -76,6 +86,9 @@
 - [x] T014 為整站啟用 Ctrl+K 快速搜尋：`src/lib/keyboard.ts` + MainTerminal 搜尋按鈕
 - [x] T015 加入 Toast 通知系統 (`toast.ts`)，在篩選、匯出、錯誤時顯示訊息
 - [x] T016 Screener 結果頁面加入「📥 匯出 CSV」按鈕與匯出邏輯
+- [x] T020 Screener表格可排序與鍵盤連結
+  - 檔案: `src/components/organisms/StockScreener.astro`
+  - 結果行 `tabindex="0"` 並支援 Enter 鍵；點選欄位標題排序價格、漲幅等
 - [x] T017 初始化 PWA 註冊 (`pwa.ts`) 及 performance-mode (`performance-mode.ts`) 在 MainTerminal
 - [x] T018 TabOverview 新增即時報價 fetch，週期 60s 呼叫 `/api/live-quote.json`
 
