@@ -103,18 +103,21 @@ try {
     <!-- ═══ Market Stats Row ═══ -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 stagger-children">
         <StatCard
+            id="stat-up"
             label="上漲"
             value={upCount}
             change={totalStocks > 0 ? (upCount / totalStocks) * 100 : 0}
             class="border-l-2 border-l-bullish/60"
         />
         <StatCard
+            id="stat-down"
             label="下跌"
             value={downCount}
             change={totalStocks > 0 ? -(downCount / totalStocks) * 100 : 0}
             class="border-l-2 border-l-bearish/60"
         />
         <StatCard
+            id="stat-flat"
             label="平盤"
             value={flatCount}
             class="border-l-2 border-l-text-muted/30"
@@ -238,3 +241,27 @@ try {
     </Fragment>
     )}
 </MainTerminal>
+
+<script>
+    // SSE updates for dashboard counts
+    if (typeof EventSource !== 'undefined') {
+        const es = new EventSource('/api/sse/stream');
+        es.addEventListener('tick', e => {
+            try {
+                const ticks = JSON.parse(e.data);
+                let up = 0, down = 0, flat = 0;
+                ticks.forEach((t: any) => {
+                    if (t.changePercent > 0) up++;
+                    else if (t.changePercent < 0) down++;
+                    else flat++;
+                });
+                const upEl = document.querySelector('#stat-up .data-value');
+                const downEl = document.querySelector('#stat-down .data-value');
+                const flatEl = document.querySelector('#stat-flat .data-value');
+                if (upEl) upEl.textContent = String(up);
+                if (downEl) downEl.textContent = String(down);
+                if (flatEl) flatEl.textContent = String(flat);
+            } catch {}
+        });
+    }
+</script>

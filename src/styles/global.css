@@ -956,3 +956,14 @@
         opacity: 1;
     }
 }
+
+/* realtime update flash */
+@keyframes rowFlash {
+    from { background: rgba(255, 255, 0, 0.3); }
+    to   { background: transparent; }
+}
+.flash {
+    animation: rowFlash 0.8s ease-out;
+}
+    }
+}

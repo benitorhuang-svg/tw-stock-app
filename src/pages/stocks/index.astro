@@ -201,40 +201,64 @@ try {
             <p class="text-sm text-text-muted">資料尚未載入，請確認 <span class="font-mono">public/data/</span> 目錄下的 JSON 已建構完成。</p>
         </div>
     )}
-</MainTerminal>
-
+    <!-- Load more button placeholder -->
+    <div class="text-center mt-4">
+        <button id="load-more-btn" class="btn-cyber text-xs" style="display:none">載入更多</button>
+    </div>
 <script>
-    function initSearch() {
-        const input = document.getElementById('stock-list-search') as HTMLInputElement;
-        const rows = document.querySelectorAll('.stock-row');
-        const visibleCount = document.getElementById('visible-count');
-        if (!input) return;
-
-        input.addEventListener('input', () => {
-            const q = input.value.toLowerCase().trim();
-
-            requestAnimationFrame(() => {
-                let visible = 0;
-                rows.forEach(row => {
-                    const el = row as HTMLElement;
-                    const symbol = el.dataset.symbol?.toLowerCase() || '';
-                    const name = el.dataset.name?.toLowerCase() || '';
-                    const match = !q || symbol.includes(q) || name.includes(q);
-                    
-                    // Only show if it matches search AND filter criteria
-                    const isFilteredOut = el.classList.contains('filter-hidden');
-                    el.style.display = match && !isFilteredOut ? '' : 'none';
-                    if (match && !isFilteredOut) visible++;
-                });
-                if (visibleCount) visibleCount.textContent = `${visible} visible`;
+        let rows: NodeListOf<Element>;
+        let displayLimit = 200;
+        function updateVisibilityLimit() {
+            if (!rows) return;
+            let visible = 0;
+            rows.forEach(row => {
+                const el = row as HTMLElement;
+                if (el.classList.contains('filter-hidden') || el.style.display === 'none') {
+                    el.style.display = 'none';
+                    return;
+                }
+                if (visible < displayLimit) {
+                    el.style.display = '';
+                } else {
+                    el.style.display = 'none';
+                }
+                visible++;
             });
-        });
-    }
+            const vc = document.getElementById('visible-count');
+            if (vc) vc.textContent = `${visible} visible`;
+        }
+
+        function initSearch() {
+            const input = document.getElementById('stock-list-search') as HTMLInputElement;
+            rows = document.querySelectorAll('.stock-row');
+            const vc = document.getElementById('visible-count');
+            if (!input) return;
+
+            input.addEventListener('input', () => {
+                const q = input.value.toLowerCase().trim();
+
+                requestAnimationFrame(() => {
+                    let visible = 0;
+                    rows.forEach(row => {
+                        const el = row as HTMLElement;
+                        const symbol = el.dataset.symbol?.toLowerCase() || '';
+                        const name = el.dataset.name?.toLowerCase() || '';
+                        const match = !q || symbol.includes(q) || name.includes(q);
+                        
+                        // Only show if it matches search AND filter criteria
+                        const isFilteredOut = el.classList.contains('filter-hidden');
+                        el.style.display = match && !isFilteredOut ? '' : 'none';
+                        if (match && !isFilteredOut) visible++;
+                    });
+                    if (vc) vc.textContent = `${visible} visible`;
+                });
+            });
+        }
 
     function initFilters() {
         const applyBtn = document.getElementById('apply-filters');
         const resetBtn = document.getElementById('reset-filters');
-        const rows = document.querySelectorAll('.stock-row');
+        // rows is global (populated by initSearch)
         const visibleCount = document.getElementById('visible-count');
         const searchInput = document.getElementById('stock-list-search') as HTMLInputElement;
 
@@ -315,8 +339,21 @@ try {
             if (visibleCount) visibleCount.textContent = `${rows.length} visible`;
         };
 
-        applyBtn?.addEventListener('click', applyFilters);
-        resetBtn?.addEventListener('click', resetFilters);
+        applyBtn?.addEventListener('click', () => { applyFilters(); updateVisibilityLimit(); });
+        resetBtn?.addEventListener('click', () => { resetFilters(); updateVisibilityLimit(); });
+
+        // initialize limit
+        updateVisibilityLimit();
+
+        // load more button
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (loadMoreBtn) {
+            loadMoreBtn.style.display = 'inline-block';
+            loadMoreBtn.addEventListener('click', () => {
+                displayLimit += 200;
+                updateVisibilityLimit();
+            });
+        }
 
         // Mobile FAB toggle
         const fab = document.getElementById('mobile-filter-fab');
@@ -360,4 +397,24 @@ try {
         init();
     }
     document.addEventListener('astro:page-load', init);
+
+    // ═══ Real-time updates via SSE ═══
+    if (typeof EventSource !== 'undefined') {
+        const es = new EventSource('/api/sse/stream');
+        es.addEventListener('tick', e => {
+            try {
+                const ticks = JSON.parse(e.data);
+                ticks.forEach((t: any) => {
+                    const sym = t.symbol;
+                    const row = document.querySelector(`.stock-row[data-symbol="${sym}"]`) as HTMLElement;
+                    if (row) {
+                        const priceCell = row.querySelector('.data-value');
+                        if (priceCell) priceCell.textContent = t.price.toFixed(2);
+                        row.classList.add('flash');
+                        setTimeout(() => row.classList.remove('flash'), 800);
+                    }
+                });
+            } catch {}
+        });
+    }
 </script>
