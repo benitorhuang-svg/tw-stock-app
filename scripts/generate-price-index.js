@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import path from 'path';
 
@@ -28,7 +27,6 @@ try {
 
     fs.writeFileSync(outputFile, JSON.stringify(index, null, 2));
     console.log(`Generated index for ${Object.keys(index).length} files at ${outputFile}`);
-
 } catch (e) {
     console.error('Error generating index:', e);
 }

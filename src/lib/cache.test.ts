@@ -5,13 +5,21 @@ const localStorageMock = (() => {
     let store: Record<string, string> = {};
     return {
         getItem: vi.fn((key: string) => store[key] || null),
-        setItem: vi.fn((key: string, value: string) => { store[key] = value; }),
-        removeItem: vi.fn((key: string) => { delete store[key]; }),
-        clear: vi.fn(() => { store = {}; }),
-        get length() { return Object.keys(store).length; },
+        setItem: vi.fn((key: string, value: string) => {
+            store[key] = value;
+        }),
+        removeItem: vi.fn((key: string) => {
+            delete store[key];
+        }),
+        clear: vi.fn(() => {
+            store = {};
+        }),
+        get length() {
+            return Object.keys(store).length;
+        },
         key: vi.fn((i: number) => Object.keys(store)[i] || null),
         // 暴露 store 以便測試檢查
-        _getStore: () => store
+        _getStore: () => store,
     };
 })();
 
@@ -21,7 +29,13 @@ vi.stubGlobal('localStorage', localStorageMock);
 const originalDateNow = Date.now;
 
 describe('SimpleCache (In-Memory)', () => {
-    let cache: { get: <T>(key: string) => T | null; set: <T>(key: string, data: T, ttlMs?: number) => void; delete: (key: string) => void; clear: () => void; getOrSet: <T>(key: string, fetcher: () => Promise<T>, ttlMs?: number) => Promise<T> };
+    let cache: {
+        get: <T>(key: string) => T | null;
+        set: <T>(key: string, data: T, ttlMs?: number) => void;
+        delete: (key: string) => void;
+        clear: () => void;
+        getOrSet: <T>(key: string, fetcher: () => Promise<T>, ttlMs?: number) => Promise<T>;
+    };
 
     beforeEach(async () => {
         vi.resetModules();

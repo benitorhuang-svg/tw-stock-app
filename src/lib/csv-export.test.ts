@@ -23,14 +23,14 @@ describe('CSV Export', () => {
                     symbol: '2330',
                     name: '台積電',
                     matchedStrategies: ['低本益比', '高ROE'],
-                    fundamentals: { pe: 15.5, pb: 4.2, dividendYield: 2.5, roe: 25 }
+                    fundamentals: { pe: 15.5, pb: 4.2, dividendYield: 2.5, roe: 25 },
                 },
                 {
                     symbol: '2317',
                     name: '鴻海',
                     matchedStrategies: ['高殖利率'],
-                    fundamentals: { pe: 12, pb: 1.2, dividendYield: 6.0, roe: 18 }
-                }
+                    fundamentals: { pe: 12, pb: 1.2, dividendYield: 6.0, roe: 18 },
+                },
             ];
 
             const csv = toCSV(results);
@@ -49,8 +49,8 @@ describe('CSV Export', () => {
                     symbol: '1234',
                     name: '測試股',
                     matchedStrategies: [],
-                    fundamentals: undefined
-                }
+                    fundamentals: undefined,
+                },
             ];
 
             const csv = toCSV(results);
@@ -71,8 +71,8 @@ describe('CSV Export', () => {
                     symbol: '2330',
                     name: '台積電',
                     matchedStrategies: [],
-                    fundamentals: { pe: 15.123, pb: 4.567, dividendYield: 2.89, roe: 25.5 }
-                }
+                    fundamentals: { pe: 15.123, pb: 4.567, dividendYield: 2.89, roe: 25.5 },
+                },
             ];
 
             const csv = toCSV(results);
@@ -89,8 +89,8 @@ describe('CSV Export', () => {
                     symbol: '2330',
                     name: '台積電',
                     matchedStrategies: ['低本益比'],
-                    fundamentals: { pe: 15, pb: 4, dividendYield: 2, roe: 25 }
-                }
+                    fundamentals: { pe: 15, pb: 4, dividendYield: 2, roe: 25 },
+                },
             ];
 
             const csv = toCSV(results);

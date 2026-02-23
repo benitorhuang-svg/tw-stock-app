@@ -1,8 +1,20 @@
 ---
-import Layout from '../layouts/Layout.astro';
+/**
+ * screener.astro — Stock Screener Page
+ * Spec: 005-ui-layout, connected to M3 screening-scoring module
+ */
+import MainTerminal from '../layouts/MainTerminal.astro';
+import PageHero from '../components/molecules/PageHero.astro';
 import StockScreener from '../components/organisms/StockScreener.astro';
 ---
 
-<Layout title="選股篩選器">
+<MainTerminal title="Screener 選股">
+    <PageHero title="Stock Screener" subtitle="多面向智能選股篩選器">
+        <div class="flex items-center gap-2">
+            <span class="terminal-label px-2 py-1 bg-surface rounded"> 📦 Local SQLite </span>
+            <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
+        </div>
+    </PageHero>
+
     <StockScreener />
-</Layout>
+</MainTerminal>

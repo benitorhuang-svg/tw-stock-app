@@ -15,14 +15,11 @@ export interface ImportResult {
  * 匯入股價 CSV
  * 支援格式：日期,開盤,最高,最低,收盤,成交量
  */
-export async function importPriceCSV(
-    file: File,
-    symbol: string
-): Promise<ImportResult> {
+export async function importPriceCSV(file: File, symbol: string): Promise<ImportResult> {
     const result: ImportResult = {
         success: false,
         imported: 0,
-        errors: []
+        errors: [],
     };
 
     try {
@@ -35,7 +32,10 @@ export async function importPriceCSV(
         }
 
         // 解析標題
-        const headers = lines[0].toLowerCase().split(',').map(h => h.trim());
+        const headers = lines[0]
+            .toLowerCase()
+            .split(',')
+            .map(h => h.trim());
         const dateIdx = findColumnIndex(headers, ['date', '日期', 'time']);
         const openIdx = findColumnIndex(headers, ['open', '開盤', '開盤價']);
         const highIdx = findColumnIndex(headers, ['high', '最高', '最高價']);
@@ -71,7 +71,7 @@ export async function importPriceCSV(
                     lowIdx >= 0 ? parseNumber(values[lowIdx]) : close,
                     close,
                     volumeIdx >= 0 ? parseNumber(values[volumeIdx]) : 0,
-                    0 // turnover
+                    0, // turnover
                 ]);
             } catch (e) {
                 result.errors.push(`第 ${i + 1} 行：${e}`);
@@ -102,14 +102,11 @@ export async function importPriceCSV(
 /**
  * 匯入股利 CSV
  */
-export async function importDividendCSV(
-    file: File,
-    symbol: string
-): Promise<ImportResult> {
+export async function importDividendCSV(file: File, symbol: string): Promise<ImportResult> {
     const result: ImportResult = {
         success: false,
         imported: 0,
-        errors: []
+        errors: [],
     };
 
     try {
@@ -121,7 +118,10 @@ export async function importDividendCSV(
             return result;
         }
 
-        const headers = lines[0].toLowerCase().split(',').map(h => h.trim());
+        const headers = lines[0]
+            .toLowerCase()
+            .split(',')
+            .map(h => h.trim());
         const yearIdx = findColumnIndex(headers, ['year', '年度', '年份']);
         const cashIdx = findColumnIndex(headers, ['cash', '現金股利', '現金']);
         const stockIdx = findColumnIndex(headers, ['stock', '股票股利', '股票']);
@@ -204,8 +204,8 @@ function parseNumber(value: string): number {
 function parseDate(value: string): string | null {
     // 支援多種格式
     const formats = [
-        /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/,  // 2024/01/15
-        /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/,  // 01/15/2024
+        /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/, // 2024/01/15
+        /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/, // 01/15/2024
     ];
 
     for (const regex of formats) {

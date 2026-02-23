@@ -5,6 +5,7 @@
 ## 職責定義
 
 本層負責**低階資料庫連線管理與資料持久化**：
+
 1. Server-side：用 `better-sqlite3` 直接開啟 `stocks.db`（同步、高效能）
 2. Client-side：用 `sql.js` (WASM) 載入資料庫至記憶體，搭配 IndexedDB 持久化
 3. 自動判斷執行環境 (`typeof window === 'undefined'`) 並選擇對應引擎
@@ -13,11 +14,11 @@
 
 ## 模組清單
 
-| 模組 | 大小 | 角色 | 測試 |
-|------|------|------|------|
-| `src/utils/db.ts` | 1KB | Server 端連線管理（單例） | ❌ |
-| `src/lib/database.ts` | 10KB | Client 端 sql.js + IndexedDB 管理 | ✅ |
-| `src/lib/sqlite-service.ts` | 17KB | 統一查詢界面（自動切換引擎） | ✅ |
+| 模組                        | 大小 | 角色                              | 測試 |
+| --------------------------- | ---- | --------------------------------- | ---- |
+| `src/utils/db.ts`           | 1KB  | Server 端連線管理（單例）         | ❌   |
+| `src/lib/database.ts`       | 10KB | Client 端 sql.js + IndexedDB 管理 | ✅   |
+| `src/lib/sqlite-service.ts` | 17KB | 統一查詢界面（自動切換引擎）      | ✅   |
 
 ## Server-side 引擎 — `utils/db.ts`
 
@@ -34,11 +35,12 @@ export function getDb() {
 }
 
 export function queryStocks(sql: string, params: any[] = []) {
-    return getDb().prepare(sql).all(params);  // 同步查詢
+    return getDb().prepare(sql).all(params); // 同步查詢
 }
 ```
 
 **特性**：
+
 - 單例模式，整個 Server 生命週期只開啟一次
 - `readonly: true` — 防止意外寫入
 - WAL 模式 — 支持讀寫並行
@@ -96,7 +98,9 @@ watchlist       — 自選股   ← Client 專用
 
 ```typescript
 // 每 30 秒自動儲存到 IndexedDB
-setInterval(() => { if (db) saveDatabase(); }, 30000);
+setInterval(() => {
+    if (db) saveDatabase();
+}, 30000);
 
 // 頁面關閉前備份到 localStorage（緊急備份）
 window.addEventListener('beforeunload', () => {
@@ -108,16 +112,16 @@ window.addEventListener('beforeunload', () => {
 
 ### 提供的原始操作
 
-| 函式 | 說明 |
-|------|------|
-| `getDatabase()` | 取得 Database 實例（含初始化） |
-| `query<T>(sql, params)` | 執行 SELECT，回傳型別安全結果 |
-| `execute(sql, params)` | 執行 INSERT/UPDATE/DELETE，回傳影響行數 |
-| `batchInsert(table, columns, rows)` | 批次插入（transaction 包裝） |
-| `saveDatabase()` | 匯出 DB → 存入 IndexedDB |
-| `exportDatabase()` | 匯出為 Blob（供使用者下載） |
-| `importDatabase(file)` | 從使用者上傳的檔案匯入 |
-| `clearDatabase()` | 清空整個 IndexedDB |
+| 函式                                | 說明                                    |
+| ----------------------------------- | --------------------------------------- |
+| `getDatabase()`                     | 取得 Database 實例（含初始化）          |
+| `query<T>(sql, params)`             | 執行 SELECT，回傳型別安全結果           |
+| `execute(sql, params)`              | 執行 INSERT/UPDATE/DELETE，回傳影響行數 |
+| `batchInsert(table, columns, rows)` | 批次插入（transaction 包裝）            |
+| `saveDatabase()`                    | 匯出 DB → 存入 IndexedDB                |
+| `exportDatabase()`                  | 匯出為 Blob（供使用者下載）             |
+| `importDatabase(file)`              | 從使用者上傳的檔案匯入                  |
+| `clearDatabase()`                   | 清空整個 IndexedDB                      |
 
 ## 統一查詢界面 — `sqlite-service.ts`
 
@@ -141,6 +145,7 @@ async function query<T>(sql: string, params: any[] = []): Promise<T[]> {
 ```
 
 **Client 端 DB 下載流程**：
+
 ```
 getClientDb()
     ├── 先檢查 IndexedDB 快取 → loadDbFromIndexedDB()
@@ -162,12 +167,12 @@ getClientDb()
 
 ## 效能數據
 
-| 操作 | Server (better-sqlite3) | Client (sql.js) |
-|------|-------------------------|-----------------|
-| 全部股票 + 最新價格 | < 10ms | < 50ms |
-| 單一股票搜尋 | < 5ms | < 20ms |
-| 條件篩選 | < 20ms | < 100ms |
-| 歷史價格 (365天) | < 5ms | < 30ms |
+| 操作                | Server (better-sqlite3) | Client (sql.js) |
+| ------------------- | ----------------------- | --------------- |
+| 全部股票 + 最新價格 | < 10ms                  | < 50ms          |
+| 單一股票搜尋        | < 5ms                   | < 20ms          |
+| 條件篩選            | < 20ms                  | < 100ms         |
+| 歷史價格 (365天)    | < 5ms                   | < 30ms          |
 
 ## 待辦任務
 

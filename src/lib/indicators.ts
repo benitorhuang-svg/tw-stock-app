@@ -1,6 +1,6 @@
 /**
  * 技術指標計算函式庫
- * 
+ *
  * 包含：MA、RSI、MACD、KD 等常用技術指標
  */
 
@@ -88,7 +88,7 @@ export function RSI(data: number[], period: number = 14): (number | null)[] {
                 result.push(100);
             } else {
                 const rs = avgGain / avgLoss;
-                const rsi = 100 - (100 / (1 + rs));
+                const rsi = 100 - 100 / (1 + rs);
                 result.push(Math.round(rsi * 100) / 100);
             }
         }
@@ -243,6 +243,6 @@ export function calculateAllIndicators(ohlcv: OHLCV[]) {
         rsi: RSI(closes),
         macd: MACD(closes),
         kd: KD(ohlcv),
-        bollinger: BollingerBands(closes)
+        bollinger: BollingerBands(closes),
     };
 }

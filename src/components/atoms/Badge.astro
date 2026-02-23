@@ -1,0 +1,24 @@
+---
+/**
+ * Badge.astro — Pill-shaped indicator badge
+ */
+interface Props {
+    variant?: 'default' | 'bullish' | 'bearish' | 'warning' | 'accent' | 'muted';
+    class?: string;
+}
+
+const { variant = 'default', class: className = '' } = Astro.props;
+
+const variantStyles: Record<string, string> = {
+    default: 'bg-glass-elevated text-text-secondary border border-border',
+    bullish: 'bg-bullish/15 text-bullish border border-bullish/30',
+    bearish: 'bg-bearish/15 text-bearish border border-bearish/30',
+    warning: 'bg-warning/15 text-warning border border-warning/30',
+    accent: 'bg-accent/15 text-accent border border-accent/30',
+    muted: 'bg-surface text-text-muted border border-border',
+};
+---
+
+<span class:list={['badge', variantStyles[variant], className]}>
+    <slot />
+</span>

@@ -72,7 +72,7 @@ describe('Toast Manager', () => {
             const onClick = vi.fn();
             toast.show({
                 message: 'with action',
-                action: { label: 'Undo', onClick }
+                action: { label: 'Undo', onClick },
             });
 
             const actionBtn = document.querySelector('.toast-action');

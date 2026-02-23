@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { keyboard } from './keyboard';
 
 describe('Keyboard Shortcuts', () => {
-
     describe('register / unregister', () => {
         it('應註冊快捷鍵', () => {
             const handler = vi.fn();
@@ -10,7 +9,7 @@ describe('Keyboard Shortcuts', () => {
                 key: 'a',
                 ctrl: true,
                 handler,
-                description: 'Test'
+                description: 'Test',
             });
 
             const all = keyboard.getAll();
@@ -22,7 +21,7 @@ describe('Keyboard Shortcuts', () => {
                 key: 'b',
                 ctrl: true,
                 handler: vi.fn(),
-                description: 'To remove'
+                description: 'To remove',
             };
 
             keyboard.register(shortcut);
@@ -47,7 +46,7 @@ describe('Keyboard Shortcuts', () => {
             keyboard.register({
                 key: 'z',
                 handler: vi.fn(),
-                description: 'Test Z'
+                description: 'Test Z',
             });
 
             expect(keyboard.getAll().length).toBeGreaterThanOrEqual(before + 1);
@@ -62,7 +61,7 @@ describe('Keyboard Shortcuts', () => {
                 ctrl: true,
                 shift: true,
                 handler,
-                description: 'Ctrl+Shift+F'
+                description: 'Ctrl+Shift+F',
             });
 
             const all = keyboard.getAll();

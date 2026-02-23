@@ -22,9 +22,15 @@ import type { UserData } from './user-account';
 const store: Record<string, string> = {};
 const mockLocalStorage = {
     getItem: vi.fn((key: string) => store[key] ?? null),
-    setItem: vi.fn((key: string, value: string) => { store[key] = value; }),
-    removeItem: vi.fn((key: string) => { delete store[key]; }),
-    clear: vi.fn(() => { Object.keys(store).forEach(k => delete store[k]); }),
+    setItem: vi.fn((key: string, value: string) => {
+        store[key] = value;
+    }),
+    removeItem: vi.fn((key: string) => {
+        delete store[key];
+    }),
+    clear: vi.fn(() => {
+        Object.keys(store).forEach(k => delete store[k]);
+    }),
 };
 
 beforeEach(() => {
@@ -33,11 +39,10 @@ beforeEach(() => {
     mockLocalStorage.setItem.mockClear();
     mockLocalStorage.removeItem.mockClear();
     vi.stubGlobal('localStorage', mockLocalStorage);
-    vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('User Account Module', () => {
-
     // ========================================
     // getUserData
     // ========================================
@@ -57,16 +62,25 @@ describe('User Account Module', () => {
 
         it('應從 localStorage 載入已存資料', () => {
             const saved: UserData = {
-                profile: { id: 'test_1', name: 'Test', createdAt: '2025-01-01', lastLoginAt: '2025-01-01' },
+                profile: {
+                    id: 'test_1',
+                    name: 'Test',
+                    createdAt: '2025-01-01',
+                    lastLoginAt: '2025-01-01',
+                },
                 settings: {
-                    theme: 'light', defaultView: 'list', showVolume: false, showMA: false,
-                    maLines: [10], language: 'en',
-                    notifications: { priceAlert: true, dividendReminder: false }
+                    theme: 'light',
+                    defaultView: 'list',
+                    showVolume: false,
+                    showMA: false,
+                    maLines: [10],
+                    language: 'en',
+                    notifications: { priceAlert: true, dividendReminder: false },
                 },
                 watchlist: ['2330'],
                 portfolioIds: [],
                 recentViewed: ['2317'],
-                customStrategies: []
+                customStrategies: [],
             };
             store['tw-stock-user'] = JSON.stringify(saved);
 
@@ -89,13 +103,25 @@ describe('User Account Module', () => {
 
         it('應更新 lastLoginAt', () => {
             const saved: UserData = {
-                profile: { id: 'test_1', name: 'Test', createdAt: '2020-01-01', lastLoginAt: '2020-01-01' },
-                settings: {
-                    theme: 'dark', defaultView: 'grid', showVolume: true, showMA: true,
-                    maLines: [5, 20, 60], language: 'zh-TW',
-                    notifications: { priceAlert: false, dividendReminder: true }
+                profile: {
+                    id: 'test_1',
+                    name: 'Test',
+                    createdAt: '2020-01-01',
+                    lastLoginAt: '2020-01-01',
                 },
-                watchlist: [], portfolioIds: [], recentViewed: [], customStrategies: []
+                settings: {
+                    theme: 'dark',
+                    defaultView: 'grid',
+                    showVolume: true,
+                    showMA: true,
+                    maLines: [5, 20, 60],
+                    language: 'zh-TW',
+                    notifications: { priceAlert: false, dividendReminder: true },
+                },
+                watchlist: [],
+                portfolioIds: [],
+                recentViewed: [],
+                customStrategies: [],
             };
             store['tw-stock-user'] = JSON.stringify(saved);
 
@@ -255,16 +281,25 @@ describe('User Account Module', () => {
 
         it('importUserData 應還原資料', () => {
             const importData: UserData = {
-                profile: { id: 'import_1', name: 'Imported', createdAt: '2025-01-01', lastLoginAt: '2025-01-01' },
+                profile: {
+                    id: 'import_1',
+                    name: 'Imported',
+                    createdAt: '2025-01-01',
+                    lastLoginAt: '2025-01-01',
+                },
                 settings: {
-                    theme: 'light', defaultView: 'list', showVolume: false, showMA: true,
-                    maLines: [10, 30], language: 'en',
-                    notifications: { priceAlert: true, dividendReminder: false }
+                    theme: 'light',
+                    defaultView: 'list',
+                    showVolume: false,
+                    showMA: true,
+                    maLines: [10, 30],
+                    language: 'en',
+                    notifications: { priceAlert: true, dividendReminder: false },
                 },
                 watchlist: ['2330', '2317'],
                 portfolioIds: [1, 2],
                 recentViewed: ['2454'],
-                customStrategies: []
+                customStrategies: [],
             };
 
             const result = importUserData(JSON.stringify(importData));

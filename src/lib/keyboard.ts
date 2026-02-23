@@ -46,8 +46,8 @@ class KeyboardShortcuts {
             ctrl: e.ctrlKey || e.metaKey,
             shift: e.shiftKey,
             alt: e.altKey,
-            handler: () => { },
-            description: ''
+            handler: () => {},
+            description: '',
         });
 
         const shortcut = this.shortcuts.get(key);
@@ -165,7 +165,7 @@ class KeyboardShortcuts {
         // 綁定事件
         backdrop.addEventListener('click', () => this.closeSearchModal());
 
-        input.addEventListener('input', (e) => {
+        input.addEventListener('input', e => {
             const query = (e.target as HTMLInputElement).value;
             this.updateSearchResults(query);
         });
@@ -175,13 +175,13 @@ class KeyboardShortcuts {
             key: 'k',
             ctrl: true,
             handler: () => this.openSearchModal(),
-            description: '開啟快速搜尋'
+            description: '開啟快速搜尋',
         });
 
         this.register({
             key: 'Escape',
             handler: () => this.closeSearchModal(),
-            description: '關閉對話框'
+            description: '關閉對話框',
         });
     }
 
@@ -219,8 +219,8 @@ class KeyboardShortcuts {
                 { symbol: '2454', name: '聯發科' },
             ];
 
-            const filtered = mockStocks.filter(s =>
-                s.symbol.includes(query) || s.name.includes(query)
+            const filtered = mockStocks.filter(
+                s => s.symbol.includes(query) || s.name.includes(query)
             );
 
             if (filtered.length === 0) {
@@ -230,7 +230,9 @@ class KeyboardShortcuts {
                     </div>
                 `;
             } else {
-                results.innerHTML = filtered.map(s => `
+                results.innerHTML = filtered
+                    .map(
+                        s => `
                     <a href="/stocks/${s.symbol}" style="
                         display: flex;
                         align-items: center;
@@ -244,7 +246,9 @@ class KeyboardShortcuts {
                         <span style="color: var(--accent, #00d4aa); font-weight: 600;">${s.symbol}</span>
                         <span>${s.name}</span>
                     </a>
-                `).join('');
+                `
+                    )
+                    .join('');
             }
         }
     }

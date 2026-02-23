@@ -21,7 +21,7 @@ async function initSQL(): Promise<SqlJsStatic> {
 
     SQL = await initSqlJs({
         // 載入 WASM 檔案
-        locateFile: (file: string) => `https://sql.js.org/dist/${file}`
+        locateFile: (file: string) => `https://sql.js.org/dist/${file}`,
     });
 
     return SQL;
@@ -36,7 +36,7 @@ async function loadFromIndexedDB(): Promise<Uint8Array | null> {
 
         request.onerror = () => reject(request.error);
 
-        request.onupgradeneeded = (event) => {
+        request.onupgradeneeded = event => {
             const db = (event.target as IDBOpenDBRequest).result;
             if (!db.objectStoreNames.contains(DB_STORE)) {
                 db.createObjectStore(DB_STORE);
@@ -66,7 +66,7 @@ async function saveToIndexedDB(data: Uint8Array): Promise<void> {
 
         request.onerror = () => reject(request.error);
 
-        request.onupgradeneeded = (event) => {
+        request.onupgradeneeded = event => {
             const db = (event.target as IDBOpenDBRequest).result;
             if (!db.objectStoreNames.contains(DB_STORE)) {
                 db.createObjectStore(DB_STORE);
@@ -283,11 +283,7 @@ export async function execute(sql: string, params: any[] = []): Promise<number> 
 /**
  * 批次插入
  */
-export async function batchInsert(
-    table: string,
-    columns: string[],
-    rows: any[][]
-): Promise<void> {
+export async function batchInsert(table: string, columns: string[], rows: any[][]): Promise<void> {
     const database = await getDatabase();
     const placeholders = columns.map(() => '?').join(', ');
     const sql = `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;

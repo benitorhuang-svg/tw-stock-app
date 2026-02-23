@@ -39,7 +39,7 @@ class SimpleCache {
         this.cache.set(key, {
             data,
             timestamp: Date.now(),
-            ttl: ttlMs
+            ttl: ttlMs,
         });
     }
 
@@ -106,11 +106,14 @@ export const localCache = {
 
     set<T>(key: string, data: T, ttlMs: number = 60 * 60 * 1000): void {
         try {
-            localStorage.setItem(`tw-cache-${key}`, JSON.stringify({
-                data,
-                timestamp: Date.now(),
-                ttl: ttlMs
-            }));
+            localStorage.setItem(
+                `tw-cache-${key}`,
+                JSON.stringify({
+                    data,
+                    timestamp: Date.now(),
+                    ttl: ttlMs,
+                })
+            );
         } catch (e) {
             console.warn('[LocalCache] Storage full, clearing old cache');
             // 清除舊快取
@@ -128,5 +131,5 @@ export const localCache = {
         Object.keys(localStorage)
             .filter(k => k.startsWith('tw-cache-'))
             .forEach(k => localStorage.removeItem(k));
-    }
+    },
 };

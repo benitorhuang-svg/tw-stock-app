@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
  * Build SQLite Database from CSV/JSON files
- * 
+ *
  * 將 CSV 歷史價格資料和 JSON 股票清單轉換為 SQLite 資料庫
- * 
+ *
  * Usage: node scripts/build-sqlite-db.js
- * 
+ *
  * 輸出: public/data/stocks.db
  */
 
@@ -152,11 +152,21 @@ console.log(`   Found ${stockList.length} stocks\n`);
 // 產業分類邏輯 (從 stockDataService.ts 遷移)
 function getSectorBySymbol(symbol) {
     const overrides = {
-        '2330': 'semiconductor', '2454': 'semiconductor', '3034': 'semiconductor',
-        '2317': 'electronics', '2308': 'electronics', '2382': 'electronics',
-        '2412': 'communication', '3008': 'optoelectronics', '1301': 'plastic',
-        '2002': 'steel', '2603': 'shipping', '2609': 'shipping',
-        '9910': 'sports-leisure', '9914': 'sports-leisure', '9921': 'sports-leisure'
+        2330: 'semiconductor',
+        2454: 'semiconductor',
+        3034: 'semiconductor',
+        2317: 'electronics',
+        2308: 'electronics',
+        2382: 'electronics',
+        2412: 'communication',
+        3008: 'optoelectronics',
+        1301: 'plastic',
+        2002: 'steel',
+        2603: 'shipping',
+        2609: 'shipping',
+        9910: 'sports-leisure',
+        9914: 'sports-leisure',
+        9921: 'sports-leisure',
     };
     if (overrides[symbol]) return overrides[symbol];
     const prefix = symbol.substring(0, 2);
@@ -185,8 +195,10 @@ function getSectorBySymbol(symbol) {
 }
 
 // 插入股票基本資料
-const insertStock = db.prepare('INSERT OR REPLACE INTO stocks (symbol, name, market, sector) VALUES (?, ?, ?, ?)');
-const insertStockBatch = db.transaction((stocks) => {
+const insertStock = db.prepare(
+    'INSERT OR REPLACE INTO stocks (symbol, name, market, sector) VALUES (?, ?, ?, ?)'
+);
+const insertStockBatch = db.transaction(stocks => {
     for (const stock of stocks) {
         insertStock.run(stock.symbol, stock.name, stock.market, getSectorBySymbol(stock.symbol));
     }
@@ -205,7 +217,7 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    const insertLatestBatch = db.transaction((prices) => {
+    const insertLatestBatch = db.transaction(prices => {
         for (const [symbol, data] of Object.entries(prices)) {
             insertLatest.run(
                 symbol,
@@ -233,8 +245,10 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
 if (fs.existsSync(MONTHLY_STATS_JSON)) {
     console.log('📊 Updating Latest Prices with Monthly Stats (PE/Yield)...');
     const stats = JSON.parse(fs.readFileSync(MONTHLY_STATS_JSON, 'utf-8'));
-    const updateStats = db.prepare('UPDATE latest_prices SET pe = ?, pb = ?, yield = ? WHERE symbol = ?');
-    const updateBatch = db.transaction((list) => {
+    const updateStats = db.prepare(
+        'UPDATE latest_prices SET pe = ?, pb = ?, yield = ? WHERE symbol = ?'
+    );
+    const updateBatch = db.transaction(list => {
         for (const item of list) {
             updateStats.run(item.peRatio, item.pbRatio, item.dividendYield, item.symbol);
         }
@@ -256,10 +270,10 @@ if (fs.existsSync(FINANCIALS_JSON)) {
     let revenueMap = {};
     if (fs.existsSync(REVENUE_JSON)) {
         const revData = JSON.parse(fs.readFileSync(REVENUE_JSON, 'utf-8'));
-        revData.forEach(r => revenueMap[r.symbol] = r.revenueYoY);
+        revData.forEach(r => (revenueMap[r.symbol] = r.revenueYoY));
     }
 
-    const insertBatch = db.transaction((list) => {
+    const insertBatch = db.transaction(list => {
         for (const item of list) {
             insertFin.run(
                 item.symbol,
@@ -272,7 +286,10 @@ if (fs.existsSync(FINANCIALS_JSON)) {
             );
             // 更新營收 YoY
             if (revenueMap[item.symbol]) {
-                db.prepare('UPDATE fundamentals SET revenue_yoy = ? WHERE symbol = ?').run(revenueMap[item.symbol], item.symbol);
+                db.prepare('UPDATE fundamentals SET revenue_yoy = ? WHERE symbol = ?').run(
+                    revenueMap[item.symbol],
+                    item.symbol
+                );
             }
         }
     });
@@ -318,7 +335,7 @@ const insertHistory = db.prepare(`
 let totalRecords = 0;
 let processedFiles = 0;
 
-const processCSVBatch = db.transaction((records) => {
+const processCSVBatch = db.transaction(records => {
     for (const record of records) {
         insertHistory.run(
             record.symbol,
@@ -364,7 +381,7 @@ for (let i = 0; i < csvFiles.length; i += BATCH_SIZE) {
                         volume: parseInt(cols[5]) || 0,
                         turnover: parseFloat(cols[6]) || 0,
                         change: parseFloat(cols[7]) || 0,
-                        changePct: parseFloat(cols[8]) || 0
+                        changePct: parseFloat(cols[8]) || 0,
                     });
                 }
             }
@@ -379,17 +396,27 @@ for (let i = 0; i < csvFiles.length; i += BATCH_SIZE) {
     totalRecords += allRecords.length;
 
     // 進度顯示
-    const progress = Math.round((i + batch.length) / csvFiles.length * 100);
-    process.stdout.write(`\r   Progress: ${progress}% (${processedFiles}/${csvFiles.length} files, ${totalRecords.toLocaleString()} records)`);
+    const progress = Math.round(((i + batch.length) / csvFiles.length) * 100);
+    process.stdout.write(
+        `\r   Progress: ${progress}% (${processedFiles}/${csvFiles.length} files, ${totalRecords.toLocaleString()} records)`
+    );
 }
 
 console.log('\n\n📈 Calculating technical indicators (MA5, MA20)...');
 const symbols = db.prepare('SELECT symbol FROM latest_prices').all();
 const updateTech = db.prepare('UPDATE latest_prices SET ma5 = ?, ma20 = ? WHERE symbol = ?');
-const calcBatch = db.transaction((list) => {
+const calcBatch = db.transaction(list => {
     for (const { symbol } of list) {
-        const ma5Row = db.prepare('SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 5)').get(symbol);
-        const ma20Row = db.prepare('SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 20)').get(symbol);
+        const ma5Row = db
+            .prepare(
+                'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 5)'
+            )
+            .get(symbol);
+        const ma20Row = db
+            .prepare(
+                'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 20)'
+            )
+            .get(symbol);
         updateTech.run(ma5Row.v || 0, ma20Row.v || 0, symbol);
     }
 });

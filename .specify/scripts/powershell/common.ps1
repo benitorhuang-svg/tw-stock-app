@@ -41,12 +41,13 @@ function Get-CurrentBranch {
         $latestFeature = ""
         $highest = 0
         
-        Get-ChildItem -Path $specsDir -Directory | ForEach-Object {
-            if ($_.Name -match '^(\d{3})-') {
+        $dirs = Get-ChildItem -Path $specsDir -Directory
+        foreach ($dir in $dirs) {
+            if ($dir.Name -match '^(\d{3})-') {
                 $num = [int]$matches[1]
                 if ($num -gt $highest) {
                     $highest = $num
-                    $latestFeature = $_.Name
+                    $latestFeature = $dir.Name
                 }
             }
         }
@@ -78,13 +79,13 @@ function Test-FeatureBranch {
     
     # For non-git repos, we can't enforce branch naming but still provide output
     if (-not $HasGit) {
-        Write-Warning "[specify] Warning: Git repository not detected; skipped branch validation"
+        Write-Warning "[specify] 警告: 未偵測到 Git 儲存庫；跳過分支驗證"
         return $true
     }
     
     if ($Branch -notmatch '^[0-9]{3}-') {
-        Write-Output "ERROR: Not on a feature branch. Current branch: $Branch"
-        Write-Output "Feature branches should be named like: 001-feature-name"
+        Write-Output "錯誤: 不在功能分支上。當前分支: $Branch"
+        Write-Output "功能分支命名應類似於: 001-feature-name"
         return $false
     }
     return $true
@@ -101,17 +102,24 @@ function Get-FeaturePathsEnv {
     $hasGit = Test-HasGit
     $featureDir = Get-FeatureDir -RepoRoot $repoRoot -Branch $currentBranch
     
+    $prefix = "000"
+    if ($currentBranch -match '^(\d{3})-') {
+        $prefix = $matches[1]
+    }
+    
     [PSCustomObject]@{
         REPO_ROOT      = $repoRoot
         CURRENT_BRANCH = $currentBranch
         HAS_GIT        = $hasGit
         FEATURE_DIR    = $featureDir
-        FEATURE_SPEC   = Join-Path $featureDir 'spec.md'
-        IMPL_PLAN      = Join-Path $featureDir 'plan.md'
-        TASKS          = Join-Path $featureDir 'tasks.md'
-        RESEARCH       = Join-Path $featureDir 'research.md'
-        DATA_MODEL     = Join-Path $featureDir 'data-model.md'
-        QUICKSTART     = Join-Path $featureDir 'quickstart.md'
+        PREFIX         = $prefix
+        FEATURE_SPEC   = Join-Path $featureDir "000-overview.md"
+        IMPL_PLAN      = Join-Path $featureDir "_${prefix}-plan.md"
+        TASKS          = Join-Path $featureDir "_${prefix}-tasks.md"
+        RESEARCH       = Join-Path $featureDir "_${prefix}-research.md"
+        DATA_MODEL     = Join-Path $featureDir "_${prefix}-data-model.md"
+        QUICKSTART     = Join-Path $featureDir "_${prefix}-quickstart.md"
+        CLARIFY        = Join-Path $featureDir "_${prefix}-clarification.md"
         CONTRACTS_DIR  = Join-Path $featureDir 'contracts'
     }
 }

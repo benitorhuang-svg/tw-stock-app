@@ -23,6 +23,13 @@ Thumbs.db
 # Large data files (local data, not for version control)
 public/data/
 tw-stock-data.zip
+stocks.db
+stocks.db-shm
+stocks.db-wal
+debug_log.txt
+err.log
+temp_output.html
+test_data.json
 
 # Cache
 .cache/

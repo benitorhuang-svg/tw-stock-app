@@ -31,7 +31,7 @@ declare module 'better-sqlite3' {
     }
 
     interface DatabaseConstructor {
-        new(filename: string, options?: DatabaseOptions): Database;
+        new (filename: string, options?: DatabaseOptions): Database;
         (filename: string, options?: DatabaseOptions): Database;
     }
 

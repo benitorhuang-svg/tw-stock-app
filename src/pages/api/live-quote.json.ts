@@ -1,5 +1,6 @@
-
 import type { APIRoute } from 'astro';
+
+export const prerender = false;
 
 export const GET: APIRoute = async ({ request, url }) => {
     const symbol = url.searchParams.get('symbol');
@@ -10,7 +11,7 @@ export const GET: APIRoute = async ({ request, url }) => {
     if (!symbol) {
         return new Response(JSON.stringify({ error: 'Symbol is required' }), {
             status: 400,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
         });
     }
 
@@ -21,8 +22,9 @@ export const GET: APIRoute = async ({ request, url }) => {
     try {
         const response = await fetch(targetUrl, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            }
+                'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            },
         });
 
         if (!response.ok) {
@@ -51,21 +53,22 @@ export const GET: APIRoute = async ({ request, url }) => {
             volume: meta.regularMarketVolume,
             time: new Date(meta.regularMarketTime * 1000).toISOString(),
             change: meta.regularMarketPrice - meta.chartPreviousClose,
-            changePercent: ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 100
+            changePercent:
+                ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) *
+                100,
         };
 
         return new Response(JSON.stringify(liveData), {
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 's-maxage=60, stale-while-revalidate=30'
-            }
+                'Cache-Control': 's-maxage=60, stale-while-revalidate=30',
+            },
         });
-
     } catch (error: any) {
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
         });
     }
-}
+};

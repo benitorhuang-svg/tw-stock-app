@@ -1,0 +1,42 @@
+---
+/**
+ * StatCard.astro — Glassmorphism data metric card
+ * Used in dashboard stats rows and overview panels.
+ */
+interface Props {
+    label: string;
+    value: string | number;
+    unit?: string;
+    change?: number;
+    class?: string;
+}
+
+const { label, value, unit = '', change, class: className = '' } = Astro.props;
+const isPositive = change !== undefined && change > 0;
+const isNegative = change !== undefined && change < 0;
+---
+
+<div class:list={['glass-card glow-interactive p-4 flex flex-col gap-2', className]}>
+    <span class="terminal-label">{label}</span>
+    <div class="flex items-baseline gap-1.5">
+        <span class="data-value text-2xl text-text-primary">
+            {value ?? '—'}
+        </span>
+        {unit && <span class="text-xs text-text-muted font-medium">{unit}</span>}
+    </div>
+    {
+        change !== undefined && (
+            <span
+                class:list={[
+                    'text-xs font-semibold font-mono',
+                    isPositive && 'text-bullish',
+                    isNegative && 'text-bearish',
+                    !isPositive && !isNegative && 'text-text-muted',
+                ]}
+            >
+                {isPositive ? '▲' : isNegative ? '▼' : '—'}{' '}
+                {change !== undefined ? `${Math.abs(change).toFixed(2)}%` : ''}
+            </span>
+        )
+    }
+</div>

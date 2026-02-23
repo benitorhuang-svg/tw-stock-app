@@ -1,491 +1,79 @@
 ---
 /**
- * 多標籤頁條元件 - Phase 1實現
- * 
- * 功能：
- * - 多標籤打開和管理
- * - 拖拽重排
- * - 快速切換 (Ctrl+Tab)
- * - 右鍵菜單 (關閉、複製鏈接等)
- * 
- * @module TabBar
- * @version 1.0.0
+ * TabBar.astro — 5 analysis tabs for individual stock pages
+ * Maps to spec 002~007: Overview, Database, Technical, Chips, Fundamentals, Alerts
  */
-
-interface Tab {
-  id: string;
-  label: string;
-  href: string;
-  icon: string;
-  closeable?: boolean;
-}
-
 interface Props {
-  currentPath: string;
+    symbol: string;
+    activeTab?: string;
 }
 
-const { currentPath } = Astro.props;
+const { symbol, activeTab = 'overview' } = Astro.props;
 
-// 防止 Astro 編譯時報錯，定義默認標籤頁
-const initialTabs: Tab[] = [];
+const tabs = [
+    { id: 'overview', label: '總覽', icon: '📊' },
+    { id: 'technical', label: '技術面', icon: '📈' },
+    { id: 'chips', label: '籌碼面', icon: '🏦' },
+    { id: 'fundamentals', label: '基本面', icon: '💰' },
+    { id: 'alerts', label: 'AI 報告', icon: '🤖' },
+];
 ---
 
-<div class="tab-bar" id="tab-bar" role="tablist">
-  <div class="tabs-container" id="tabs-container">
-    <!-- 標籤頁動態生成 -->
-  </div>
-  
-  <!-- 標籤頁菜單（右鍵） -->
-  <div class="tab-context-menu" id="tab-context-menu">
-    <button class="context-item" data-action="close">關閉</button>
-    <button class="context-item" data-action="close-others">關閉其他</button>
-    <button class="context-item" data-action="close-right">關閉右側</button>
-    <div class="context-divider"></div>
-    <button class="context-item" data-action="copy-link">複製鏈接</button>
-  </div>
-</div>
-
-<style>
-  .tab-bar {
-    display: flex;
-    align-items: center;
-    height: 44px;
-    background: var(--c-bg-glass);
-    border-bottom: 1px solid var(--c-border);
-    padding: 0 12px;
-    gap: 4px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    user-select: none;
-  }
-
-  .tab-bar::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  .tab-bar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .tab-bar::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
-  }
-
-  .tab-bar::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  .tabs-container {
-    display: flex;
-    gap: 4px;
-    flex-wrap: nowrap;
-    min-width: 100%;
-  }
-
-  /* Tab Item */
-  .tab-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    height: 32px;
-    padding: 0 12px;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    color: var(--c-text-secondary);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s var(--ease-out);
-    white-space: nowrap;
-    position: relative;
-    flex-shrink: 0;
-    border: 1px solid var(--c-border);
-  }
-
-  .tab-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--c-text-primary);
-  }
-
-  .tab-item.active {
-    background: rgba(var(--c-accent-rgb), 0.1);
-    color: var(--c-accent);
-    border-color: rgba(var(--c-accent-rgb), 0.3);
-    box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.15);
-  }
-
-  .tab-icon {
-    font-size: 14px;
-    min-width: 16px;
-  }
-
-  .tab-label {
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .tab-close {
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 3px;
-    background: transparent;
-    border: none;
-    color: inherit;
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.2s;
-    margin-left: 4px;
-  }
-
-  .tab-close:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  /* Context Menu */
-  .tab-context-menu {
-    position: fixed;
-    background: var(--c-bg-glass);
-    border: 1px solid var(--c-border);
-    border-radius: 6px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-    display: none;
-    z-index: 1000;
-    min-width: 160px;
-    padding: 4px;
-  }
-
-  .tab-context-menu.visible {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .context-item {
-    display: flex;
-    align-items: center;
-    height: 32px;
-    padding: 0 12px;
-    background: transparent;
-    border: none;
-    color: var(--c-text-secondary);
-    font-size: 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s;
-    text-align: left;
-  }
-
-  .context-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--c-accent);
-  }
-
-  .context-divider {
-    height: 1px;
-    background: var(--c-border);
-    margin: 2px 0;
-  }
-
-  /* 響應式 */
-  @media (max-width: 768px) {
-    .tab-bar {
-      height: 40px;
-      padding: 0 8px;
+<nav
+    class="flex items-center gap-1 px-2 py-1 glass-panel rounded-xl mb-6"
+    id="stock-tab-bar"
+    aria-label="分析分頁"
+>
+    {
+        tabs.map(tab => (
+            <button
+                class:list={[
+                    'flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer',
+                    activeTab === tab.id
+                        ? 'bg-accent/15 text-accent shadow-[inset_0_1px_0_hsl(0_0%_100%/0.1)]'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-glass-hover',
+                ]}
+                data-tab={tab.id}
+                data-symbol={symbol}
+                aria-selected={activeTab === tab.id}
+                role="tab"
+            >
+                <span class="text-sm">{tab.icon}</span>
+                <span class="hidden sm:inline">{tab.label}</span>
+            </button>
+        ))
     }
-
-    .tab-item {
-      height: 28px;
-      padding: 0 8px;
-      font-size: 11px;
-    }
-
-    .tab-label {
-      max-width: 80px;
-    }
-  }
-</style>
+</nav>
 
 <script>
-  /**
-   * Tab Management System
-   * Handles opening, closing, and switching tabs
-   */
-  
-  interface TabItem {
-    id: string;
-    label: string;
-    href: string;
-    icon: string;
-    closeable: boolean;
-  }
+    document.querySelectorAll('#stock-tab-bar [data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = (btn as HTMLElement).dataset.tab;
+            const symbol = (btn as HTMLElement).dataset.symbol;
 
-  class TabManager {
-    private tabs: Map<string, TabItem> = new Map();
-    private activeTabId: string = '';
-    private container: HTMLElement | null = null;
-    private contextMenu: HTMLElement | null = null;
-    private contextTargetId: string = '';
+            // Update active state
+            document.querySelectorAll('#stock-tab-bar [data-tab]').forEach(b => {
+                b.classList.remove('bg-accent/15', 'text-accent');
+                b.classList.add('text-text-secondary');
+                b.setAttribute('aria-selected', 'false');
+            });
+            btn.classList.add('bg-accent/15', 'text-accent');
+            btn.classList.remove('text-text-secondary');
+            btn.setAttribute('aria-selected', 'true');
 
-    constructor() {
-      this.container = document.getElementById('tabs-container');
-      this.contextMenu = document.getElementById('tab-context-menu');
-      this.initializeFromStorage();
-      this.attachEventListeners();
-      this.render();
-    }
+            // Show/hide tab content panels
+            document.querySelectorAll('[data-tab-content]').forEach(panel => {
+                const panelId = (panel as HTMLElement).dataset.tabContent;
+                if (panelId === tabId) {
+                    panel.classList.remove('hidden');
+                    (panel as HTMLElement).style.animation =
+                        'fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both';
+                } else {
+                    panel.classList.add('hidden');
+                }
+            });
 
-    private initializeFromStorage(): void {
-      const saved = localStorage.getItem('tw-tabs');
-      const savedActive = localStorage.getItem('tw-active-tab');
-      
-      if (saved) {
-        try {
-          const tabs = JSON.parse(saved);
-          tabs.forEach((tab: TabItem) => {
-            this.tabs.set(tab.id, tab);
-          });
-          if (savedActive && this.tabs.has(savedActive)) {
-            this.activeTabId = savedActive;
-          } else {
-            this.activeTabId = this.tabs.keys().next().value || '';
-          }
-        } catch (e) {
-          console.warn('Failed to restore tabs:', e);
-        }
-      }
-
-      // Create initial tab if none exist
-      if (this.tabs.size === 0) {
-        this.addTab({
-          id: 'home',
-          label: '首頁',
-          href: '/',
-          icon: '🏠',
-          closeable: false
+            console.log(`[TabBar] Switch to: ${tabId} for ${symbol}`);
         });
-      }
-    }
-
-    public addTab(tab: TabItem): void {
-      this.tabs.set(tab.id, tab);
-      this.activeTabId = tab.id;
-      this.save();
-      this.render();
-    }
-
-    public closeTab(id: string): void {
-      if (this.tabs.get(id)?.closeable === false) return;
-      
-      this.tabs.delete(id);
-      
-      if (this.activeTabId === id) {
-        this.activeTabId = Array.from(this.tabs.keys())[0] || '';
-      }
-      
-      this.save();
-      this.render();
-    }
-
-    public switchTab(id: string): void {
-      if (this.tabs.has(id)) {
-        this.activeTabId = id;
-        const tab = this.tabs.get(id);
-        if (tab) {
-          window.location.href = tab.href;
-        }
-      }
-    }
-
-    public closeOtherTabs(keepId: string): void {
-      const toDelete = Array.from(this.tabs.keys()).filter(id => 
-        id !== keepId && this.tabs.get(id)?.closeable !== false
-      );
-      
-      toDelete.forEach(id => this.tabs.delete(id));
-      
-      if (!this.tabs.has(this.activeTabId)) {
-        this.activeTabId = keepId;
-      }
-      
-      this.save();
-      this.render();
-    }
-
-    public closeRightTabs(fromId: string): void {
-      const keys = Array.from(this.tabs.keys());
-      const index = keys.indexOf(fromId);
-      
-      if (index >= 0) {
-        const toDelete = keys.slice(index + 1).filter(id => 
-          this.tabs.get(id)?.closeable !== false
-        );
-        toDelete.forEach(id => this.tabs.delete(id));
-      }
-      
-      this.save();
-      this.render();
-    }
-
-    private save(): void {
-      localStorage.setItem('tw-tabs', JSON.stringify(Array.from(this.tabs.values())));
-      localStorage.setItem('tw-active-tab', this.activeTabId);
-    }
-
-    private render(): void {
-      if (!this.container) return;
-      
-      this.container.innerHTML = '';
-      
-      this.tabs.forEach((tab, id) => {
-        const tabEl = document.createElement('button');
-        tabEl.className = `tab-item ${id === this.activeTabId ? 'active' : ''}`;
-        tabEl.setAttribute('data-tab-id', id);
-        tabEl.setAttribute('role', 'tab');
-        
-        tabEl.innerHTML = `
-          <span class="tab-icon">${tab.icon}</span>
-          <span class="tab-label">${tab.label}</span>
-          ${tab.closeable ? '<button class="tab-close">×</button>' : ''}
-        `;
-        
-        // 點擊切換
-        tabEl.addEventListener('click', (e) => {
-          if ((e.target as HTMLElement).classList.contains('tab-close')) {
-            this.closeTab(id);
-          } else {
-            this.switchTab(id);
-          }
-        });
-        
-        // 右鍵菜單
-        tabEl.addEventListener('contextmenu', (e) => {
-          e.preventDefault();
-          this.showContextMenu(e as MouseEvent, id);
-        });
-        
-        // 拖拽重排
-        tabEl.draggable = true;
-        tabEl.addEventListener('dragstart', (e) => {
-          (e.dataTransfer as DataTransfer).effectAllowed = 'move';
-          (e.dataTransfer as DataTransfer).setData('text/plain', id);
-        });
-        
-        tabEl.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          (e.dataTransfer as DataTransfer).dropEffect = 'move';
-        });
-        
-        tabEl.addEventListener('drop', (e) => {
-          e.preventDefault();
-          const draggedId = (e.dataTransfer as DataTransfer).getData('text/plain');
-          if (draggedId !== id) {
-            this.reorderTabs(draggedId, id);
-          }
-        });
-        
-        this.container!.appendChild(tabEl);
-      });
-    }
-
-    private reorderTabs(fromId: string, toId: string): void {
-      const entries = Array.from(this.tabs.entries());
-      const fromIndex = entries.findIndex(([id]) => id === fromId);
-      const toIndex = entries.findIndex(([id]) => id === toId);
-      
-      if (fromIndex >= 0 && toIndex >= 0) {
-        const [movedEntry] = entries.splice(fromIndex, 1);
-        entries.splice(toIndex, 0, movedEntry);
-        
-        this.tabs = new Map(entries);
-        this.save();
-        this.render();
-      }
-    }
-
-    private showContextMenu(event: MouseEvent, tabId: string): void {
-      this.contextTargetId = tabId;
-      
-      if (!this.contextMenu) return;
-      
-      this.contextMenu.classList.add('visible');
-      this.contextMenu.style.left = event.clientX + 'px';
-      this.contextMenu.style.top = event.clientY + 'px';
-    }
-
-    private attachEventListeners(): void {
-      // 隱藏右鍵菜單
-      document.addEventListener('click', () => {
-        this.contextMenu?.classList.remove('visible');
-      });
-      
-      // 右鍵菜單動作
-      this.contextMenu?.querySelectorAll('.context-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-          const action = (e.target as HTMLElement).getAttribute('data-action');
-          
-          switch (action) {
-            case 'close':
-              this.closeTab(this.contextTargetId);
-              break;
-            case 'close-others':
-              this.closeOtherTabs(this.contextTargetId);
-              break;
-            case 'close-right':
-              this.closeRightTabs(this.contextTargetId);
-              break;
-            case 'copy-link':
-              const tab = this.tabs.get(this.contextTargetId);
-              if (tab) {
-                navigator.clipboard.writeText(window.location.origin + tab.href);
-              }
-              break;
-          }
-          
-          this.contextMenu?.classList.remove('visible');
-        });
-      });
-      
-      // 鍵盤快捷鍵
-      document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Tab') {
-          e.preventDefault();
-          const keys = Array.from(this.tabs.keys());
-          const currentIndex = keys.indexOf(this.activeTabId);
-          
-          if (e.shiftKey) {
-            // Ctrl+Shift+Tab: 上一個標籤
-            const nextIndex = (currentIndex - 1 + keys.length) % keys.length;
-            this.switchTab(keys[nextIndex]);
-          } else {
-            // Ctrl+Tab: 下一個標籤
-            const nextIndex = (currentIndex + 1) % keys.length;
-            this.switchTab(keys[nextIndex]);
-          }
-        }
-      });
-    }
-  }
-
-  // 初始化標籤管理器
-  window.addEventListener('DOMContentLoaded', () => {
-    (window as any).tabManager = new TabManager();
-  });
-
-  // 暴露全局方法供其他組件使用
-  (window as any).openTab = function(label: string, href: string, icon: string = '📄') {
-    const id = 'tab-' + Date.now();
-    (window as any).tabManager?.addTab({
-      id,
-      label,
-      href,
-      icon,
-      closeable: true
     });
-  };
 </script>

@@ -16,11 +16,11 @@ export interface Stock {
 
 export interface FundamentalData {
     symbol: string;
-    pe?: number;        // 本益比
-    pb?: number;        // 股價淨值比
+    pe?: number; // 本益比
+    pb?: number; // 股價淨值比
     dividendYield?: number; // 殖利率 (%)
-    roe?: number;       // 股東權益報酬率 (%)
-    eps?: number;       // 每股盈餘
+    roe?: number; // 股東權益報酬率 (%)
+    eps?: number; // 每股盈餘
 }
 
 export interface ScreenerCriteria {
@@ -50,14 +50,10 @@ export interface ScreenerResult {
  * @param min 最小值
  * @param max 最大值
  */
-export function filterByPE(
-    data: FundamentalData[],
-    min?: number,
-    max?: number
-): FundamentalData[] {
+export function filterByPE(data: FundamentalData[], min?: number, max?: number): FundamentalData[] {
     return data.filter(d => {
         if (d.pe === undefined || d.pe === null) return false;
-        if (d.pe <= 0) return false;  // 排除虧損公司
+        if (d.pe <= 0) return false; // 排除虧損公司
         if (min !== undefined && d.pe < min) return false;
         if (max !== undefined && d.pe > max) return false;
         return true;
@@ -67,11 +63,7 @@ export function filterByPE(
 /**
  * 股價淨值比篩選 (P/B Ratio)
  */
-export function filterByPB(
-    data: FundamentalData[],
-    min?: number,
-    max?: number
-): FundamentalData[] {
+export function filterByPB(data: FundamentalData[], min?: number, max?: number): FundamentalData[] {
     return data.filter(d => {
         if (d.pb === undefined || d.pb === null) return false;
         if (min !== undefined && d.pb < min) return false;
@@ -223,7 +215,11 @@ export function screenStocks(
                 if (passes.length > 0) matchedStrategies.push('低股價淨值比');
             }
             if (criteria.dividendYield) {
-                const passes = filterByDividendYield([fund], criteria.dividendYield.min, criteria.dividendYield.max);
+                const passes = filterByDividendYield(
+                    [fund],
+                    criteria.dividendYield.min,
+                    criteria.dividendYield.max
+                );
                 if (passes.length > 0) matchedStrategies.push('高殖利率');
             }
             if (criteria.roe) {
@@ -252,7 +248,7 @@ export function screenStocks(
                 symbol: stock.symbol,
                 name: stock.name,
                 matchedStrategies,
-                fundamentals: fund
+                fundamentals: fund,
             });
         }
     }

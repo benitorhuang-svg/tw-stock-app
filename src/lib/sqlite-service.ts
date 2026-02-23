@@ -1,10 +1,10 @@
 /**
  * SQLite Data Service
- * 
+ *
  * 統一的資料存取層，支援：
  * - Server-side: 使用 better-sqlite3 (同步、高效能)
  * - Client-side: 使用 sql.js (WASM、離線支援)
- * 
+ *
  * 自動判斷執行環境並使用適合的引擎
  */
 
@@ -111,7 +111,7 @@ async function getClientDb() {
 
             const SQL = await initSqlJs({
                 // 使用 CDN 或本地 WASM
-                locateFile: (file: string) => `https://sql.js.org/dist/${file}`
+                locateFile: (file: string) => `https://sql.js.org/dist/${file}`,
             });
 
             // 嘗試從 IndexedDB 載入快取的資料庫
@@ -153,20 +153,20 @@ const IDB_STORE = 'databases';
 const IDB_KEY = 'stocks.db';
 
 async function loadDbFromIndexedDB(): Promise<Uint8Array | null> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         try {
             const request = indexedDB.open(IDB_NAME, 1);
 
             request.onerror = () => resolve(null);
 
-            request.onupgradeneeded = (event) => {
+            request.onupgradeneeded = event => {
                 const db = (event.target as IDBOpenDBRequest).result;
                 if (!db.objectStoreNames.contains(IDB_STORE)) {
                     db.createObjectStore(IDB_STORE);
                 }
             };
 
-            request.onsuccess = (event) => {
+            request.onsuccess = event => {
                 const db = (event.target as IDBOpenDBRequest).result;
                 const tx = db.transaction(IDB_STORE, 'readonly');
                 const store = tx.objectStore(IDB_STORE);
@@ -186,20 +186,20 @@ async function loadDbFromIndexedDB(): Promise<Uint8Array | null> {
 }
 
 async function saveDbToIndexedDB(buffer: ArrayBuffer): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         try {
             const request = indexedDB.open(IDB_NAME, 1);
 
             request.onerror = () => resolve();
 
-            request.onupgradeneeded = (event) => {
+            request.onupgradeneeded = event => {
                 const db = (event.target as IDBOpenDBRequest).result;
                 if (!db.objectStoreNames.contains(IDB_STORE)) {
                     db.createObjectStore(IDB_STORE);
                 }
             };
 
-            request.onsuccess = (event) => {
+            request.onsuccess = event => {
                 const db = (event.target as IDBOpenDBRequest).result;
                 const tx = db.transaction(IDB_STORE, 'readwrite');
                 const store = tx.objectStore(IDB_STORE);
@@ -301,7 +301,8 @@ export async function getAllStocksWithPrices(): Promise<StockWithPrice[]> {
  * 取得單一股票資訊
  */
 export async function getStock(symbol: string): Promise<StockWithPrice | null> {
-    return queryOne<StockWithPrice>(`
+    return queryOne<StockWithPrice>(
+        `
         SELECT 
             s.symbol, s.name, s.market,
             COALESCE(p.date, '') as date,
@@ -318,17 +319,17 @@ export async function getStock(symbol: string): Promise<StockWithPrice | null> {
         FROM stocks s
         LEFT JOIN latest_prices p ON s.symbol = p.symbol
         WHERE s.symbol = ?
-    `, [symbol]);
+    `,
+        [symbol]
+    );
 }
 
 /**
  * 取得股票歷史價格
  */
-export async function getStockHistory(
-    symbol: string,
-    limit: number = 365
-): Promise<PriceRecord[]> {
-    return query<PriceRecord>(`
+export async function getStockHistory(symbol: string, limit: number = 365): Promise<PriceRecord[]> {
+    return query<PriceRecord>(
+        `
         SELECT 
             date, open, high, low, close, volume, 
             change, change_pct as changePct
@@ -336,14 +337,17 @@ export async function getStockHistory(
         WHERE symbol = ?
         ORDER BY date DESC
         LIMIT ?
-    `, [symbol, limit]);
+    `,
+        [symbol, limit]
+    );
 }
 
 /**
  * 取得漲幅排行
  */
 export async function getTopGainers(limit: number = 10): Promise<StockWithPrice[]> {
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT 
             s.symbol, s.name, s.market,
             p.date, p.open, p.high, p.low, p.close, p.volume,
@@ -354,14 +358,17 @@ export async function getTopGainers(limit: number = 10): Promise<StockWithPrice[
         WHERE p.change_pct > 0
         ORDER BY p.change_pct DESC
         LIMIT ?
-    `, [limit]);
+    `,
+        [limit]
+    );
 }
 
 /**
  * 取得跌幅排行
  */
 export async function getTopLosers(limit: number = 10): Promise<StockWithPrice[]> {
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT 
             s.symbol, s.name, s.market,
             p.date, p.open, p.high, p.low, p.close, p.volume,
@@ -372,14 +379,17 @@ export async function getTopLosers(limit: number = 10): Promise<StockWithPrice[]
         WHERE p.change_pct < 0
         ORDER BY p.change_pct ASC
         LIMIT ?
-    `, [limit]);
+    `,
+        [limit]
+    );
 }
 
 /**
  * 取得成交量排行
  */
 export async function getTopByVolume(limit: number = 10): Promise<StockWithPrice[]> {
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT 
             s.symbol, s.name, s.market,
             p.date, p.open, p.high, p.low, p.close, p.volume,
@@ -390,18 +400,18 @@ export async function getTopByVolume(limit: number = 10): Promise<StockWithPrice
         WHERE p.volume > 0
         ORDER BY p.volume DESC
         LIMIT ?
-    `, [limit]);
+    `,
+        [limit]
+    );
 }
 
 /**
  * 搜尋股票
  */
-export async function searchStocks(
-    keyword: string,
-    limit: number = 50
-): Promise<StockWithPrice[]> {
+export async function searchStocks(keyword: string, limit: number = 50): Promise<StockWithPrice[]> {
     const pattern = `%${keyword}%`;
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT 
             s.symbol, s.name, s.market,
             COALESCE(p.date, '') as date,
@@ -420,7 +430,9 @@ export async function searchStocks(
         WHERE s.symbol LIKE ? OR s.name LIKE ?
         ORDER BY s.symbol
         LIMIT ?
-    `, [pattern, pattern, limit]);
+    `,
+        [pattern, pattern, limit]
+    );
 }
 
 /**
@@ -475,11 +487,10 @@ export async function screenStocks(criteria: ScreenerCriteria): Promise<StockWit
         params.push(criteria.changePctMax);
     }
 
-    const whereClause = conditions.length > 0
-        ? `WHERE ${conditions.join(' AND ')}`
-        : '';
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT 
             s.symbol, s.name, s.market,
             p.date, p.open, p.high, p.low, p.close, p.volume,
@@ -489,7 +500,9 @@ export async function screenStocks(criteria: ScreenerCriteria): Promise<StockWit
         JOIN latest_prices p ON s.symbol = p.symbol
         ${whereClause}
         ORDER BY s.symbol
-    `, params);
+    `,
+        params
+    );
 }
 
 /**
@@ -501,13 +514,17 @@ export async function getDbStats(): Promise<{
     lastUpdateDate: string;
 }> {
     const stockCount = await queryOne<{ count: number }>('SELECT COUNT(*) as count FROM stocks');
-    const historyCount = await queryOne<{ count: number }>('SELECT COUNT(*) as count FROM price_history');
-    const lastDate = await queryOne<{ date: string }>('SELECT MAX(date) as date FROM latest_prices');
+    const historyCount = await queryOne<{ count: number }>(
+        'SELECT COUNT(*) as count FROM price_history'
+    );
+    const lastDate = await queryOne<{ date: string }>(
+        'SELECT MAX(date) as date FROM latest_prices'
+    );
 
     return {
         stockCount: stockCount?.count || 0,
         historyRecordCount: historyCount?.count || 0,
-        lastUpdateDate: lastDate?.date || 'N/A'
+        lastUpdateDate: lastDate?.date || 'N/A',
     };
 }
 
@@ -517,7 +534,7 @@ export async function getDbStats(): Promise<{
 export async function clearClientCache(): Promise<void> {
     if (isServer()) return;
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const request = indexedDB.deleteDatabase(IDB_NAME);
         request.onsuccess = () => {
             clientDb = null;

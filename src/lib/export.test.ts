@@ -6,7 +6,7 @@ import {
     exportStocksCSV,
     exportPortfolioCSV,
     exportTransactionsCSV,
-    parseCSV
+    parseCSV,
 } from './export';
 
 // Mock DOM APIs
@@ -23,7 +23,7 @@ beforeEach(() => {
     createdObjectURLs = [];
     revokedURLs = [];
 
-    vi.spyOn(console, 'warn').mockImplementation(() => { });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     // Mock document.createElement
     vi.stubGlobal('document', {
@@ -34,8 +34,8 @@ beforeEach(() => {
         },
         body: {
             appendChild: (el: any) => appendedChildren.push(el),
-            removeChild: (el: any) => removedChildren.push(el)
-        }
+            removeChild: (el: any) => removedChildren.push(el),
+        },
     });
 
     // Mock URL.createObjectURL / revokeObjectURL
@@ -47,24 +47,26 @@ beforeEach(() => {
         },
         revokeObjectURL: (url: string) => {
             revokedURLs.push(url);
-        }
+        },
     });
 
     // Mock Blob (happy-dom should provide this, but just in case)
     if (typeof Blob === 'undefined') {
-        vi.stubGlobal('Blob', class MockBlob {
-            parts: any[];
-            options: any;
-            constructor(parts: any[], options?: any) {
-                this.parts = parts;
-                this.options = options;
+        vi.stubGlobal(
+            'Blob',
+            class MockBlob {
+                parts: any[];
+                options: any;
+                constructor(parts: any[], options?: any) {
+                    this.parts = parts;
+                    this.options = options;
+                }
             }
-        });
+        );
     }
 });
 
 describe('Export Module', () => {
-
     // ========================================
     // exportToCSV
     // ========================================
@@ -73,12 +75,12 @@ describe('Export Module', () => {
         it('應生成正確的 CSV 並觸發下載', () => {
             const data = [
                 { symbol: '2330', name: '台積電', price: 600 },
-                { symbol: '2317', name: '鴻海', price: 120 }
+                { symbol: '2317', name: '鴻海', price: 120 },
             ];
             const columns = [
                 { key: 'symbol', label: '代號' },
                 { key: 'name', label: '名稱' },
-                { key: 'price', label: '股價' }
+                { key: 'price', label: '股價' },
             ];
 
             exportToCSV(data, columns, 'test.csv');
@@ -123,7 +125,7 @@ describe('Export Module', () => {
             const columns = [
                 { key: 'a', label: 'A' },
                 { key: 'b', label: 'B' },
-                { key: 'c', label: 'C' }
+                { key: 'c', label: 'C' },
             ];
 
             exportToCSV(data, columns, 'test.csv');
@@ -184,11 +186,21 @@ describe('Export Module', () => {
 
     describe('exportStocksCSV', () => {
         it('應使用預定義的欄位匯出股票資料', () => {
-            const stocks = [{
-                symbol: '2330', name: '台積電', price: 600,
-                change: 5, changePercent: 0.8,
-                pe: 28, pb: 6, yield: 3.5, roe: 30, eps: 22, volume: 30000
-            }];
+            const stocks = [
+                {
+                    symbol: '2330',
+                    name: '台積電',
+                    price: 600,
+                    change: 5,
+                    changePercent: 0.8,
+                    pe: 28,
+                    pb: 6,
+                    yield: 3.5,
+                    roe: 30,
+                    eps: 22,
+                    volume: 30000,
+                },
+            ];
 
             exportStocksCSV(stocks);
 
@@ -200,12 +212,19 @@ describe('Export Module', () => {
 
     describe('exportPortfolioCSV', () => {
         it('應使用預定義的欄位匯出投資組合', () => {
-            const portfolio = [{
-                symbol: '2330', stock_name: '台積電',
-                shares: 1000, avg_cost: 580,
-                currentPrice: 600, cost: 580000, value: 600000,
-                pl: 20000, plPercent: 3.4
-            }];
+            const portfolio = [
+                {
+                    symbol: '2330',
+                    stock_name: '台積電',
+                    shares: 1000,
+                    avg_cost: 580,
+                    currentPrice: 600,
+                    cost: 580000,
+                    value: 600000,
+                    pl: 20000,
+                    plPercent: 3.4,
+                },
+            ];
 
             exportPortfolioCSV(portfolio);
 
@@ -217,12 +236,18 @@ describe('Export Module', () => {
 
     describe('exportTransactionsCSV', () => {
         it('應使用預定義的欄位匯出交易紀錄', () => {
-            const transactions = [{
-                date: '2025-01-15', symbol: '2330',
-                type: 'buy', shares: 1000,
-                price: 580, fee: 826, tax: 0,
-                notes: '逢低買入'
-            }];
+            const transactions = [
+                {
+                    date: '2025-01-15',
+                    symbol: '2330',
+                    type: 'buy',
+                    shares: 1000,
+                    price: 580,
+                    fee: 826,
+                    tax: 0,
+                    notes: '逢低買入',
+                },
+            ];
 
             exportTransactionsCSV(transactions);
 
@@ -253,7 +278,9 @@ describe('Export Module', () => {
         });
 
         it('應處理帶引號的欄位', async () => {
-            const file = createMockFile('Name,Note\nTSMC,"Hello, World"\nHon Hai,"She said ""hi"""');
+            const file = createMockFile(
+                'Name,Note\nTSMC,"Hello, World"\nHon Hai,"She said ""hi"""'
+            );
 
             const result = await parseCSV(file);
 

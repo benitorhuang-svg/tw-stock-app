@@ -9,7 +9,7 @@ import {
     detectMACDBullish,
     screenStocks,
     type FundamentalData,
-    type Stock
+    type Stock,
 } from './screener';
 
 // ================== 測試資料 ==================
@@ -27,8 +27,24 @@ const uptrendPrices = Array.from({ length: 25 }, (_, i) => 100 + i * 2);
 
 // 下跌後反彈價格（用於 RSI 超賣）
 const oversoldReboundPrices = [
-    100, 98, 95, 90, 85, 82, 80, 78, 77, 76, // 下跌
-    75, 74, 73, 72, 75, 78, 82, 85           // 反彈
+    100,
+    98,
+    95,
+    90,
+    85,
+    82,
+    80,
+    78,
+    77,
+    76, // 下跌
+    75,
+    74,
+    73,
+    72,
+    75,
+    78,
+    82,
+    85, // 反彈
 ];
 
 // 平穩價格
@@ -102,12 +118,11 @@ describe('Technical Filters', () => {
             // 建立明確的黃金交叉情境：先下跌讓 MA5 < MA20，再急漲
             const prices = [
                 // 前 15 天穩定
-                100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-                100, 100, 100, 100, 100,
+                100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
                 // 小跌 5 天（讓 MA5 低於 MA20）
                 98, 96, 94, 92, 90,
                 // 急漲（讓 MA5 上穿 MA20）
-                95, 100, 105, 110, 115
+                95, 100, 105, 110, 115,
             ];
 
             const result = detectGoldenCross(prices);
@@ -130,8 +145,8 @@ describe('Technical Filters', () => {
         it('超賣後反彈應偵測成功', () => {
             // 建立 RSI 超賣反彈情境
             const prices = [
-                100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-                99, 97, 94, 90, 85, 80, 75, 70, 72, 75
+                100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 99, 97, 94, 90, 85, 80, 75, 70,
+                72, 75,
             ];
 
             const result = detectRSIOversoldRebound(prices);
@@ -165,18 +180,13 @@ describe('screenStocks', () => {
     const stocks: Stock[] = [
         { symbol: '2330', name: '台積電' },
         { symbol: '2317', name: '鴻海' },
-        { symbol: '2454', name: '聯發科' }
+        { symbol: '2454', name: '聯發科' },
     ];
 
     it('應篩選符合基本面條件的股票', () => {
         const priceData = new Map<string, number[]>();
 
-        const results = screenStocks(
-            stocks,
-            sampleFundamentals,
-            priceData,
-            { pe: { max: 15 } }
-        );
+        const results = screenStocks(stocks, sampleFundamentals, priceData, { pe: { max: 15 } });
 
         expect(results.length).toBeGreaterThan(0);
         expect(results[0].matchedStrategies).toContain('低本益比');
@@ -198,20 +208,16 @@ describe('screenStocks', () => {
     it('應按符合策略數量排序', () => {
         const priceData = new Map<string, number[]>();
 
-        const results = screenStocks(
-            stocks,
-            sampleFundamentals,
-            priceData,
-            {
-                pe: { max: 15 },
-                dividendYield: { min: 5 }
-            }
-        );
+        const results = screenStocks(stocks, sampleFundamentals, priceData, {
+            pe: { max: 15 },
+            dividendYield: { min: 5 },
+        });
 
         // 符合兩個策略的應排在前面
         if (results.length > 1) {
-            expect(results[0].matchedStrategies.length)
-                .toBeGreaterThanOrEqual(results[1].matchedStrategies.length);
+            expect(results[0].matchedStrategies.length).toBeGreaterThanOrEqual(
+                results[1].matchedStrategies.length
+            );
         }
     });
 });

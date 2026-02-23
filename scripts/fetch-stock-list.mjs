@@ -1,6 +1,6 @@
 /**
  * 從證交所/櫃買中心取得完整股票清單
- * 
+ *
  * 使用方式:
  * node scripts/fetch-stock-list.mjs
  */
@@ -15,8 +15,9 @@ const OUTPUT_FILE = path.join(__dirname, '..', 'public', 'data', 'stocks.json');
 // TWSE 上市股票 API
 const TWSE_URL = 'https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=json';
 
-// TPEx 上櫃股票 API  
-const TPEX_URL = 'https://www.tpex.org.tw/web/stock/aftertrading/daily_close_quotes/stk_quote_result.php?l=zh-tw&o=json';
+// TPEx 上櫃股票 API
+const TPEX_URL =
+    'https://www.tpex.org.tw/web/stock/aftertrading/daily_close_quotes/stk_quote_result.php?l=zh-tw&o=json';
 
 // 設定
 const REQUEST_TIMEOUT = 5000;
@@ -38,7 +39,7 @@ async function fetchWithRetry(url, options = {}, retries = MAX_RETRIES) {
         try {
             const response = await fetch(url, {
                 ...options,
-                signal: controller.signal
+                signal: controller.signal,
             });
             clearTimeout(timeoutId);
 
@@ -68,8 +69,8 @@ async function fetchTWSEStocks() {
     try {
         const response = await fetchWithRetry(TWSE_URL, {
             headers: {
-                'User-Agent': 'Mozilla/5.0'
-            }
+                'User-Agent': 'Mozilla/5.0',
+            },
         });
 
         if (!response.ok) {
@@ -93,12 +94,11 @@ async function fetchTWSEStocks() {
             .map(row => ({
                 symbol: row[0],
                 name: row[1].trim(),
-                market: 'TSE'
+                market: 'TSE',
             }));
 
         console.log(`   ✅ 取得 ${stocks.length} 檔上市股票`);
         return stocks;
-
     } catch (error) {
         console.error(`   ❌ 失敗: ${error.message}`);
         return [];
@@ -114,8 +114,8 @@ async function fetchTPExStocks() {
     try {
         const response = await fetchWithRetry(TPEX_URL, {
             headers: {
-                'User-Agent': 'Mozilla/5.0'
-            }
+                'User-Agent': 'Mozilla/5.0',
+            },
         });
 
         if (!response.ok) {
@@ -138,12 +138,11 @@ async function fetchTPExStocks() {
             .map(row => ({
                 symbol: row[0],
                 name: row[1].trim(),
-                market: 'OTC'
+                market: 'OTC',
             }));
 
         console.log(`   ✅ 取得 ${stocks.length} 檔上櫃股票`);
         return stocks;
-
     } catch (error) {
         console.error(`   ❌ 失敗: ${error.message}`);
         return [];

@@ -1,50 +1,73 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# [PROJECT_NAME] 憲法 (Constitution)
 
-## Core Principles
+<!-- 範例：專案核心憲法、架構憲法等 -->
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+## 核心原則 (Core Principles)
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### [原則 1 名稱]
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+<!-- 範例：I. 程式庫優先 (Library-First) -->
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+[原則 1 描述]
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+<!-- 範例：每個功能都應從獨立的程式庫開始；程式庫必須自給自足、可獨立測試且具備完整文件；核心目的必須明確——不允許僅為了組織目的而建立程式庫 -->
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### [原則 2 名稱]
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+<!-- 範例：II. CLI 介面優先 -->
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+[原則 2 描述]
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+<!-- 範例：每個程式庫都應透過 CLI 暴露功能；遵循文本輸入/輸出協議：stdin/參數 → stdout, 錯誤 → stderr；支援 JSON 與人類可讀格式 -->
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+### [原則 3 名稱]
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+<!-- 範例：III. 測試優先 (不可妥協) -->
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+[原則 3 描述]
+
+<!-- 範例：強制執行 TDD：編寫測試 → 使用者核准 → 測試失敗 → 開始實作；嚴格執行紅燈-綠燈-重構 (Red-Green-Refactor) 循環 -->
+
+### [原則 4 名稱]
+
+<!-- 範例：IV. 整合測試 (Integration Testing) -->
+
+[原則 4 描述]
+
+<!-- 範例：需要整合測試的核心領域：新程式庫契約測試、契約變更、服務間通信、共享 Schema -->
+
+### [原則 5 名稱]
+
+<!-- 範例：V. 可觀測性, VI. 版本管理, VII. 簡約原則 -->
+
+[原則 5 描述]
+
+<!-- 範例：透過文本 I/O 確保可調試性；強制使用結構化日誌；採用 MAJOR.MINOR.BUILD 版本格式；保持簡單，遵循 YAGNI 原則 -->
+
+## [章節 2 名稱]
+
+<!-- 範例：額外約束、安全需求、效能標準等 -->
+
+[章節 2 內容]
+
+<!-- 範例：技術棧要求、合規標準、部署政策等 -->
+
+## [章節 3 名稱]
+
+<!-- 範例：開發工作流、審核流程、品質門檻等 -->
+
+[章節 3 內容]
+
+<!-- 範例：程式碼審核要求、測試門檻、部署核准流程等 -->
+
+## 治理與管理 (Governance)
+
+<!-- 範例：憲法優先於所有其他規範；修正案需要完整記錄、核准與遷移計畫 -->
+
+[治理規則]
+
+<!-- 範例：所有 PR/審核必須驗證合規性；任何複雜設計必須具備正當理由；使用 [GUIDANCE_FILE] 作為執行期開發指南 -->
+
+**版本**: [CONSTITUTION_VERSION] | **生效日期**: [RATIFICATION_DATE] | **最後修正**: [LAST_AMENDED_DATE]
+
+<!-- 範例：版本: 2.1.1 | 生效日期: 2025-06-13 | 最後修正: 2025-07-16 -->

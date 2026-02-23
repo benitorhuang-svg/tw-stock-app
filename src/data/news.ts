@@ -19,12 +19,13 @@ const mockNews: NewsItem[] = [
     {
         id: 'news-1',
         title: '台積電法說會：2025 年營收成長上看 25%',
-        summary: '台積電今日舉行法說會，管理層表示受惠於 AI 需求強勁，預期 2025 年營收將成長 20-25%。',
+        summary:
+            '台積電今日舉行法說會，管理層表示受惠於 AI 需求強勁，預期 2025 年營收將成長 20-25%。',
         source: '經濟日報',
         url: '#',
         publishedAt: '2025/01/24 14:30',
         symbol: '2330',
-        category: 'stock'
+        category: 'stock',
     },
     {
         id: 'news-2',
@@ -33,7 +34,7 @@ const mockNews: NewsItem[] = [
         source: '工商時報',
         url: '#',
         publishedAt: '2025/01/24 10:15',
-        category: 'market'
+        category: 'market',
     },
     {
         id: 'news-3',
@@ -43,7 +44,7 @@ const mockNews: NewsItem[] = [
         url: '#',
         publishedAt: '2025/01/23 16:00',
         symbol: '2454',
-        category: 'stock'
+        category: 'stock',
     },
     {
         id: 'news-4',
@@ -52,7 +53,7 @@ const mockNews: NewsItem[] = [
         source: 'CNN',
         url: '#',
         publishedAt: '2025/01/23 08:00',
-        category: 'global'
+        category: 'global',
     },
     {
         id: 'news-5',
@@ -62,8 +63,8 @@ const mockNews: NewsItem[] = [
         url: '#',
         publishedAt: '2025/01/22 11:30',
         symbol: '2603',
-        category: 'industry'
-    }
+        category: 'industry',
+    },
 ];
 
 /**
@@ -92,9 +93,10 @@ export function getNewsByCategory(category: NewsItem['category']): NewsItem[] {
  */
 export function searchNews(keyword: string): NewsItem[] {
     const lowerKeyword = keyword.toLowerCase();
-    return mockNews.filter(news =>
-        news.title.toLowerCase().includes(lowerKeyword) ||
-        news.summary.toLowerCase().includes(lowerKeyword)
+    return mockNews.filter(
+        news =>
+            news.title.toLowerCase().includes(lowerKeyword) ||
+            news.summary.toLowerCase().includes(lowerKeyword)
     );
 }
 
@@ -112,14 +114,14 @@ export function formatNewsForDisplay(news: NewsItem): {
         market: '大盤',
         stock: '個股',
         industry: '產業',
-        global: '國際'
+        global: '國際',
     };
 
     const categoryColors: Record<string, string> = {
         market: '#00d4aa',
         stock: '#4dabf7',
         industry: '#ffd43b',
-        global: '#ff6b6b'
+        global: '#ff6b6b',
     };
 
     return {
@@ -127,6 +129,6 @@ export function formatNewsForDisplay(news: NewsItem): {
         summary: news.summary,
         meta: `${news.source} · ${news.publishedAt}`,
         categoryLabel: categoryLabels[news.category] || '其他',
-        categoryColor: categoryColors[news.category] || '#a0a0b0'
+        categoryColor: categoryColors[news.category] || '#a0a0b0',
     };
 }

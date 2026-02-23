@@ -1,9 +1,9 @@
 /**
  * Data Optimization Script
- * 
+ *
  * Consolidates individual stock history CSVs into a single optimized JSON file
  * to minimize disk I/O on Windows.
- * 
+ *
  * Run: node scripts/optimize-data.mjs
  */
 

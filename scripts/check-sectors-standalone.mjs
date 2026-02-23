@@ -1,11 +1,10 @@
-
 import fs from 'fs';
 
 // Mocked logic from industry.ts and stockDataService.ts
 const stockIndustryMap = {
-    '2317': 'electronics',
-    '2308': 'electronics',
-    '2382': 'electronics'
+    2317: 'electronics',
+    2308: 'electronics',
+    2382: 'electronics',
 };
 
 function getSectorBySymbol(symbol) {

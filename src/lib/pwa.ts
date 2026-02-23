@@ -9,7 +9,7 @@ export function registerServiceWorker(): void {
         window.addEventListener('load', async () => {
             try {
                 const registration = await navigator.serviceWorker.register('/sw.js', {
-                    scope: '/'
+                    scope: '/',
                 });
                 console.log('[PWA] Service Worker registered:', registration.scope);
 
@@ -18,7 +18,10 @@ export function registerServiceWorker(): void {
                     const newWorker = registration.installing;
                     if (newWorker) {
                         newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            if (
+                                newWorker.state === 'installed' &&
+                                navigator.serviceWorker.controller
+                            ) {
                                 // 有新版本可用
                                 showUpdateNotification();
                             }
@@ -152,8 +155,10 @@ function showUpdateNotification(): void {
 
 // 檢查是否為 PWA 模式
 export function isPWA(): boolean {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as any).standalone === true;
+    return (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone === true
+    );
 }
 
 // 初始化 PWA

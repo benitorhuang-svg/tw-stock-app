@@ -17,7 +17,7 @@ const defaultOptions: ExportOptions = {
     includeCharts: true,
     includePortfolio: true,
     includeWatchlist: true,
-    compressData: true
+    compressData: true,
 };
 
 /**
@@ -37,7 +37,7 @@ export async function exportOfflineHTML(options: Partial<ExportOptions> = {}): P
         strategies,
         userData: JSON.parse(userData),
         portfolio: opts.includePortfolio ? JSON.parse(portfolioData) : [],
-        watchlist: opts.includeWatchlist ? JSON.parse(watchlistData) : []
+        watchlist: opts.includeWatchlist ? JSON.parse(watchlistData) : [],
     });
 
     // 下載
@@ -105,7 +105,10 @@ function generateOfflineHTML(data: any): string {
                 
                 <h2>🔥 漲幅排行</h2>
                 <div class="stock-grid">
-                    ${stocks.slice(0, 8).map((s: any) => `
+                    ${stocks
+                        .slice(0, 8)
+                        .map(
+                            (s: any) => `
                         <div class="stock-card">
                             <div class="stock-symbol">${s.symbol}</div>
                             <div class="stock-name">${s.name}</div>
@@ -114,7 +117,9 @@ function generateOfflineHTML(data: any): string {
                                 ${s.changePercent >= 0 ? '+' : ''}${s.changePercent}%
                             </div>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
             </section>
 
@@ -134,7 +139,9 @@ function generateOfflineHTML(data: any): string {
                         </tr>
                     </thead>
                     <tbody>
-                        ${stocks.map((s: any) => `
+                        ${stocks
+                            .map(
+                                (s: any) => `
                             <tr data-symbol="${s.symbol}" data-name="${s.name}">
                                 <td class="symbol">${s.symbol}</td>
                                 <td>${s.name}</td>
@@ -145,7 +152,9 @@ function generateOfflineHTML(data: any): string {
                                 <td>${s.pe || '-'}</td>
                                 <td>${s.yield}%</td>
                             </tr>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </tbody>
                 </table>
             </section>
@@ -153,12 +162,15 @@ function generateOfflineHTML(data: any): string {
             <!-- 投資組合 -->
             <section id="page-portfolio" class="page">
                 <h1>💼 投資組合</h1>
-                ${portfolio.length === 0 ? `
+                ${
+                    portfolio.length === 0
+                        ? `
                     <div class="empty-state">
                         <div class="empty-icon">📋</div>
                         <p>尚無投資組合資料</p>
                     </div>
-                ` : `
+                `
+                        : `
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -169,33 +181,42 @@ function generateOfflineHTML(data: any): string {
                             </tr>
                         </thead>
                         <tbody>
-                            ${portfolio.map((p: any) => `
+                            ${portfolio
+                                .map(
+                                    (p: any) => `
                                 <tr>
                                     <td class="symbol">${p.symbol}</td>
                                     <td>${p.name || p.symbol}</td>
                                     <td>${p.shares}</td>
                                     <td>${p.avgCost}</td>
                                 </tr>
-                            `).join('')}
+                            `
+                                )
+                                .join('')}
                         </tbody>
                     </table>
-                `}
+                `
+                }
             </section>
 
             <!-- 自選股 -->
             <section id="page-watchlist" class="page">
                 <h1>⭐ 自選股</h1>
-                ${watchlist.length === 0 ? `
+                ${
+                    watchlist.length === 0
+                        ? `
                     <div class="empty-state">
                         <div class="empty-icon">📋</div>
                         <p>尚無自選股</p>
                     </div>
-                ` : `
+                `
+                        : `
                     <div class="stock-grid">
-                        ${watchlist.map((symbol: string) => {
-        const stock = stocks.find((s: any) => s.symbol === symbol);
-        if (!stock) return '';
-        return `
+                        ${watchlist
+                            .map((symbol: string) => {
+                                const stock = stocks.find((s: any) => s.symbol === symbol);
+                                if (!stock) return '';
+                                return `
                                 <div class="stock-card">
                                     <div class="stock-symbol">${stock.symbol}</div>
                                     <div class="stock-name">${stock.name}</div>
@@ -205,9 +226,11 @@ function generateOfflineHTML(data: any): string {
                                     </div>
                                 </div>
                             `;
-    }).join('')}
+                            })
+                            .join('')}
                     </div>
-                `}
+                `
+                }
             </section>
         </main>
     </div>

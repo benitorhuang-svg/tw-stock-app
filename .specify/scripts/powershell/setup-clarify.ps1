@@ -11,9 +11,9 @@ $ErrorActionPreference = 'Stop'
 
 # Show help if requested
 if ($Help) {
-    Write-Output "Usage: ./setup-clarify.ps1 [-Json] [-Help]"
-    Write-Output "  -Json     Output results in JSON format"
-    Write-Output "  -Help     Show this help message"
+    Write-Output "用法: ./setup-clarify.ps1 [-Json] [-Help]"
+    Write-Output "  -Json     以 JSON 格式輸出結果"
+    Write-Output "  -Help     顯示此說明訊息"
     exit 0
 }
 
@@ -31,17 +31,18 @@ if (-not (Test-FeatureBranch -Branch $paths.CURRENT_BRANCH -HasGit:$paths.HAS_GI
 # Ensure the feature directory exists
 New-Item -ItemType Directory -Path $paths.FEATURE_DIR -Force | Out-Null
 
-$clarifyFile = Join-Path $paths.FEATURE_DIR 'clarification.md'
+$clarifyFile = $paths.CLARIFY
+$clarifyFileName = Split-Path $clarifyFile -Leaf
 
 # Copy clarify template if it exists, otherwise create a basic one
 $template = Join-Path $paths.REPO_ROOT '.specify/templates/clarification-template.md'
 if (Test-Path $template) { 
     Copy-Item $template $clarifyFile -Force
-    Write-Output "Copied clarification template to $clarifyFile"
+    Write-Output "已將需求釐清模板複製到 $clarifyFile"
 }
 else {
-    Write-Warning "Clarification template not found at $template"
-    Write-Output "Creating default clarification.md..."
+    Write-Warning "於 $template 找不到需求釐清模板"
+    Write-Output "正在建立預設的 $clarifyFileName..."
     
     $defaultContent = @"
 # 需求釐清 (Clarification)
@@ -57,11 +58,13 @@ else {
 - [ ] 若網路斷線或 DB 鎖死 (Locked/Timeout)，錯誤處理機制為何？
 
 ## 3. 效能與資源評估 (Performance Impact)
-- [ ] 此功能是否會產生 $O(N^2)$ 以上的運算複雜度？
+- [ ] 此功能是否會產生 `$O(N^2)` 以上的運算複雜度？
 - [ ] 是否需要建立新的 DB Index (索引) 來支撐查詢速度？
 - [ ] 是否需要設定 Cache (Redis/IndexedDB)？
 "@
-    Set-Content -Path $clarifyFile -Value $defaultContent -Encoding utf8
+    # Use .NET to write UTF-8 without BOM to avoid mojibake
+    [System.IO.File]::WriteAllText($clarifyFile, $defaultContent, (New-Object System.Text.UTF8Encoding($False)))
+
 }
 
 # Output results

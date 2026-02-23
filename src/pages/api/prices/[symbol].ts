@@ -1,7 +1,7 @@
 // TEMPORARILY DISABLED - Dynamic API routes require server adapter
 // This will be restored in Phase 2 when we set up proper server configuration
 // For now, clients fetch data using priceService with local cache/files
-// 
+//
 // TODO Phase 2: Re-enable by:
 // 1. Install: npm install @astrojs/node
 // 2. Update astro.config.mjs: output: 'hybrid' + adapter: node()

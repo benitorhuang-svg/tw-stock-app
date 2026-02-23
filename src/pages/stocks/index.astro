@@ -1,453 +1,123 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { getTopVolume } from '../../utils/marketService';
+/**
+ * stocks/index.astro — Stock Listing / Analysis Hub
+ * Lists all available stocks with search and filtering.
+ */
+import MainTerminal from '../../layouts/MainTerminal.astro';
+import PageHero from '../../components/molecules/PageHero.astro';
+import StockCard from '../../components/organisms/StockCard.astro';
 
-// Load real stock data with full details from SQLite
-const allStocks = getTopVolume(500);
+// SSR: Load stock list
+import type { StockFullData } from '../../utils/stockDataService';
 
-// Format stocks for client-side usage
-const stockList = allStocks.map((s: any) => ({
-    symbol: s.symbol,
-    name: s.name,
-    price: s.price,
-    change: s.change,
-    changePercent: s.change_pct,
-    volume: s.volume,
-    pe: s.pe,
-    yield: s.yield,
-}));
+const fmtVol = (v: number) => (v > 0 ? v.toLocaleString('zh-TW') : '—');
+
+let stocks: StockFullData[] = [];
+
+try {
+    const { getTopStocksByVolume } = await import('../../utils/stockDataService');
+    stocks = (await getTopStocksByVolume?.(30)) ?? [];
+} catch {
+    // Fallback demo data
+    stocks = [
+        {
+            symbol: '2330',
+            name: '台積電',
+            market: 'TWSE',
+            price: 892.0,
+            change: 15.0,
+            changePercent: 1.71,
+            volume: 32456,
+            high: 895,
+            low: 880,
+            open: 885,
+            pe: 22.5,
+            pb: 6.1,
+            yield: 1.8,
+            roe: 0,
+            eps: 0,
+            sector: 'semiconductor',
+        },
+        {
+            symbol: '2454',
+            name: '聯發科',
+            market: 'TWSE',
+            price: 1280.0,
+            change: 25.0,
+            changePercent: 1.99,
+            volume: 8234,
+            high: 1290,
+            low: 1260,
+            open: 1265,
+            pe: 18.2,
+            pb: 4.5,
+            yield: 2.1,
+            roe: 0,
+            eps: 0,
+            sector: 'semiconductor',
+        },
+        {
+            symbol: '2317',
+            name: '鴻海',
+            market: 'TWSE',
+            price: 156.0,
+            change: 3.5,
+            changePercent: 2.29,
+            volume: 45678,
+            high: 158,
+            low: 153,
+            open: 154,
+            pe: 11.5,
+            pb: 1.4,
+            yield: 5.2,
+            roe: 0,
+            eps: 0,
+            sector: 'electronics',
+        },
+    ];
+}
 ---
 
-<Layout title="個股分析">
-    <div class="page-container">
-        <!-- Floating Header Section -->
-        <div class="page-header glass-card">
-            <div class="header-content">
-                <div class="title-group">
-                    <h1>📊 個股分析</h1>
-                    <p class="subtitle">全市場 {stockList.length} 檔股票即時監控</p>
-                </div>
+<MainTerminal title="Analysis 分析">
+    <PageHero title="Stock Analysis" subtitle="個股分析中心 — 點擊進入個股診斷頁">
+        <span class="terminal-label">
+            {stocks.length} 檔
+        </span>
+    </PageHero>
 
-                <!-- Search Box -->
-                <div class="search-box-wrapper">
-                    <span class="search-icon">🔍</span>
-                    <input
-                        type="text"
-                        id="stock-search"
-                        placeholder="搜尋代號或名稱 (例: 2330)..."
-                        class="premium-search-input mono"
-                    />
-                    <div class="search-shortcut">/</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Grid -->
-        <div class="stock-grid" id="stock-list">
-            <!-- Will be populated by JS -->
-        </div>
-
-        <!-- Floating Pagination -->
-        <div class="pagination-bar glass-card">
-            <button id="prev-page" class="nav-btn" disabled>
-                <span class="icon">←</span>
-            </button>
-            <span id="page-info" class="page-counter mono">Page 1</span>
-            <button id="next-page" class="nav-btn">
-                <span class="icon">→</span>
-            </button>
-        </div>
+    <!-- Filter Bar -->
+    <div class="flex items-center gap-3 mb-6">
+        <input
+            type="text"
+            placeholder="🔍 搜尋代號或名稱..."
+            class="bg-glass border border-border rounded-lg px-4 py-2 text-sm font-mono text-text-primary placeholder:text-text-muted outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-all w-full max-w-xs"
+            id="stock-list-search"
+        />
+        <select
+            class="bg-glass border border-border text-text-secondary text-xs font-medium px-3 py-2 rounded-md outline-none cursor-pointer transition-colors hover:border-accent"
+        >
+            <option>全部</option>
+            <option>上漲</option>
+            <option>下跌</option>
+        </select>
     </div>
-</Layout>
 
-<script define:vars={{ initialStocks: stockList }}>
-    // --- State Management ---
-    const stocks = initialStocks;
-    let filteredStocks = [...stocks];
-    let currentPage = 1;
-    const pageSize = 48; // Best for grid layouts
-
-    // --- DOM Elements ---
-    const stockListElement = document.getElementById('stock-list');
-    const searchInput = document.getElementById('stock-search');
-    const pageInfo = document.getElementById('page-info');
-    const prevBtn = document.getElementById('prev-page');
-    const nextBtn = document.getElementById('next-page');
-
-    // --- Helper: Generate Sparkline HTML ---
-    function getSparklineBars(isGainer) {
-        const colorClass = isGainer ? 'pos' : 'neg';
-        const heights = isGainer ? [30, 45, 40, 60, 55, 75, 90] : [80, 70, 60, 65, 40, 30, 20];
-
-        return heights
-            .map(
-                (h, i) => `
-            <div class="spark-bar ${colorClass}" style="height: ${h}%; left: ${i * 16}%"></div>
-        `
-            )
-            .join('');
-    }
-
-    // --- Render Function ---
-    function renderPage() {
-        if (!stockListElement) return;
-
-        const totalPages = Math.ceil(filteredStocks.length / pageSize) || 1;
-        if (currentPage > totalPages) currentPage = totalPages;
-        if (currentPage < 1) currentPage = 1;
-
-        const start = (currentPage - 1) * pageSize;
-        const end = start + pageSize;
-        const pageStocks = filteredStocks.slice(start, end);
-
-        if (pageStocks.length === 0) {
-            stockListElement.innerHTML = `
-                <div class="no-results">
-                    <span class="emoji">😕</span>
-                    <h3>找不到相關股票</h3>
-                    <p>請嘗試其他關鍵字</p>
-                </div>
-            `;
-            pageInfo.textContent = `0 / 0`;
-            return;
+    <!-- Stock Cards Grid -->
+    <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children"
+        id="stock-list-grid"
+    >
+        {
+            stocks.map(stock => (
+                <StockCard
+                    symbol={stock.symbol}
+                    name={stock.name}
+                    price={stock.price}
+                    change={stock.change}
+                    changePercent={stock.changePercent}
+                    volume={fmtVol(stock.volume)}
+                />
+            ))
         }
-
-        const html = pageStocks
-            .map(stock => {
-                const isGainer = stock.change >= 0;
-                const trendClass = isGainer ? 'pos' : 'neg';
-                const sign = isGainer ? '+' : '';
-                const price = stock.price.toFixed(2);
-                const change = Math.abs(stock.changePercent).toFixed(2);
-
-                return `
-            <a href="/stocks/${stock.symbol}/" class="stock-card-pro glass-card glow-wrapper fade-in">
-                <div class="glow-bg ${isGainer ? 'pos-glow' : 'neg-glow'}"></div>
-                
-                <div class="card-main">
-                    <div class="col-identity">
-                        <span class="symbol mono">${stock.symbol}</span>
-                        <span class="name">${stock.name}</span>
-                    </div>
-
-                    <div class="col-chart">
-                         <div class="sparkline-box">
-                             ${getSparklineBars(isGainer)}
-                         </div>
-                    </div>
-
-                    <div class="col-price">
-                        <span class="price mono">${price}</span>
-                        <span class="change mono ${trendClass}">${sign}${change}%</span>
-                    </div>
-                </div>
-            </a>
-            `;
-            })
-            .join('');
-
-        stockListElement.innerHTML = html;
-
-        // Update Controls
-        pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
-        if (prevBtn) prevBtn.disabled = currentPage === 1;
-        if (nextBtn) nextBtn.disabled = currentPage === totalPages;
-
-        // Re-init glows
-        initGlows();
-    }
-
-    function initGlows() {
-        document.querySelectorAll('.glow-wrapper').forEach(wrapper => {
-            wrapper.addEventListener('mousemove', e => {
-                const rect = wrapper.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                wrapper.style.setProperty('--mouse-x', `${x}px`);
-                wrapper.style.setProperty('--mouse-y', `${y}px`);
-            });
-        });
-    }
-
-    // --- Event Listeners ---
-    let debounceTimer;
-    searchInput?.addEventListener('input', e => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            const query = e.target.value.toLowerCase().trim();
-            filteredStocks = stocks.filter(
-                s => s.symbol.includes(query) || s.name.toLowerCase().includes(query)
-            );
-            currentPage = 1;
-            renderPage();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 300);
-    });
-
-    document.addEventListener('keydown', e => {
-        if (e.key === '/' && document.activeElement !== searchInput) {
-            e.preventDefault();
-            searchInput?.focus();
-        }
-    });
-
-    prevBtn?.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderPage();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    });
-
-    nextBtn?.addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredStocks.length / pageSize);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderPage();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    });
-
-    renderPage();
-</script>
-
-<style>
-    .page-container {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        padding-bottom: 100px;
-    }
-
-    .page-header {
-        padding: 24px 32px;
-    }
-
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
-
-    .title-group h1 {
-        font-size: 24px;
-        font-weight: 800;
-        margin: 0;
-        background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .subtitle {
-        color: var(--c-text-secondary);
-        font-size: 13px;
-        margin: 4px 0 0;
-    }
-
-    .search-box-wrapper {
-        position: relative;
-        width: 350px;
-        display: flex;
-        align-items: center;
-    }
-
-    .premium-search-input {
-        width: 100%;
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--c-border);
-        color: var(--c-text-primary);
-        padding: 12px 16px 12px 42px;
-        border-radius: 12px;
-        font-size: 14px;
-        transition: all 0.3s;
-    }
-
-    .premium-search-input:focus {
-        border-color: var(--c-accent);
-        background: rgba(0, 0, 0, 0.5);
-        box-shadow: 0 0 0 4px rgba(var(--c-accent-rgb), 0.1);
-        outline: none;
-    }
-
-    .search-icon {
-        position: absolute;
-        left: 14px;
-        opacity: 0.5;
-        font-size: 14px;
-        pointer-events: none;
-    }
-
-    .search-shortcut {
-        position: absolute;
-        right: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-        padding: 2px 8px;
-        font-size: 10px;
-        color: var(--c-text-muted);
-        pointer-events: none;
-    }
-
-    .stock-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-    }
-
-    .stock-card-pro {
-        display: block;
-        padding: 20px;
-        text-decoration: none;
-        height: 110px;
-        transition: transform 0.3s var(--ease-out);
-    }
-
-    .stock-card-pro:hover {
-        transform: translateY(-4px);
-    }
-
-    .card-main {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 100%;
-        position: relative;
-        z-index: 2;
-    }
-
-    .col-identity {
-        display: flex;
-        flex-direction: column;
-        width: 100px;
-    }
-
-    .symbol {
-        font-size: 16px;
-        font-weight: 800;
-        color: var(--c-accent);
-    }
-
-    .name {
-        font-size: 13px;
-        color: var(--c-text-primary);
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .col-chart {
-        flex: 1;
-        height: 40px;
-        margin: 0 20px;
-        opacity: 0.6;
-    }
-
-    .sparkline-box {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: flex-end;
-        gap: 3px;
-    }
-
-    .spark-bar {
-        width: 8px;
-        background: currentColor;
-        border-radius: 2px 2px 0 0;
-    }
-    .spark-bar.pos {
-        background: var(--c-success);
-    }
-    .spark-bar.neg {
-        background: var(--c-danger);
-    }
-
-    .col-price {
-        text-align: right;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .price {
-        font-size: 18px;
-        font-weight: 800;
-        color: #fff;
-    }
-
-    .change {
-        font-size: 13px;
-        font-weight: 700;
-    }
-    .change.pos {
-        color: var(--c-success);
-    }
-    .change.neg {
-        color: var(--c-danger);
-    }
-
-    .pagination-bar {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        z-index: 50;
-        border-radius: 50px;
-    }
-
-    .nav-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(255, 255, 255, 0.05);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .nav-btn:hover:not(:disabled) {
-        background: var(--c-accent);
-        border-color: var(--c-accent);
-    }
-
-    .nav-btn:disabled {
-        opacity: 0.3;
-        cursor: not-allowed;
-    }
-
-    .page-counter {
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--c-text-secondary);
-        min-width: 100px;
-        text-align: center;
-    }
-
-    .no-results {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 100px 0;
-    }
-
-    @media (max-width: 768px) {
-        .header-content {
-            flex-direction: column;
-            gap: 20px;
-            align-items: stretch;
-        }
-        .search-box-wrapper {
-            width: 100%;
-        }
-    }
-</style>
+    </div>
+</MainTerminal>

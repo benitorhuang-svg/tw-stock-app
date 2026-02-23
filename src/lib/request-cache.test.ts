@@ -3,7 +3,7 @@ import {
     withRequestCache,
     clearRequestCache,
     clearCacheByKey,
-    getCacheSize
+    getCacheSize,
 } from './request-cache';
 
 beforeEach(() => {
@@ -12,7 +12,6 @@ beforeEach(() => {
 });
 
 describe('Request Cache', () => {
-
     describe('withRequestCache', () => {
         it('首次呼叫應執行 fetcher', async () => {
             const fetcher = vi.fn().mockResolvedValue('data');
@@ -51,9 +50,7 @@ describe('Request Cache', () => {
         });
 
         it('TTL 過期後應重新執行', async () => {
-            const fetcher = vi.fn()
-                .mockResolvedValueOnce('first')
-                .mockResolvedValueOnce('second');
+            const fetcher = vi.fn().mockResolvedValueOnce('first').mockResolvedValueOnce('second');
 
             const r1 = await withRequestCache('key1', fetcher, 1000);
             expect(r1).toBe('first');
@@ -70,7 +67,7 @@ describe('Request Cache', () => {
             const fetcher = vi.fn().mockResolvedValue('cached');
 
             await withRequestCache('key1', fetcher, 5000);
-            vi.advanceTimersByTime(2000);  // 未過期
+            vi.advanceTimersByTime(2000); // 未過期
             await withRequestCache('key1', fetcher, 5000);
 
             expect(fetcher).toHaveBeenCalledOnce();

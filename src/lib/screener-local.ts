@@ -27,9 +27,11 @@ export async function screenStocksLocal(criteria: ScreenerCriteria): Promise<Scr
     const criteriaKey = JSON.stringify(criteria);
 
     // 檢查快取
-    if (resultsCache &&
+    if (
+        resultsCache &&
         resultsCache.criteriaKey === criteriaKey &&
-        Date.now() - resultsCache.timestamp < CACHE_TTL) {
+        Date.now() - resultsCache.timestamp < CACHE_TTL
+    ) {
         console.log('[Screener] Using cached results');
         return resultsCache.data;
     }
@@ -55,7 +57,7 @@ export async function screenStocksLocal(criteria: ScreenerCriteria): Promise<Scr
         const response = await fetch('/api/screener', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(criteria)
+            body: JSON.stringify(criteria),
         });
 
         if (response.ok) {
@@ -91,35 +93,41 @@ async function queryLocalDatabase(criteria: ScreenerCriteria): Promise<ScreenerR
     const rawResults = await filterStocks(conditions);
 
     // 轉換為 ScreenerResult 格式
-    return rawResults.map(r => {
-        const matchedStrategies: string[] = [];
+    return rawResults
+        .map(r => {
+            const matchedStrategies: string[] = [];
 
-        if (criteria.pe?.max && r.pe && r.pe > 0 && r.pe <= criteria.pe.max) {
-            matchedStrategies.push('低本益比');
-        }
-        if (criteria.pb?.max && r.pb && r.pb <= criteria.pb.max) {
-            matchedStrategies.push('低P/B');
-        }
-        if (criteria.dividendYield?.min && r.dividend_yield && r.dividend_yield >= criteria.dividendYield.min) {
-            matchedStrategies.push('高殖利率');
-        }
-        if (criteria.roe?.min && r.roe && r.roe >= criteria.roe.min) {
-            matchedStrategies.push('高ROE');
-        }
-
-        return {
-            symbol: r.symbol,
-            name: r.name,
-            matchedStrategies,
-            fundamentals: {
-                symbol: r.symbol,
-                pe: r.pe,
-                pb: r.pb,
-                dividendYield: r.dividend_yield,
-                roe: r.roe
+            if (criteria.pe?.max && r.pe && r.pe > 0 && r.pe <= criteria.pe.max) {
+                matchedStrategies.push('低本益比');
             }
-        } as ScreenerResult;
-    }).filter(r => r.matchedStrategies.length > 0);
+            if (criteria.pb?.max && r.pb && r.pb <= criteria.pb.max) {
+                matchedStrategies.push('低P/B');
+            }
+            if (
+                criteria.dividendYield?.min &&
+                r.dividend_yield &&
+                r.dividend_yield >= criteria.dividendYield.min
+            ) {
+                matchedStrategies.push('高殖利率');
+            }
+            if (criteria.roe?.min && r.roe && r.roe >= criteria.roe.min) {
+                matchedStrategies.push('高ROE');
+            }
+
+            return {
+                symbol: r.symbol,
+                name: r.name,
+                matchedStrategies,
+                fundamentals: {
+                    symbol: r.symbol,
+                    pe: r.pe,
+                    pb: r.pb,
+                    dividendYield: r.dividend_yield,
+                    roe: r.roe,
+                },
+            } as ScreenerResult;
+        })
+        .filter(r => r.matchedStrategies.length > 0);
 }
 
 /**

@@ -1,6 +1,6 @@
 /**
  * Request Deduplication & Caching Layer
- * 
+ *
  * Prevents duplicate concurrent requests for the same URL
  * Caches responses for a configurable TTL
  */
@@ -29,7 +29,7 @@ export function withRequestCache<T>(
     const cached = requestCache.get(key);
 
     // Return cached promise if still valid
-    if (cached && (now - cached.timestamp) < cached.ttl) {
+    if (cached && now - cached.timestamp < cached.ttl) {
         return cached.promise;
     }
 
@@ -40,17 +40,17 @@ export function withRequestCache<T>(
 
     // Create new promise and cache it
     const promise = fn();
-    
+
     requestCache.set(key, {
         promise,
         timestamp: now,
-        ttl
+        ttl,
     });
 
     // Clean up cache entry after TTL expires
     setTimeout(() => {
         const entry = requestCache.get(key);
-        if (entry && (Date.now() - entry.timestamp) >= entry.ttl) {
+        if (entry && Date.now() - entry.timestamp >= entry.ttl) {
             requestCache.delete(key);
         }
     }, ttl + 100);

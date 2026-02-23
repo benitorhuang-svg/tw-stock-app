@@ -42,12 +42,7 @@ class ToastManager {
     }
 
     show(options: ToastOptions): number {
-        const {
-            message,
-            type = 'info',
-            duration = 3000,
-            action
-        } = options;
+        const { message, type = 'info', duration = 3000, action } = options;
 
         const id = this.nextId++;
         const container = this.getContainer();
@@ -76,7 +71,7 @@ class ToastManager {
             success: '✅',
             error: '❌',
             warning: '⚠️',
-            info: 'ℹ️'
+            info: 'ℹ️',
         };
 
         // 邊框顏色
@@ -84,7 +79,7 @@ class ToastManager {
             success: '#00d4aa',
             error: '#ff4757',
             warning: '#ff9500',
-            info: '#0099ff'
+            info: '#0099ff',
         };
 
         toast.style.borderLeftWidth = '3px';
@@ -93,7 +88,9 @@ class ToastManager {
         toast.innerHTML = `
             <span class="toast-icon">${icons[type]}</span>
             <span class="toast-message" style="flex: 1;">${message}</span>
-            ${action ? `<button class="toast-action" style="
+            ${
+                action
+                    ? `<button class="toast-action" style="
                 background: none;
                 border: 1px solid currentColor;
                 color: ${borderColors[type]};
@@ -101,7 +98,9 @@ class ToastManager {
                 border-radius: 6px;
                 cursor: pointer;
                 font-size: 0.85rem;
-            ">${action.label}</button>` : ''}
+            ">${action.label}</button>`
+                    : ''
+            }
             <button class="toast-close" style="
                 background: none;
                 border: none;

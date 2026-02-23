@@ -14,48 +14,47 @@ export interface LazyLoadOptions {
  * 初始化懶載入
  */
 export function initLazyLoad(options: LazyLoadOptions = {}): IntersectionObserver {
-    const {
-        root = null,
-        rootMargin = '200px',
-        threshold = 0,
-        onLoad
-    } = options;
+    const { root = null, rootMargin = '200px', threshold = 0, onLoad } = options;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const element = entry.target;
+    const observer = new IntersectionObserver(
+        entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
 
-                // 處理圖片
-                if (element instanceof HTMLImageElement && element.dataset.src) {
-                    element.src = element.dataset.src;
-                    delete element.dataset.src;
+                    // 處理圖片
+                    if (element instanceof HTMLImageElement && element.dataset.src) {
+                        element.src = element.dataset.src;
+                        delete element.dataset.src;
+                    }
+
+                    // 處理背景圖片
+                    if (element.dataset.bg) {
+                        (element as HTMLElement).style.backgroundImage =
+                            `url(${element.dataset.bg})`;
+                        delete element.dataset.bg;
+                    }
+
+                    // 處理 iframe
+                    if (element instanceof HTMLIFrameElement && element.dataset.src) {
+                        element.src = element.dataset.src;
+                        delete element.dataset.src;
+                    }
+
+                    // 移除載入中樣式
+                    element.classList.remove('lazy');
+                    element.classList.add('loaded');
+
+                    // 觸發回調
+                    onLoad?.(element);
+
+                    // 停止觀察
+                    observer.unobserve(element);
                 }
-
-                // 處理背景圖片
-                if (element.dataset.bg) {
-                    (element as HTMLElement).style.backgroundImage = `url(${element.dataset.bg})`;
-                    delete element.dataset.bg;
-                }
-
-                // 處理 iframe
-                if (element instanceof HTMLIFrameElement && element.dataset.src) {
-                    element.src = element.dataset.src;
-                    delete element.dataset.src;
-                }
-
-                // 移除載入中樣式
-                element.classList.remove('lazy');
-                element.classList.add('loaded');
-
-                // 觸發回調
-                onLoad?.(element);
-
-                // 停止觀察
-                observer.unobserve(element);
-            }
-        });
-    }, { root, rootMargin, threshold });
+            });
+        },
+        { root, rootMargin, threshold }
+    );
 
     return observer;
 }

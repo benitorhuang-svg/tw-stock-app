@@ -15,13 +15,13 @@ export interface StockPriceRecord {
 
 /**
  * P0+ Optimization: Multi-tier price data loading strategy
- * 
+ *
  * Load Priority:
  * 1. Memory Cache (5 min) - In-process, fastest
  * 2. IndexedDB (7 day) - Browser persistent
  * 3. Local Files (Tier 2) - Filesystem/HTTP static
  * 4. API Fallback (Real-time) - Network fetch
- * 
+ *
  * Automatically detects environment:
  * - Server: Reads directly from filesystem (fast)
  * - Browser: Fetches + caches via IndexedDB/Memory
@@ -57,7 +57,7 @@ export async function fetchStockPrices(symbol: string): Promise<StockPriceRecord
             const fileMap = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
             const filename = fileMap[symbol];
             if (!filename) {
-                console.warn(`[Data] No price file index entry for: ${symbol}`);
+                console.info(`[Data] No price file index entry for: ${symbol}`);
                 return [];
             }
 
@@ -71,16 +71,15 @@ export async function fetchStockPrices(symbol: string): Promise<StockPriceRecord
         } else {
             // CLIENT-SIDE Tier 2: Load from local files (HTTP)
             console.log(`[Data] Loading prices from local files: ${symbol}`);
-            
+
             // Use request cache to deduplicate concurrent requests for the index
             const fileMap = await withRequestCache('price-index', () =>
-                fetch('/data/price_index.json')
-                    .then(res => {
-                        if (!res.ok) throw new Error(`Index fetch failed: ${res.status}`);
-                        return res.json();
-                    })
+                fetch('/data/price_index.json').then(res => {
+                    if (!res.ok) throw new Error(`Index fetch failed: ${res.status}`);
+                    return res.json();
+                })
             );
-            
+
             const filename = fileMap[symbol];
             if (!filename) {
                 console.warn(`[Data] No price entry for symbol: ${symbol}`);
@@ -97,7 +96,7 @@ export async function fetchStockPrices(symbol: string): Promise<StockPriceRecord
         }
 
         const prices = parseCSV(csvText);
-        
+
         // P0 Cache: Store in client-side caches (browser with IndexedDB)
         if (!isServer && prices.length > 0) {
             await setCache<StockPriceRecord[]>(cacheKey, prices, CACHE_TTL);
@@ -107,7 +106,7 @@ export async function fetchStockPrices(symbol: string): Promise<StockPriceRecord
         return prices;
     } catch (e) {
         console.error(`[Error] Failed to load price data for ${symbol}:`, e);
-        
+
         // P0 Fallback: Try API endpoint (Tier 3)
         if (!isServer) {
             try {
@@ -122,7 +121,7 @@ export async function fetchStockPrices(symbol: string): Promise<StockPriceRecord
                 console.error(`[Error] API fallback also failed:`, apiError);
             }
         }
-        
+
         return [];
     }
 }
@@ -145,4 +144,3 @@ function parseCSV(csv: string): StockPriceRecord[] {
         return record as StockPriceRecord;
     });
 }
-

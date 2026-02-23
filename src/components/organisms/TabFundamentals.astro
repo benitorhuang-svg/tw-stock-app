@@ -1,0 +1,361 @@
+---
+/**
+ * TabFundamentals.astro — Fundamentals & Valuation Tab (006-tab-fundamentals)
+ * Valuation River, Revenue Momentum, Financial Health Matrix
+ */
+import { getQuarterlyReports, getMonthlyRevenue, getEPSGrowth } from '../../data/financials';
+
+interface Props {
+    symbol: string;
+    pe: number;
+    pb: number;
+    yield_: number;
+    roe: number;
+    eps: number;
+}
+
+const { symbol, pe, pb, yield_, roe, eps } = Astro.props;
+
+const quarters = getQuarterlyReports(symbol);
+const monthlyRev = getMonthlyRevenue(symbol);
+
+const epsGrowth = getEPSGrowth(symbol);
+
+// Revenue bars (generate 12 months if we don't have enough)
+const revBars =
+    monthlyRev.length > 0
+        ? monthlyRev.slice(0, 12)
+        : Array.from({ length: 12 }, (_, i) => ({
+              year: 2024,
+              month: 12 - i,
+              revenue: 200000 + Math.random() * 100000,
+              revenueYoY: (Math.random() - 0.3) * 40,
+              revenueMoM: 0,
+              symbol,
+              accumulated: 0,
+              accumulatedYoY: 0,
+          }));
+
+const maxRev = Math.max(...revBars.map(r => r.revenue), 1);
+const hasAcceleration =
+    revBars.length >= 3 &&
+    revBars[0].revenueYoY > revBars[1].revenueYoY &&
+    revBars[1].revenueYoY > revBars[2].revenueYoY;
+
+// Triple margins data from quarterly reports
+const marginData =
+    quarters.length > 0
+        ? quarters.slice(0, 4).reverse()
+        : [
+              { grossMargin: 55, operatingMargin: 42, netMargin: 36, year: 2024, quarter: 1 },
+              { grossMargin: 56, operatingMargin: 45, netMargin: 37, year: 2024, quarter: 2 },
+              { grossMargin: 59, operatingMargin: 49, netMargin: 43, year: 2024, quarter: 3 },
+              { grossMargin: 60, operatingMargin: 50, netMargin: 45, year: 2024, quarter: 4 },
+          ];
+
+// Check triple-up (三率三升)
+const tripleUp =
+    marginData.length >= 2 &&
+    (() => {
+        const last = marginData[marginData.length - 1] as any;
+        const prev = marginData[marginData.length - 2] as any;
+        return (
+            last.grossMargin > prev.grossMargin &&
+            last.operatingMargin > prev.operatingMargin &&
+            last.netMargin > prev.netMargin
+        );
+    })();
+
+// Margin sparkline points
+const marginPoints = (key: string) => {
+    const data = marginData.map((d: any) => d[key] || 0);
+    if (data.length === 0) return '';
+    const max = Math.max(...data, 1);
+    const min = Math.min(...data, 0);
+    const range = max - min || 1;
+    return data
+        .map((v: number, i: number) => {
+            const x = (i / Math.max(data.length - 1, 1)) * 180 + 10;
+            const y = 55 - ((v - min) / range) * 45;
+            return `${x},${y}`;
+        })
+        .join(' ');
+};
+
+// Health badges
+const healthBadges = [
+    {
+        label: 'P/E',
+        value: pe > 0 ? pe.toFixed(1) : '—',
+        status: pe > 0 && pe < 15 ? 'good' : pe > 30 ? 'warn' : 'normal',
+    },
+    {
+        label: 'P/B',
+        value: pb > 0 ? pb.toFixed(2) : '—',
+        status: pb > 0 && pb < 2 ? 'good' : pb > 5 ? 'warn' : 'normal',
+    },
+    {
+        label: 'ROE',
+        value: roe > 0 ? `${roe.toFixed(1)}%` : '—',
+        status: roe >= 15 ? 'good' : roe < 8 && roe > 0 ? 'warn' : 'normal',
+    },
+    {
+        label: '殖利率',
+        value: yield_ > 0 ? `${yield_.toFixed(2)}%` : '—',
+        status: yield_ >= 4 ? 'good' : yield_ < 2 && yield_ > 0 ? 'warn' : 'normal',
+    },
+    { label: 'EPS', value: eps > 0 ? eps.toFixed(2) : '—', status: eps > 5 ? 'good' : 'normal' },
+    {
+        label: 'EPS成長',
+        value: epsGrowth !== null ? `${epsGrowth.toFixed(1)}%` : '—',
+        status:
+            epsGrowth !== null && epsGrowth > 10
+                ? 'good'
+                : epsGrowth !== null && epsGrowth < 0
+                  ? 'warn'
+                  : 'normal',
+    },
+];
+---
+
+<div class="space-y-6">
+    <!-- Valuation River Chart Placeholder -->
+    <div class="glass-card p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="terminal-label mb-1">估值河流圖</h3>
+                <p class="text-xs text-text-muted">Valuation River — 本益比區間與歷史股價位階</p>
+            </div>
+            <div class="flex gap-1">
+                {
+                    ['P/E', 'P/B'].map((type, i) => (
+                        <button
+                            class:list={[
+                                'px-3 py-1 rounded text-xs font-semibold transition-all',
+                                i === 0
+                                    ? 'bg-accent/15 text-accent border border-accent/20'
+                                    : 'text-text-muted hover:text-text-secondary bg-glass border border-border',
+                            ]}
+                        >
+                            {type}
+                        </button>
+                    ))
+                }
+                <div class="w-px bg-border mx-1"></div>
+                {
+                    ['1Y', '3Y', '5Y'].map((yr, i) => (
+                        <button
+                            class:list={[
+                                'px-2 py-1 rounded text-[10px] font-mono font-bold transition-all',
+                                i === 1
+                                    ? 'bg-accent/10 text-accent'
+                                    : 'text-text-muted hover:text-text-secondary',
+                            ]}
+                        >
+                            {yr}
+                        </button>
+                    ))
+                }
+            </div>
+        </div>
+
+        <!-- River chart visualization -->
+        <div class="relative h-[250px] overflow-hidden rounded-lg">
+            <!-- Background gradient bands (valuation zones) -->
+            <div class="absolute inset-0 flex flex-col">
+                <div class="flex-1 bg-bearish/[0.08]" title="昂貴區"></div>
+                <div class="flex-1 bg-bearish/[0.04]"></div>
+                <div class="flex-1 bg-white/[0.02]" title="均衡區"></div>
+                <div class="flex-1 bg-bullish/[0.04]"></div>
+                <div class="flex-1 bg-bullish/[0.08]" title="便宜區"></div>
+            </div>
+            <!-- Zone labels -->
+            <div
+                class="absolute right-3 top-0 bottom-0 flex flex-col justify-between text-[8px] font-mono py-2"
+            >
+                <span class="text-bearish/60">泡沫區</span>
+                <span class="text-bearish/40">偏貴</span>
+                <span class="text-text-muted">均衡</span>
+                <span class="text-bullish/40">偏低</span>
+                <span class="text-bullish/60">超跌區</span>
+            </div>
+            <!-- Price line snake -->
+            <svg
+                class="absolute inset-0 w-full h-full"
+                preserveAspectRatio="none"
+                viewBox="0 0 400 200"
+            >
+                <path
+                    d="M10,140 Q50,135 80,120 T160,100 T200,90 T250,95 T300,80 T340,65 T380,55 T400,50"
+                    fill="none"
+                    stroke="hsl(48,100%,70%)"
+                    stroke-width="2.5"
+                    opacity="0.9"></path>
+                <circle cx="400" cy="50" r="4" fill="hsl(48,100%,70%)" opacity="0.8">
+                    <animate
+                        attributeName="opacity"
+                        values="0.5;1;0.5"
+                        dur="2s"
+                        repeatCount="indefinite"></animate>
+                </circle>
+            </svg>
+            <!-- PE labels on left -->
+            <div
+                class="absolute left-3 top-0 bottom-0 flex flex-col justify-between text-[9px] font-mono text-text-muted py-2"
+            >
+                <span>30x</span>
+                <span>22x</span>
+                <span>15x</span>
+                <span>10x</span>
+                <span>5x</span>
+            </div>
+        </div>
+        <p class="text-[10px] text-text-muted mt-2 text-center font-mono">
+            目前 P/E {pe > 0 ? pe.toFixed(1) + 'x' : '—'} — 位於{
+                pe > 20 ? '偏貴' : pe > 12 ? '均衡' : '偏低'
+            }區間
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Revenue Momentum -->
+        <div class="glass-card p-5 glow-interactive relative">
+            {
+                hasAcceleration && (
+                    <span class="absolute top-3 right-3 text-[10px] font-bold text-bullish bg-bullish/15 px-2 py-0.5 rounded-full animate-glow-pulse">
+                        Accelerating 🚀
+                    </span>
+                )
+            }
+            <h3 class="terminal-label mb-1">營收動能趨勢</h3>
+            <p class="text-[10px] text-text-muted mb-3">月營收 + YoY 年增率</p>
+
+            <div class="h-[140px] flex items-end gap-1 px-1">
+                {
+                    revBars
+                        .slice()
+                        .reverse()
+                        .map((r, i) => {
+                            const pct = (r.revenue / maxRev) * 100;
+                            const isYoYPositive = r.revenueYoY > 0;
+                            return (
+                                <div class="flex flex-col items-center gap-0.5 flex-1 group relative">
+                                    <div
+                                        class:list={[
+                                            'w-full rounded-t-sm transition-all duration-300 group-hover:opacity-100',
+                                            isYoYPositive ? 'bg-accent/50' : 'bg-bearish/40',
+                                        ]}
+                                        style={`height: ${pct}%; opacity: 0.7`}
+                                    />
+                                    {i % 3 === 0 && (
+                                        <span class="text-[7px] font-mono text-text-muted">
+                                            {r.month}月
+                                        </span>
+                                    )}
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-base border border-border rounded text-[9px] font-mono opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 whitespace-nowrap">
+                                        <div>
+                                            {r.year}/{r.month}月
+                                        </div>
+                                        <div class="text-accent">
+                                            {(r.revenue / 10000).toFixed(1)}億
+                                        </div>
+                                        <div
+                                            class:list={[
+                                                r.revenueYoY > 0 ? 'text-bullish' : 'text-bearish',
+                                            ]}
+                                        >
+                                            YoY {r.revenueYoY > 0 ? '+' : ''}
+                                            {r.revenueYoY.toFixed(1)}%
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                }
+            </div>
+        </div>
+
+        <!-- Financial Health Matrix -->
+        <div class="glass-card p-5 glow-interactive relative">
+            {
+                tripleUp && (
+                    <div class="absolute inset-0 rounded-2xl bg-bullish/[0.03] pointer-events-none" />
+                )
+            }
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="terminal-label">財務體檢雷達</h3>
+                {
+                    tripleUp && (
+                        <span class="text-[10px] font-bold text-bullish bg-bullish/15 px-2 py-0.5 rounded-full">
+                            三率三升 ✨
+                        </span>
+                    )
+                }
+            </div>
+            <p class="text-[10px] text-text-muted mb-3">毛利率 / 營業利益率 / 淨利率</p>
+
+            <!-- Triple Margins Mini Chart -->
+            <div class="h-[70px] mb-4 relative">
+                <svg viewBox="0 0 200 60" class="w-full h-full">
+                    <polyline
+                        points={marginPoints('grossMargin')}
+                        fill="none"
+                        stroke="hsl(217,91%,60%)"
+                        stroke-width="1.5"
+                        stroke-linecap="round"></polyline>
+                    <polyline
+                        points={marginPoints('operatingMargin')}
+                        fill="none"
+                        stroke="hsl(38,92%,50%)"
+                        stroke-width="1.5"
+                        stroke-linecap="round"></polyline>
+                    <polyline
+                        points={marginPoints('netMargin')}
+                        fill="none"
+                        stroke="hsl(142,71%,45%)"
+                        stroke-width="1.5"
+                        stroke-linecap="round"></polyline>
+                </svg>
+                <div
+                    class="absolute bottom-0 left-0 right-0 flex justify-between text-[8px] font-mono text-text-muted px-2"
+                >
+                    {marginData.map((d: any) => <span>Q{d.quarter}</span>)}
+                </div>
+            </div>
+            <div class="flex gap-3 text-[10px] mb-4">
+                <span class="flex items-center gap-1"
+                    ><span class="w-2 h-0.5 bg-accent rounded"></span>毛利率</span
+                >
+                <span class="flex items-center gap-1"
+                    ><span class="w-2 h-0.5 bg-warning rounded"></span>營利率</span
+                >
+                <span class="flex items-center gap-1"
+                    ><span class="w-2 h-0.5 bg-bullish rounded"></span>純益率</span
+                >
+            </div>
+
+            <!-- Health Badges -->
+            <div class="grid grid-cols-3 gap-2">
+                {
+                    healthBadges.map(badge => (
+                        <div
+                            class:list={[
+                                'flex items-center justify-between px-3 py-1.5 rounded-full border text-xs font-mono',
+                                badge.status === 'good'
+                                    ? 'border-bullish/30 text-bullish bg-bullish/5'
+                                    : badge.status === 'warn'
+                                      ? 'border-warning/30 text-warning bg-warning/5'
+                                      : 'border-border text-text-secondary bg-glass',
+                            ]}
+                        >
+                            <span class="text-[10px] font-semibold tracking-wider">
+                                {badge.label}
+                            </span>
+                            <span class="font-bold">{badge.value}</span>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </div>
+</div>

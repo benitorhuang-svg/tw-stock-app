@@ -35,7 +35,7 @@ export const industries: Industry[] = [
     { id: 'trading', name: '貿易百貨', icon: '🛒', description: '百貨、零售' },
     { id: 'sports-leisure', name: '休閒與運動', icon: '👟', description: '自行車、運動鞋、健身' },
     { id: 'household', name: '生活與居家', icon: '🏠', description: '保全、家居配件、水電' },
-    { id: 'other', name: '其他', icon: '📦', description: '其他產業、未分類' }
+    { id: 'other', name: '其他', icon: '📦', description: '其他產業、未分類' },
 ];
 
 export function getIndustry(id: string): Industry | undefined {

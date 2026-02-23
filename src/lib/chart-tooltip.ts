@@ -59,16 +59,24 @@ export function showTooltip(x: number, y: number, data: TooltipData): void {
             <span style="text-align: right; color: #00d4aa;">${data.low.toFixed(2)}</span>
             <span style="color: #a0a0b0;">收盤</span>
             <span style="text-align: right; font-weight: 700;">${data.close.toFixed(2)}</span>
-            ${data.volume ? `
+            ${
+                data.volume
+                    ? `
                 <span style="color: #a0a0b0;">成交量</span>
                 <span style="text-align: right;">${(data.volume / 1000).toFixed(0)}K</span>
-            ` : ''}
+            `
+                    : ''
+            }
         </div>
-        ${data.change !== undefined ? `
+        ${
+            data.change !== undefined
+                ? `
             <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); color: ${changeColor};">
                 ${arrow} ${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)} (${data.changePercent?.toFixed(2)}%)
             </div>
-        ` : ''}
+        `
+                : ''
+        }
     `;
 
     // 計算位置，避免超出畫面
@@ -122,7 +130,7 @@ export function bindChartTooltip(
             showTooltip(e.clientX, e.clientY, {
                 ...data,
                 change,
-                changePercent
+                changePercent,
             });
         } else {
             hideTooltip();

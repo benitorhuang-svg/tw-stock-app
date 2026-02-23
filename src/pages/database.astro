@@ -1,0 +1,370 @@
+---
+/**
+ * database.astro — Data Explorer Page (003-tab-database)
+ * Standalone engineering tool for SQLite inspection.
+ */
+import MainTerminal from '../layouts/MainTerminal.astro';
+
+// SSR: Load initial table list
+import { dbService } from '../lib/db/sqlite-service';
+const tables = dbService.getTables();
+---
+
+<MainTerminal title="Data Explorer 數據觀測">
+    <div class="fixed inset-x-0 bottom-0 top-[64px] flex overflow-hidden">
+        <!-- Sidebar: Table Navigator -->
+        <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-20">
+            <div class="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                    Tables
+                </span>
+                <span
+                    class="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-mono"
+                >
+                    {tables.length}
+                </span>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-2 custom-scrollbar">
+                <ul class="space-y-0.5" id="table-list">
+                    {
+                        tables.map(table => (
+                            <li>
+                                <button
+                                    class="w-full text-left px-4 py-2 text-xs font-mono text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 transition-all flex items-center justify-between group"
+                                    data-table={table}
+                                >
+                                    <span class="truncate">{table}</span>
+                                    <div class="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-slate-500 transition-colors" />
+                                </button>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content: Data Grid -->
+        <main class="flex-1 flex flex-col bg-slate-950 relative">
+            <!-- Loading Indicator (NProgress style) -->
+            <div
+                id="db-loading-bar"
+                class="absolute top-0 left-0 w-0 h-[2px] bg-accent z-50 transition-all duration-300 opacity-0"
+            >
+            </div>
+
+            <!-- Toolbar -->
+            <header
+                class="h-14 border-b border-slate-900 px-6 flex items-center justify-between bg-slate-950/50 backdrop-blur sticky top-0 z-10"
+            >
+                <div class="flex items-center gap-3">
+                    <h2
+                        class="text-sm font-bold text-text-primary uppercase tracking-wider"
+                        id="current-table-name"
+                    >
+                        Select a table
+                    </h2>
+                    <span
+                        id="row-count-badge"
+                        class="hidden text-[10px] bg-accent/20 text-accent font-bold px-2 py-0.5 rounded-full"
+                    >
+                        0 ROWS
+                    </span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-slate-500 font-bold">PAGE</span>
+                        <div
+                            class="flex items-center bg-slate-900 border border-slate-800 rounded px-2 py-1"
+                        >
+                            <button
+                                id="prev-page"
+                                class="text-slate-400 hover:text-white disabled:opacity-30"
+                                >◀</button
+                            >
+                            <span id="page-num" class="text-[10px] font-mono mx-3 text-slate-200"
+                                >1</span
+                            >
+                            <button
+                                id="next-page"
+                                class="text-slate-400 hover:text-white disabled:opacity-30"
+                                >▶</button
+                            >
+                        </div>
+                    </div>
+                    <select
+                        id="page-limit"
+                        class="bg-slate-900 border border-slate-800 text-[10px] text-slate-300 px-2 py-1 rounded outline-none cursor-pointer focus:border-accent"
+                    >
+                        <option value="50">50 rows</option>
+                        <option value="100" selected>100 rows</option>
+                        <option value="500">500 rows</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Table Container -->
+            <div class="flex-1 overflow-auto custom-scrollbar relative" id="grid-container">
+                <!-- Welcome State -->
+                <div
+                    id="welcome-message"
+                    class="absolute inset-0 flex flex-col items-center justify-center text-center p-12"
+                >
+                    <div
+                        class="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-3xl mb-4 border border-slate-800 animate-glow-pulse"
+                    >
+                        🗃️
+                    </div>
+                    <h3 class="text-lg font-bold text-text-primary">SQLite Data Explorer</h3>
+                    <p class="text-sm text-text-muted mt-2 max-w-sm">
+                        Select a table from the sidebar to inspect raw records, verified health and
+                        data types.
+                    </p>
+                </div>
+
+                <!-- Error State -->
+                <div
+                    id="db-error"
+                    class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-12 bg-red-950/20"
+                >
+                    <span class="text-4xl mb-4">⚠️</span>
+                    <h3 class="text-red-500 font-bold uppercase tracking-widest text-sm">
+                        Database Error
+                    </h3>
+                    <p id="error-message" class="text-xs text-red-400/80 mt-2 font-mono"></p>
+                    <button onclick="location.reload()" class="btn-cyber mt-6">RETRY</button>
+                </div>
+
+                <!-- Actual Data Table -->
+                <table class="w-full text-left border-collapse hidden" id="data-table">
+                    <thead class="sticky top-0 bg-slate-900 shadow-lg z-10" id="table-head">
+                        <!-- Head content injected by JS -->
+                    </thead>
+                    <tbody class="divide-y divide-slate-900/50" id="table-body">
+                        <!-- Body content injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer info -->
+            <footer class="h-8 border-t border-slate-900 px-6 flex items-center bg-slate-950">
+                <p class="text-[9px] text-slate-600 font-mono flex items-center gap-4">
+                    <span>QUERY EXEC: <span id="query-time" class="text-slate-500">0ms</span></span>
+                    <span>ADAPTER: SQLite (Better-Sqlite3)</span>
+                </p>
+            </footer>
+        </main>
+    </div>
+</MainTerminal>
+
+<style>
+    /* Custom scrollbar for that engineering tool feel */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #334155;
+    }
+
+    /* Fixed table layout for performance */
+    #data-table {
+        table-layout: auto;
+        min-width: 100%;
+    }
+
+    /* Cell styles */
+    :global(.db-cell) {
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<script>
+    let activeTable = '';
+    let currentPage = 1;
+    let limit = 100;
+
+    const tableList = document.getElementById('table-list');
+    const welcomeMsg = document.getElementById('welcome-message');
+    const dataTable = document.getElementById('data-table');
+    const tableHead = document.getElementById('table-head');
+    const tableBody = document.getElementById('table-body');
+    const tableNameLabel = document.getElementById('current-table-name');
+    const rowCountBadge = document.getElementById('row-count-badge');
+    const loadingBar = document.getElementById('db-loading-bar');
+    const dbError = document.getElementById('db-error');
+    const errorMsg = document.getElementById('error-message');
+    const queryTimeLabel = document.getElementById('query-time');
+    const pageNumLabel = document.getElementById('page-num');
+
+    interface ColumnDef {
+        name: string;
+        type: string;
+    }
+
+    interface TableDataResponse {
+        total: number;
+        columns: ColumnDef[];
+        rows: any[];
+    }
+
+    // UI State helpers
+    function setLoading(isLoading: boolean) {
+        if (!loadingBar) return;
+        if (isLoading) {
+            loadingBar.style.opacity = '1';
+            loadingBar.style.width = '30%';
+            setTimeout(() => {
+                if (loadingBar && loadingBar.style.width === '30%') loadingBar.style.width = '70%';
+            }, 500);
+        } else {
+            loadingBar.style.width = '100%';
+            setTimeout(() => {
+                if (loadingBar) {
+                    loadingBar.style.opacity = '0';
+                    loadingBar.style.width = '0';
+                }
+            }, 300);
+        }
+    }
+
+    async function loadTable(name: string, page = 1) {
+        if (!name) return;
+        const startTime = performance.now();
+        setLoading(true);
+        if (dbError) dbError.classList.add('hidden');
+        if (welcomeMsg) welcomeMsg.classList.add('hidden');
+
+        try {
+            const offset = (page - 1) * limit;
+            const res = await fetch(`/api/db/${name}?limit=${limit}&offset=${offset}`);
+            if (!res.ok) throw new Error(await res.text());
+
+            const data: TableDataResponse = await res.json();
+
+            // Update UI Labels
+            if (tableNameLabel) tableNameLabel.textContent = name;
+            if (rowCountBadge) {
+                rowCountBadge.textContent = `${data.total.toLocaleString()} ROWS`;
+                rowCountBadge.classList.remove('hidden');
+            }
+            if (pageNumLabel) pageNumLabel.textContent = page.toString();
+            currentPage = page;
+
+            // Render Header
+            if (tableHead) {
+                tableHead.innerHTML = `<tr>
+                    ${data.columns
+                        .map(
+                            (col: ColumnDef) => `
+                        <th class="px-3 py-2 text-[10px] font-bold text-slate-400 border-r border-slate-800">
+                            <div class="flex flex-col">
+                                <span class="text-white">${col.name}</span>
+                                <span class="text-[8px] font-normal text-slate-500 uppercase">${col.type}</span>
+                            </div>
+                        </th>
+                    `
+                        )
+                        .join('')}
+                </tr>`;
+            }
+
+            // Render Body
+            if (tableBody) {
+                tableBody.innerHTML = data.rows
+                    .map(
+                        (row: any) => `
+                    <tr class="hover:bg-accent/5 transition-colors border-b border-slate-900/50">
+                        ${data.columns
+                            .map((col: ColumnDef) => {
+                                const val = row[col.name];
+                                const isNull = val === null || val === undefined;
+                                return `
+                                <td class="px-3 py-1.5 text-xs font-mono border-r border-slate-900/30 ${isNull ? 'bg-red-950/20 text-red-500 italic' : 'text-slate-300'}">
+                                    <div class="db-cell">${isNull ? 'NULL' : val}</div>
+                                </td>
+                            `;
+                            })
+                            .join('')}
+                    </tr>
+                `
+                    )
+                    .join('');
+            }
+
+            if (dataTable) dataTable.classList.remove('hidden');
+            if (queryTimeLabel)
+                queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
+        } catch (err) {
+            console.error(err);
+            if (dbError) dbError.classList.remove('hidden');
+            if (dataTable) dataTable.classList.add('hidden');
+            if (errorMsg) errorMsg.textContent = (err as Error).message;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Event Listeners
+    if (tableList) {
+        tableList.addEventListener('click', e => {
+            const btn = (e.target as HTMLElement).closest('button');
+            if (!btn) return;
+
+            // Reset highlights
+            tableList.querySelectorAll('button').forEach(b => {
+                b.classList.remove(
+                    'bg-blue-900/30',
+                    'text-blue-400',
+                    'border-l-[3px]',
+                    'border-blue-500'
+                );
+                b.classList.add('text-slate-400');
+            });
+
+            // Highlight active
+            btn.classList.add(
+                'bg-blue-900/30',
+                'text-blue-400',
+                'border-l-[3px]',
+                'border-blue-500'
+            );
+            btn.classList.remove('text-slate-400');
+
+            activeTable = btn.dataset.table || '';
+            currentPage = 1;
+            loadTable(activeTable);
+        });
+    }
+
+    const prevPageBtn = document.getElementById('prev-page');
+    if (prevPageBtn) {
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) loadTable(activeTable, currentPage - 1);
+        });
+    }
+
+    const nextPageBtn = document.getElementById('next-page');
+    if (nextPageBtn) {
+        nextPageBtn.addEventListener('click', () => {
+            loadTable(activeTable, currentPage + 1);
+        });
+    }
+
+    const pageLimitSelect = document.getElementById('page-limit');
+    if (pageLimitSelect) {
+        pageLimitSelect.addEventListener('change', e => {
+            limit = parseInt((e.target as HTMLSelectElement).value);
+            if (activeTable) loadTable(activeTable, 1);
+        });
+    }
+</script>

@@ -1,9 +1,9 @@
 /**
  * Stock Data Service (Optimized)
- * 
+ *
  * Loads stock list from stocks.json and enriches with latest price data
  * from the pre-generated latest_prices.json snapshot.
- * 
+ *
  * Performance: Reads 2 JSON files instead of 1077 CSVs
  */
 
@@ -117,39 +117,39 @@ function getSectorBySymbol(symbol: string): string {
         '2330': 'semiconductor', // TSMC
         '2454': 'semiconductor', // MediaTek
         '3034': 'semiconductor', // Novatek
-        '2317': 'electronics',   // Hon Hai
-        '2308': 'electronics',   // Delta
-        '2382': 'electronics',   // Quanta
+        '2317': 'electronics', // Hon Hai
+        '2308': 'electronics', // Delta
+        '2382': 'electronics', // Quanta
         '2412': 'communication', // Chunghwa Telecom
         '3008': 'optoelectronics', // Largan
-        '1301': 'plastic',       // Formosa Plastic
-        '2002': 'steel',         // China Steel
-        '2603': 'shipping',      // Evergreen
-        '2609': 'shipping',      // Yang Ming
-        '7722': 'finance',       // LINEPAY (Digital finance)
-        '7705': 'tourism',       // Tri-Sans Food
+        '1301': 'plastic', // Formosa Plastic
+        '2002': 'steel', // China Steel
+        '2603': 'shipping', // Evergreen
+        '2609': 'shipping', // Yang Ming
+        '7722': 'finance', // LINEPAY (Digital finance)
+        '7705': 'tourism', // Tri-Sans Food
         // 99xx Overrides (The big ones)
         '9910': 'sports-leisure', // Feng Tay (Shoes)
         '9914': 'sports-leisure', // Merida (Bicycle)
         '9921': 'sports-leisure', // Giant (Bicycle)
         '9938': 'sports-leisure', // Paiho (Shoes)
         '9802': 'sports-leisure', // Fulgent (Shoes)
-        '9917': 'household',      // SECOM (Security)
-        '9925': 'household',      // SKS (Security)
-        '9911': 'household',      // Sakura (Home)
-        '9934': 'household',      // Chen Lin (Home)
-        '9942': 'household',      // Maw Soon (Auto related but household)
-        '9908': 'energy',         // Great Taipei Gas
-        '9918': 'energy',         // Shin Hai Gas
-        '9926': 'energy',         // Shin Gas
-        '9931': 'energy',         // Hsin Kao Gas
-        '9937': 'energy',         // National Gas
-        '9939': 'household',      // Hon Chuan (Packaging)
-        '9958': 'energy',         // Century Iron (Offshore wind steel)
-        '9930': 'steel',          // CHC Resources
-        '9940': 'construction',   // Sinyi
-        '9945': 'construction',   // Ruentex
-        '9946': 'construction',   // San Far
+        '9917': 'household', // SECOM (Security)
+        '9925': 'household', // SKS (Security)
+        '9911': 'household', // Sakura (Home)
+        '9934': 'household', // Chen Lin (Home)
+        '9942': 'household', // Maw Soon (Auto related but household)
+        '9908': 'energy', // Great Taipei Gas
+        '9918': 'energy', // Shin Hai Gas
+        '9926': 'energy', // Shin Gas
+        '9931': 'energy', // Hsin Kao Gas
+        '9937': 'energy', // National Gas
+        '9939': 'household', // Hon Chuan (Packaging)
+        '9958': 'energy', // Century Iron (Offshore wind steel)
+        '9930': 'steel', // CHC Resources
+        '9940': 'construction', // Sinyi
+        '9945': 'construction', // Ruentex
+        '9946': 'construction', // San Far
     };
 
     if (overrides[symbol]) return overrides[symbol];
@@ -181,32 +181,32 @@ function getSectorBySymbol(symbol: string): string {
     if (prefix === '29') return 'trading';
 
     // 4. Technology & Special OTC Ranges
-    if (prefix === '30') return 'electronics';   // Components
+    if (prefix === '30') return 'electronics'; // Components
     if (prefix === '31') return 'communication';
     if (prefix === '32') return 'electronics';
     if (prefix === '33') return 'computer';
     if (prefix === '34') return 'optoelectronics';
     if (prefix === '35') return 'semiconductor';
     if (prefix === '36') return 'communication';
-    if (prefix === '37') return 'other-tech';    // Distribution
+    if (prefix === '37') return 'other-tech'; // Distribution
     if (prefix === '38') return 'other-tech';
     if (prefix === '39') return 'other';
 
     if (prefix === '41') return 'biotech';
-    if (prefix === '45') return 'electronics';   // Machinery
+    if (prefix === '45') return 'electronics'; // Machinery
     if (prefix === '47') return 'chemical';
     if (prefix === '49') return 'semiconductor';
 
     if (prefix === '52') return 'semiconductor'; // IC Design
     if (prefix === '53') return 'electronics';
     if (prefix === '54') return 'semiconductor';
-    if (prefix === '55') return 'construction';  // OTC Construction
-    if (prefix === '56') return 'shipping';      // OTC Shipping
-    if (prefix === '57') return 'tourism';       // OTC Tourism
-    if (prefix === '58') return 'finance';       // OTC Bank
-    if (prefix === '59') return 'trading';       // OTC Trading
+    if (prefix === '55') return 'construction'; // OTC Construction
+    if (prefix === '56') return 'shipping'; // OTC Shipping
+    if (prefix === '57') return 'tourism'; // OTC Tourism
+    if (prefix === '58') return 'finance'; // OTC Bank
+    if (prefix === '59') return 'trading'; // OTC Trading
 
-    if (prefix === '60') return 'finance';       // Securities
+    if (prefix === '60') return 'finance'; // Securities
     if (prefix === '61') return 'electronics';
     if (prefix === '62') return 'semiconductor';
     if (prefix === '64') return 'semiconductor';
@@ -217,8 +217,8 @@ function getSectorBySymbol(symbol: string): string {
     if (prefix === '80') return 'semiconductor';
     if (prefix === '81') return 'electronics';
     if (prefix === '82') return 'other-tech';
-    if (prefix === '83') return 'energy';        // Environment/Various
-    if (prefix === '84') return 'biotech';       // Life Science
+    if (prefix === '83') return 'energy'; // Environment/Various
+    if (prefix === '84') return 'biotech'; // Life Science
     if (prefix === '89') return 'trading';
 
     // Energy series (Specific 6xxx-7xxx stocks)
@@ -296,7 +296,10 @@ export async function getStocksWithPrices(): Promise<StockFullData[]> {
 /**
  * Get paginated stocks
  */
-export async function getStocksPaginated(page: number = 1, pageSize: number = 50): Promise<{
+export async function getStocksPaginated(
+    page: number = 1,
+    pageSize: number = 50
+): Promise<{
     stocks: StockFullData[];
     total: number;
     page: number;
@@ -312,7 +315,7 @@ export async function getStocksPaginated(page: number = 1, pageSize: number = 50
         total: allStocks.length,
         page,
         pageSize,
-        totalPages: Math.ceil(allStocks.length / pageSize)
+        totalPages: Math.ceil(allStocks.length / pageSize),
     };
 }
 
@@ -326,10 +329,7 @@ export async function searchStocks(query: string, limit: number = 50): Promise<S
     if (!q) return stocks.slice(0, limit);
 
     return stocks
-        .filter(s =>
-            s.symbol.toLowerCase().includes(q) ||
-            s.name.toLowerCase().includes(q)
-        )
+        .filter(s => s.symbol.toLowerCase().includes(q) || s.name.toLowerCase().includes(q))
         .slice(0, limit);
 }
 

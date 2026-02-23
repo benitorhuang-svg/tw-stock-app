@@ -17,12 +17,12 @@ export function toCSV(results: ScreenerResult[]): string {
         r.fundamentals?.pe?.toFixed(2) ?? '',
         r.fundamentals?.pb?.toFixed(2) ?? '',
         r.fundamentals?.dividendYield?.toFixed(2) ?? '',
-        r.fundamentals?.roe?.toFixed(2) ?? ''
+        r.fundamentals?.roe?.toFixed(2) ?? '',
     ]);
 
     const csvContent = [
         headers.join(','),
-        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
     ].join('\n');
 
     return csvContent;

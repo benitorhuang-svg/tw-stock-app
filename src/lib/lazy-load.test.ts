@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculateVisibleItems, throttle, debounce } from './lazy-load';
 
 describe('Lazy Load Utilities', () => {
-
     // ========================================
     // calculateVisibleItems (Virtual Scrolling)
     // ========================================
@@ -109,8 +108,8 @@ describe('Lazy Load Utilities', () => {
             const fn = vi.fn();
             const throttled = throttle(fn, 100);
 
-            throttled();  // 立即
-            throttled();  // 排程尾端呼叫
+            throttled(); // 立即
+            throttled(); // 排程尾端呼叫
 
             vi.advanceTimersByTime(150);
 

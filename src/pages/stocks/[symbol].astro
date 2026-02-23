@@ -1,146 +1,177 @@
 ---
 /**
- * Stock Terminal (Analysis Page)
+ * [symbol].astro — Individual Stock Analysis Page (5-tab)
+ * Spec: 002-tab-overview through 007-tab-alerts
  *
- * Clean-Slate Rebuild following Spec 004 & 005.
+ * Route: /stocks/:symbol
+ * Contains 5 analysis tabs: Overview, Technical, Chips, Fundamentals, AI Alerts
  */
-import Layout from '../../layouts/Layout.astro';
-import StockHero from '../../components/organisms/StockHero.astro';
-import StockChart from '../../components/organisms/StockChart.astro';
-import DataTabs from '../../components/organisms/DataTabs.astro';
-import { getStockDetails, getStockChips } from '../../utils/marketService';
-import { fetchStockPrices } from '../../utils/priceService';
-import { getDb } from '../../lib/db';
-
-export async function getStaticPaths() {
-    const db = getDb();
-    const stocks = db.prepare('SELECT symbol FROM stocks LIMIT 100').all();
-    return stocks.map((s: any) => ({ params: { symbol: s.symbol } }));
-}
+import MainTerminal from '../../layouts/MainTerminal.astro';
+import Badge from '../../components/atoms/Badge.astro';
+import TabBar from '../../components/organisms/TabBar.astro';
+import StatCard from '../../components/molecules/StatCard.astro';
+import TabOverview from '../../components/organisms/TabOverview.astro';
+import TabTechnical from '../../components/organisms/TabTechnical.astro';
+import TabChips from '../../components/organisms/TabChips.astro';
+import TabFundamentals from '../../components/organisms/TabFundamentals.astro';
+import TabAlerts from '../../components/organisms/TabAlerts.astro';
 
 const { symbol } = Astro.params;
 
-// Fetch Real Data
-const details = getStockDetails(symbol as string);
-const chips = getStockChips(symbol as string);
-const prices = await fetchStockPrices(symbol as string);
-
-// Fallback if not found
-if (!details) {
-    return Astro.redirect('/404');
+if (!symbol) {
+    return Astro.redirect('/');
 }
 
-const pageTitle = `${symbol} ${details.name} | TW Stock Terminal`;
+// SSR: Load stock data using actual StockFullData type from service
+import type { StockFullData } from '../../utils/stockDataService';
+
+let stock: StockFullData | null = null;
+
+try {
+    const { getStockBySymbol } = await import('../../utils/stockDataService');
+    stock = (await getStockBySymbol?.(symbol)) ?? null;
+} catch {
+    // Fallback
+}
+
+if (!stock) {
+    stock = {
+        symbol: symbol,
+        name: `${symbol}`,
+        market: 'TWSE',
+        price: 0,
+        change: 0,
+        changePercent: 0,
+        open: 0,
+        high: 0,
+        low: 0,
+        volume: 0,
+        pe: 0,
+        pb: 0,
+        yield: 0,
+        roe: 0,
+        eps: 0,
+        sector: 'other',
+    };
+}
+
+/** Format volume for display */
+const fmtVol = (v: number) => (v > 0 ? v.toLocaleString('zh-TW') : '—');
+
+const isBullish = stock.change > 0;
+const isBearish = stock.change < 0;
 ---
 
-<Layout title={pageTitle}>
-    <main class="terminal-container">
-        <!-- Back Link -->
-        <nav class="breadcrumb">
-            <a href="/screener" class="mono">/ SCANNER</a>
-            <span class="sep">></span>
-            <span class="current mono">{symbol}</span>
-        </nav>
+<MainTerminal title={`${stock.name} ${stock.symbol}`}>
+    <!-- Stock Hero Section -->
+    <header class="mb-6 animate-fade-up">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+            <!-- Left: Name & Price -->
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <h1 class="text-2xl lg:text-3xl font-bold">{stock.name}</h1>
+                    <span class="font-mono text-sm text-text-muted">{stock.symbol}</span>
+                    <Badge variant={isBullish ? 'bullish' : isBearish ? 'bearish' : 'muted'}>
+                        {isBullish ? '上漲' : isBearish ? '下跌' : '平盤'}
+                    </Badge>
+                </div>
+                <div class="flex items-baseline gap-3">
+                    <span class="data-value text-4xl lg:text-5xl">
+                        {stock.price > 0 ? stock.price.toFixed(2) : '—'}
+                    </span>
+                    <span
+                        class:list={[
+                            'data-value text-xl',
+                            isBullish && 'text-bullish',
+                            isBearish && 'text-bearish',
+                            !isBullish && !isBearish && 'text-text-muted',
+                        ]}
+                    >
+                        {isBullish ? '▲' : isBearish ? '▼' : '—'}
+                        {stock.change !== 0 ? Math.abs(stock.change).toFixed(2) : ''}
+                    </span>
+                    <span
+                        class:list={[
+                            'text-sm font-mono font-semibold',
+                            isBullish && 'text-bullish',
+                            isBearish && 'text-bearish',
+                            !isBullish && !isBearish && 'text-text-muted',
+                        ]}
+                    >
+                        ({isBullish ? '+' : ''}{stock.changePercent.toFixed(2)}%)
+                    </span>
+                </div>
+            </div>
 
-        <!-- Top Hero Section -->
-        <StockHero
-            symbol={details.symbol}
-            name={details.name}
-            price={details.price}
-            change={details.change}
-            changePct={details.change_pct}
-            market={details.market}
-            sector={details.sector}
-        />
-
-        <div class="main-workspace">
-            <!-- Central Chart Terminal -->
-            <section class="chart-section glass-panel">
-                <div class="section-tag mono">CHART_TERMINAL_V4</div>
-                <StockChart symbol={details.symbol} prices={prices} height={500} />
-            </section>
-
-            <!-- Bottom Analysis Tabs -->
-            <section class="analysis-section">
-                <div class="section-tag mono">DEEP_RECON_ANALYSIS</div>
-                <DataTabs symbol={details.symbol} details={details} chips={chips} />
-            </section>
+            <!-- Right: Quick Actions -->
+            <div class="flex items-center gap-3">
+                <button class="btn-ghost text-xs"> ⭐ 加入自選 </button>
+                <button class="btn-cyber text-xs"> 🤖 AI 分析報告 </button>
+            </div>
         </div>
-    </main>
-</Layout>
+    </header>
 
-<style>
-    .terminal-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
+    <!-- Quick Stats Row -->
+    <div class="grid grid-cols-3 md:grid-cols-6 gap-3 mb-6 stagger-children">
+        <StatCard label="開盤" value={stock.open > 0 ? stock.open.toFixed(2) : '—'} />
+        <StatCard label="最高" value={stock.high > 0 ? stock.high.toFixed(2) : '—'} />
+        <StatCard label="最低" value={stock.low > 0 ? stock.low.toFixed(2) : '—'} />
+        <StatCard label="本益比" value={stock.pe > 0 ? stock.pe.toFixed(1) : '—'} unit="倍" />
+        <StatCard label="成交量" value={fmtVol(stock.volume)} unit="張" />
+        <StatCard label="殖利率" value={stock.yield > 0 ? stock.yield.toFixed(2) : '—'} unit="%" />
+    </div>
 
-    .breadcrumb {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 11px;
-        color: #64748b;
-        margin-bottom: 8px;
-    }
+    <!-- Tab Navigation -->
+    <TabBar symbol={symbol} activeTab="overview" />
 
-    .breadcrumb a {
-        color: #94a3b8;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
+    <!-- ═══════════════════════════════════════════════ -->
+    <!-- TAB CONTENT PANELS                              -->
+    <!-- ═══════════════════════════════════════════════ -->
 
-    .breadcrumb a:hover {
-        color: var(--c-accent);
-    }
+    <!-- Tab 1: Overview (002-tab-overview) -->
+    <div data-tab-content="overview" class="space-y-6">
+        <TabOverview
+            symbol={symbol}
+            price={stock.price}
+            change={stock.change}
+            changePercent={stock.changePercent}
+            open={stock.open}
+            high={stock.high}
+            low={stock.low}
+            volume={stock.volume}
+        />
+    </div>
 
-    .breadcrumb .sep {
-        opacity: 0.3;
-    }
+    <!-- Tab 2: Technical (004-tab-technical) -->
+    <div data-tab-content="technical" class="hidden">
+        <TabTechnical symbol={symbol} price={stock.price} change={stock.change} />
+    </div>
 
-    .breadcrumb .current {
-        color: var(--c-accent);
-        font-weight: 700;
-    }
+    <!-- Tab 3: Chips (005-tab-chips) -->
+    <div data-tab-content="chips" class="hidden">
+        <TabChips symbol={symbol} price={stock.price} />
+    </div>
 
-    .main-workspace {
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
-    }
+    <!-- Tab 4: Fundamentals (006-tab-fundamentals) -->
+    <div data-tab-content="fundamentals" class="hidden">
+        <TabFundamentals
+            symbol={symbol}
+            pe={stock.pe}
+            pb={stock.pb}
+            yield_={stock.yield}
+            roe={stock.roe}
+            eps={stock.eps}
+        />
+    </div>
 
-    .section-tag {
-        font-size: 10px;
-        color: var(--c-accent);
-        letter-spacing: 2px;
-        margin-bottom: 16px;
-        padding-left: 4px;
-        border-left: 2px solid var(--c-accent);
-    }
-
-    .chart-section {
-        padding: 20px;
-    }
-
-    .analysis-section {
-        margin-top: 20px;
-    }
-
-    /* Standard Glass Panel overrides if needed */
-    .glass-panel {
-        background: rgba(15, 23, 42, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        backdrop-filter: blur(12px);
-    }
-
-    @media (max-width: 1024px) {
-        .terminal-container {
-            padding: 16px;
-        }
-    }
-</style>
+    <!-- Tab 5: AI Alerts (007-tab-alerts) -->
+    <div data-tab-content="alerts" class="hidden">
+        <TabAlerts
+            symbol={symbol}
+            name={stock.name}
+            price={stock.price}
+            change={stock.change}
+            changePercent={stock.changePercent}
+        />
+    </div>
+</MainTerminal>

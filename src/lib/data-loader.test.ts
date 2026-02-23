@@ -4,7 +4,7 @@ import {
     getAvailableStocks,
     getRecentPrices,
     getPricesInRange,
-    calculateReturn
+    calculateReturn,
 } from './data-loader';
 
 const mockFetch = vi.fn();
@@ -12,8 +12,8 @@ vi.stubGlobal('fetch', mockFetch);
 
 beforeEach(() => {
     mockFetch.mockReset();
-    vi.spyOn(console, 'warn').mockImplementation(() => { });
-    vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 const sampleCSV = `Date,Open,High,Low,Close,Volume
@@ -24,12 +24,11 @@ const sampleCSV = `Date,Open,High,Low,Close,Volume
 2024/01/19,111,114,109,113,70000`;
 
 describe('Data Loader', () => {
-
     describe('loadStockPrices', () => {
         it('應正確解析 CSV 為價格陣列', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => sampleCSV
+                text: async () => sampleCSV,
             });
 
             const result = await loadStockPrices('2330');
@@ -60,7 +59,7 @@ describe('Data Loader', () => {
         it('空 CSV 應回傳空陣列', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => 'Date,Open,High,Low,Close,Volume'
+                text: async () => 'Date,Open,High,Low,Close,Volume',
             });
 
             const result = await loadStockPrices('2330');
@@ -70,7 +69,8 @@ describe('Data Loader', () => {
         it('應過濾掉 close 為 NaN 的行', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => 'Date,Open,High,Low,Close,Volume\n2024/01/15,100,105,98,103,50000\n2024/01/16,bad,bad,bad,bad,bad'
+                text: async () =>
+                    'Date,Open,High,Low,Close,Volume\n2024/01/15,100,105,98,103,50000\n2024/01/16,bad,bad,bad,bad,bad',
             });
 
             const result = await loadStockPrices('2330');
@@ -84,8 +84,8 @@ describe('Data Loader', () => {
                 ok: true,
                 json: async () => [
                     { symbol: '2330', name: '台積電' },
-                    { symbol: '2317', name: '鴻海' }
-                ]
+                    { symbol: '2317', name: '鴻海' },
+                ],
             });
 
             const result = await getAvailableStocks();
@@ -111,24 +111,24 @@ describe('Data Loader', () => {
         it('應取得最後 N 天', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => sampleCSV
+                text: async () => sampleCSV,
             });
 
             const result = await getRecentPrices('2330', 3);
 
             expect(result).toHaveLength(3);
-            expect(result[0].date).toBe('2024/01/17');  // 倒數第3筆
-            expect(result[2].date).toBe('2024/01/19');  // 最後一筆
+            expect(result[0].date).toBe('2024/01/17'); // 倒數第3筆
+            expect(result[2].date).toBe('2024/01/19'); // 最後一筆
         });
 
         it('預設應取 60 天（但不超過資料量）', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => sampleCSV
+                text: async () => sampleCSV,
             });
 
             const result = await getRecentPrices('2330');
-            expect(result).toHaveLength(5);  // 只有 5 筆
+            expect(result).toHaveLength(5); // 只有 5 筆
         });
     });
 
@@ -136,7 +136,7 @@ describe('Data Loader', () => {
         it('應篩選日期範圍', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => sampleCSV
+                text: async () => sampleCSV,
             });
 
             const result = await getPricesInRange('2330', '2024/01/16', '2024/01/18');
@@ -149,7 +149,7 @@ describe('Data Loader', () => {
         it('範圍外無資料應回傳空陣列', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => sampleCSV
+                text: async () => sampleCSV,
             });
 
             const result = await getPricesInRange('2330', '2025/01/01', '2025/12/31');
@@ -161,7 +161,7 @@ describe('Data Loader', () => {
         it('應計算期間報酬率', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => sampleCSV
+                text: async () => sampleCSV,
             });
 
             const result = await calculateReturn('2330', 5);
@@ -174,7 +174,8 @@ describe('Data Loader', () => {
         it('資料不足應回傳 null', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                text: async () => 'Date,Open,High,Low,Close,Volume\n2024/01/15,100,105,98,103,50000'
+                text: async () =>
+                    'Date,Open,High,Low,Close,Volume\n2024/01/15,100,105,98,103,50000',
             });
 
             const result = await calculateReturn('2330', 60);

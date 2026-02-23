@@ -27,8 +27,9 @@ function setCacheResult(key: string, data: any[]): void {
     queryCache.set(key, { data, timestamp: Date.now() });
     // Cleanup: remove oldest if >50 cached queries
     if (queryCache.size > 50) {
-        const oldest = Array.from(queryCache.entries())
-            .sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+        const oldest = Array.from(queryCache.entries()).sort(
+            (a, b) => a[1].timestamp - b[1].timestamp
+        )[0];
         if (oldest) queryCache.delete(oldest[0]);
     }
 }
@@ -147,7 +148,14 @@ export async function saveDailyPrices(prices: DailyPrice[]): Promise<void> {
         'daily_prices',
         ['symbol', 'date', 'open', 'high', 'low', 'close', 'volume', 'turnover'],
         prices.map(p => [
-            p.symbol, p.date, p.open, p.high, p.low, p.close, p.volume, p.turnover || 0
+            p.symbol,
+            p.date,
+            p.open,
+            p.high,
+            p.low,
+            p.close,
+            p.volume,
+            p.turnover || 0,
         ])
     );
 }
@@ -179,8 +187,13 @@ export async function saveFundamentals(data: Fundamental[]): Promise<void> {
         'fundamentals',
         ['symbol', 'date', 'pe', 'pb', 'dividend_yield', 'eps', 'roe'],
         data.map(f => [
-            f.symbol, f.date, f.pe || null, f.pb || null,
-            f.dividend_yield || null, f.eps || null, f.roe || null
+            f.symbol,
+            f.date,
+            f.pe || null,
+            f.pb || null,
+            f.dividend_yield || null,
+            f.eps || null,
+            f.roe || null,
         ])
     );
 }
@@ -200,9 +213,7 @@ export async function saveDividends(dividends: Dividend[]): Promise<void> {
     await batchInsert(
         'dividends',
         ['symbol', 'year', 'cash_dividend', 'stock_dividend', 'total_dividend'],
-        dividends.map(d => [
-            d.symbol, d.year, d.cash_dividend, d.stock_dividend, d.total_dividend
-        ])
+        dividends.map(d => [d.symbol, d.year, d.cash_dividend, d.stock_dividend, d.total_dividend])
     );
 }
 
@@ -229,9 +240,18 @@ export async function updatePortfolioItem(id: number, item: Partial<PortfolioIte
     const sets: string[] = [];
     const params: any[] = [];
 
-    if (item.shares !== undefined) { sets.push('shares = ?'); params.push(item.shares); }
-    if (item.avg_cost !== undefined) { sets.push('avg_cost = ?'); params.push(item.avg_cost); }
-    if (item.notes !== undefined) { sets.push('notes = ?'); params.push(item.notes); }
+    if (item.shares !== undefined) {
+        sets.push('shares = ?');
+        params.push(item.shares);
+    }
+    if (item.avg_cost !== undefined) {
+        sets.push('avg_cost = ?');
+        params.push(item.avg_cost);
+    }
+    if (item.notes !== undefined) {
+        sets.push('notes = ?');
+        params.push(item.notes);
+    }
 
     if (sets.length === 0) return;
 
@@ -259,7 +279,16 @@ export async function addTransaction(tx: Transaction): Promise<number> {
     return execute(
         `INSERT INTO transactions (symbol, type, shares, price, fee, tax, date, notes) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [tx.symbol, tx.type, tx.shares, tx.price, tx.fee || 0, tx.tax || 0, tx.date, tx.notes || null]
+        [
+            tx.symbol,
+            tx.type,
+            tx.shares,
+            tx.price,
+            tx.fee || 0,
+            tx.tax || 0,
+            tx.date,
+            tx.notes || null,
+        ]
     );
 }
 
@@ -291,7 +320,7 @@ export async function getPortfolioSummary(): Promise<{
             cost,
             value,
             pl: value - cost,
-            plPercent: ((value - cost) / cost * 100).toFixed(2)
+            plPercent: (((value - cost) / cost) * 100).toFixed(2),
         });
     }
 
@@ -299,7 +328,7 @@ export async function getPortfolioSummary(): Promise<{
         totalCost,
         totalValue,
         unrealizedPL: totalValue - totalCost,
-        items
+        items,
     };
 }
 
@@ -365,9 +394,9 @@ export async function filterStocks(conditions: {
     sql += ' ORDER BY s.symbol';
 
     const results = await query(sql, params);
-    
+
     // P0 Optimization: Cache the results for 5 minutes
     setCacheResult(cacheKey, results);
-    
+
     return results;
 }

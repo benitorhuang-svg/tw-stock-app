@@ -1,9 +1,9 @@
 /**
  * Build Script: Generate Latest Prices Snapshot
- * 
+ *
  * Reads all CSV files from public/data/prices/ and generates
  * a single JSON file with the latest price for each stock.
- * 
+ *
  * Run: node scripts/build-price-snapshot.js
  */
 
@@ -82,7 +82,7 @@ async function buildPriceSnapshot() {
                         changePct: latestRecord.ChangePct || 0,
                         pe: pe,
                         pb: pb,
-                        yield: dy
+                        yield: dy,
                     };
                     processed++;
                 }

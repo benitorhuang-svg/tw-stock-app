@@ -16,20 +16,14 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint"
-    ],
+    "plugins": ["@typescript-eslint"],
     "overrides": [
         {
-            "files": [
-                "*.astro"
-            ],
+            "files": ["*.astro"],
             "parser": "astro-eslint-parser",
             "parserOptions": {
                 "parser": "@typescript-eslint/parser",
-                "extraFileExtensions": [
-                    ".astro"
-                ]
+                "extraFileExtensions": [".astro"]
             },
             "rules": {}
         }
@@ -45,18 +39,11 @@
         "no-console": [
             "warn",
             {
-                "allow": [
-                    "warn",
-                    "error"
-                ]
+                "allow": ["warn", "error"]
             }
         ],
         "prefer-const": "error",
         "no-var": "error"
     },
-    "ignorePatterns": [
-        "node_modules/",
-        "dist/",
-        ".astro/"
-    ]
+    "ignorePatterns": ["node_modules/", "dist/", ".astro/"]
 }

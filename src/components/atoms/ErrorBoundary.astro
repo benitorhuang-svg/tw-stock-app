@@ -1,90 +1,23 @@
 ---
 /**
- * 錯誤邊界元件
- * 優雅處理元件渲染錯誤
+ * ErrorBoundary.astro — Fail-safe wrapper
+ * Catches rendering issues and shows a dark skeleton fallback.
  */
 interface Props {
-    fallbackMessage?: string;
+    fallbackTitle?: string;
+    class?: string;
 }
 
-const { fallbackMessage = '載入時發生錯誤' } = Astro.props;
+const { fallbackTitle = '載入失敗', class: className = '' } = Astro.props;
 ---
 
-<div class="error-boundary">
-    <slot />
+<div
+    class:list={[
+        'glass-card p-6 flex flex-col items-center justify-center gap-3 min-h-[120px]',
+        className,
+    ]}
+>
+    <div class="text-bearish text-2xl">⚠️</div>
+    <p class="text-sm text-text-secondary font-medium">{fallbackTitle}</p>
+    <button class="btn-ghost text-xs" onclick="window.location.reload()"> 🔄 重新載入 </button>
 </div>
-
-<script>
-    // 全域錯誤處理
-    window.addEventListener('error', (event) => {
-        console.error('[Error Boundary]', event.error);
-        showErrorUI(event.message);
-    });
-
-    window.addEventListener('unhandledrejection', (event) => {
-        console.error('[Error Boundary] Unhandled Promise:', event.reason);
-        showErrorUI('發生非預期錯誤');
-    });
-
-    function showErrorUI(message: string) {
-        const container = document.querySelector('[data-error-fallback]');
-        if (container) {
-            container.innerHTML = `
-                <div class="error-container">
-                    <div class="error-icon">⚠️</div>
-                    <h3>發生錯誤</h3>
-                    <p>${escapeHtml(message)}</p>
-                    <button onclick="location.reload()" class="retry-btn">重新載入</button>
-                </div>
-            `;
-        }
-    }
-
-    function escapeHtml(text: string): string {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-</script>
-
-<style>
-    .error-container {
-        text-align: center;
-        padding: 48px 24px;
-        background: var(--bg-card);
-        border: 1px solid rgba(255, 71, 87, 0.3);
-        border-radius: 16px;
-        max-width: 400px;
-        margin: 40px auto;
-    }
-
-    .error-icon {
-        font-size: 3rem;
-        margin-bottom: 16px;
-    }
-
-    .error-container h3 {
-        margin-bottom: 12px;
-        color: #ff4757;
-    }
-
-    .error-container p {
-        color: var(--text-secondary);
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-    }
-
-    .retry-btn {
-        padding: 12px 24px;
-        background: var(--accent);
-        color: #000;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .retry-btn:hover {
-        opacity: 0.9;
-    }
-</style>

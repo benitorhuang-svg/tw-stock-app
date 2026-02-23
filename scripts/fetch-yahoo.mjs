@@ -1,6 +1,6 @@
 /**
  * Yahoo Finance 歷史資料抓取腳本
- * 
+ *
  * 使用方式:
  * node scripts/fetch-yahoo.mjs              # 自動續傳 + 跳過已完成
  * node scripts/fetch-yahoo.mjs --retry      # 重試失敗的股票
@@ -46,7 +46,7 @@ function loadFailedList() {
         if (fs.existsSync(FAILED_LOG)) {
             return JSON.parse(fs.readFileSync(FAILED_LOG, 'utf-8'));
         }
-    } catch { }
+    } catch {}
     return [];
 }
 
@@ -65,7 +65,7 @@ function loadProgress() {
         if (fs.existsSync(PROGRESS_LOG)) {
             return JSON.parse(fs.readFileSync(PROGRESS_LOG, 'utf-8'));
         }
-    } catch { }
+    } catch {}
     return { lastSymbol: null, lastIndex: 0 };
 }
 
@@ -73,11 +73,19 @@ function loadProgress() {
  * 儲存進度
  */
 function saveProgress(symbol, index) {
-    fs.writeFileSync(PROGRESS_LOG, JSON.stringify({
-        lastSymbol: symbol,
-        lastIndex: index,
-        timestamp: new Date().toISOString()
-    }, null, 2), 'utf-8');
+    fs.writeFileSync(
+        PROGRESS_LOG,
+        JSON.stringify(
+            {
+                lastSymbol: symbol,
+                lastIndex: index,
+                timestamp: new Date().toISOString(),
+            },
+            null,
+            2
+        ),
+        'utf-8'
+    );
 }
 
 /**
@@ -112,7 +120,16 @@ function showProgress(current, total, symbol, name, status) {
         eta = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    const statusIcon = status === 'success' ? '✅' : status === 'skip' ? '⏭️' : status === 'fail' ? '❌' : status === 'retry' ? '🔄' : '📥';
+    const statusIcon =
+        status === 'success'
+            ? '✅'
+            : status === 'skip'
+              ? '⏭️'
+              : status === 'fail'
+                ? '❌'
+                : status === 'retry'
+                  ? '🔄'
+                  : '📥';
     const displayName = name.substring(0, 8).padEnd(8);
     const line = `\r${bar} ${percent}% [${current}/${total}] ETA: ${eta} | ${statusIcon} ${symbol} ${displayName}`;
 
@@ -125,13 +142,15 @@ function showProgress(current, total, symbol, name, status) {
 async function fetchYahooFinance(symbol) {
     const twSymbol = `${symbol}.TW`;
     const endDate = Math.floor(Date.now() / 1000);
-    const startDate = endDate - (YEARS_BACK * 365 * 24 * 60 * 60);
+    const startDate = endDate - YEARS_BACK * 365 * 24 * 60 * 60;
 
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${twSymbol}?period1=${startDate}&period2=${endDate}&interval=1d&events=history`;
 
     try {
         const response = await fetch(url, {
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            },
         });
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -183,7 +202,7 @@ function parseYahooData(data) {
             volume: volumeInLots,
             turnover,
             change: round(change, 1),
-            changePct: round(changePct, 2)
+            changePct: round(changePct, 2),
         });
 
         prevClose = close;
@@ -216,8 +235,9 @@ function saveToCSV(symbol, name, data) {
     }
 
     const csvHeader = 'Date,Open,High,Low,Close,Volume,Turnover,Change,ChangePct';
-    const csvRows = data.map(row =>
-        `${row.date},${row.open},${row.high},${row.low},${row.close},${row.volume},${row.turnover},${row.change},${row.changePct}`
+    const csvRows = data.map(
+        row =>
+            `${row.date},${row.open},${row.high},${row.low},${row.close},${row.volume},${row.turnover},${row.change},${row.changePct}`
     );
 
     const csvContent = [csvHeader, ...csvRows].join('\n');
@@ -302,7 +322,7 @@ async function main() {
             skipped++;
             showProgress(displayIndex, displayTotal, symbol, name, 'skip');
         } else {
-            const statusType = (i === startIndex && !forceAll) ? 'retry' : 'loading';
+            const statusType = i === startIndex && !forceAll ? 'retry' : 'loading';
             showProgress(displayIndex, displayTotal, symbol, name, statusType);
 
             const data = await fetchYahooFinance(symbol);
@@ -334,7 +354,9 @@ async function main() {
 
     // 完成後清除進度
     if (failed === 0) {
-        try { fs.unlinkSync(PROGRESS_LOG); } catch { }
+        try {
+            fs.unlinkSync(PROGRESS_LOG);
+        } catch {}
     }
 
     console.log('');

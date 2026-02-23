@@ -5,7 +5,7 @@ import {
     getAllPERatios,
     getDailyQuotes,
     formatDateForAPI,
-    formatMonthForAPI
+    formatMonthForAPI,
 } from './twse-api';
 
 // Mock global fetch
@@ -14,11 +14,10 @@ vi.stubGlobal('fetch', mockFetch);
 
 beforeEach(() => {
     mockFetch.mockReset();
-    vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('TWSE API Service', () => {
-
     // ========================================
     // formatDateForAPI / formatMonthForAPI
     // ========================================
@@ -64,9 +63,9 @@ describe('TWSE API Service', () => {
                     stat: 'OK',
                     data: [
                         ['114/01/02', '3.50', '112', '28.50', '6.20', '112/Q4'],
-                        ['114/01/03', '3.60', '112', '27.80', '6.10', '112/Q4']
-                    ]
-                })
+                        ['114/01/03', '3.60', '112', '27.80', '6.10', '112/Q4'],
+                    ],
+                }),
             });
 
             const result = await getPERatio('20250103', '2330');
@@ -88,9 +87,9 @@ describe('TWSE API Service', () => {
                     data: [
                         ['114/01/02', '3.50', '112', '28.50', '6.20', '112/Q4'],
                         ['114/01/03', '3.60', '112', '27.80', '6.10', '112/Q4'],
-                        ['114/01/06', '3.70', '112', '26.50', '5.90', '112/Q4']
-                    ]
-                })
+                        ['114/01/06', '3.70', '112', '26.50', '5.90', '112/Q4'],
+                    ],
+                }),
             });
 
             const result = await getPERatio('20250106', '2330');
@@ -101,7 +100,7 @@ describe('TWSE API Service', () => {
         it('stat 非 OK 應回傳 null', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                json: async () => ({ stat: 'FAIL', data: null })
+                json: async () => ({ stat: 'FAIL', data: null }),
             });
 
             const result = await getPERatio('20250101', '9999');
@@ -111,7 +110,7 @@ describe('TWSE API Service', () => {
         it('data 為空陣列應回傳 null', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                json: async () => ({ stat: 'OK', data: [] })
+                json: async () => ({ stat: 'OK', data: [] }),
             });
 
             const result = await getPERatio('20250101', '2330');
@@ -137,8 +136,8 @@ describe('TWSE API Service', () => {
                 ok: true,
                 json: async () => ({
                     stat: 'OK',
-                    data: [['114/01/02', '-', '112', '-', '-', '112/Q4']]
-                })
+                    data: [['114/01/02', '-', '112', '-', '-', '112/Q4']],
+                }),
             });
 
             const result = await getPERatio('20250102', '2330');
@@ -159,9 +158,19 @@ describe('TWSE API Service', () => {
                 json: async () => ({
                     stat: 'OK',
                     data: [
-                        ['114/01/02', '25,330,456', '15,200,000,000', '598.0', '605.0', '595.0', '600.0', '+5.00', '32,456']
-                    ]
-                })
+                        [
+                            '114/01/02',
+                            '25,330,456',
+                            '15,200,000,000',
+                            '598.0',
+                            '605.0',
+                            '595.0',
+                            '600.0',
+                            '+5.00',
+                            '32,456',
+                        ],
+                    ],
+                }),
             });
 
             const result = await getStockDay('202501', '2330');
@@ -186,9 +195,9 @@ describe('TWSE API Service', () => {
                     data: [
                         ['114/01/02', '1,000', '500,000', '100', '105', '99', '103', '+3', '200'],
                         ['114/01/03', '2,000', '600,000', '103', '108', '102', '107', '+4', '300'],
-                        ['114/01/06', '1,500', '550,000', '107', '110', '106', '109', '+2', '250']
-                    ]
-                })
+                        ['114/01/06', '1,500', '550,000', '107', '110', '106', '109', '+2', '250'],
+                    ],
+                }),
             });
 
             const result = await getStockDay('202501', '2330');
@@ -199,7 +208,7 @@ describe('TWSE API Service', () => {
         it('stat 非 OK 應回傳 null', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                json: async () => ({ stat: 'FAIL' })
+                json: async () => ({ stat: 'FAIL' }),
             });
 
             const result = await getStockDay('202501', '9999');
@@ -233,9 +242,9 @@ describe('TWSE API Service', () => {
                     stat: 'OK',
                     data: [
                         ['2330', '台積電', '3.60', '112', '27.80', '6.10', '112/Q4'],
-                        ['2317', '鴻海', '5.20', '112', '12.50', '1.40', '112/Q4']
-                    ]
-                })
+                        ['2317', '鴻海', '5.20', '112', '12.50', '1.40', '112/Q4'],
+                    ],
+                }),
             });
 
             const result = await getAllPERatios('20250103');
@@ -253,7 +262,7 @@ describe('TWSE API Service', () => {
         it('stat 非 OK 應回傳空陣列', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                json: async () => ({ stat: 'FAIL' })
+                json: async () => ({ stat: 'FAIL' }),
             });
 
             const result = await getAllPERatios('20250101');
@@ -290,11 +299,23 @@ describe('TWSE API Service', () => {
                         {
                             title: '個股日成交資訊',
                             data: [
-                                ['2330', '台積電', '25,330,456', '32,456', '15,200,000,000', '598', '605', '595', '600', '+', '5.00']
-                            ]
-                        }
-                    ]
-                })
+                                [
+                                    '2330',
+                                    '台積電',
+                                    '25,330,456',
+                                    '32,456',
+                                    '15,200,000,000',
+                                    '598',
+                                    '605',
+                                    '595',
+                                    '600',
+                                    '+',
+                                    '5.00',
+                                ],
+                            ],
+                        },
+                    ],
+                }),
             });
 
             const result = await getDailyQuotes('20250103');
@@ -313,8 +334,8 @@ describe('TWSE API Service', () => {
                 ok: true,
                 json: async () => ({
                     stat: 'OK',
-                    tables: [{ title: '大盤指數', data: [] }]
-                })
+                    tables: [{ title: '大盤指數', data: [] }],
+                }),
             });
 
             const result = await getDailyQuotes('20250103');
@@ -324,7 +345,7 @@ describe('TWSE API Service', () => {
         it('stat 非 OK 應回傳空陣列', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                json: async () => ({ stat: 'FAIL' })
+                json: async () => ({ stat: 'FAIL' }),
             });
 
             const result = await getDailyQuotes('20250101');

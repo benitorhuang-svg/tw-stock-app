@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 
 // Constants from industries.ts
@@ -19,15 +18,27 @@ const industries = [
     { id: 'construction', name: '營建' },
     { id: 'tourism', name: '觀光' },
     { id: 'trading', name: '貿易百貨' },
-    { id: 'other', name: '其他' }
+    { id: 'other', name: '其他' },
 ];
 
 const stockIndustryMap = {
-    '2330': 'semiconductor', '2454': 'semiconductor', '3034': 'semiconductor',
-    '2317': 'electronics', '2308': 'electronics', '2382': 'electronics',
-    '2881': 'finance', '2882': 'finance', '2884': 'finance', '2891': 'finance',
-    '2412': 'communication', '3008': 'optoelectronics', '2105': 'food',
-    '1301': 'plastic', '2002': 'steel', '2603': 'shipping', '2609': 'shipping'
+    2330: 'semiconductor',
+    2454: 'semiconductor',
+    3034: 'semiconductor',
+    2317: 'electronics',
+    2308: 'electronics',
+    2382: 'electronics',
+    2881: 'finance',
+    2882: 'finance',
+    2884: 'finance',
+    2891: 'finance',
+    2412: 'communication',
+    3008: 'optoelectronics',
+    2105: 'food',
+    1301: 'plastic',
+    2002: 'steel',
+    2603: 'shipping',
+    2609: 'shipping',
 };
 
 function getSectorBySymbol(symbol) {
@@ -52,14 +63,15 @@ function getSectorBySymbol(symbol) {
     if (prefix === '27') return 'tourism';
     if (prefix === '28') return 'finance';
     if (prefix === '29') return 'trading';
-    if (['30', '31', '32', '33', '34', '36', '37', '53', '61', '81'].includes(prefix)) return 'electronics';
+    if (['30', '31', '32', '33', '34', '36', '37', '53', '61', '81'].includes(prefix))
+        return 'electronics';
     if (['35', '49', '54', '62', '64', '80'].includes(prefix)) return 'semiconductor';
     return 'other';
 }
 
 const stocks = JSON.parse(fs.readFileSync('./public/data/stocks.json', 'utf-8'));
 const counts = {};
-industries.forEach(ind => counts[ind.id] = 0);
+industries.forEach(ind => (counts[ind.id] = 0));
 
 stocks.forEach(s => {
     const sector = getSectorBySymbol(s.symbol);

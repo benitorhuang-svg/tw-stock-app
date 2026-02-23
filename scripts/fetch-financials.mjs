@@ -1,6 +1,6 @@
 /**
  * 取得公司財務報表 (EPS, ROE, 獲利比率)
- * 
+ *
  * 來源: TWSE OpenAPI (t187ap06_L_ci, t187ap17_L 等最新的財報批次)
  * 輸出: public/data/financials.json
  */
@@ -15,8 +15,8 @@ const OUTPUT_FILE = path.join(__dirname, '..', 'public', 'data', 'financials.jso
 // 使用多個 OpenAPI 端點來獲取最完整的「最新財報批次」
 const ENDPOINTS = [
     'https://openapi.twse.com.tw/v1/opendata/t187ap06_L_ci', // 損益表摘要
-    'https://openapi.twse.com.tw/v1/opendata/t187ap17_L',    // 獲利能力分析
-    'https://openapi.twse.com.tw/v1/opendata/t187ap14_L'     // 每股盈餘
+    'https://openapi.twse.com.tw/v1/opendata/t187ap17_L', // 獲利能力分析
+    'https://openapi.twse.com.tw/v1/opendata/t187ap14_L', // 每股盈餘
 ];
 
 const REQUEST_TIMEOUT = 10000;
@@ -59,21 +59,34 @@ async function main() {
                     symbol,
                     name: item['公司名稱']?.trim(),
                     year: item['年度']?.trim(),
-                    quarter: item['季別']?.trim()
+                    quarter: item['季別']?.trim(),
                 };
             }
 
             // 補充各別 API 提供的欄位
-            if (item['基本每股盈餘（元）']) consolidated[symbol].eps = parseFloat(item['基本每股盈餘（元）']);
-            if (item['基本每股盈餘(元)']) consolidated[symbol].eps = parseFloat(item['基本每股盈餘(元)']);
+            if (item['基本每股盈餘（元）'])
+                consolidated[symbol].eps = parseFloat(item['基本每股盈餘（元）']);
+            if (item['基本每股盈餘(元)'])
+                consolidated[symbol].eps = parseFloat(item['基本每股盈餘(元)']);
 
-            if (item['營業毛利（毛損）淨額']) consolidated[symbol].grossProfit = parseFloat(item['營業毛利（毛損）淨額']);
-            if (item['營業利益（損失）']) consolidated[symbol].operatingIncome = parseFloat(item['營業利益（損失）']);
+            if (item['營業毛利（毛損）淨額'])
+                consolidated[symbol].grossProfit = parseFloat(item['營業毛利（毛損）淨額']);
+            if (item['營業利益（損失）'])
+                consolidated[symbol].operatingIncome = parseFloat(item['營業利益（損失）']);
             if (item['稅後淨利']) consolidated[symbol].netIncome = parseFloat(item['稅後淨利']);
 
-            if (item['毛利率(%)(營業毛利)/(營業收入)']) consolidated[symbol].grossMargin = parseFloat(item['毛利率(%)(營業毛利)/(營業收入)']);
-            if (item['營業利益率(%)(營業利益)/(營業收入)']) consolidated[symbol].operatingMargin = parseFloat(item['營業利益率(%)(營業利益)/(營業收入)']);
-            if (item['稅後純益率(%)(稅後純益)/(營業收入)']) consolidated[symbol].netMargin = parseFloat(item['稅後純益率(%)(稅後純益)/(營業收入)']);
+            if (item['毛利率(%)(營業毛利)/(營業收入)'])
+                consolidated[symbol].grossMargin = parseFloat(
+                    item['毛利率(%)(營業毛利)/(營業收入)']
+                );
+            if (item['營業利益率(%)(營業利益)/(營業收入)'])
+                consolidated[symbol].operatingMargin = parseFloat(
+                    item['營業利益率(%)(營業利益)/(營業收入)']
+                );
+            if (item['稅後純益率(%)(稅後純益)/(營業收入)'])
+                consolidated[symbol].netMargin = parseFloat(
+                    item['稅後純益率(%)(稅後純益)/(營業收入)']
+                );
         });
 
         console.log(`   ✅ 處理完畢，目前累計 ${Object.keys(consolidated).length} 家公司`);

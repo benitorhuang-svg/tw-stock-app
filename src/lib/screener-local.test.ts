@@ -23,12 +23,11 @@ beforeEach(() => {
     mockGetStocks.mockReset().mockResolvedValue([]);
     mockFetch.mockReset();
     vi.stubGlobal('fetch', mockFetch);
-    vi.spyOn(console, 'log').mockImplementation(() => { });
-    vi.spyOn(console, 'warn').mockImplementation(() => { });
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
 describe('Screener Local', () => {
-
     describe('screenStocksLocal', () => {
         it('本地有資料應直接回傳', async () => {
             mockFilterStocks.mockResolvedValueOnce([
@@ -37,7 +36,7 @@ describe('Screener Local', () => {
 
             const results = await screenStocksLocal({
                 pe: { max: 30 },
-                dividendYield: { min: 2 }
+                dividendYield: { min: 2 },
             });
 
             expect(results.length).toBeGreaterThan(0);
@@ -52,7 +51,7 @@ describe('Screener Local', () => {
             const results = await screenStocksLocal({
                 pe: { max: 15 },
                 dividendYield: { min: 3 },
-                roe: { min: 20 }
+                roe: { min: 20 },
             });
 
             expect(results[0].matchedStrategies).toContain('低本益比');
@@ -67,7 +66,7 @@ describe('Screener Local', () => {
 
             const results = await screenStocksLocal({
                 pe: { max: 15 },
-                dividendYield: { min: 3 }
+                dividendYield: { min: 3 },
             });
 
             expect(results).toHaveLength(0);
@@ -107,10 +106,8 @@ describe('Screener Local', () => {
                 ok: true,
                 json: async () => ({
                     success: true,
-                    results: [
-                        { symbol: '2330', name: '台積電', matchedStrategies: ['低本益比'] }
-                    ]
-                })
+                    results: [{ symbol: '2330', name: '台積電', matchedStrategies: ['低本益比'] }],
+                }),
             });
 
             const results = await screenStocksLocal({ pe: { max: 15 } });
@@ -134,7 +131,7 @@ describe('Screener Local', () => {
             mockGetStocks.mockResolvedValueOnce([
                 { symbol: '2330' },
                 { symbol: '2317' },
-                { symbol: '2454' }
+                { symbol: '2454' },
             ]);
 
             const count = await getLocalStockCount();

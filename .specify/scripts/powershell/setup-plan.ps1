@@ -11,9 +11,9 @@ $ErrorActionPreference = 'Stop'
 
 # Show help if requested
 if ($Help) {
-    Write-Output "Usage: ./setup-plan.ps1 [-Json] [-Help]"
-    Write-Output "  -Json     Output results in JSON format"
-    Write-Output "  -Help     Show this help message"
+    Write-Output "用法: ./setup-plan.ps1 [-Json] [-Help]"
+    Write-Output "  -Json     以 JSON 格式輸出結果"
+    Write-Output "  -Help     顯示此說明訊息"
     exit 0
 }
 
@@ -33,26 +33,31 @@ New-Item -ItemType Directory -Path $paths.FEATURE_DIR -Force | Out-Null
 
 # Copy plan template if it exists, otherwise note it or create empty file
 $template = Join-Path $paths.REPO_ROOT '.specify/templates/plan-template.md'
-if (Test-Path $template) { 
-    Copy-Item $template $paths.IMPL_PLAN -Force
-    Write-Output "Copied plan template to $($paths.IMPL_PLAN)"
-} else {
-    Write-Warning "Plan template not found at $template"
-    # Create a basic plan file if template doesn't exist
-    New-Item -ItemType File -Path $paths.IMPL_PLAN -Force | Out-Null
+if (Test-Path $paths.IMPL_PLAN) {
+    Write-Output "實作計畫已存在於 $($paths.IMPL_PLAN)，跳過建立。"
+}
+elseif (Test-Path $template) { 
+    Copy-Item $template $paths.IMPL_PLAN
+    Write-Output "已將計畫模板複製到 $($paths.IMPL_PLAN)"
+}
+else {
+    Write-Warning "於 $template 找不到計畫模板"
+    # 若模板不存在，建立基礎計畫檔案
+    New-Item -ItemType File -Path $paths.IMPL_PLAN | Out-Null
 }
 
 # Output results
 if ($Json) {
     $result = [PSCustomObject]@{ 
         FEATURE_SPEC = $paths.FEATURE_SPEC
-        IMPL_PLAN = $paths.IMPL_PLAN
-        SPECS_DIR = $paths.FEATURE_DIR
-        BRANCH = $paths.CURRENT_BRANCH
-        HAS_GIT = $paths.HAS_GIT
+        IMPL_PLAN    = $paths.IMPL_PLAN
+        SPECS_DIR    = $paths.FEATURE_DIR
+        BRANCH       = $paths.CURRENT_BRANCH
+        HAS_GIT      = $paths.HAS_GIT
     }
     $result | ConvertTo-Json -Compress
-} else {
+}
+else {
     Write-Output "FEATURE_SPEC: $($paths.FEATURE_SPEC)"
     Write-Output "IMPL_PLAN: $($paths.IMPL_PLAN)"
     Write-Output "SPECS_DIR: $($paths.FEATURE_DIR)"

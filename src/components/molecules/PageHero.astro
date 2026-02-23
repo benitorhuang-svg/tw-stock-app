@@ -1,94 +1,28 @@
 ---
+/**
+ * PageHero.astro — Page title section with breadcrumb support
+ */
 interface Props {
-    icon: string;
     title: string;
-    subtitle: string;
-    glowClass?: string;
-    animationDelay?: string;
+    subtitle?: string;
+    symbol?: string;
+    class?: string;
 }
 
-const { icon, title, subtitle, glowClass = 'neutral-glow', animationDelay = '0.1s' } = Astro.props;
+const { title, subtitle, symbol, class: className = '' } = Astro.props;
 ---
 
-<header
-    class="page-hero glass-card glow-wrapper cyber-reveal"
-    style={`animation-delay: ${animationDelay};`}
->
-    <div class={`glow-bg ${glowClass}`}></div>
-    <div class="hero-left">
-        <div class="icon-box text-accent">
-            <span class="icon">{icon}</span>
+<header class:list={['flex items-start justify-between mb-6', className]}>
+    <div class="flex flex-col gap-1">
+        <div class="flex items-center gap-3">
+            <h1 class="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">
+                {title}
+            </h1>
+            {symbol && <span class="font-mono text-sm text-text-muted font-normal">{symbol}</span>}
         </div>
-        <div>
-            <h1 class="mono">{title} //</h1>
-            <p class="text-muted mono">{subtitle}</p>
-        </div>
+        {subtitle && <p class="text-sm text-text-secondary">{subtitle}</p>}
     </div>
-
-    <!-- Using a slot for right-side utilities like sys-status or actions -->
-    <div class="hero-right">
-        <slot name="action" />
+    <div>
+        <slot />
     </div>
 </header>
-
-<style>
-    .page-hero {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 24px 32px;
-        z-index: 10;
-        overflow: hidden;
-    }
-
-    .hero-left {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        z-index: 1;
-    }
-
-    .hero-right {
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .icon-box {
-        width: 56px;
-        height: 56px;
-        background: rgba(var(--c-accent-rgb), 0.1);
-        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-    }
-
-    h1 {
-        font-size: 16px;
-        margin: 0;
-        letter-spacing: 2px;
-        color: #fff;
-    }
-
-    p {
-        font-size: 11px;
-        margin: 4px 0 0;
-        color: var(--c-text-muted);
-    }
-
-    @media (max-width: 600px) {
-        .page-hero {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-        }
-        .hero-right {
-            width: 100%;
-            justify-content: flex-end;
-        }
-    }
-</style>

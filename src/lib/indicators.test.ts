@@ -1,12 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-    SMA,
-    EMA,
-    RSI,
-    MACD,
-    KD,
-    BollingerBands
-} from './indicators';
+import { SMA, EMA, RSI, MACD, KD, BollingerBands } from './indicators';
 
 describe('Technical Indicators', () => {
     // 測試資料
@@ -17,7 +10,7 @@ describe('Technical Indicators', () => {
         high: close + 2,
         low: close - 2,
         close,
-        volume: 1000000
+        volume: 1000000,
     }));
 
     describe('SMA', () => {
@@ -39,7 +32,7 @@ describe('Technical Indicators', () => {
         it('應計算指數移動平均', () => {
             const result = EMA(prices, 3);
             expect(result).toHaveLength(prices.length);
-            expect(result[0]).toBe(0);  // EMA 前 period-1 個值回傳 0
+            expect(result[0]).toBe(0); // EMA 前 period-1 個值回傳 0
             expect(result[1]).toBe(0);
             expect(result[2]).not.toBeNull();
         });

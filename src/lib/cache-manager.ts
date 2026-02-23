@@ -2,7 +2,7 @@
  * Multi-Layer Cache Management
  * Priority: Memory (fast) → IndexedDB (persistent) → Network (fallback)
  * Implements smart caching strategy for optimal performance
- * 
+ *
  * @module cache-manager
  * @version 2.0.0 (P0 Multi-layer optimization)
  * @see https://docs.astro.build/en/getting-started/
@@ -21,18 +21,18 @@ export interface CacheConfig {
     dbName: string;
     storeName: string;
     version: number;
-    ttl?: number;  // IndexedDB TTL
-    memoryTTL?: number;  // Memory cache TTL (default 5 min)
-    enableMemory?: boolean;  // Enable memory layer (default true)
+    ttl?: number; // IndexedDB TTL
+    memoryTTL?: number; // Memory cache TTL (default 5 min)
+    enableMemory?: boolean; // Enable memory layer (default true)
 }
 
 const DEFAULT_CONFIG: CacheConfig = {
     dbName: 'tw-stock-app-cache',
     storeName: 'cache-store',
     version: 1,
-    ttl: 7 * 24 * 60 * 60 * 1000,  // IndexedDB: 7 days
-    memoryTTL: 5 * 60 * 1000,      // Memory: 5 minutes (P0 optimization)
-    enableMemory: true
+    ttl: 7 * 24 * 60 * 60 * 1000, // IndexedDB: 7 days
+    memoryTTL: 5 * 60 * 1000, // Memory: 5 minutes (P0 optimization)
+    enableMemory: true,
 };
 
 // P0 Optimization: In-memory cache layer (fastest)
@@ -45,7 +45,7 @@ const MAX_MEMORY_SIZE = 10 * 1024 * 1024; // 10MB limit
  */
 export async function initCache(config: Partial<CacheConfig> = {}): Promise<IDBDatabase> {
     const finalConfig = { ...DEFAULT_CONFIG, ...config };
-    
+
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(finalConfig.dbName, finalConfig.version);
 
@@ -57,9 +57,9 @@ export async function initCache(config: Partial<CacheConfig> = {}): Promise<IDBD
             resolve(db);
         };
 
-        request.onupgradeneeded = (event) => {
+        request.onupgradeneeded = event => {
             const db = (event.target as IDBOpenDBRequest).result;
-            
+
             if (!db.objectStoreNames.contains(finalConfig.storeName)) {
                 const store = db.createObjectStore(finalConfig.storeName, { keyPath: 'key' });
                 store.createIndex('timestamp', 'timestamp', { unique: false });
@@ -92,7 +92,7 @@ export async function setCache<T>(
     // 2. Set to IndexedDB (P0: persistent backup)
     const db = await initCache(finalConfig);
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const transaction = db.transaction([finalConfig.storeName], 'readwrite');
         const store = transaction.objectStore(finalConfig.storeName);
 
@@ -101,7 +101,7 @@ export async function setCache<T>(
             data,
             timestamp: Date.now(),
             expiresAt: Date.now() + ttl,
-            level: 'indexeddb'
+            level: 'indexeddb',
         };
 
         const request = store.put(entry);
@@ -147,7 +147,7 @@ function setToMemory<T>(
     if (!finalConfig.enableMemory) return;
 
     const size = JSON.stringify(data).length;
-    
+
     // Evict if needed
     if (memorySize + size > MAX_MEMORY_SIZE) {
         memoryCache.clear();
@@ -159,7 +159,7 @@ function setToMemory<T>(
         data,
         timestamp: Date.now(),
         expiresAt: Date.now() + ttl,
-        level: 'memory'
+        level: 'memory',
     };
 
     memoryCache.set(key, entry);
@@ -213,10 +213,7 @@ export async function getCache<T>(
 /**
  * Delete cache entry
  */
-export async function deleteCache(
-    key: string,
-    config: Partial<CacheConfig> = {}
-): Promise<void> {
+export async function deleteCache(key: string, config: Partial<CacheConfig> = {}): Promise<void> {
     const finalConfig = { ...DEFAULT_CONFIG, ...config };
     const db = await initCache(finalConfig);
 
@@ -273,9 +270,9 @@ export async function getAllCacheEntries(
             const summary = entries.map(e => ({
                 key: e.key,
                 timestamp: e.timestamp,
-                expiresAt: e.expiresAt
+                expiresAt: e.expiresAt,
             }));
-            
+
             console.log(`[IndexedDB] Total entries: ${summary.length}`);
             resolve(summary);
         };
@@ -299,9 +296,9 @@ export async function cleanExpiredCache(config: Partial<CacheConfig> = {}): Prom
         const request = index.openCursor(range);
 
         request.onerror = () => reject(request.error);
-        request.onsuccess = (event) => {
+        request.onsuccess = event => {
             const cursor = (event.target as IDBRequest).result;
-            
+
             if (cursor) {
                 cursor.delete();
                 deletedCount++;
@@ -332,7 +329,7 @@ export async function getCacheSize(config: Partial<CacheConfig> = {}): Promise<{
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
             const entries = request.result as CacheEntry<any>[];
-            
+
             // Estimate size by JSON serialization
             let estimatedSize = 0;
             entries.forEach(entry => {
@@ -347,7 +344,7 @@ export async function getCacheSize(config: Partial<CacheConfig> = {}): Promise<{
             console.log(`[IndexedDB] Size: ${estimatedSize} bytes, Entries: ${entries.length}`);
             resolve({
                 entries: entries.length,
-                estimatedSizeBytes: estimatedSize
+                estimatedSizeBytes: estimatedSize,
             });
         };
     });
@@ -362,7 +359,7 @@ const DB_CACHE_CONFIG: CacheConfig = {
     dbName: 'tw-stock-app-db',
     storeName: DB_CACHE_STORE,
     version: 1,
-    ttl: 30 * 24 * 60 * 60 * 1000  // 30 days for database
+    ttl: 30 * 24 * 60 * 60 * 1000, // 30 days for database
 };
 
 /**
@@ -379,7 +376,7 @@ export async function saveDatabaseCache(buffer: ArrayBuffer): Promise<void> {
             key: DB_CACHE_KEY,
             data: new Uint8Array(buffer),
             timestamp: Date.now(),
-            expiresAt: Date.now() + DB_CACHE_CONFIG.ttl!
+            expiresAt: Date.now() + DB_CACHE_CONFIG.ttl!,
         };
 
         const request = store.put(entry);
@@ -443,5 +440,5 @@ export default {
     getCacheSize,
     saveDatabaseCache,
     loadDatabaseCache,
-    clearDatabaseCache
+    clearDatabaseCache,
 };

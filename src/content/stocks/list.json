@@ -1,5387 +1,5387 @@
 [
-  {
-    "symbol": "0050",
-    "name": "元大台灣50",
-    "market": "TSE"
-  },
-  {
-    "symbol": "0051",
-    "name": "元大中型100",
-    "market": "TSE"
-  },
-  {
-    "symbol": "0052",
-    "name": "富邦科技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "0053",
-    "name": "元大電子",
-    "market": "TSE"
-  },
-  {
-    "symbol": "0055",
-    "name": "元大MSCI金融",
-    "market": "TSE"
-  },
-  {
-    "symbol": "0056",
-    "name": "元大高股息",
-    "market": "TSE"
-  },
-  {
-    "symbol": "0057",
-    "name": "富邦摩台",
-    "market": "TSE"
-  },
-  {
-    "symbol": "0061",
-    "name": "元大寶滬深",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1101",
-    "name": "台泥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1102",
-    "name": "亞泥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1103",
-    "name": "嘉泥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1104",
-    "name": "環泥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1108",
-    "name": "幸福",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1109",
-    "name": "信大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1110",
-    "name": "東泥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1201",
-    "name": "味全",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1203",
-    "name": "味王",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1210",
-    "name": "大成",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1213",
-    "name": "大飲",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1215",
-    "name": "卜蜂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1216",
-    "name": "統一",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1217",
-    "name": "愛之味",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1218",
-    "name": "泰山",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1219",
-    "name": "福壽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1220",
-    "name": "台榮",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1225",
-    "name": "福懋油",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1227",
-    "name": "佳格",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1229",
-    "name": "聯華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1231",
-    "name": "聯華食",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1232",
-    "name": "大統益",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1233",
-    "name": "天仁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1234",
-    "name": "黑松",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1235",
-    "name": "興泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1236",
-    "name": "宏亞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1256",
-    "name": "鮮活果汁-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1301",
-    "name": "台塑",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1303",
-    "name": "南亞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1304",
-    "name": "台聚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1305",
-    "name": "華夏",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1307",
-    "name": "三芳",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1308",
-    "name": "亞聚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1309",
-    "name": "台達化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1310",
-    "name": "台苯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1312",
-    "name": "國喬",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1313",
-    "name": "聯成",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1314",
-    "name": "中石化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1315",
-    "name": "達新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1316",
-    "name": "上曜",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1319",
-    "name": "東陽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1321",
-    "name": "大洋",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1323",
-    "name": "永裕",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1324",
-    "name": "地球",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1325",
-    "name": "恆大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1326",
-    "name": "台化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1337",
-    "name": "再生-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1338",
-    "name": "廣華-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1339",
-    "name": "昭輝",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1340",
-    "name": "勝悅-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1341",
-    "name": "富林-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1342",
-    "name": "八貫",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1402",
-    "name": "遠東新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1409",
-    "name": "新纖",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1410",
-    "name": "南染",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1413",
-    "name": "宏洲",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1414",
-    "name": "東和",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1416",
-    "name": "廣豐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1417",
-    "name": "嘉裕",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1418",
-    "name": "東華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1419",
-    "name": "新紡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1423",
-    "name": "利華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1432",
-    "name": "大魯閣",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1434",
-    "name": "福懋",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1435",
-    "name": "中福",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1436",
-    "name": "華友聯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1437",
-    "name": "勤益控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1438",
-    "name": "三地開發",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1439",
-    "name": "雋揚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1440",
-    "name": "南紡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1441",
-    "name": "大東",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1442",
-    "name": "名軒",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1443",
-    "name": "立益物流",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1444",
-    "name": "力麗",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1445",
-    "name": "大宇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1446",
-    "name": "宏和",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1447",
-    "name": "力鵬",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1449",
-    "name": "佳和",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1451",
-    "name": "年興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1452",
-    "name": "宏益",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1453",
-    "name": "大將",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1454",
-    "name": "台富",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1455",
-    "name": "集盛",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1456",
-    "name": "怡華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1457",
-    "name": "宜進",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1459",
-    "name": "聯發",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1460",
-    "name": "宏遠",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1463",
-    "name": "強盛新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1464",
-    "name": "得力",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1465",
-    "name": "偉全",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1466",
-    "name": "聚隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1467",
-    "name": "南緯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1468",
-    "name": "昶和",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1470",
-    "name": "大統新創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1471",
-    "name": "首利",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1472",
-    "name": "三洋實業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1473",
-    "name": "台南",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1474",
-    "name": "弘裕",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1475",
-    "name": "業旺",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1476",
-    "name": "儒鴻",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1477",
-    "name": "聚陽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1503",
-    "name": "士電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1504",
-    "name": "東元",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1506",
-    "name": "正道",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1512",
-    "name": "瑞利",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1513",
-    "name": "中興電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1514",
-    "name": "亞力",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1515",
-    "name": "力山",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1516",
-    "name": "川飛",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1517",
-    "name": "利奇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1519",
-    "name": "華城",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1521",
-    "name": "大億",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1522",
-    "name": "堤維西",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1524",
-    "name": "耿鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1525",
-    "name": "江申",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1526",
-    "name": "日馳",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1527",
-    "name": "鑽全",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1528",
-    "name": "恩德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1529",
-    "name": "樂事綠能",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1530",
-    "name": "亞崴",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1531",
-    "name": "高林股",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1532",
-    "name": "勤美",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1533",
-    "name": "車王電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1535",
-    "name": "中宇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1536",
-    "name": "和大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1537",
-    "name": "廣隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1538",
-    "name": "正峰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1539",
-    "name": "巨庭",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1540",
-    "name": "喬福",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1541",
-    "name": "錩泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1558",
-    "name": "伸興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1560",
-    "name": "中砂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1563",
-    "name": "巧新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1568",
-    "name": "倉佑",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1582",
-    "name": "信錦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1583",
-    "name": "程泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1587",
-    "name": "吉茂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1589",
-    "name": "永冠-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1590",
-    "name": "亞德客-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1597",
-    "name": "直得",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1598",
-    "name": "岱宇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1603",
-    "name": "華電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1604",
-    "name": "聲寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1605",
-    "name": "華新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1608",
-    "name": "華榮",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1609",
-    "name": "大亞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1611",
-    "name": "中電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1612",
-    "name": "宏泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1614",
-    "name": "三洋電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1615",
-    "name": "大山",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1616",
-    "name": "億泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1617",
-    "name": "榮星",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1618",
-    "name": "合機",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1623",
-    "name": "大東電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1626",
-    "name": "艾美特-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1702",
-    "name": "南僑",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1707",
-    "name": "葡萄王",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1708",
-    "name": "東鹼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1709",
-    "name": "和益",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1710",
-    "name": "東聯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1711",
-    "name": "永光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1712",
-    "name": "興農",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1713",
-    "name": "國化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1714",
-    "name": "和桐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1717",
-    "name": "長興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1718",
-    "name": "中纖",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1720",
-    "name": "生達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1721",
-    "name": "三晃",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1722",
-    "name": "台肥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1723",
-    "name": "中碳",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1725",
-    "name": "元禎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1726",
-    "name": "永記",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1727",
-    "name": "中華化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1730",
-    "name": "花仙子",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1731",
-    "name": "美吾華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1732",
-    "name": "毛寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1733",
-    "name": "五鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1734",
-    "name": "杏輝",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1735",
-    "name": "日勝化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1736",
-    "name": "喬山",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1737",
-    "name": "臺鹽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1752",
-    "name": "南光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1760",
-    "name": "寶齡富錦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1762",
-    "name": "中化生",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1773",
-    "name": "勝一",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1776",
-    "name": "展宇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1783",
-    "name": "和康生",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1786",
-    "name": "科妍",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1789",
-    "name": "神隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1795",
-    "name": "美時",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1802",
-    "name": "台玻",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1805",
-    "name": "寶徠",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1806",
-    "name": "冠軍",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1808",
-    "name": "潤隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1809",
-    "name": "中釉",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1810",
-    "name": "和成",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1817",
-    "name": "凱撒衛",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1903",
-    "name": "士紙",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1904",
-    "name": "正隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1905",
-    "name": "華紙",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1906",
-    "name": "寶隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1907",
-    "name": "永豐餘",
-    "market": "TSE"
-  },
-  {
-    "symbol": "1909",
-    "name": "榮成",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2002",
-    "name": "中鋼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2006",
-    "name": "東和鋼鐵",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2007",
-    "name": "燁興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2008",
-    "name": "高興昌",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2009",
-    "name": "第一銅",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2010",
-    "name": "春源",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2012",
-    "name": "春雨",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2013",
-    "name": "中鋼構",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2014",
-    "name": "中鴻",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2015",
-    "name": "豐興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2017",
-    "name": "官田鋼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2020",
-    "name": "美亞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2022",
-    "name": "聚亨",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2023",
-    "name": "燁輝",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2024",
-    "name": "志聯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2025",
-    "name": "千興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2027",
-    "name": "大成鋼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2028",
-    "name": "威致",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2029",
-    "name": "盛餘",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2030",
-    "name": "彰源",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2031",
-    "name": "新光鋼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2032",
-    "name": "新鋼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2033",
-    "name": "佳大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2034",
-    "name": "允強",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2038",
-    "name": "海光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2049",
-    "name": "上銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2059",
-    "name": "川湖",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2062",
-    "name": "橋椿",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2069",
-    "name": "運錩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2101",
-    "name": "南港",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2102",
-    "name": "泰豐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2103",
-    "name": "台橡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2104",
-    "name": "國際中橡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2105",
-    "name": "正新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2106",
-    "name": "建大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2107",
-    "name": "厚生",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2108",
-    "name": "南帝",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2109",
-    "name": "華豐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2114",
-    "name": "鑫永銓",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2115",
-    "name": "六暉-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2201",
-    "name": "裕隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2204",
-    "name": "中華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2206",
-    "name": "三陽工業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2207",
-    "name": "和泰車",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2208",
-    "name": "台船",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2211",
-    "name": "長榮鋼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2227",
-    "name": "裕日車",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2228",
-    "name": "劍麟",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2231",
-    "name": "為升",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2233",
-    "name": "宇隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2236",
-    "name": "百達-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2239",
-    "name": "英利-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2241",
-    "name": "艾姆勒",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2243",
-    "name": "宏旭-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2247",
-    "name": "汎德永業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2248",
-    "name": "華勝-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2250",
-    "name": "IKKA-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2254",
-    "name": "巨鎧精密-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2258",
-    "name": "鴻華先進-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2301",
-    "name": "光寶科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2302",
-    "name": "麗正",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2303",
-    "name": "聯電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2305",
-    "name": "全友",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2308",
-    "name": "台達電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2312",
-    "name": "金寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2313",
-    "name": "華通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2314",
-    "name": "台揚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2316",
-    "name": "楠梓電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2317",
-    "name": "鴻海",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2321",
-    "name": "東訊",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2323",
-    "name": "中環",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2324",
-    "name": "仁寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2327",
-    "name": "國巨*",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2328",
-    "name": "廣宇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2329",
-    "name": "華泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2330",
-    "name": "台積電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2331",
-    "name": "精英",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2332",
-    "name": "友訊",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2337",
-    "name": "旺宏",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2338",
-    "name": "光罩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2340",
-    "name": "台亞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2342",
-    "name": "茂矽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2344",
-    "name": "華邦電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2345",
-    "name": "智邦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2347",
-    "name": "聯強",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2348",
-    "name": "海悅",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2349",
-    "name": "錸德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2351",
-    "name": "順德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2352",
-    "name": "佳世達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2353",
-    "name": "宏碁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2354",
-    "name": "鴻準",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2355",
-    "name": "敬鵬",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2356",
-    "name": "英業達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2357",
-    "name": "華碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2359",
-    "name": "所羅門",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2360",
-    "name": "致茂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2362",
-    "name": "藍天",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2363",
-    "name": "矽統",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2364",
-    "name": "倫飛",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2365",
-    "name": "昆盈",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2367",
-    "name": "燿華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2368",
-    "name": "金像電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2369",
-    "name": "菱生",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2371",
-    "name": "大同",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2373",
-    "name": "震旦行",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2374",
-    "name": "佳能",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2375",
-    "name": "凱美",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2376",
-    "name": "技嘉",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2377",
-    "name": "微星",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2379",
-    "name": "瑞昱",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2380",
-    "name": "虹光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2382",
-    "name": "廣達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2383",
-    "name": "台光電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2385",
-    "name": "群光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2387",
-    "name": "精元",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2388",
-    "name": "威盛",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2390",
-    "name": "云辰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2392",
-    "name": "正崴",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2393",
-    "name": "億光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2395",
-    "name": "研華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2397",
-    "name": "友通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2399",
-    "name": "映泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2401",
-    "name": "凌陽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2402",
-    "name": "毅嘉",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2404",
-    "name": "漢唐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2405",
-    "name": "輔信",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2406",
-    "name": "國碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2408",
-    "name": "南亞科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2409",
-    "name": "友達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2412",
-    "name": "中華電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2413",
-    "name": "環科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2414",
-    "name": "精技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2415",
-    "name": "錩新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2417",
-    "name": "圓剛",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2419",
-    "name": "仲琦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2420",
-    "name": "新巨",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2421",
-    "name": "建準",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2423",
-    "name": "固緯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2424",
-    "name": "隴華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2425",
-    "name": "承啟",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2426",
-    "name": "鼎元",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2427",
-    "name": "三商電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2428",
-    "name": "興勤",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2429",
-    "name": "銘旺科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2430",
-    "name": "燦坤",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2431",
-    "name": "聯昌",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2432",
-    "name": "倚天酷碁-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2433",
-    "name": "互盛電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2434",
-    "name": "統懋",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2436",
-    "name": "偉詮電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2438",
-    "name": "翔耀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2439",
-    "name": "美律",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2440",
-    "name": "太空梭",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2441",
-    "name": "超豐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2442",
-    "name": "新美齊",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2444",
-    "name": "兆勁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2449",
-    "name": "京元電子",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2450",
-    "name": "神腦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2451",
-    "name": "創見",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2453",
-    "name": "凌群",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2454",
-    "name": "聯發科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2455",
-    "name": "全新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2457",
-    "name": "飛宏",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2458",
-    "name": "義隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2459",
-    "name": "敦吉",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2460",
-    "name": "建通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2461",
-    "name": "光群雷",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2462",
-    "name": "良得電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2464",
-    "name": "盟立",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2465",
-    "name": "麗臺",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2466",
-    "name": "冠西電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2467",
-    "name": "志聖",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2468",
-    "name": "華經",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2471",
-    "name": "資通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2472",
-    "name": "立隆電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2474",
-    "name": "可成",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2476",
-    "name": "鉅祥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2477",
-    "name": "美隆電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2478",
-    "name": "大毅",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2480",
-    "name": "敦陽科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2481",
-    "name": "強茂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2482",
-    "name": "連宇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2483",
-    "name": "百容",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2484",
-    "name": "希華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2485",
-    "name": "兆赫",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2486",
-    "name": "一詮",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2488",
-    "name": "漢平",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2489",
-    "name": "瑞軒",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2491",
-    "name": "吉祥全",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2492",
-    "name": "華新科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2493",
-    "name": "揚博",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2495",
-    "name": "普安",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2496",
-    "name": "卓越",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2497",
-    "name": "怡利電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2498",
-    "name": "宏達電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2501",
-    "name": "國建",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2504",
-    "name": "國產",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2505",
-    "name": "國揚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2506",
-    "name": "太設",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2509",
-    "name": "全坤建",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2511",
-    "name": "太子",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2514",
-    "name": "龍邦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2515",
-    "name": "中工",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2516",
-    "name": "新建",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2520",
-    "name": "冠德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2524",
-    "name": "京城",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2527",
-    "name": "宏璟",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2528",
-    "name": "皇普",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2530",
-    "name": "華建",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2534",
-    "name": "宏盛",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2535",
-    "name": "達欣工",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2536",
-    "name": "宏普",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2537",
-    "name": "聯上發",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2538",
-    "name": "基泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2539",
-    "name": "櫻花建",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2540",
-    "name": "愛山林",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2542",
-    "name": "興富發",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2543",
-    "name": "皇昌",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2545",
-    "name": "皇翔",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2546",
-    "name": "根基",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2547",
-    "name": "日勝生",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2548",
-    "name": "華固",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2597",
-    "name": "潤弘",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2601",
-    "name": "益航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2603",
-    "name": "長榮",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2605",
-    "name": "新興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2606",
-    "name": "裕民",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2607",
-    "name": "榮運",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2608",
-    "name": "嘉里大榮",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2609",
-    "name": "陽明",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2610",
-    "name": "華航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2611",
-    "name": "志信",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2612",
-    "name": "中航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2613",
-    "name": "中櫃",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2614",
-    "name": "東森",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2615",
-    "name": "萬海",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2616",
-    "name": "山隆",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2617",
-    "name": "台航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2618",
-    "name": "長榮航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2630",
-    "name": "亞航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2633",
-    "name": "台灣高鐵",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2634",
-    "name": "漢翔",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2636",
-    "name": "台驊控股",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2637",
-    "name": "慧洋-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2642",
-    "name": "宅配通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2645",
-    "name": "長榮航太",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2646",
-    "name": "星宇航空",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2701",
-    "name": "萬企",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2702",
-    "name": "華園",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2704",
-    "name": "國賓",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2705",
-    "name": "六福",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2706",
-    "name": "第一店",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2707",
-    "name": "晶華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2712",
-    "name": "遠雄來",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2722",
-    "name": "夏都",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2723",
-    "name": "美食-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2727",
-    "name": "王品",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2731",
-    "name": "雄獅",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2739",
-    "name": "寒舍",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2748",
-    "name": "雲品",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2753",
-    "name": "八方雲集",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2762",
-    "name": "世界健身-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2801",
-    "name": "彰銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2812",
-    "name": "台中銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2816",
-    "name": "旺旺保",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2820",
-    "name": "華票",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2832",
-    "name": "台產",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2834",
-    "name": "臺企銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2836",
-    "name": "高雄銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2838",
-    "name": "聯邦銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2845",
-    "name": "遠東銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2849",
-    "name": "安泰銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2850",
-    "name": "新產",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2851",
-    "name": "中再保",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2852",
-    "name": "第一保",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2855",
-    "name": "統一證",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2867",
-    "name": "三商壽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2880",
-    "name": "華南金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2881",
-    "name": "富邦金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2882",
-    "name": "國泰金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2883",
-    "name": "凱基金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2884",
-    "name": "玉山金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2885",
-    "name": "元大金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2886",
-    "name": "兆豐金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2887",
-    "name": "台新新光金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2889",
-    "name": "國票金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2890",
-    "name": "永豐金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2891",
-    "name": "中信金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2892",
-    "name": "第一金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2897",
-    "name": "王道銀行",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2901",
-    "name": "欣欣",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2903",
-    "name": "遠百",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2904",
-    "name": "匯僑",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2905",
-    "name": "三商",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2906",
-    "name": "高林",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2908",
-    "name": "特力",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2910",
-    "name": "統領",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2911",
-    "name": "麗嬰房",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2912",
-    "name": "統一超",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2913",
-    "name": "農林",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2915",
-    "name": "潤泰全",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2923",
-    "name": "鼎固-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2929",
-    "name": "淘帝-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2939",
-    "name": "永邑-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "2945",
-    "name": "三商家購",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3002",
-    "name": "歐格",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3003",
-    "name": "健和興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3004",
-    "name": "豐達科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3005",
-    "name": "神基",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3006",
-    "name": "晶豪科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3008",
-    "name": "大立光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3010",
-    "name": "華立",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3011",
-    "name": "今皓",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3013",
-    "name": "晟銘電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3014",
-    "name": "聯陽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3015",
-    "name": "全漢",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3016",
-    "name": "嘉晶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3017",
-    "name": "奇鋐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3018",
-    "name": "隆銘綠能",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3019",
-    "name": "亞光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3021",
-    "name": "鴻名",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3022",
-    "name": "威強電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3023",
-    "name": "信邦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3024",
-    "name": "憶聲",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3025",
-    "name": "星通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3026",
-    "name": "禾伸堂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3027",
-    "name": "盛達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3028",
-    "name": "增你強",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3029",
-    "name": "零壹",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3030",
-    "name": "德律",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3031",
-    "name": "佰鴻",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3032",
-    "name": "偉訓",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3033",
-    "name": "威健",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3034",
-    "name": "聯詠",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3035",
-    "name": "智原",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3036",
-    "name": "文曄",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3037",
-    "name": "欣興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3038",
-    "name": "全台",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3040",
-    "name": "遠見",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3041",
-    "name": "揚智",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3042",
-    "name": "晶技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3043",
-    "name": "科風",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3044",
-    "name": "健鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3045",
-    "name": "台灣大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3046",
-    "name": "建碁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3047",
-    "name": "訊舟",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3048",
-    "name": "益登",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3049",
-    "name": "精金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3050",
-    "name": "鈺德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3051",
-    "name": "力特",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3052",
-    "name": "夆典",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3054",
-    "name": "立萬利",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3055",
-    "name": "蔚華科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3056",
-    "name": "富華新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3057",
-    "name": "喬鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3058",
-    "name": "立德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3059",
-    "name": "華晶科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3060",
-    "name": "銘異",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3062",
-    "name": "建漢",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3090",
-    "name": "日電貿",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3092",
-    "name": "鴻碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3094",
-    "name": "聯傑",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3130",
-    "name": "一零四",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3135",
-    "name": "凌航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3138",
-    "name": "耀登",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3149",
-    "name": "正達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3150",
-    "name": "鈺寶-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3164",
-    "name": "景岳",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3167",
-    "name": "大量",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3168",
-    "name": "眾福科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3189",
-    "name": "景碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3209",
-    "name": "全科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3229",
-    "name": "晟鈦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3231",
-    "name": "緯創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3257",
-    "name": "虹冠電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3266",
-    "name": "昇陽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3296",
-    "name": "勝德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3305",
-    "name": "昇貿",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3308",
-    "name": "聯德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3311",
-    "name": "閎暉",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3312",
-    "name": "弘憶股",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3321",
-    "name": "同泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3338",
-    "name": "泰碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3346",
-    "name": "麗清",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3356",
-    "name": "奇偶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3376",
-    "name": "新日興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3380",
-    "name": "明泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3406",
-    "name": "玉晶光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3413",
-    "name": "京鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3416",
-    "name": "融程電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3419",
-    "name": "譁裕",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3432",
-    "name": "台端",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3437",
-    "name": "榮創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3443",
-    "name": "創意",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3447",
-    "name": "展達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3450",
-    "name": "聯鈞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3454",
-    "name": "晶睿",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3481",
-    "name": "群創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3494",
-    "name": "誠研",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3501",
-    "name": "維熹",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3504",
-    "name": "揚明光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3515",
-    "name": "華擎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3518",
-    "name": "柏騰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3528",
-    "name": "安馳",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3530",
-    "name": "晶相光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3532",
-    "name": "台勝科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3533",
-    "name": "嘉澤",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3535",
-    "name": "晶彩科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3543",
-    "name": "州巧",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3545",
-    "name": "敦泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3550",
-    "name": "聯穎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3557",
-    "name": "嘉威",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3563",
-    "name": "牧德",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3576",
-    "name": "聯合再生",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3583",
-    "name": "辛耘",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3588",
-    "name": "通嘉",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3591",
-    "name": "艾笛森",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3592",
-    "name": "瑞鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3593",
-    "name": "力銘",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3596",
-    "name": "智易",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3605",
-    "name": "宏致",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3607",
-    "name": "谷崧",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3617",
-    "name": "碩天",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3622",
-    "name": "洋華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3645",
-    "name": "達邁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3652",
-    "name": "精聯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3653",
-    "name": "健策",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3661",
-    "name": "世芯-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3665",
-    "name": "貿聯-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3669",
-    "name": "圓展",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3673",
-    "name": "TPK-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3679",
-    "name": "新至陞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3686",
-    "name": "達能",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3694",
-    "name": "海華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3701",
-    "name": "大眾控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3702",
-    "name": "大聯大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3703",
-    "name": "欣陸",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3704",
-    "name": "合勤控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3705",
-    "name": "永信",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3706",
-    "name": "神達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3708",
-    "name": "上緯投控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3711",
-    "name": "日月光投控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3712",
-    "name": "永崴投控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3714",
-    "name": "富采",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3715",
-    "name": "定穎投控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3716",
-    "name": "中化控股",
-    "market": "TSE"
-  },
-  {
-    "symbol": "3717",
-    "name": "聯嘉投控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4104",
-    "name": "佳醫",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4106",
-    "name": "雃博",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4108",
-    "name": "懷特",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4119",
-    "name": "旭富",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4133",
-    "name": "亞諾法",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4137",
-    "name": "麗豐-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4142",
-    "name": "國光生",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4148",
-    "name": "全宇生技-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4155",
-    "name": "訊映",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4164",
-    "name": "承業醫",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4190",
-    "name": "佐登-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4306",
-    "name": "炎洲",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4414",
-    "name": "如興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4426",
-    "name": "利勤",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4438",
-    "name": "廣越",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4439",
-    "name": "冠星-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4440",
-    "name": "宜新實業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4441",
-    "name": "振大環球",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4526",
-    "name": "東台",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4532",
-    "name": "瑞智",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4536",
-    "name": "拓凱",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4540",
-    "name": "全球傳動",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4545",
-    "name": "銘鈺",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4551",
-    "name": "智伸科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4552",
-    "name": "力達-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4555",
-    "name": "氣立",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4557",
-    "name": "永新-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4560",
-    "name": "強信-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4562",
-    "name": "穎漢",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4564",
-    "name": "元翎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4566",
-    "name": "時碩工業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4569",
-    "name": "六方科-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4571",
-    "name": "鈞興-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4572",
-    "name": "駐龍",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4576",
-    "name": "大銀微系統",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4581",
-    "name": "光隆精密-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4583",
-    "name": "台灣精銳",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4585",
-    "name": "達明",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4588",
-    "name": "玖鼎電力",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4720",
-    "name": "德淵",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4722",
-    "name": "國精化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4736",
-    "name": "泰博",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4737",
-    "name": "華廣",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4739",
-    "name": "康普",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4746",
-    "name": "台耀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4755",
-    "name": "三福化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4763",
-    "name": "材料*-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4764",
-    "name": "雙鍵",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4766",
-    "name": "南寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4770",
-    "name": "上品",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4771",
-    "name": "望隼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4807",
-    "name": "日成-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4904",
-    "name": "遠傳",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4906",
-    "name": "正文",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4912",
-    "name": "聯德控股-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4915",
-    "name": "致伸",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4916",
-    "name": "事欣科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4919",
-    "name": "新唐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4927",
-    "name": "泰鼎-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4930",
-    "name": "燦星網",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4934",
-    "name": "太極",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4935",
-    "name": "茂林-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4938",
-    "name": "和碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4942",
-    "name": "嘉彰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4943",
-    "name": "康控-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4949",
-    "name": "有成精密",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4952",
-    "name": "凌通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4956",
-    "name": "光鋐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4958",
-    "name": "臻鼎-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4960",
-    "name": "誠美材",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4961",
-    "name": "天鈺",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4967",
-    "name": "十銓",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4968",
-    "name": "立積",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4976",
-    "name": "佳凌",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4977",
-    "name": "眾達-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4989",
-    "name": "榮科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4994",
-    "name": "傳奇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "4999",
-    "name": "鑫禾",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5007",
-    "name": "三星",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5203",
-    "name": "訊連",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5215",
-    "name": "科嘉-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5222",
-    "name": "全訊",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5225",
-    "name": "東科-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5234",
-    "name": "達興材料",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5243",
-    "name": "乙盛-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5244",
-    "name": "弘凱",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5258",
-    "name": "虹堡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5269",
-    "name": "祥碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5283",
-    "name": "禾聯碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5284",
-    "name": "jpp-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5285",
-    "name": "界霖",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5288",
-    "name": "豐祥-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5292",
-    "name": "華懋",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5306",
-    "name": "桂盟",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5388",
-    "name": "中磊",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5434",
-    "name": "崇越",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5469",
-    "name": "瀚宇博",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5471",
-    "name": "松翰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5484",
-    "name": "慧友",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5515",
-    "name": "建國",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5519",
-    "name": "隆大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5521",
-    "name": "工信",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5522",
-    "name": "遠雄",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5525",
-    "name": "順天",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5531",
-    "name": "鄉林",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5533",
-    "name": "皇鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5534",
-    "name": "長虹",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5538",
-    "name": "東明-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5546",
-    "name": "永固-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5607",
-    "name": "遠雄港",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5608",
-    "name": "四維航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5706",
-    "name": "鳳凰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5871",
-    "name": "中租-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5876",
-    "name": "上海商銀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5880",
-    "name": "合庫金",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5906",
-    "name": "台南-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "5907",
-    "name": "大洋-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6005",
-    "name": "群益證",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6024",
-    "name": "群益期",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6108",
-    "name": "競國",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6112",
-    "name": "邁達特",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6115",
-    "name": "鎰勝",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6116",
-    "name": "彩晶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6117",
-    "name": "迎廣",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6120",
-    "name": "達運",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6128",
-    "name": "上福",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6133",
-    "name": "金橋",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6136",
-    "name": "富爾特",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6139",
-    "name": "亞翔",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6141",
-    "name": "柏承",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6142",
-    "name": "友勁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6152",
-    "name": "百一",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6153",
-    "name": "嘉聯益",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6155",
-    "name": "鈞寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6164",
-    "name": "華興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6165",
-    "name": "浪凡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6166",
-    "name": "凌華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6168",
-    "name": "宏齊",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6176",
-    "name": "瑞儀",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6177",
-    "name": "達麗",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6183",
-    "name": "關貿",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6184",
-    "name": "大豐電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6189",
-    "name": "豐藝",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6191",
-    "name": "精成科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6192",
-    "name": "巨路",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6196",
-    "name": "帆宣",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6197",
-    "name": "佳必琪",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6201",
-    "name": "亞弘電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6202",
-    "name": "盛群",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6205",
-    "name": "詮欣",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6206",
-    "name": "飛捷",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6209",
-    "name": "今國光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6213",
-    "name": "聯茂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6214",
-    "name": "精誠",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6215",
-    "name": "和椿",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6216",
-    "name": "居易",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6224",
-    "name": "聚鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6225",
-    "name": "天瀚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6226",
-    "name": "光鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6230",
-    "name": "尼得科超眾",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6235",
-    "name": "華孚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6239",
-    "name": "力成",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6243",
-    "name": "迅杰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6257",
-    "name": "矽格",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6269",
-    "name": "台郡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6271",
-    "name": "同欣電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6272",
-    "name": "驊陞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6277",
-    "name": "宏正",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6278",
-    "name": "台表科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6281",
-    "name": "全國電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6282",
-    "name": "康舒",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6283",
-    "name": "淳安",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6285",
-    "name": "啟碁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6405",
-    "name": "悅城",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6409",
-    "name": "旭隼",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6412",
-    "name": "群電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6414",
-    "name": "樺漢",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6415",
-    "name": "矽力*-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6416",
-    "name": "瑞祺電通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6426",
-    "name": "統新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6431",
-    "name": "光麗-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6438",
-    "name": "迅得",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6442",
-    "name": "光聖",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6443",
-    "name": "元晶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6446",
-    "name": "藥華藥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6449",
-    "name": "鈺邦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6451",
-    "name": "訊芯-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6456",
-    "name": "GIS-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6464",
-    "name": "台數科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6472",
-    "name": "保瑞",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6477",
-    "name": "安集",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6491",
-    "name": "晶碩",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6504",
-    "name": "南六",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6505",
-    "name": "台塑化",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6515",
-    "name": "穎崴",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6525",
-    "name": "捷敏-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6526",
-    "name": "達發",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6531",
-    "name": "愛普*",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6533",
-    "name": "晶心科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6534",
-    "name": "正瀚-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6541",
-    "name": "泰福-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6550",
-    "name": "北極星藥業-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6552",
-    "name": "易華電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6558",
-    "name": "興能高",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6573",
-    "name": "虹揚-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6579",
-    "name": "研揚",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6581",
-    "name": "鋼聯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6582",
-    "name": "申豐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6585",
-    "name": "鼎基",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6589",
-    "name": "台康生技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6591",
-    "name": "動力-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6592",
-    "name": "和潤企業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6598",
-    "name": "ABC-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6605",
-    "name": "帝寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6606",
-    "name": "建德工業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6614",
-    "name": "資拓宏宇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6625",
-    "name": "必應",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6641",
-    "name": "基士德-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6645",
-    "name": "金萬林-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6655",
-    "name": "科定",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6657",
-    "name": "華安",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6658",
-    "name": "聯策",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6666",
-    "name": "羅麗芬-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6668",
-    "name": "中揚光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6669",
-    "name": "緯穎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6670",
-    "name": "復盛應用",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6671",
-    "name": "三能-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6672",
-    "name": "騰輝電子-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6674",
-    "name": "鋐寶科技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6689",
-    "name": "伊雲谷",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6691",
-    "name": "洋基工程",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6695",
-    "name": "芯鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6698",
-    "name": "旭暉應材",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6706",
-    "name": "惠特",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6715",
-    "name": "嘉基",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6719",
-    "name": "力智",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6722",
-    "name": "輝創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6742",
-    "name": "澤米",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6743",
-    "name": "安普新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6753",
-    "name": "龍德造船",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6754",
-    "name": "匯僑設計",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6756",
-    "name": "威鋒電子",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6757",
-    "name": "台灣虎航",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6768",
-    "name": "志強-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6770",
-    "name": "力積電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6771",
-    "name": "平和環保-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6776",
-    "name": "展碁國際",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6781",
-    "name": "AES-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6782",
-    "name": "視陽",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6789",
-    "name": "采鈺",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6790",
-    "name": "永豐實",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6792",
-    "name": "詠業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6794",
-    "name": "向榮生技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6796",
-    "name": "晉弘",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6799",
-    "name": "來頡",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6805",
-    "name": "富世達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6806",
-    "name": "森崴能源",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6807",
-    "name": "峰源-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6830",
-    "name": "汎銓",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6831",
-    "name": "邁科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6834",
-    "name": "天二科技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6835",
-    "name": "圓裕",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6838",
-    "name": "台新藥",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6854",
-    "name": "錼創科技-KY創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6861",
-    "name": "睿生光電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6862",
-    "name": "三集瑞-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6863",
-    "name": "永道-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6869",
-    "name": "雲豹能源",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6873",
-    "name": "泓德能源",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6885",
-    "name": "全福生技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6887",
-    "name": "寶綠特-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6890",
-    "name": "來億-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6901",
-    "name": "鑽石投資",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6902",
-    "name": "GOGOLOOK",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6906",
-    "name": "現觀科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6909",
-    "name": "創控",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6914",
-    "name": "阜爾運通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6916",
-    "name": "華凌",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6918",
-    "name": "愛派司",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6919",
-    "name": "康霈*",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6921",
-    "name": "嘉雨思-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6923",
-    "name": "中台",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6924",
-    "name": "榮惠-KY創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6928",
-    "name": "攸泰科技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6931",
-    "name": "青松健康",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6933",
-    "name": "AMAX-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6936",
-    "name": "永鴻生技",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6937",
-    "name": "天虹",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6944",
-    "name": "兆聯實業",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6949",
-    "name": "沛爾生醫-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6951",
-    "name": "青新-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6952",
-    "name": "大武山",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6955",
-    "name": "邦睿生技-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6957",
-    "name": "裕慶-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6958",
-    "name": "日盛台駿",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6962",
-    "name": "奕力-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6965",
-    "name": "中傑-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6969",
-    "name": "成信實業*-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6988",
-    "name": "威力暘-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "6994",
-    "name": "富威電力",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7610",
-    "name": "聯友金屬-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7631",
-    "name": "聚賢研發-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7705",
-    "name": "三商餐飲",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7711",
-    "name": "永擎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7721",
-    "name": "微程式",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7722",
-    "name": "LINEPAY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7730",
-    "name": "暉盛-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7732",
-    "name": "金興精密",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7736",
-    "name": "虎山",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7740",
-    "name": "熙特爾-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7749",
-    "name": "意騰-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7750",
-    "name": "新代",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7765",
-    "name": "中華資安",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7769",
-    "name": "鴻勁",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7780",
-    "name": "大研生醫*",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7786",
-    "name": "東方風能",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7788",
-    "name": "松川精密",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7791",
-    "name": "皇家可口",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7795",
-    "name": "長廣",
-    "market": "TSE"
-  },
-  {
-    "symbol": "7799",
-    "name": "禾榮科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8011",
-    "name": "台通",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8016",
-    "name": "矽創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8021",
-    "name": "尖點",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8028",
-    "name": "昇陽半導體",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8033",
-    "name": "雷虎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8039",
-    "name": "台虹",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8045",
-    "name": "達運光電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8046",
-    "name": "南電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8070",
-    "name": "長華*",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8072",
-    "name": "陞泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8081",
-    "name": "致新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8101",
-    "name": "華冠",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8103",
-    "name": "瀚荃",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8104",
-    "name": "錸寶",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8105",
-    "name": "凌巨",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8110",
-    "name": "華東",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8112",
-    "name": "至上",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8114",
-    "name": "振樺電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8131",
-    "name": "福懋科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8150",
-    "name": "南茂",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8162",
-    "name": "微矽電子-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8163",
-    "name": "達方",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8201",
-    "name": "無敵",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8210",
-    "name": "勤誠",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8213",
-    "name": "志超",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8215",
-    "name": "明基材",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8222",
-    "name": "寶一",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8249",
-    "name": "菱光",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8261",
-    "name": "富鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8271",
-    "name": "宇瞻",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8341",
-    "name": "日友",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8367",
-    "name": "建新國際",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8374",
-    "name": "羅昇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8404",
-    "name": "百和興業-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8411",
-    "name": "福貞-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8422",
-    "name": "可寧衛*",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8429",
-    "name": "金麗-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8438",
-    "name": "昶昕",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8442",
-    "name": "威宏-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8443",
-    "name": "阿瘦",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8454",
-    "name": "富邦媒",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8462",
-    "name": "柏文",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8463",
-    "name": "潤泰材",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8464",
-    "name": "億豐",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8466",
-    "name": "美吉吉-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8467",
-    "name": "波力-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8473",
-    "name": "山林水",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8476",
-    "name": "台境*",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8478",
-    "name": "東哥遊艇",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8481",
-    "name": "政伸",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8482",
-    "name": "商億-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8487",
-    "name": "愛爾達-創",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8488",
-    "name": "吉源-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8499",
-    "name": "鼎炫-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8926",
-    "name": "台汽電",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8940",
-    "name": "新天地",
-    "market": "TSE"
-  },
-  {
-    "symbol": "8996",
-    "name": "高力",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9103",
-    "name": "美德醫療-DR",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9105",
-    "name": "泰金寶-DR",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9110",
-    "name": "越南控-DR",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9136",
-    "name": "巨騰-DR",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9802",
-    "name": "鈺齊-KY",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9902",
-    "name": "台火",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9904",
-    "name": "寶成",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9905",
-    "name": "大華",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9906",
-    "name": "欣巴巴",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9907",
-    "name": "統一實",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9908",
-    "name": "大台北",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9910",
-    "name": "豐泰",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9911",
-    "name": "櫻花",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9912",
-    "name": "偉聯",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9914",
-    "name": "美利達",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9917",
-    "name": "中保科",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9918",
-    "name": "欣天然",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9919",
-    "name": "康那香",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9921",
-    "name": "巨大",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9924",
-    "name": "福興",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9925",
-    "name": "新保",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9926",
-    "name": "新海",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9927",
-    "name": "泰銘",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9928",
-    "name": "中視",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9929",
-    "name": "秋雨",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9930",
-    "name": "中聯資源",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9931",
-    "name": "欣高",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9933",
-    "name": "中鼎",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9934",
-    "name": "成霖",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9935",
-    "name": "慶豐富",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9937",
-    "name": "全國",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9938",
-    "name": "百和",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9939",
-    "name": "宏全",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9940",
-    "name": "信義",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9941",
-    "name": "裕融",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9942",
-    "name": "茂順",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9943",
-    "name": "好樂迪",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9944",
-    "name": "新麗",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9945",
-    "name": "潤泰新",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9946",
-    "name": "三發地產",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9955",
-    "name": "佳龍",
-    "market": "TSE"
-  },
-  {
-    "symbol": "9958",
-    "name": "世紀鋼",
-    "market": "TSE"
-  }
+    {
+        "symbol": "0050",
+        "name": "元大台灣50",
+        "market": "TSE"
+    },
+    {
+        "symbol": "0051",
+        "name": "元大中型100",
+        "market": "TSE"
+    },
+    {
+        "symbol": "0052",
+        "name": "富邦科技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "0053",
+        "name": "元大電子",
+        "market": "TSE"
+    },
+    {
+        "symbol": "0055",
+        "name": "元大MSCI金融",
+        "market": "TSE"
+    },
+    {
+        "symbol": "0056",
+        "name": "元大高股息",
+        "market": "TSE"
+    },
+    {
+        "symbol": "0057",
+        "name": "富邦摩台",
+        "market": "TSE"
+    },
+    {
+        "symbol": "0061",
+        "name": "元大寶滬深",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1101",
+        "name": "台泥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1102",
+        "name": "亞泥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1103",
+        "name": "嘉泥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1104",
+        "name": "環泥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1108",
+        "name": "幸福",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1109",
+        "name": "信大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1110",
+        "name": "東泥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1201",
+        "name": "味全",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1203",
+        "name": "味王",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1210",
+        "name": "大成",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1213",
+        "name": "大飲",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1215",
+        "name": "卜蜂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1216",
+        "name": "統一",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1217",
+        "name": "愛之味",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1218",
+        "name": "泰山",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1219",
+        "name": "福壽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1220",
+        "name": "台榮",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1225",
+        "name": "福懋油",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1227",
+        "name": "佳格",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1229",
+        "name": "聯華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1231",
+        "name": "聯華食",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1232",
+        "name": "大統益",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1233",
+        "name": "天仁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1234",
+        "name": "黑松",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1235",
+        "name": "興泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1236",
+        "name": "宏亞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1256",
+        "name": "鮮活果汁-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1301",
+        "name": "台塑",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1303",
+        "name": "南亞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1304",
+        "name": "台聚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1305",
+        "name": "華夏",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1307",
+        "name": "三芳",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1308",
+        "name": "亞聚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1309",
+        "name": "台達化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1310",
+        "name": "台苯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1312",
+        "name": "國喬",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1313",
+        "name": "聯成",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1314",
+        "name": "中石化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1315",
+        "name": "達新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1316",
+        "name": "上曜",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1319",
+        "name": "東陽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1321",
+        "name": "大洋",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1323",
+        "name": "永裕",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1324",
+        "name": "地球",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1325",
+        "name": "恆大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1326",
+        "name": "台化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1337",
+        "name": "再生-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1338",
+        "name": "廣華-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1339",
+        "name": "昭輝",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1340",
+        "name": "勝悅-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1341",
+        "name": "富林-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1342",
+        "name": "八貫",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1402",
+        "name": "遠東新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1409",
+        "name": "新纖",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1410",
+        "name": "南染",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1413",
+        "name": "宏洲",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1414",
+        "name": "東和",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1416",
+        "name": "廣豐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1417",
+        "name": "嘉裕",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1418",
+        "name": "東華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1419",
+        "name": "新紡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1423",
+        "name": "利華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1432",
+        "name": "大魯閣",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1434",
+        "name": "福懋",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1435",
+        "name": "中福",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1436",
+        "name": "華友聯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1437",
+        "name": "勤益控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1438",
+        "name": "三地開發",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1439",
+        "name": "雋揚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1440",
+        "name": "南紡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1441",
+        "name": "大東",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1442",
+        "name": "名軒",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1443",
+        "name": "立益物流",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1444",
+        "name": "力麗",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1445",
+        "name": "大宇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1446",
+        "name": "宏和",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1447",
+        "name": "力鵬",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1449",
+        "name": "佳和",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1451",
+        "name": "年興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1452",
+        "name": "宏益",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1453",
+        "name": "大將",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1454",
+        "name": "台富",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1455",
+        "name": "集盛",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1456",
+        "name": "怡華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1457",
+        "name": "宜進",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1459",
+        "name": "聯發",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1460",
+        "name": "宏遠",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1463",
+        "name": "強盛新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1464",
+        "name": "得力",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1465",
+        "name": "偉全",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1466",
+        "name": "聚隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1467",
+        "name": "南緯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1468",
+        "name": "昶和",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1470",
+        "name": "大統新創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1471",
+        "name": "首利",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1472",
+        "name": "三洋實業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1473",
+        "name": "台南",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1474",
+        "name": "弘裕",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1475",
+        "name": "業旺",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1476",
+        "name": "儒鴻",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1477",
+        "name": "聚陽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1503",
+        "name": "士電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1504",
+        "name": "東元",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1506",
+        "name": "正道",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1512",
+        "name": "瑞利",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1513",
+        "name": "中興電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1514",
+        "name": "亞力",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1515",
+        "name": "力山",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1516",
+        "name": "川飛",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1517",
+        "name": "利奇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1519",
+        "name": "華城",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1521",
+        "name": "大億",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1522",
+        "name": "堤維西",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1524",
+        "name": "耿鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1525",
+        "name": "江申",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1526",
+        "name": "日馳",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1527",
+        "name": "鑽全",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1528",
+        "name": "恩德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1529",
+        "name": "樂事綠能",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1530",
+        "name": "亞崴",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1531",
+        "name": "高林股",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1532",
+        "name": "勤美",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1533",
+        "name": "車王電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1535",
+        "name": "中宇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1536",
+        "name": "和大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1537",
+        "name": "廣隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1538",
+        "name": "正峰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1539",
+        "name": "巨庭",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1540",
+        "name": "喬福",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1541",
+        "name": "錩泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1558",
+        "name": "伸興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1560",
+        "name": "中砂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1563",
+        "name": "巧新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1568",
+        "name": "倉佑",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1582",
+        "name": "信錦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1583",
+        "name": "程泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1587",
+        "name": "吉茂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1589",
+        "name": "永冠-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1590",
+        "name": "亞德客-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1597",
+        "name": "直得",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1598",
+        "name": "岱宇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1603",
+        "name": "華電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1604",
+        "name": "聲寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1605",
+        "name": "華新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1608",
+        "name": "華榮",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1609",
+        "name": "大亞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1611",
+        "name": "中電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1612",
+        "name": "宏泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1614",
+        "name": "三洋電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1615",
+        "name": "大山",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1616",
+        "name": "億泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1617",
+        "name": "榮星",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1618",
+        "name": "合機",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1623",
+        "name": "大東電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1626",
+        "name": "艾美特-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1702",
+        "name": "南僑",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1707",
+        "name": "葡萄王",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1708",
+        "name": "東鹼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1709",
+        "name": "和益",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1710",
+        "name": "東聯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1711",
+        "name": "永光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1712",
+        "name": "興農",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1713",
+        "name": "國化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1714",
+        "name": "和桐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1717",
+        "name": "長興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1718",
+        "name": "中纖",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1720",
+        "name": "生達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1721",
+        "name": "三晃",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1722",
+        "name": "台肥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1723",
+        "name": "中碳",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1725",
+        "name": "元禎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1726",
+        "name": "永記",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1727",
+        "name": "中華化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1730",
+        "name": "花仙子",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1731",
+        "name": "美吾華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1732",
+        "name": "毛寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1733",
+        "name": "五鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1734",
+        "name": "杏輝",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1735",
+        "name": "日勝化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1736",
+        "name": "喬山",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1737",
+        "name": "臺鹽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1752",
+        "name": "南光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1760",
+        "name": "寶齡富錦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1762",
+        "name": "中化生",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1773",
+        "name": "勝一",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1776",
+        "name": "展宇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1783",
+        "name": "和康生",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1786",
+        "name": "科妍",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1789",
+        "name": "神隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1795",
+        "name": "美時",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1802",
+        "name": "台玻",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1805",
+        "name": "寶徠",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1806",
+        "name": "冠軍",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1808",
+        "name": "潤隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1809",
+        "name": "中釉",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1810",
+        "name": "和成",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1817",
+        "name": "凱撒衛",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1903",
+        "name": "士紙",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1904",
+        "name": "正隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1905",
+        "name": "華紙",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1906",
+        "name": "寶隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1907",
+        "name": "永豐餘",
+        "market": "TSE"
+    },
+    {
+        "symbol": "1909",
+        "name": "榮成",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2002",
+        "name": "中鋼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2006",
+        "name": "東和鋼鐵",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2007",
+        "name": "燁興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2008",
+        "name": "高興昌",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2009",
+        "name": "第一銅",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2010",
+        "name": "春源",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2012",
+        "name": "春雨",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2013",
+        "name": "中鋼構",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2014",
+        "name": "中鴻",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2015",
+        "name": "豐興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2017",
+        "name": "官田鋼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2020",
+        "name": "美亞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2022",
+        "name": "聚亨",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2023",
+        "name": "燁輝",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2024",
+        "name": "志聯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2025",
+        "name": "千興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2027",
+        "name": "大成鋼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2028",
+        "name": "威致",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2029",
+        "name": "盛餘",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2030",
+        "name": "彰源",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2031",
+        "name": "新光鋼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2032",
+        "name": "新鋼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2033",
+        "name": "佳大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2034",
+        "name": "允強",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2038",
+        "name": "海光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2049",
+        "name": "上銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2059",
+        "name": "川湖",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2062",
+        "name": "橋椿",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2069",
+        "name": "運錩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2101",
+        "name": "南港",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2102",
+        "name": "泰豐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2103",
+        "name": "台橡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2104",
+        "name": "國際中橡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2105",
+        "name": "正新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2106",
+        "name": "建大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2107",
+        "name": "厚生",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2108",
+        "name": "南帝",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2109",
+        "name": "華豐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2114",
+        "name": "鑫永銓",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2115",
+        "name": "六暉-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2201",
+        "name": "裕隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2204",
+        "name": "中華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2206",
+        "name": "三陽工業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2207",
+        "name": "和泰車",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2208",
+        "name": "台船",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2211",
+        "name": "長榮鋼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2227",
+        "name": "裕日車",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2228",
+        "name": "劍麟",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2231",
+        "name": "為升",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2233",
+        "name": "宇隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2236",
+        "name": "百達-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2239",
+        "name": "英利-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2241",
+        "name": "艾姆勒",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2243",
+        "name": "宏旭-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2247",
+        "name": "汎德永業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2248",
+        "name": "華勝-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2250",
+        "name": "IKKA-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2254",
+        "name": "巨鎧精密-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2258",
+        "name": "鴻華先進-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2301",
+        "name": "光寶科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2302",
+        "name": "麗正",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2303",
+        "name": "聯電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2305",
+        "name": "全友",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2308",
+        "name": "台達電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2312",
+        "name": "金寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2313",
+        "name": "華通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2314",
+        "name": "台揚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2316",
+        "name": "楠梓電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2317",
+        "name": "鴻海",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2321",
+        "name": "東訊",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2323",
+        "name": "中環",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2324",
+        "name": "仁寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2327",
+        "name": "國巨*",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2328",
+        "name": "廣宇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2329",
+        "name": "華泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2330",
+        "name": "台積電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2331",
+        "name": "精英",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2332",
+        "name": "友訊",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2337",
+        "name": "旺宏",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2338",
+        "name": "光罩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2340",
+        "name": "台亞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2342",
+        "name": "茂矽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2344",
+        "name": "華邦電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2345",
+        "name": "智邦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2347",
+        "name": "聯強",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2348",
+        "name": "海悅",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2349",
+        "name": "錸德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2351",
+        "name": "順德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2352",
+        "name": "佳世達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2353",
+        "name": "宏碁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2354",
+        "name": "鴻準",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2355",
+        "name": "敬鵬",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2356",
+        "name": "英業達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2357",
+        "name": "華碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2359",
+        "name": "所羅門",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2360",
+        "name": "致茂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2362",
+        "name": "藍天",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2363",
+        "name": "矽統",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2364",
+        "name": "倫飛",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2365",
+        "name": "昆盈",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2367",
+        "name": "燿華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2368",
+        "name": "金像電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2369",
+        "name": "菱生",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2371",
+        "name": "大同",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2373",
+        "name": "震旦行",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2374",
+        "name": "佳能",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2375",
+        "name": "凱美",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2376",
+        "name": "技嘉",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2377",
+        "name": "微星",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2379",
+        "name": "瑞昱",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2380",
+        "name": "虹光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2382",
+        "name": "廣達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2383",
+        "name": "台光電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2385",
+        "name": "群光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2387",
+        "name": "精元",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2388",
+        "name": "威盛",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2390",
+        "name": "云辰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2392",
+        "name": "正崴",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2393",
+        "name": "億光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2395",
+        "name": "研華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2397",
+        "name": "友通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2399",
+        "name": "映泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2401",
+        "name": "凌陽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2402",
+        "name": "毅嘉",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2404",
+        "name": "漢唐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2405",
+        "name": "輔信",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2406",
+        "name": "國碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2408",
+        "name": "南亞科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2409",
+        "name": "友達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2412",
+        "name": "中華電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2413",
+        "name": "環科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2414",
+        "name": "精技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2415",
+        "name": "錩新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2417",
+        "name": "圓剛",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2419",
+        "name": "仲琦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2420",
+        "name": "新巨",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2421",
+        "name": "建準",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2423",
+        "name": "固緯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2424",
+        "name": "隴華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2425",
+        "name": "承啟",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2426",
+        "name": "鼎元",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2427",
+        "name": "三商電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2428",
+        "name": "興勤",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2429",
+        "name": "銘旺科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2430",
+        "name": "燦坤",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2431",
+        "name": "聯昌",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2432",
+        "name": "倚天酷碁-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2433",
+        "name": "互盛電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2434",
+        "name": "統懋",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2436",
+        "name": "偉詮電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2438",
+        "name": "翔耀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2439",
+        "name": "美律",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2440",
+        "name": "太空梭",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2441",
+        "name": "超豐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2442",
+        "name": "新美齊",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2444",
+        "name": "兆勁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2449",
+        "name": "京元電子",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2450",
+        "name": "神腦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2451",
+        "name": "創見",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2453",
+        "name": "凌群",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2454",
+        "name": "聯發科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2455",
+        "name": "全新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2457",
+        "name": "飛宏",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2458",
+        "name": "義隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2459",
+        "name": "敦吉",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2460",
+        "name": "建通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2461",
+        "name": "光群雷",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2462",
+        "name": "良得電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2464",
+        "name": "盟立",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2465",
+        "name": "麗臺",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2466",
+        "name": "冠西電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2467",
+        "name": "志聖",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2468",
+        "name": "華經",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2471",
+        "name": "資通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2472",
+        "name": "立隆電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2474",
+        "name": "可成",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2476",
+        "name": "鉅祥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2477",
+        "name": "美隆電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2478",
+        "name": "大毅",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2480",
+        "name": "敦陽科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2481",
+        "name": "強茂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2482",
+        "name": "連宇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2483",
+        "name": "百容",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2484",
+        "name": "希華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2485",
+        "name": "兆赫",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2486",
+        "name": "一詮",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2488",
+        "name": "漢平",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2489",
+        "name": "瑞軒",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2491",
+        "name": "吉祥全",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2492",
+        "name": "華新科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2493",
+        "name": "揚博",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2495",
+        "name": "普安",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2496",
+        "name": "卓越",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2497",
+        "name": "怡利電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2498",
+        "name": "宏達電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2501",
+        "name": "國建",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2504",
+        "name": "國產",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2505",
+        "name": "國揚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2506",
+        "name": "太設",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2509",
+        "name": "全坤建",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2511",
+        "name": "太子",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2514",
+        "name": "龍邦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2515",
+        "name": "中工",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2516",
+        "name": "新建",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2520",
+        "name": "冠德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2524",
+        "name": "京城",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2527",
+        "name": "宏璟",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2528",
+        "name": "皇普",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2530",
+        "name": "華建",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2534",
+        "name": "宏盛",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2535",
+        "name": "達欣工",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2536",
+        "name": "宏普",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2537",
+        "name": "聯上發",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2538",
+        "name": "基泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2539",
+        "name": "櫻花建",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2540",
+        "name": "愛山林",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2542",
+        "name": "興富發",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2543",
+        "name": "皇昌",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2545",
+        "name": "皇翔",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2546",
+        "name": "根基",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2547",
+        "name": "日勝生",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2548",
+        "name": "華固",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2597",
+        "name": "潤弘",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2601",
+        "name": "益航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2603",
+        "name": "長榮",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2605",
+        "name": "新興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2606",
+        "name": "裕民",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2607",
+        "name": "榮運",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2608",
+        "name": "嘉里大榮",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2609",
+        "name": "陽明",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2610",
+        "name": "華航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2611",
+        "name": "志信",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2612",
+        "name": "中航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2613",
+        "name": "中櫃",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2614",
+        "name": "東森",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2615",
+        "name": "萬海",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2616",
+        "name": "山隆",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2617",
+        "name": "台航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2618",
+        "name": "長榮航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2630",
+        "name": "亞航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2633",
+        "name": "台灣高鐵",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2634",
+        "name": "漢翔",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2636",
+        "name": "台驊控股",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2637",
+        "name": "慧洋-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2642",
+        "name": "宅配通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2645",
+        "name": "長榮航太",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2646",
+        "name": "星宇航空",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2701",
+        "name": "萬企",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2702",
+        "name": "華園",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2704",
+        "name": "國賓",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2705",
+        "name": "六福",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2706",
+        "name": "第一店",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2707",
+        "name": "晶華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2712",
+        "name": "遠雄來",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2722",
+        "name": "夏都",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2723",
+        "name": "美食-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2727",
+        "name": "王品",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2731",
+        "name": "雄獅",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2739",
+        "name": "寒舍",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2748",
+        "name": "雲品",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2753",
+        "name": "八方雲集",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2762",
+        "name": "世界健身-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2801",
+        "name": "彰銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2812",
+        "name": "台中銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2816",
+        "name": "旺旺保",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2820",
+        "name": "華票",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2832",
+        "name": "台產",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2834",
+        "name": "臺企銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2836",
+        "name": "高雄銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2838",
+        "name": "聯邦銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2845",
+        "name": "遠東銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2849",
+        "name": "安泰銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2850",
+        "name": "新產",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2851",
+        "name": "中再保",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2852",
+        "name": "第一保",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2855",
+        "name": "統一證",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2867",
+        "name": "三商壽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2880",
+        "name": "華南金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2881",
+        "name": "富邦金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2882",
+        "name": "國泰金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2883",
+        "name": "凱基金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2884",
+        "name": "玉山金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2885",
+        "name": "元大金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2886",
+        "name": "兆豐金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2887",
+        "name": "台新新光金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2889",
+        "name": "國票金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2890",
+        "name": "永豐金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2891",
+        "name": "中信金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2892",
+        "name": "第一金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2897",
+        "name": "王道銀行",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2901",
+        "name": "欣欣",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2903",
+        "name": "遠百",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2904",
+        "name": "匯僑",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2905",
+        "name": "三商",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2906",
+        "name": "高林",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2908",
+        "name": "特力",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2910",
+        "name": "統領",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2911",
+        "name": "麗嬰房",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2912",
+        "name": "統一超",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2913",
+        "name": "農林",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2915",
+        "name": "潤泰全",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2923",
+        "name": "鼎固-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2929",
+        "name": "淘帝-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2939",
+        "name": "永邑-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "2945",
+        "name": "三商家購",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3002",
+        "name": "歐格",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3003",
+        "name": "健和興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3004",
+        "name": "豐達科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3005",
+        "name": "神基",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3006",
+        "name": "晶豪科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3008",
+        "name": "大立光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3010",
+        "name": "華立",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3011",
+        "name": "今皓",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3013",
+        "name": "晟銘電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3014",
+        "name": "聯陽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3015",
+        "name": "全漢",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3016",
+        "name": "嘉晶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3017",
+        "name": "奇鋐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3018",
+        "name": "隆銘綠能",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3019",
+        "name": "亞光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3021",
+        "name": "鴻名",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3022",
+        "name": "威強電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3023",
+        "name": "信邦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3024",
+        "name": "憶聲",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3025",
+        "name": "星通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3026",
+        "name": "禾伸堂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3027",
+        "name": "盛達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3028",
+        "name": "增你強",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3029",
+        "name": "零壹",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3030",
+        "name": "德律",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3031",
+        "name": "佰鴻",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3032",
+        "name": "偉訓",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3033",
+        "name": "威健",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3034",
+        "name": "聯詠",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3035",
+        "name": "智原",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3036",
+        "name": "文曄",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3037",
+        "name": "欣興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3038",
+        "name": "全台",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3040",
+        "name": "遠見",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3041",
+        "name": "揚智",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3042",
+        "name": "晶技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3043",
+        "name": "科風",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3044",
+        "name": "健鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3045",
+        "name": "台灣大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3046",
+        "name": "建碁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3047",
+        "name": "訊舟",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3048",
+        "name": "益登",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3049",
+        "name": "精金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3050",
+        "name": "鈺德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3051",
+        "name": "力特",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3052",
+        "name": "夆典",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3054",
+        "name": "立萬利",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3055",
+        "name": "蔚華科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3056",
+        "name": "富華新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3057",
+        "name": "喬鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3058",
+        "name": "立德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3059",
+        "name": "華晶科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3060",
+        "name": "銘異",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3062",
+        "name": "建漢",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3090",
+        "name": "日電貿",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3092",
+        "name": "鴻碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3094",
+        "name": "聯傑",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3130",
+        "name": "一零四",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3135",
+        "name": "凌航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3138",
+        "name": "耀登",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3149",
+        "name": "正達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3150",
+        "name": "鈺寶-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3164",
+        "name": "景岳",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3167",
+        "name": "大量",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3168",
+        "name": "眾福科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3189",
+        "name": "景碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3209",
+        "name": "全科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3229",
+        "name": "晟鈦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3231",
+        "name": "緯創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3257",
+        "name": "虹冠電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3266",
+        "name": "昇陽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3296",
+        "name": "勝德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3305",
+        "name": "昇貿",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3308",
+        "name": "聯德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3311",
+        "name": "閎暉",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3312",
+        "name": "弘憶股",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3321",
+        "name": "同泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3338",
+        "name": "泰碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3346",
+        "name": "麗清",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3356",
+        "name": "奇偶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3376",
+        "name": "新日興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3380",
+        "name": "明泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3406",
+        "name": "玉晶光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3413",
+        "name": "京鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3416",
+        "name": "融程電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3419",
+        "name": "譁裕",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3432",
+        "name": "台端",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3437",
+        "name": "榮創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3443",
+        "name": "創意",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3447",
+        "name": "展達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3450",
+        "name": "聯鈞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3454",
+        "name": "晶睿",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3481",
+        "name": "群創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3494",
+        "name": "誠研",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3501",
+        "name": "維熹",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3504",
+        "name": "揚明光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3515",
+        "name": "華擎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3518",
+        "name": "柏騰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3528",
+        "name": "安馳",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3530",
+        "name": "晶相光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3532",
+        "name": "台勝科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3533",
+        "name": "嘉澤",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3535",
+        "name": "晶彩科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3543",
+        "name": "州巧",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3545",
+        "name": "敦泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3550",
+        "name": "聯穎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3557",
+        "name": "嘉威",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3563",
+        "name": "牧德",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3576",
+        "name": "聯合再生",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3583",
+        "name": "辛耘",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3588",
+        "name": "通嘉",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3591",
+        "name": "艾笛森",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3592",
+        "name": "瑞鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3593",
+        "name": "力銘",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3596",
+        "name": "智易",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3605",
+        "name": "宏致",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3607",
+        "name": "谷崧",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3617",
+        "name": "碩天",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3622",
+        "name": "洋華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3645",
+        "name": "達邁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3652",
+        "name": "精聯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3653",
+        "name": "健策",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3661",
+        "name": "世芯-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3665",
+        "name": "貿聯-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3669",
+        "name": "圓展",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3673",
+        "name": "TPK-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3679",
+        "name": "新至陞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3686",
+        "name": "達能",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3694",
+        "name": "海華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3701",
+        "name": "大眾控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3702",
+        "name": "大聯大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3703",
+        "name": "欣陸",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3704",
+        "name": "合勤控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3705",
+        "name": "永信",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3706",
+        "name": "神達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3708",
+        "name": "上緯投控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3711",
+        "name": "日月光投控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3712",
+        "name": "永崴投控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3714",
+        "name": "富采",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3715",
+        "name": "定穎投控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3716",
+        "name": "中化控股",
+        "market": "TSE"
+    },
+    {
+        "symbol": "3717",
+        "name": "聯嘉投控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4104",
+        "name": "佳醫",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4106",
+        "name": "雃博",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4108",
+        "name": "懷特",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4119",
+        "name": "旭富",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4133",
+        "name": "亞諾法",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4137",
+        "name": "麗豐-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4142",
+        "name": "國光生",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4148",
+        "name": "全宇生技-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4155",
+        "name": "訊映",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4164",
+        "name": "承業醫",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4190",
+        "name": "佐登-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4306",
+        "name": "炎洲",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4414",
+        "name": "如興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4426",
+        "name": "利勤",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4438",
+        "name": "廣越",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4439",
+        "name": "冠星-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4440",
+        "name": "宜新實業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4441",
+        "name": "振大環球",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4526",
+        "name": "東台",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4532",
+        "name": "瑞智",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4536",
+        "name": "拓凱",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4540",
+        "name": "全球傳動",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4545",
+        "name": "銘鈺",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4551",
+        "name": "智伸科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4552",
+        "name": "力達-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4555",
+        "name": "氣立",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4557",
+        "name": "永新-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4560",
+        "name": "強信-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4562",
+        "name": "穎漢",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4564",
+        "name": "元翎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4566",
+        "name": "時碩工業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4569",
+        "name": "六方科-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4571",
+        "name": "鈞興-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4572",
+        "name": "駐龍",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4576",
+        "name": "大銀微系統",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4581",
+        "name": "光隆精密-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4583",
+        "name": "台灣精銳",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4585",
+        "name": "達明",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4588",
+        "name": "玖鼎電力",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4720",
+        "name": "德淵",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4722",
+        "name": "國精化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4736",
+        "name": "泰博",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4737",
+        "name": "華廣",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4739",
+        "name": "康普",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4746",
+        "name": "台耀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4755",
+        "name": "三福化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4763",
+        "name": "材料*-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4764",
+        "name": "雙鍵",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4766",
+        "name": "南寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4770",
+        "name": "上品",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4771",
+        "name": "望隼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4807",
+        "name": "日成-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4904",
+        "name": "遠傳",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4906",
+        "name": "正文",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4912",
+        "name": "聯德控股-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4915",
+        "name": "致伸",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4916",
+        "name": "事欣科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4919",
+        "name": "新唐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4927",
+        "name": "泰鼎-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4930",
+        "name": "燦星網",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4934",
+        "name": "太極",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4935",
+        "name": "茂林-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4938",
+        "name": "和碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4942",
+        "name": "嘉彰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4943",
+        "name": "康控-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4949",
+        "name": "有成精密",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4952",
+        "name": "凌通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4956",
+        "name": "光鋐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4958",
+        "name": "臻鼎-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4960",
+        "name": "誠美材",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4961",
+        "name": "天鈺",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4967",
+        "name": "十銓",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4968",
+        "name": "立積",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4976",
+        "name": "佳凌",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4977",
+        "name": "眾達-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4989",
+        "name": "榮科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4994",
+        "name": "傳奇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "4999",
+        "name": "鑫禾",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5007",
+        "name": "三星",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5203",
+        "name": "訊連",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5215",
+        "name": "科嘉-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5222",
+        "name": "全訊",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5225",
+        "name": "東科-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5234",
+        "name": "達興材料",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5243",
+        "name": "乙盛-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5244",
+        "name": "弘凱",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5258",
+        "name": "虹堡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5269",
+        "name": "祥碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5283",
+        "name": "禾聯碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5284",
+        "name": "jpp-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5285",
+        "name": "界霖",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5288",
+        "name": "豐祥-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5292",
+        "name": "華懋",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5306",
+        "name": "桂盟",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5388",
+        "name": "中磊",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5434",
+        "name": "崇越",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5469",
+        "name": "瀚宇博",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5471",
+        "name": "松翰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5484",
+        "name": "慧友",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5515",
+        "name": "建國",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5519",
+        "name": "隆大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5521",
+        "name": "工信",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5522",
+        "name": "遠雄",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5525",
+        "name": "順天",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5531",
+        "name": "鄉林",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5533",
+        "name": "皇鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5534",
+        "name": "長虹",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5538",
+        "name": "東明-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5546",
+        "name": "永固-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5607",
+        "name": "遠雄港",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5608",
+        "name": "四維航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5706",
+        "name": "鳳凰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5871",
+        "name": "中租-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5876",
+        "name": "上海商銀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5880",
+        "name": "合庫金",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5906",
+        "name": "台南-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "5907",
+        "name": "大洋-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6005",
+        "name": "群益證",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6024",
+        "name": "群益期",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6108",
+        "name": "競國",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6112",
+        "name": "邁達特",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6115",
+        "name": "鎰勝",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6116",
+        "name": "彩晶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6117",
+        "name": "迎廣",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6120",
+        "name": "達運",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6128",
+        "name": "上福",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6133",
+        "name": "金橋",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6136",
+        "name": "富爾特",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6139",
+        "name": "亞翔",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6141",
+        "name": "柏承",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6142",
+        "name": "友勁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6152",
+        "name": "百一",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6153",
+        "name": "嘉聯益",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6155",
+        "name": "鈞寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6164",
+        "name": "華興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6165",
+        "name": "浪凡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6166",
+        "name": "凌華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6168",
+        "name": "宏齊",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6176",
+        "name": "瑞儀",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6177",
+        "name": "達麗",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6183",
+        "name": "關貿",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6184",
+        "name": "大豐電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6189",
+        "name": "豐藝",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6191",
+        "name": "精成科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6192",
+        "name": "巨路",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6196",
+        "name": "帆宣",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6197",
+        "name": "佳必琪",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6201",
+        "name": "亞弘電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6202",
+        "name": "盛群",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6205",
+        "name": "詮欣",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6206",
+        "name": "飛捷",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6209",
+        "name": "今國光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6213",
+        "name": "聯茂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6214",
+        "name": "精誠",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6215",
+        "name": "和椿",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6216",
+        "name": "居易",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6224",
+        "name": "聚鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6225",
+        "name": "天瀚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6226",
+        "name": "光鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6230",
+        "name": "尼得科超眾",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6235",
+        "name": "華孚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6239",
+        "name": "力成",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6243",
+        "name": "迅杰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6257",
+        "name": "矽格",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6269",
+        "name": "台郡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6271",
+        "name": "同欣電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6272",
+        "name": "驊陞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6277",
+        "name": "宏正",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6278",
+        "name": "台表科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6281",
+        "name": "全國電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6282",
+        "name": "康舒",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6283",
+        "name": "淳安",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6285",
+        "name": "啟碁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6405",
+        "name": "悅城",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6409",
+        "name": "旭隼",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6412",
+        "name": "群電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6414",
+        "name": "樺漢",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6415",
+        "name": "矽力*-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6416",
+        "name": "瑞祺電通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6426",
+        "name": "統新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6431",
+        "name": "光麗-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6438",
+        "name": "迅得",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6442",
+        "name": "光聖",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6443",
+        "name": "元晶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6446",
+        "name": "藥華藥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6449",
+        "name": "鈺邦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6451",
+        "name": "訊芯-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6456",
+        "name": "GIS-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6464",
+        "name": "台數科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6472",
+        "name": "保瑞",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6477",
+        "name": "安集",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6491",
+        "name": "晶碩",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6504",
+        "name": "南六",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6505",
+        "name": "台塑化",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6515",
+        "name": "穎崴",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6525",
+        "name": "捷敏-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6526",
+        "name": "達發",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6531",
+        "name": "愛普*",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6533",
+        "name": "晶心科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6534",
+        "name": "正瀚-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6541",
+        "name": "泰福-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6550",
+        "name": "北極星藥業-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6552",
+        "name": "易華電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6558",
+        "name": "興能高",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6573",
+        "name": "虹揚-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6579",
+        "name": "研揚",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6581",
+        "name": "鋼聯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6582",
+        "name": "申豐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6585",
+        "name": "鼎基",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6589",
+        "name": "台康生技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6591",
+        "name": "動力-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6592",
+        "name": "和潤企業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6598",
+        "name": "ABC-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6605",
+        "name": "帝寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6606",
+        "name": "建德工業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6614",
+        "name": "資拓宏宇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6625",
+        "name": "必應",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6641",
+        "name": "基士德-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6645",
+        "name": "金萬林-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6655",
+        "name": "科定",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6657",
+        "name": "華安",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6658",
+        "name": "聯策",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6666",
+        "name": "羅麗芬-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6668",
+        "name": "中揚光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6669",
+        "name": "緯穎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6670",
+        "name": "復盛應用",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6671",
+        "name": "三能-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6672",
+        "name": "騰輝電子-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6674",
+        "name": "鋐寶科技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6689",
+        "name": "伊雲谷",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6691",
+        "name": "洋基工程",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6695",
+        "name": "芯鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6698",
+        "name": "旭暉應材",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6706",
+        "name": "惠特",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6715",
+        "name": "嘉基",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6719",
+        "name": "力智",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6722",
+        "name": "輝創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6742",
+        "name": "澤米",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6743",
+        "name": "安普新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6753",
+        "name": "龍德造船",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6754",
+        "name": "匯僑設計",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6756",
+        "name": "威鋒電子",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6757",
+        "name": "台灣虎航",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6768",
+        "name": "志強-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6770",
+        "name": "力積電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6771",
+        "name": "平和環保-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6776",
+        "name": "展碁國際",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6781",
+        "name": "AES-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6782",
+        "name": "視陽",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6789",
+        "name": "采鈺",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6790",
+        "name": "永豐實",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6792",
+        "name": "詠業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6794",
+        "name": "向榮生技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6796",
+        "name": "晉弘",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6799",
+        "name": "來頡",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6805",
+        "name": "富世達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6806",
+        "name": "森崴能源",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6807",
+        "name": "峰源-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6830",
+        "name": "汎銓",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6831",
+        "name": "邁科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6834",
+        "name": "天二科技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6835",
+        "name": "圓裕",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6838",
+        "name": "台新藥",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6854",
+        "name": "錼創科技-KY創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6861",
+        "name": "睿生光電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6862",
+        "name": "三集瑞-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6863",
+        "name": "永道-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6869",
+        "name": "雲豹能源",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6873",
+        "name": "泓德能源",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6885",
+        "name": "全福生技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6887",
+        "name": "寶綠特-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6890",
+        "name": "來億-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6901",
+        "name": "鑽石投資",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6902",
+        "name": "GOGOLOOK",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6906",
+        "name": "現觀科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6909",
+        "name": "創控",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6914",
+        "name": "阜爾運通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6916",
+        "name": "華凌",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6918",
+        "name": "愛派司",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6919",
+        "name": "康霈*",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6921",
+        "name": "嘉雨思-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6923",
+        "name": "中台",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6924",
+        "name": "榮惠-KY創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6928",
+        "name": "攸泰科技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6931",
+        "name": "青松健康",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6933",
+        "name": "AMAX-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6936",
+        "name": "永鴻生技",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6937",
+        "name": "天虹",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6944",
+        "name": "兆聯實業",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6949",
+        "name": "沛爾生醫-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6951",
+        "name": "青新-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6952",
+        "name": "大武山",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6955",
+        "name": "邦睿生技-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6957",
+        "name": "裕慶-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6958",
+        "name": "日盛台駿",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6962",
+        "name": "奕力-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6965",
+        "name": "中傑-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6969",
+        "name": "成信實業*-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6988",
+        "name": "威力暘-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "6994",
+        "name": "富威電力",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7610",
+        "name": "聯友金屬-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7631",
+        "name": "聚賢研發-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7705",
+        "name": "三商餐飲",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7711",
+        "name": "永擎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7721",
+        "name": "微程式",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7722",
+        "name": "LINEPAY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7730",
+        "name": "暉盛-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7732",
+        "name": "金興精密",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7736",
+        "name": "虎山",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7740",
+        "name": "熙特爾-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7749",
+        "name": "意騰-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7750",
+        "name": "新代",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7765",
+        "name": "中華資安",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7769",
+        "name": "鴻勁",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7780",
+        "name": "大研生醫*",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7786",
+        "name": "東方風能",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7788",
+        "name": "松川精密",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7791",
+        "name": "皇家可口",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7795",
+        "name": "長廣",
+        "market": "TSE"
+    },
+    {
+        "symbol": "7799",
+        "name": "禾榮科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8011",
+        "name": "台通",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8016",
+        "name": "矽創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8021",
+        "name": "尖點",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8028",
+        "name": "昇陽半導體",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8033",
+        "name": "雷虎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8039",
+        "name": "台虹",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8045",
+        "name": "達運光電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8046",
+        "name": "南電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8070",
+        "name": "長華*",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8072",
+        "name": "陞泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8081",
+        "name": "致新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8101",
+        "name": "華冠",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8103",
+        "name": "瀚荃",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8104",
+        "name": "錸寶",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8105",
+        "name": "凌巨",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8110",
+        "name": "華東",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8112",
+        "name": "至上",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8114",
+        "name": "振樺電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8131",
+        "name": "福懋科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8150",
+        "name": "南茂",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8162",
+        "name": "微矽電子-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8163",
+        "name": "達方",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8201",
+        "name": "無敵",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8210",
+        "name": "勤誠",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8213",
+        "name": "志超",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8215",
+        "name": "明基材",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8222",
+        "name": "寶一",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8249",
+        "name": "菱光",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8261",
+        "name": "富鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8271",
+        "name": "宇瞻",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8341",
+        "name": "日友",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8367",
+        "name": "建新國際",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8374",
+        "name": "羅昇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8404",
+        "name": "百和興業-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8411",
+        "name": "福貞-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8422",
+        "name": "可寧衛*",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8429",
+        "name": "金麗-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8438",
+        "name": "昶昕",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8442",
+        "name": "威宏-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8443",
+        "name": "阿瘦",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8454",
+        "name": "富邦媒",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8462",
+        "name": "柏文",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8463",
+        "name": "潤泰材",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8464",
+        "name": "億豐",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8466",
+        "name": "美吉吉-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8467",
+        "name": "波力-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8473",
+        "name": "山林水",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8476",
+        "name": "台境*",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8478",
+        "name": "東哥遊艇",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8481",
+        "name": "政伸",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8482",
+        "name": "商億-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8487",
+        "name": "愛爾達-創",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8488",
+        "name": "吉源-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8499",
+        "name": "鼎炫-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8926",
+        "name": "台汽電",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8940",
+        "name": "新天地",
+        "market": "TSE"
+    },
+    {
+        "symbol": "8996",
+        "name": "高力",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9103",
+        "name": "美德醫療-DR",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9105",
+        "name": "泰金寶-DR",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9110",
+        "name": "越南控-DR",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9136",
+        "name": "巨騰-DR",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9802",
+        "name": "鈺齊-KY",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9902",
+        "name": "台火",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9904",
+        "name": "寶成",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9905",
+        "name": "大華",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9906",
+        "name": "欣巴巴",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9907",
+        "name": "統一實",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9908",
+        "name": "大台北",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9910",
+        "name": "豐泰",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9911",
+        "name": "櫻花",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9912",
+        "name": "偉聯",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9914",
+        "name": "美利達",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9917",
+        "name": "中保科",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9918",
+        "name": "欣天然",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9919",
+        "name": "康那香",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9921",
+        "name": "巨大",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9924",
+        "name": "福興",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9925",
+        "name": "新保",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9926",
+        "name": "新海",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9927",
+        "name": "泰銘",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9928",
+        "name": "中視",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9929",
+        "name": "秋雨",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9930",
+        "name": "中聯資源",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9931",
+        "name": "欣高",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9933",
+        "name": "中鼎",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9934",
+        "name": "成霖",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9935",
+        "name": "慶豐富",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9937",
+        "name": "全國",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9938",
+        "name": "百和",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9939",
+        "name": "宏全",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9940",
+        "name": "信義",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9941",
+        "name": "裕融",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9942",
+        "name": "茂順",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9943",
+        "name": "好樂迪",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9944",
+        "name": "新麗",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9945",
+        "name": "潤泰新",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9946",
+        "name": "三發地產",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9955",
+        "name": "佳龍",
+        "market": "TSE"
+    },
+    {
+        "symbol": "9958",
+        "name": "世紀鋼",
+        "market": "TSE"
+    }
 ]

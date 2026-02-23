@@ -1,6 +1,6 @@
 /**
  * 取得三大法人買賣超資料
- * 
+ *
  * 使用方式:
  * node scripts/fetch-chips.mjs [YYYYMMDD]
  */
@@ -43,7 +43,8 @@ async function main() {
     if (!dateStr) {
         let now = new Date();
         // 如果是週末，往前找最接近的週五
-        if (now.getDay() === 0) now.setDate(now.getDate() - 2); // Sunday -> Friday
+        if (now.getDay() === 0)
+            now.setDate(now.getDate() - 2); // Sunday -> Friday
         else if (now.getDay() === 6) now.setDate(now.getDate() - 1); // Saturday -> Friday
 
         const y = now.getFullYear();
@@ -69,7 +70,7 @@ async function main() {
         name: row[1].trim(),
         foreign_inv: parseInt(row[4].replace(/,/g, '')) || 0,
         invest_trust: parseInt(row[10].replace(/,/g, '')) || 0,
-        dealer: parseInt(row[11].replace(/,/g, '')) || 0
+        dealer: parseInt(row[11].replace(/,/g, '')) || 0,
     }));
 
     // 儲存為特定日期的檔案

@@ -1,6 +1,6 @@
 /**
  * 取得每月營收數據
- * 
+ *
  * 來源: TWSE OpenAPI (t187ap05_L, t187ap05_P)
  * 輸出: public/data/revenue.json
  */
@@ -15,7 +15,7 @@ const OUTPUT_FILE = path.join(__dirname, '..', 'public', 'data', 'revenue.json')
 // TWSE OpenAPI 端點
 const ENDPOINTS = [
     'https://openapi.twse.com.tw/v1/opendata/t187ap05_L', // 上市公司
-    'https://openapi.twse.com.tw/v1/opendata/t187ap05_P'  // 公開發行公司
+    'https://openapi.twse.com.tw/v1/opendata/t187ap05_P', // 公開發行公司
 ];
 
 const REQUEST_TIMEOUT = 10000;
@@ -61,7 +61,7 @@ async function main() {
         revenueYoY: parseFloat(item['營業收入-去年同月增減(%)']) || 0,
         cumulativeRevenue: parseInt(item['累計營業收入-當月累計營收']) || 0,
         cumulativeYoY: parseFloat(item['累計營業收入-前期比較增減(%)']) || 0,
-        note: item['備註'] || ''
+        note: item['備註'] || '',
     }));
 
     // 儲存

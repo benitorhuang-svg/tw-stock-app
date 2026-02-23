@@ -1,4 +1,3 @@
-
 import fs from 'fs';
 import { getSectorBySymbol } from './src/utils/stockDataService.ts';
 

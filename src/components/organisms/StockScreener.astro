@@ -1,770 +1,174 @@
 ---
 /**
- * Premium Stock Screener
- * Rebuild with Glassmorphism and Cyber-Premium aesthetics
+ * StockScreener.astro — Interactive stock screening organism
+ * Connects to M3 screener logic for filtering stocks.
  */
-interface Props {
-    className?: string;
+import Badge from '../atoms/Badge.astro';
+
+// Import strategies from data layer
+let strategies: { id: string; name: string; description: string; icon: string }[] = [];
+try {
+    const { strategies: s } = await import('../../data/strategies');
+    strategies = s?.slice(0, 6) ?? [];
+} catch {
+    strategies = [
+        { id: 'value', name: '價值低估', description: '本益比低於歷史平均', icon: '💎' },
+        { id: 'momentum', name: '動能突破', description: '價格突破 MA20/MA60', icon: '🚀' },
+        { id: 'dividend', name: '高殖利率', description: '殖利率 > 5% 且穩定', icon: '💰' },
+        { id: 'institutional', name: '法人同買', description: '外資投信同步買超', icon: '🏦' },
+        { id: 'growth', name: '營收成長', description: '連續三月 YoY 增長', icon: '📈' },
+        { id: 'turnaround', name: '轉機黑馬', description: '由虧轉盈或營收翻正', icon: '🔄' },
+    ];
 }
-const { className = '' } = Astro.props;
 ---
 
-<div class={`premium-screener ${className}`} id="screener-app">
-    <!-- Top: Strategy Carousel -->
-    <div
-        class="strategy-carousel glass-card glow-wrapper cyber-reveal"
-        style="animation-delay: 0.1s;"
-    >
-        <div class="glow-bg accent-glow"></div>
-        <div class="carousel-content">
-            <span class="carousel-label mono text-muted">QUICK_FILTERS //</span>
-            <button class="strategy-btn" data-template="value">💎 深度價值</button>
-            <button class="strategy-btn" data-template="dividend">💰 高殖利率</button>
-            <button class="strategy-btn" data-template="growth">🚀 動能成長</button>
-            <button class="strategy-btn" data-template="technical">📈 技術強勢</button>
+<section class="space-y-6" id="screener-panel">
+    <!-- Strategy Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+        {
+            strategies.map(strategy => (
+                <button
+                    class="glass-card glow-interactive p-5 text-left transition-all duration-300 hover:scale-[1.02] hover:border-accent/30 cursor-pointer group"
+                    data-strategy={strategy.id}
+                >
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">{strategy.icon}</span>
+                        <div class="flex-1">
+                            <h3 class="text-sm font-bold text-text-primary group-hover:text-accent transition-colors">
+                                {strategy.name}
+                            </h3>
+                            <p class="text-xs text-text-secondary mt-1">{strategy.description}</p>
+                        </div>
+                        <Badge variant="muted">策略</Badge>
+                    </div>
+                </button>
+            ))
+        }
+    </div>
+
+    <!-- Results Area (populated by client-side JS) -->
+    <div id="screener-results" class="hidden">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-text-primary">篩選結果</h3>
+            <div class="flex items-center gap-2">
+                <span id="screener-count" class="data-value text-sm text-accent">0</span>
+                <span class="text-xs text-text-muted">檔符合</span>
+            </div>
+        </div>
+        <div
+            id="screener-results-grid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
+            <!-- Dynamically populated -->
         </div>
     </div>
 
-    <div class="screener-workspace">
-        <!-- Left: Filters Sidebar -->
-        <aside
-            class="screener-sidebar glass-card glow-wrapper cyber-reveal"
-            style="animation-delay: 0.2s;"
-        >
-            <div class="glow-bg neutral-glow"></div>
-
-            <header class="sidebar-header">
-                <div class="title-group">
-                    <span class="icon text-accent">⎈</span>
-                    <h2>Parameter Matrix</h2>
-                </div>
-                <button id="reset-btn" class="icon-btn-small" title="Reset Filters">↻</button>
-            </header>
-
-            <div class="filters-scroll">
-                <!-- Fundamentals -->
-                <section class="filter-group">
-                    <h3 class="group-title mono">FUNDAMENTALS</h3>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input type="checkbox" class="cyber-checkbox" id="filter-pe" />
-                            <span class="label-text">P/E Ratio</span>
-                        </div>
-                        <div class="filter-body">
-                            <input
-                                type="number"
-                                id="pe-max"
-                                class="cyber-input mono"
-                                placeholder="Max"
-                                value="15"
-                            />
-                        </div>
-                    </label>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input type="checkbox" class="cyber-checkbox" id="filter-pb" />
-                            <span class="label-text">P/B Ratio</span>
-                        </div>
-                        <div class="filter-body">
-                            <input
-                                type="number"
-                                id="pb-max"
-                                class="cyber-input mono"
-                                placeholder="Max"
-                                value="1.5"
-                                step="0.1"
-                            />
-                        </div>
-                    </label>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input type="checkbox" class="cyber-checkbox" id="filter-yield" />
-                            <span class="label-text">Dividend Yield (%)</span>
-                        </div>
-                        <div class="filter-body">
-                            <input
-                                type="number"
-                                id="yield-min"
-                                class="cyber-input mono"
-                                placeholder="Min"
-                                value="5"
-                                step="0.5"
-                            />
-                        </div>
-                    </label>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input type="checkbox" class="cyber-checkbox" id="filter-roe" />
-                            <span class="label-text">ROE (%)</span>
-                        </div>
-                        <div class="filter-body">
-                            <input
-                                type="number"
-                                id="roe-min"
-                                class="cyber-input mono"
-                                placeholder="Min"
-                                value="10"
-                            />
-                        </div>
-                    </label>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input type="checkbox" class="cyber-checkbox" id="filter-rev-yoy" />
-                            <span class="label-text">Rev Growth (YoY %)</span>
-                        </div>
-                        <div class="filter-body">
-                            <input
-                                type="number"
-                                id="rev-yoy-min"
-                                class="cyber-input mono"
-                                placeholder="Min"
-                                value="15"
-                            />
-                        </div>
-                    </label>
-                </section>
-
-                <!-- Technicals -->
-                <section class="filter-group">
-                    <h3 class="group-title mono">TECHNICALS</h3>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input
-                                type="checkbox"
-                                class="cyber-checkbox"
-                                id="filter-golden-cross"
-                            />
-                            <span class="label-text">Golden Cross</span>
-                        </div>
-                        <div class="filter-hint mono">MA5 &gt; MA20</div>
-                    </label>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input type="checkbox" class="cyber-checkbox" id="filter-rsi" />
-                            <span class="label-text">RSI Oversold Bounce</span>
-                        </div>
-                        <div class="filter-hint mono">RSI &lt; 30 Recovery</div>
-                    </label>
-
-                    <label class="filter-item">
-                        <div class="filter-header">
-                            <input type="checkbox" class="cyber-checkbox" id="filter-macd" />
-                            <span class="label-text">MACD Bullish</span>
-                        </div>
-                        <div class="filter-hint mono">DIF &gt; MACD</div>
-                    </label>
-                </section>
-            </div>
-
-            <div class="sidebar-footer">
-                <button id="run-screener" class="run-btn cyber-btn">
-                    <span class="btn-icon">▶</span>
-                    <span>EXECUTE SCAN</span>
-                </button>
-            </div>
-        </aside>
-
-        <!-- Right: DataGrid -->
-        <main
-            class="datagrid-container glass-card glow-wrapper cyber-reveal"
-            style="animation-delay: 0.3s;"
-        >
-            <div class="glow-bg pos-glow"></div>
-
-            <header class="grid-header">
-                <div class="results-meta">
-                    <h2 class="mono">SCAN_RESULTS</h2>
-                    <span class="results-badge mono" id="results-count">0</span>
-                </div>
-                <div class="grid-actions">
-                    <button class="sys-btn" id="export-btn" disabled>
-                        <span class="icon">⤓</span> EXPORT
-                    </button>
-                    <button class="sys-btn" id="refresh-btn">
-                        <span class="icon">↻</span> FORCE_SYNC
-                    </button>
-                </div>
-            </header>
-
-            <div class="grid-body">
-                <!-- Empty State -->
-                <div id="empty-state" class="state-overlay">
-                    <div class="state-icon text-muted">⎈</div>
-                    <div class="state-msg mono">AWAITING_PARAMETERS...</div>
-                </div>
-
-                <!-- Loading State -->
-                <div id="loading-state" class="state-overlay" style="display:none;">
-                    <div class="cyber-spinner"></div>
-                    <div class="state-msg mono text-accent pulse">ANALYZING_MARKET_DATA...</div>
-                </div>
-
-                <!-- Table Container -->
-                <div class="table-scroll-area">
-                    <table class="premium-table" id="results-table" style="display:none;">
-                        <thead>
-                            <tr>
-                                <th class="sticky-col">IDENTITY</th>
-                                <th class="mono">MATCH</th>
-                                <th class="mono sortable" data-sort="price">PRICE ↕</th>
-                                <th class="mono sortable" data-sort="changePercent">CHG% ↕</th>
-                                <th class="mono sortable" data-sort="pe">P/E ↕</th>
-                                <th class="mono sortable" data-sort="pb">P/B ↕</th>
-                                <th class="mono sortable" data-sort="dividendYield">YIELD ↕</th>
-                                <th class="mono sortable" data-sort="roe">ROE ↕</th>
-                            </tr>
-                        </thead>
-                        <tbody id="results-body">
-                            <!-- Filled by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
+    <!-- Empty State -->
+    <div id="screener-empty" class="glass-card p-12 text-center">
+        <div class="text-4xl mb-4">🔍</div>
+        <h3 class="text-lg font-bold text-text-primary mb-2">選擇一個策略開始篩選</h3>
+        <p class="text-sm text-text-secondary max-w-md mx-auto">
+            點擊上方的策略卡片，系統將從本地 SQLite 資料庫中快速篩選符合條件的股票。
+        </p>
     </div>
-</div>
-
-<style>
-    .premium-screener {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        min-height: calc(100vh - 120px);
-        padding-bottom: 40px;
-    }
-
-    /* Top: Strategy Carousel */
-    .strategy-carousel {
-        display: flex;
-        align-items: center;
-        padding: 16px 24px;
-        flex-shrink: 0;
-    }
-    .carousel-content {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        z-index: 1;
-        position: relative;
-        overflow-x: auto;
-        scrollbar-width: none;
-    }
-    .carousel-content::-webkit-scrollbar {
-        display: none;
-    }
-    .carousel-label {
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 1px;
-    }
-    .strategy-btn {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 8px 16px;
-        border-radius: 20px;
-        color: var(--c-text-secondary);
-        font-size: 13px;
-        font-weight: 600;
-        white-space: nowrap;
-        transition: all 0.2s;
-    }
-    .strategy-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-        transform: translateY(-1px);
-    }
-    .strategy-btn.active {
-        background: rgba(var(--c-accent-rgb), 0.2);
-        border-color: var(--c-accent);
-        color: var(--c-accent);
-        box-shadow: 0 0 16px rgba(var(--c-accent-rgb), 0.3);
-    }
-
-    /* Main Workspace */
-    .screener-workspace {
-        display: flex;
-        gap: 20px;
-        flex: 1;
-    }
-
-    /* Left Sidebar */
-    .screener-sidebar {
-        width: 320px;
-        display: flex;
-        flex-direction: column;
-        flex-shrink: 0;
-        position: sticky;
-        top: 20px;
-        align-self: flex-start;
-        max-height: calc(100vh - 40px);
-    }
-    .sidebar-header {
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        z-index: 1;
-    }
-    .title-group {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .title-group h2 {
-        font-size: 15px;
-        font-weight: 700;
-        margin: 0;
-    }
-    .icon-btn-small {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid transparent;
-        color: var(--c-text-muted);
-        transition: all 0.2s;
-        cursor: pointer;
-    }
-    .icon-btn-small:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-    }
-
-    .filters-scroll {
-        flex: 1;
-        overflow-y: auto;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        z-index: 1;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-    }
-    .group-title {
-        font-size: 11px;
-        color: var(--c-text-muted);
-        letter-spacing: 2px;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .filter-item {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        padding: 12px;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid transparent;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-bottom: 8px;
-    }
-    .filter-item:hover {
-        background: rgba(0, 0, 0, 0.4);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-    .filter-item:has(input:checked) {
-        border-color: rgba(var(--c-accent-rgb), 0.3);
-        background: rgba(var(--c-accent-rgb), 0.05);
-    }
-
-    .filter-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .cyber-checkbox {
-        appearance: none;
-        width: 16px;
-        height: 16px;
-        border: 1px solid var(--c-text-muted);
-        border-radius: 4px;
-        background: transparent;
-        position: relative;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .cyber-checkbox:checked {
-        background: var(--c-accent);
-        border-color: var(--c-accent);
-        box-shadow: 0 0 10px var(--c-accent);
-    }
-    .cyber-checkbox:checked::after {
-        content: '✓';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #fff;
-        font-size: 10px;
-        font-weight: 900;
-    }
-    .label-text {
-        font-size: 13px;
-        font-weight: 600;
-    }
-    .filter-hint {
-        font-size: 10px;
-        color: var(--c-text-muted);
-        padding-left: 28px;
-    }
-
-    .filter-body {
-        padding-left: 28px;
-        display: none;
-        margin-top: 4px;
-    }
-    .filter-item:has(input:checked) .filter-body {
-        display: block;
-    }
-
-    .sidebar-footer {
-        padding: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        z-index: 1;
-    }
-
-    /* Right DataGrid */
-    .datagrid-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        min-height: 600px;
-    }
-
-    .grid-header {
-        padding: 20px 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        z-index: 1;
-    }
-    .results-meta {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .results-meta h2 {
-        font-size: 14px;
-        color: var(--c-text-muted);
-        margin: 0;
-    }
-    .results-badge {
-        background: rgba(var(--c-accent-rgb), 0.1);
-        color: var(--c-accent);
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 800;
-        border: 1px solid rgba(var(--c-accent-rgb), 0.2);
-    }
-
-    .grid-actions {
-        display: flex;
-        gap: 12px;
-    }
-
-    .grid-body {
-        flex: 1;
-        position: relative;
-        z-index: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .table-scroll-area {
-        flex: 1;
-        overflow-y: auto;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-    }
-
-    .premium-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: right;
-    }
-    .premium-table th,
-    .premium-table td {
-        padding: 16px 20px;
-    }
-    .premium-table th {
-        position: sticky;
-        top: 0;
-        background: rgba(10, 15, 25, 0.95);
-        backdrop-filter: blur(10px);
-        font-size: 10px;
-        color: var(--c-text-muted);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        z-index: 10;
-        letter-spacing: 1px;
-    }
-    .premium-table td {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        font-size: 14px;
-    }
-    .premium-table tbody tr:hover {
-        background: rgba(255, 255, 255, 0.02);
-    }
-    .sticky-col {
-        position: sticky;
-        left: 0;
-        text-align: left !important;
-        background: var(--c-bg-glass);
-        z-index: 11;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .sortable {
-        cursor: pointer;
-        user-select: none;
-    }
-    .sortable:hover {
-        color: #fff;
-    }
-
-    /* States overlay */
-    .state-overlay {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: rgba(10, 15, 25, 0.5);
-        backdrop-filter: blur(10px);
-        z-index: 20;
-        gap: 24px;
-    }
-    .state-icon {
-        font-size: 48px;
-        opacity: 0.5;
-    }
-    .state-msg {
-        font-size: 12px;
-        letter-spacing: 2px;
-        color: var(--c-text-muted);
-    }
-
-    .pulse {
-        animation: p 2s infinite;
-    }
-    @keyframes p {
-        0%,
-        100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.5;
-        }
-    }
-
-    .cyber-spinner {
-        width: 48px;
-        height: 48px;
-        border: 2px solid rgba(var(--c-accent-rgb), 0.1);
-        border-top-color: var(--c-accent);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.2);
-    }
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    /* Match Tags */
-    :global(.match-tag) {
-        display: inline-block;
-        padding: 4px 8px;
-        border-radius: 4px;
-        background: rgba(255, 255, 255, 0.05);
-        font-size: 10px;
-        margin-right: 6px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    @media (max-width: 1024px) {
-        .screener-workspace {
-            flex-direction: column;
-        }
-        .screener-sidebar {
-            width: 100%;
-        }
-        .filters-scroll {
-            max-height: 300px;
-        }
-    }
-</style>
+</section>
 
 <script>
-    import { actions } from 'astro:actions';
-    let currentResults: any[] = [];
+    import type { StockFullData } from '../../utils/stockDataService';
 
-    function initScreener() {
-        const runBtn = document.getElementById('run-screener');
-        const emptyState = document.getElementById('empty-state');
-        const loadingState = document.getElementById('loading-state');
-        const resultsTable = document.getElementById('results-table');
-        const resultsBody = document.getElementById('results-body');
-        const resultsCount = document.getElementById('results-count');
-        const resetBtn = document.getElementById('reset-btn');
-        const templateBtns = document.querySelectorAll('.strategy-btn');
+    let activeStrategy = '';
+    const resultsContainer = document.getElementById('screener-results');
+    const resultsGrid = document.getElementById('screener-results-grid');
+    const resultsCount = document.getElementById('screener-count');
+    const emptyState = document.getElementById('screener-empty');
 
-        // Logic functions
-        const getFilters = () => ({
-            pe: (document.getElementById('filter-pe') as HTMLInputElement)?.checked
-                ? Number((document.getElementById('pe-max') as HTMLInputElement).value)
-                : undefined,
-            pb: (document.getElementById('filter-pb') as HTMLInputElement)?.checked
-                ? Number((document.getElementById('pb-max') as HTMLInputElement).value)
-                : undefined,
-            dividendYield: (document.getElementById('filter-yield') as HTMLInputElement)?.checked
-                ? Number((document.getElementById('yield-min') as HTMLInputElement).value)
-                : undefined,
-            roe: (document.getElementById('filter-roe') as HTMLInputElement)?.checked
-                ? Number((document.getElementById('roe-min') as HTMLInputElement).value)
-                : undefined,
-            revenueYoY: (document.getElementById('filter-rev-yoy') as HTMLInputElement)?.checked
-                ? Number((document.getElementById('rev-yoy-min') as HTMLInputElement).value)
-                : undefined,
-            goldenCross: (document.getElementById('filter-golden-cross') as HTMLInputElement)
-                ?.checked,
-            rsiOversold: (document.getElementById('filter-rsi') as HTMLInputElement)?.checked,
-            macdBullish: (document.getElementById('filter-macd') as HTMLInputElement)?.checked,
-        });
+    function renderResults(stocks: any[]) {
+        if (!resultsGrid) return;
 
-        async function runScan() {
-            if (!emptyState || !loadingState || !resultsTable || !resultsBody) return;
-
-            emptyState.style.display = 'none';
-            resultsTable.style.display = 'none';
-            loadingState.style.display = 'flex';
-
-            try {
-                const filters = getFilters();
-                const { data, error } = await actions.screenStocks(filters);
-
-                if (error) throw new Error(error.message);
-
-                currentResults = data || [];
-                renderResults();
-            } catch (err) {
-                console.error(err);
-                alert('Execution Failed: ' + (err as Error).message);
-            } finally {
-                loadingState.style.display = 'none';
-                resultsTable.style.display = 'table';
-            }
-        }
-
-        function renderResults() {
-            if (!resultsBody || !resultsCount) return;
-
-            resultsCount.textContent = currentResults.length.toString();
-
-            if (currentResults.length === 0) {
-                resultsBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 40px;" class="mono text-muted">0_MATCHES_FOUND</td></tr>`;
-                return;
-            }
-
-            resultsBody.innerHTML = currentResults
-                .map(stock => {
-                    const isPos = stock.change >= 0;
-                    const matches = stock.matchedStrategies
-                        ? stock.matchedStrategies
-                              .map((m: string) => `<span class="match-tag">${m}</span>`)
-                              .join('')
-                        : '';
-                    return `
-                    <tr>
-                        <td class="sticky-col">
-                            <a href="/stocks/${stock.symbol}/" style="text-decoration:none;">
-                                <div style="display:flex; flex-direction:column;">
-                                    <span style="color:var(--c-accent); font-family:'JetBrains Mono'; font-weight:800; font-size:16px;">${stock.symbol}</span>
-                                    <span style="color:#fff; font-size:12px;">${stock.name}</span>
-                                </div>
-                            </a>
-                        </td>
-                        <td>${matches || '-'}</td>
-                        <td class="mono" style="color:${isPos ? 'var(--c-success)' : 'var(--c-danger)'}; font-weight: 800;">${stock.price.toFixed(2)}</td>
-                        <td class="mono" style="color:${isPos ? 'var(--c-success)' : 'var(--c-danger)'}">
-                            ${isPos ? '+' : ''}${stock.changePercent.toFixed(2)}%
-                        </td>
-                        <td class="mono">${stock.pe ? stock.pe.toFixed(2) : '-'}</td>
-                        <td class="mono">${stock.pb ? stock.pb.toFixed(2) : '-'}</td>
-                        <td class="mono" style="color:var(--c-success);">${stock.dividendYield ? stock.dividendYield.toFixed(2) + '%' : '-'}</td>
-                        <td class="mono">${stock.roe ? stock.roe.toFixed(2) + '%' : '-'}</td>
-                    </tr>
-                `;
-                })
-                .join('');
-        }
-
-        // Events
-        runBtn?.addEventListener('click', runScan);
-
-        resetBtn?.addEventListener('click', () => {
-            document
-                .querySelectorAll('input[type="checkbox"]')
-                .forEach(cb => ((cb as HTMLInputElement).checked = false));
-            templateBtns.forEach(btn => btn.classList.remove('active'));
-            if (resultsTable) resultsTable.style.display = 'none';
-            if (emptyState) emptyState.style.display = 'flex';
-            if (resultsCount) resultsCount.textContent = '0';
-        });
-
-        // Templates
-        templateBtns.forEach(btn => {
-            btn.addEventListener('click', e => {
-                templateBtns.forEach(b => b.classList.remove('active'));
-                const target = e.currentTarget as HTMLButtonElement;
-                target.classList.add('active');
-
-                // reset first
-                document
-                    .querySelectorAll('input[type="checkbox"]')
-                    .forEach(cb => ((cb as HTMLInputElement).checked = false));
-
-                const type = target.dataset.template;
-                if (type === 'value') {
-                    (document.getElementById('filter-pe') as HTMLInputElement).checked = true;
-                    (document.getElementById('pe-max') as HTMLInputElement).value = '15';
-                    (document.getElementById('filter-pb') as HTMLInputElement).checked = true;
-                    (document.getElementById('pb-max') as HTMLInputElement).value = '1.5';
-                } else if (type === 'dividend') {
-                    (document.getElementById('filter-yield') as HTMLInputElement).checked = true;
-                    (document.getElementById('yield-min') as HTMLInputElement).value = '6';
-                } else if (type === 'growth') {
-                    (document.getElementById('filter-roe') as HTMLInputElement).checked = true;
-                    (document.getElementById('roe-min') as HTMLInputElement).value = '15';
-                    (document.getElementById('filter-rev-yoy') as HTMLInputElement).checked = true;
-                    (document.getElementById('rev-yoy-min') as HTMLInputElement).value = '20';
-                } else if (type === 'technical') {
-                    (document.getElementById('filter-golden-cross') as HTMLInputElement).checked =
-                        true;
-                    (document.getElementById('filter-macd') as HTMLInputElement).checked = true;
-                }
-
-                runScan();
-            });
-        });
+        resultsGrid.innerHTML = stocks
+            .map(
+                stock => `
+            <a href="/stocks/${stock.symbol}" class="glass-card p-4 hover:border-accent/40 transition-all group">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <div class="text-[10px] font-mono text-text-muted mb-0.5">${stock.symbol}</div>
+                        <div class="text-sm font-bold text-text-primary group-hover:text-accent transition-colors">${stock.name}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-mono font-bold ${stock.fundamentals?.pe > 0 ? 'text-accent' : 'text-text-muted'}">
+                            PE: ${stock.fundamentals?.pe?.toFixed(1) || '—'}
+                        </div>
+                        <div class="text-[9px] text-text-muted">Yield: ${stock.fundamentals?.dividendYield?.toFixed(2)}%</div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-1 mt-3">
+                    ${stock.matchedStrategies
+                        .map(
+                            (s: string) => `
+                        <span class="px-1.5 py-0.5 rounded text-[8px] bg-accent/10 text-accent border border-accent/20 font-bold uppercase tracking-tighter">
+                            ${s}
+                        </span>
+                    `
+                        )
+                        .join('')}
+                </div>
+            </a>
+        `
+            )
+            .join('');
     }
 
-    // Run on load and View Transitions
-    document.addEventListener('astro:page-load', initScreener);
+    // Strategy card click handling
+    document.querySelectorAll('[data-strategy]').forEach(card => {
+        card.addEventListener('click', async () => {
+            const strategyId = (card as HTMLElement).dataset.strategy;
+            if (!strategyId) return;
+
+            // Visual active state
+            document.querySelectorAll('[data-strategy]').forEach(c => {
+                c.classList.remove('border-accent/50', 'bg-accent/5');
+            });
+            card.classList.add('border-accent/50', 'bg-accent/5');
+
+            activeStrategy = strategyId;
+
+            // Prepare filter conditions based on strategy
+            const filters: any = { page: 1, limit: 12 };
+            if (strategyId === 'value') filters.pe = { max: 15 };
+            if (strategyId === 'dividend') filters.dividendYield = { min: 5 };
+            if (strategyId === 'growth') filters.roe = { min: 15 };
+            if (strategyId === 'momentum') filters.pe = { max: 25 };
+
+            try {
+                // Show loading state
+                if (resultsCount) resultsCount.textContent = '...';
+                emptyState?.classList.add('hidden');
+                resultsContainer?.classList.remove('hidden');
+                if (resultsGrid)
+                    resultsGrid.innerHTML =
+                        '<div class="col-span-full py-12 flex justify-center"><div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div></div>';
+
+                const res = await fetch('/api/screener', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(filters),
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    if (resultsCount) resultsCount.textContent = data.pagination.total;
+                    renderResults(data.results);
+
+                    if (data.results.length === 0) {
+                        if (resultsGrid)
+                            resultsGrid.innerHTML =
+                                '<div class="col-span-full py-12 text-center text-text-muted text-sm italic">沒有符合條件的股票</div>';
+                    }
+                }
+            } catch (err) {
+                console.error('[Screener] Fetch error:', err);
+            }
+        });
+    });
 </script>

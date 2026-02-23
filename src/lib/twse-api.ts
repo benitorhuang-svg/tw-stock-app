@@ -7,9 +7,9 @@
 const TWSE_BASE = 'https://www.twse.com.tw';
 
 // 設定
-const REQUEST_TIMEOUT = 5000;  // 5 秒超時
+const REQUEST_TIMEOUT = 5000; // 5 秒超時
 const MAX_RETRIES = 3;
-const BASE_DELAY = 1000;  // 首次重試等待 1 秒
+const BASE_DELAY = 1000; // 首次重試等待 1 秒
 
 // 延遲函式 (避免請求過於頻繁)
 function delay(ms: number): Promise<void> {
@@ -39,7 +39,7 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Respo
                 continue;
             }
 
-            return response;  // 其他 HTTP 錯誤直接回傳
+            return response; // 其他 HTTP 錯誤直接回傳
         } catch (error: any) {
             clearTimeout(timeoutId);
 
@@ -79,7 +79,7 @@ export async function getPERatio(date: string, stockNo: string) {
             dividendYear: latest[2],
             pe: parseFloat(latest[3]) || 0,
             pb: parseFloat(latest[4]) || 0,
-            fiscalPeriod: latest[5]
+            fiscalPeriod: latest[5],
         };
     } catch (error) {
         console.error(`getPERatio error for ${stockNo}:`, error);
@@ -115,7 +115,7 @@ export async function getStockDay(date: string, stockNo: string) {
             low: parseFloat(row[5].replace(/,/g, '')) || 0,
             close: parseFloat(row[6].replace(/,/g, '')) || 0,
             change: parseFloat(row[7].replace(/,/g, '')) || 0,
-            transactions: parseInt(row[8].replace(/,/g, '')) || 0
+            transactions: parseInt(row[8].replace(/,/g, '')) || 0,
         }));
     } catch (error) {
         console.error(`getStockDay error for ${stockNo}:`, error);
@@ -148,7 +148,7 @@ export async function getAllPERatios(date: string) {
             dividendYear: row[3],
             pe: parseFloat(row[4]) || 0,
             pb: parseFloat(row[5]) || 0,
-            fiscalPeriod: row[6]
+            fiscalPeriod: row[6],
         }));
     } catch (error) {
         console.error('getAllPERatios error:', error);
@@ -187,7 +187,7 @@ export async function getDailyQuotes(date: string) {
             low: parseFloat(row[7]?.replace(/,/g, '')) || 0,
             close: parseFloat(row[8]?.replace(/,/g, '')) || 0,
             change: row[9],
-            changePrice: parseFloat(row[10]?.replace(/,/g, '')) || 0
+            changePrice: parseFloat(row[10]?.replace(/,/g, '')) || 0,
         }));
     } catch (error) {
         console.error('getDailyQuotes error:', error);

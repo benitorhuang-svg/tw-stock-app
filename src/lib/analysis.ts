@@ -91,7 +91,11 @@ export function sharpeRatio(returns: number[], riskFreeRate: number = 1.5): numb
 /**
  * 計算最大回撤
  */
-export function maxDrawdown(prices: number[]): { maxDrawdown: number; peak: number; trough: number } {
+export function maxDrawdown(prices: number[]): {
+    maxDrawdown: number;
+    peak: number;
+    trough: number;
+} {
     if (prices.length < 2) return { maxDrawdown: 0, peak: 0, trough: 0 };
 
     let peak = prices[0];
@@ -114,7 +118,7 @@ export function maxDrawdown(prices: number[]): { maxDrawdown: number; peak: numb
     return {
         maxDrawdown: maxDD * 100,
         peak: peakValue,
-        trough: troughValue
+        trough: troughValue,
     };
 }
 
@@ -150,6 +154,6 @@ export function analyzeRisk(stockPrices: number[], marketPrices: number[]): Risk
         volatility: Math.round(annualizedVolatility(stockReturns) * 100) / 100,
         sharpe: Math.round(sharpeRatio(stockReturns) * 100) / 100,
         maxDrawdown: Math.round(maxDrawdown(stockPrices).maxDrawdown * 100) / 100,
-        correlation: Math.round(correlation(stockReturns, marketReturns) * 100) / 100
+        correlation: Math.round(correlation(stockReturns, marketReturns) * 100) / 100,
     };
 }

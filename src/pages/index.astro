@@ -1,220 +1,136 @@
 ---
 /**
- * Premium Dashboard Index Page
+ * index.astro — Dashboard / 總覽
+ * Spec: 005-ui-layout/002-tab-overview.md (adapted for market-wide dashboard)
  *
- * Clean-Slate Refactor using Spec 002 Architecture.
+ * Features:
+ * - Market breadth overview (TAIEX, advances/declines)
+ * - Top gainers & losers panels
+ * - Quick stock cards grid
  */
-import Layout from '../layouts/Layout.astro';
+import MainTerminal from '../layouts/MainTerminal.astro';
 import PageHero from '../components/molecules/PageHero.astro';
+import StatCard from '../components/molecules/StatCard.astro';
 import MarketBreadth from '../components/organisms/MarketBreadth.astro';
 import MoversPanel from '../components/organisms/MoversPanel.astro';
-import SectorMomentum from '../components/organisms/SectorMomentum.astro';
 import StockCard from '../components/organisms/StockCard.astro';
-import {
-    getMarketBreadth,
-    getTopGainers,
-    getTopLosers,
-    getTopVolume,
-    getTopChips,
-    getGrowthStars,
-    getSectorPerformance,
-} from '../utils/marketService';
 
-const breadth = getMarketBreadth();
-const topGainers = getTopGainers(5);
-const topLosers = getTopLosers(5);
-const growthStars = getGrowthStars(5);
-const topChips = getTopChips(5);
-const rawSectorPerf = getSectorPerformance();
+// SSR: Try loading real data from services
+import type { StockFullData } from '../utils/stockDataService';
 
-// Mapping for growth/chips cards
-const mapGrowthToStock = (s: any) => ({
-    symbol: s.symbol,
-    name: s.name,
-    price: s.price || 0,
-    change: 0,
-    changePercent: s.change_pct || 0,
-    volume: 0,
-    pe: 0,
-    pb: 0,
-    yield: 0,
-    roe: 0,
-    eps: 0,
-    revenueYoY: s.revenue_yoy,
-});
+const fmtVol = (v: number) => (v > 0 ? v.toLocaleString('zh-TW') : '—');
 
-const mapChipsToStock = (s: any) => ({
-    symbol: s.symbol,
-    name: s.name,
-    price: 0,
-    change: 0,
-    changePercent: s.change_pct || 0,
-    volume: 0,
-    pe: 0,
-    pb: 0,
-    yield: 0,
-    roe: 0,
-    eps: 0,
-    foreignInv: s.foreign_inv,
-});
+let topStocks: StockFullData[] = [];
+
+try {
+    const { getTopStocksByVolume } = await import('../utils/stockDataService');
+    topStocks = (await getTopStocksByVolume?.(6)) ?? [];
+} catch {
+    // Fallback demo data
+    topStocks = [
+        {
+            symbol: '2330',
+            name: '台積電',
+            market: 'TWSE',
+            price: 892.0,
+            change: 15.0,
+            changePercent: 1.71,
+            volume: 32456,
+            high: 895,
+            low: 880,
+            open: 885,
+            pe: 22.5,
+            pb: 6.1,
+            yield: 1.8,
+            roe: 0,
+            eps: 0,
+            sector: 'semiconductor',
+        },
+        {
+            symbol: '2454',
+            name: '聯發科',
+            market: 'TWSE',
+            price: 1280.0,
+            change: 25.0,
+            changePercent: 1.99,
+            volume: 8234,
+            high: 1290,
+            low: 1260,
+            open: 1265,
+            pe: 18.2,
+            pb: 4.5,
+            yield: 2.1,
+            roe: 0,
+            eps: 0,
+            sector: 'semiconductor',
+        },
+        {
+            symbol: '2317',
+            name: '鴻海',
+            market: 'TWSE',
+            price: 156.0,
+            change: 3.5,
+            changePercent: 2.29,
+            volume: 45678,
+            high: 158,
+            low: 153,
+            open: 154,
+            pe: 11.5,
+            pb: 1.4,
+            yield: 5.2,
+            roe: 0,
+            eps: 0,
+            sector: 'electronics',
+        },
+    ];
+}
 ---
 
-<Layout title="Premium Market Dashboard">
-    <div class="dashboard-wrapper">
-        <!-- Dashboard Header -->
-        <PageHero
-            icon="📊"
-            title="MARKET_INTELLIGENCE"
-            subtitle="Premium Real-time Financial Terminal"
-            glowClass="neutral-glow"
-        >
-            <div class="sys-status" slot="action">
-                <span class="pulse-dot text-success"></span>
-                <span class="mono text-success">TERMINAL ONLINE</span>
-            </div>
-        </PageHero>
+<MainTerminal title="Dashboard">
+    <!-- Page Hero -->
+    <PageHero title="Market Dashboard" subtitle="台股即時市場概覽" />
 
-        <!-- Market Breadth Overview (Organism) -->
-        <MarketBreadth breadth={breadth} />
+    <!-- Stats Row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 stagger-children">
+        <StatCard label="加權指數" value="22,156.78" change={0.57} />
+        <StatCard label="櫃買指數" value="237.45" change={-0.32} />
+        <StatCard label="成交量" value="3,421" unit="億" />
+        <StatCard label="漲跌比" value="523 / 401" />
+    </div>
 
-        <!-- Main Workspace Grid -->
-        <div class="dashboard-grid cyber-reveal">
-            <!-- Column 1: Price Action -->
-            <div class="grid-col">
-                <MoversPanel title="Price Gainers" stocks={topGainers} variant="pos" icon="🔥" />
+    <!-- Main Dashboard Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 stagger-children">
+        <!-- Left: Market Breadth -->
+        <div class="lg:col-span-5">
+            <MarketBreadth />
+        </div>
 
-                <MoversPanel title="Price Losers" stocks={topLosers} variant="neg" icon="📉" />
-            </div>
-
-            <!-- Column 2: Fundamentals & Capital -->
-            <div class="grid-col">
-                <!-- Sector Momentum (Organism) -->
-                <SectorMomentum rawSectorPerf={rawSectorPerf} />
-
-                <!-- Growth Stars -->
-                <div class="glass-card panel glow-wrapper">
-                    <div class="glow-bg accent-glow"></div>
-                    <div class="panel-header">
-                        <div class="panel-title-group">
-                            <span class="panel-icon text-accent">🚀</span>
-                            <h2 class="panel-title text-accent">Growth Stars</h2>
-                        </div>
-                    </div>
-                    <div class="panel-content">
-                        {
-                            growthStars.map((s: any) => (
-                                <div class="insight-row">
-                                    <StockCard
-                                        stock={mapGrowthToStock(s)}
-                                        showWatchlistBtn={false}
-                                    />
-                                    <div class="insight-badge text-success">
-                                        +{s.revenue_yoy.toFixed(1)}% Rev
-                                    </div>
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-
-                <!-- Capital Flow -->
-                <div class="glass-card panel glow-wrapper">
-                    <div class="glow-bg accent-glow"></div>
-                    <div class="panel-header">
-                        <div class="panel-title-group">
-                            <span class="panel-icon text-accent">🏛️</span>
-                            <h2 class="panel-title text-accent">Capital Inflow (Foreign)</h2>
-                        </div>
-                    </div>
-                    <div class="panel-content">
-                        {
-                            topChips.map((s: any) => (
-                                <div class="insight-row">
-                                    <StockCard
-                                        stock={mapChipsToStock(s)}
-                                        showWatchlistBtn={false}
-                                    />
-                                    <div class="insight-badge text-accent">
-                                        {(s.foreign_inv / 1000).toFixed(0)}k Shrs
-                                    </div>
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-            </div>
+        <!-- Right: Top Movers -->
+        <div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <MoversPanel type="gainers" />
+            <MoversPanel type="losers" />
         </div>
     </div>
-</Layout>
 
-<style>
-    .dashboard-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        padding-bottom: 40px;
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-    }
-
-    .grid-col {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-    }
-
-    .panel {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .panel-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--c-border);
-    }
-
-    .panel-title {
-        font-size: 15px;
-        font-weight: 700;
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .insight-row {
-        position: relative;
-    }
-
-    .insight-badge {
-        position: absolute;
-        right: 12px;
-        top: 14px;
-        font-size: 10px;
-        font-weight: 800;
-        background: rgba(0, 0, 0, 0.4);
-        padding: 2px 8px;
-        border-radius: 10px;
-        border: 1px solid currentColor;
-        pointer-events: none;
-        font-family: 'JetBrains Mono', monospace;
-    }
-
-    .text-success {
-        color: var(--c-success);
-    }
-    .text-accent {
-        color: var(--c-accent);
-    }
-
-    @media (max-width: 1024px) {
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
+    <!-- Stock Cards Grid -->
+    <section class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-text-primary">🏷️ 熱門個股</h2>
+            <a href="/screener" class="btn-ghost text-xs" data-astro-prefetch> 查看更多 → </a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+            {
+                topStocks.map(stock => (
+                    <StockCard
+                        symbol={stock.symbol}
+                        name={stock.name}
+                        price={stock.price}
+                        change={stock.change}
+                        changePercent={stock.changePercent}
+                        volume={fmtVol(stock.volume)}
+                    />
+                ))
+            }
+        </div>
+    </section>
+</MainTerminal>

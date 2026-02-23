@@ -3,18 +3,17 @@ import { isPWA } from './pwa';
 
 // Mock matchMedia for isPWA test
 beforeEach(() => {
-    vi.spyOn(console, 'log').mockImplementation(() => { });
-    vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('PWA Module', () => {
-
     describe('isPWA', () => {
         it('standalone 模式應回傳 true', () => {
             vi.stubGlobal('window', {
                 ...window,
                 matchMedia: vi.fn().mockReturnValue({ matches: true }),
-                navigator: { ...window.navigator, standalone: undefined }
+                navigator: { ...window.navigator, standalone: undefined },
             });
 
             // Re-check since we can't easily re-import
@@ -26,7 +25,7 @@ describe('PWA Module', () => {
             vi.stubGlobal('window', {
                 ...window,
                 matchMedia: vi.fn().mockReturnValue({ matches: false }),
-                navigator: { ...window.navigator, standalone: undefined }
+                navigator: { ...window.navigator, standalone: undefined },
             });
 
             const result = window.matchMedia('(display-mode: standalone)').matches;

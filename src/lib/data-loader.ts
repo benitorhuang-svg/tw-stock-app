@@ -41,17 +41,19 @@ function parseCSV(text: string): HistoricalPrice[] {
     // 跳過標題行
     const dataLines = lines.slice(1);
 
-    return dataLines.map(line => {
-        const [date, open, high, low, close, volume] = line.split(',');
-        return {
-            date: date.trim(),
-            open: parseFloat(open),
-            high: parseFloat(high),
-            low: parseFloat(low),
-            close: parseFloat(close),
-            volume: parseInt(volume) || 0
-        };
-    }).filter(p => !isNaN(p.close));
+    return dataLines
+        .map(line => {
+            const [date, open, high, low, close, volume] = line.split(',');
+            return {
+                date: date.trim(),
+                open: parseFloat(open),
+                high: parseFloat(high),
+                low: parseFloat(low),
+                close: parseFloat(close),
+                volume: parseInt(volume) || 0,
+            };
+        })
+        .filter(p => !isNaN(p.close));
 }
 
 /**
@@ -98,10 +100,7 @@ export async function getPricesInRange(
 /**
  * 計算期間報酬率
  */
-export async function calculateReturn(
-    symbol: string,
-    days: number
-): Promise<number | null> {
+export async function calculateReturn(symbol: string, days: number): Promise<number | null> {
     const prices = await getRecentPrices(symbol, days);
 
     if (prices.length < 2) return null;

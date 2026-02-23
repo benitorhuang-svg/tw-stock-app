@@ -29,25 +29,25 @@ $ErrorActionPreference = 'Stop'
 # Show help if requested
 if ($Help) {
     Write-Output @"
-Usage: check-prerequisites.ps1 [OPTIONS]
+用法: check-prerequisites.ps1 [選項]
 
-Consolidated prerequisite checking for Spec-Driven Development workflow.
+規格驅動開發 (Spec-Driven Development) 工作流的綜合先決條件檢查。
 
-OPTIONS:
-  -Json               Output in JSON format
-  -RequireTasks       Require tasks.md to exist (for implementation phase)
-  -IncludeTasks       Include tasks.md in AVAILABLE_DOCS list
-  -PathsOnly          Only output path variables (no prerequisite validation)
-  -Help, -h           Show this help message
+選項:
+  -Json               以 JSON 格式輸出
+  -RequireTasks       要求 tasks.md 必須存在 (用於實作階段)
+  -IncludeTasks       在可用文件 (AVAILABLE_DOCS) 列表中包含 tasks.md
+  -PathsOnly          僅輸出路徑變數 (不進行先決條件驗證)
+  -Help, -h           顯示此說明訊息
 
-EXAMPLES:
-  # Check task prerequisites (plan.md required)
+範例:
+  # 檢查任務先決條件 (需要 plan.md)
   .\check-prerequisites.ps1 -Json
   
-  # Check implementation prerequisites (plan.md + tasks.md required)
+  # 檢查實作先決條件 (需要 plan.md + tasks.md)
   .\check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
   
-  # Get feature paths only (no validation)
+  # 僅獲取功能路徑 (不驗證)
   .\check-prerequisites.ps1 -PathsOnly
 
 "@
@@ -87,30 +87,37 @@ if ($PathsOnly) {
     exit 0
 }
 
+$clarifyFile = Split-Path $paths.CLARIFY -Leaf
+$planFile = Split-Path $paths.IMPL_PLAN -Leaf
+$tasksFile = Split-Path $paths.TASKS -Leaf
+$researchFile = Split-Path $paths.RESEARCH -Leaf
+$dataModelFile = Split-Path $paths.DATA_MODEL -Leaf
+$quickstartFile = Split-Path $paths.QUICKSTART -Leaf
+
 # Validate required directories and files
 if (-not (Test-Path $paths.FEATURE_DIR -PathType Container)) {
-    Write-Output "ERROR: Feature directory not found: $($paths.FEATURE_DIR)"
-    Write-Output "Run /speckit.specify first to create the feature structure."
+    Write-Output "錯誤: 找不到功能目錄: $($paths.FEATURE_DIR)"
+    Write-Output "請先執行 /speckit.specify 建立功能結構。"
     exit 1
 }
 
 if (-not (Test-Path $paths.IMPL_PLAN -PathType Leaf)) {
-    Write-Output "ERROR: plan.md not found in $($paths.FEATURE_DIR)"
-    Write-Output "Run /speckit.plan first to create the implementation plan."
+    Write-Output "錯誤: 在 $($paths.FEATURE_DIR) 中找不到 $planFile"
+    Write-Output "請先執行 /speckit.plan 建立實作計畫。"
     exit 1
 }
 
 # Check for tasks.md if required
 if ($RequireTasks -and -not (Test-Path $paths.TASKS -PathType Leaf)) {
-    Write-Output "ERROR: tasks.md not found in $($paths.FEATURE_DIR)"
-    Write-Output "Run /speckit.tasks first to create the task list."
+    Write-Output "錯誤: 在 $($paths.FEATURE_DIR) 中找不到 $tasksFile"
+    Write-Output "請先執行 /speckit.tasks 建立任務清單。"
     exit 1
 }
 
 # Check for clarification.md if required
-if ($RequireClarify -and -not (Test-Path (Join-Path $paths.FEATURE_DIR 'clarification.md' ) -PathType Leaf)) {
-    Write-Output "ERROR: clarification.md not found in $($paths.FEATURE_DIR)"
-    Write-Output "Run /speckit.clarify first to outline edge cases and data sources."
+if ($RequireClarify -and -not (Test-Path $paths.CLARIFY -PathType Leaf)) {
+    Write-Output "錯誤: 在 $($paths.FEATURE_DIR) 中找不到 $clarifyFile"
+    Write-Output "請先執行 /speckit.clarify 概述邊界條件與資料來源。"
     exit 1
 }
 
@@ -118,20 +125,20 @@ if ($RequireClarify -and -not (Test-Path (Join-Path $paths.FEATURE_DIR 'clarific
 $docs = @()
 
 # Always check these optional docs
-if (Test-Path $paths.RESEARCH) { $docs += 'research.md' }
-if (Test-Path $paths.DATA_MODEL) { $docs += 'data-model.md' }
-if (Test-Path (Join-Path $paths.FEATURE_DIR 'clarification.md')) { $docs += 'clarification.md' }
+if (Test-Path $paths.RESEARCH) { $docs += $researchFile }
+if (Test-Path $paths.DATA_MODEL) { $docs += $dataModelFile }
+if (Test-Path $paths.CLARIFY) { $docs += $clarifyFile }
 
 # Check contracts directory (only if it exists and has files)
 if ((Test-Path $paths.CONTRACTS_DIR) -and (Get-ChildItem -Path $paths.CONTRACTS_DIR -ErrorAction SilentlyContinue | Select-Object -First 1)) { 
     $docs += 'contracts/' 
 }
 
-if (Test-Path $paths.QUICKSTART) { $docs += 'quickstart.md' }
+if (Test-Path $paths.QUICKSTART) { $docs += $quickstartFile }
 
 # Include tasks.md if requested and it exists
 if ($IncludeTasks -and (Test-Path $paths.TASKS)) { 
-    $docs += 'tasks.md' 
+    $docs += $tasksFile 
 }
 
 # Output results
@@ -143,18 +150,18 @@ if ($Json) {
     } | ConvertTo-Json -Compress
 }
 else {
-    # Text output
-    Write-Output "FEATURE_DIR:$($paths.FEATURE_DIR)"
-    Write-Output "AVAILABLE_DOCS:"
+    # 文本輸出
+    Write-Output "功能目錄 (FEATURE_DIR):$($paths.FEATURE_DIR)"
+    Write-Output "可用文件 (AVAILABLE_DOCS):"
     
     # Show status of each potential document
-    Test-FileExists -Path $paths.RESEARCH -Description 'research.md' | Out-Null
-    Test-FileExists -Path $paths.DATA_MODEL -Description 'data-model.md' | Out-Null
-    Test-FileExists -Path (Join-Path $paths.FEATURE_DIR 'clarification.md') -Description 'clarification.md' | Out-Null
+    Test-FileExists -Path $paths.RESEARCH -Description $researchFile | Out-Null
+    Test-FileExists -Path $paths.DATA_MODEL -Description $dataModelFile | Out-Null
+    Test-FileExists -Path $paths.CLARIFY -Description $clarifyFile | Out-Null
     Test-DirHasFiles -Path $paths.CONTRACTS_DIR -Description 'contracts/' | Out-Null
-    Test-FileExists -Path $paths.QUICKSTART -Description 'quickstart.md' | Out-Null
+    Test-FileExists -Path $paths.QUICKSTART -Description $quickstartFile | Out-Null
     
     if ($IncludeTasks) {
-        Test-FileExists -Path $paths.TASKS -Description 'tasks.md' | Out-Null
+        Test-FileExists -Path $paths.TASKS -Description $tasksFile | Out-Null
     }
 }

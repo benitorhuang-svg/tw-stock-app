@@ -22,7 +22,10 @@ describe('Chart Tooltip', () => {
         it('應建立 tooltip 元素', () => {
             showTooltip(100, 200, {
                 date: '2024/01/15',
-                open: 100, high: 105, low: 98, close: 103
+                open: 100,
+                high: 105,
+                low: 98,
+                close: 103,
             });
 
             const tooltip = document.getElementById('chart-tooltip');
@@ -33,7 +36,10 @@ describe('Chart Tooltip', () => {
         it('應顯示 OHLC 資料', () => {
             showTooltip(100, 200, {
                 date: '2024/01/15',
-                open: 100, high: 105, low: 98, close: 103
+                open: 100,
+                high: 105,
+                low: 98,
+                close: 103,
             });
 
             const tooltip = document.getElementById('chart-tooltip');
@@ -47,8 +53,11 @@ describe('Chart Tooltip', () => {
         it('有 volume 時應顯示成交量 (K 單位)', () => {
             showTooltip(100, 200, {
                 date: '2024/01/15',
-                open: 100, high: 105, low: 98, close: 103,
-                volume: 50000
+                open: 100,
+                high: 105,
+                low: 98,
+                close: 103,
+                volume: 50000,
             });
 
             const tooltip = document.getElementById('chart-tooltip');
@@ -58,9 +67,12 @@ describe('Chart Tooltip', () => {
         it('有 change 時應顯示漲跌額和百分比', () => {
             showTooltip(100, 200, {
                 date: '2024/01/15',
-                open: 100, high: 105, low: 98, close: 103,
+                open: 100,
+                high: 105,
+                low: 98,
+                close: 103,
                 change: 3,
-                changePercent: 3.0
+                changePercent: 3.0,
             });
 
             const tooltip = document.getElementById('chart-tooltip');
@@ -71,8 +83,12 @@ describe('Chart Tooltip', () => {
         it('上漲時應顯示 ▲', () => {
             showTooltip(100, 200, {
                 date: '2024/01/15',
-                open: 100, high: 105, low: 98, close: 103,
-                change: 3, changePercent: 3.0
+                open: 100,
+                high: 105,
+                low: 98,
+                close: 103,
+                change: 3,
+                changePercent: 3.0,
             });
 
             const tooltip = document.getElementById('chart-tooltip');
@@ -82,8 +98,12 @@ describe('Chart Tooltip', () => {
         it('下跌時應顯示 ▼', () => {
             showTooltip(100, 200, {
                 date: '2024/01/15',
-                open: 105, high: 105, low: 98, close: 100,
-                change: -5, changePercent: -4.76
+                open: 105,
+                high: 105,
+                low: 98,
+                close: 100,
+                change: -5,
+                changePercent: -4.76,
             });
 
             const tooltip = document.getElementById('chart-tooltip');
@@ -95,7 +115,10 @@ describe('Chart Tooltip', () => {
         it('應隱藏 tooltip', () => {
             showTooltip(100, 200, {
                 date: '2024/01/15',
-                open: 100, high: 105, low: 98, close: 103
+                open: 100,
+                high: 105,
+                low: 98,
+                close: 103,
             });
 
             hideTooltip();
@@ -112,13 +135,11 @@ describe('Chart Tooltip', () => {
     describe('bindChartTooltip', () => {
         it('應回傳清理函式', () => {
             const canvas = document.createElement('canvas');
-            const data = [
-                { date: '2024/01/15', open: 100, high: 105, low: 98, close: 103 }
-            ];
+            const data = [{ date: '2024/01/15', open: 100, high: 105, low: 98, close: 103 }];
 
             const cleanup = bindChartTooltip(canvas, data, {
                 padding: { left: 50, right: 20, top: 20, bottom: 30 },
-                getBarIndex: (x: number) => Math.floor(x / 10)
+                getBarIndex: (x: number) => Math.floor(x / 10),
             });
 
             expect(typeof cleanup).toBe('function');

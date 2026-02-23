@@ -1,92 +1,126 @@
 ---
 /**
- * MoversPanel Organism
- *
- * Lists top movers in a glass panel.
+ * MoversPanel.astro — Top gainers/losers ranking organism
+ * Shows strongest and weakest stocks for the day.
  */
-import StockCard from './StockCard.astro';
 
-interface Props {
-    title: string;
-    stocks: any[];
-    variant?: 'pos' | 'neg' | 'accent';
-    icon: string;
+interface MoverItem {
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+    changePercent: number;
+    volume: string;
 }
 
-const { title, stocks, variant = 'accent', icon } = Astro.props;
+interface Props {
+    title?: string;
+    type?: 'gainers' | 'losers';
+    items?: MoverItem[];
+    class?: string;
+}
 
-const mapToStock = (s: any) => ({
-    symbol: s.symbol,
-    name: s.name,
-    price: s.price || 0,
-    change: s.change || 0,
-    changePercent: s.change_pct || 0,
-    volume: s.volume || 0,
-    pe: s.pe || 0,
-    pb: s.pb || 0,
-    yield: s.yield || 0,
-    roe: 0,
-    eps: 0,
-});
+const { title, type = 'gainers', items = [], class: className = '' } = Astro.props;
+const isGainer = type === 'gainers';
+const displayTitle = title ?? (isGainer ? '🚀 強勢股排行' : '📉 弱勢股排行');
+
+// Fallback demo data
+const displayItems: MoverItem[] =
+    items.length > 0
+        ? items
+        : [
+              {
+                  symbol: '2330',
+                  name: '台積電',
+                  price: 892.0,
+                  change: 15.0,
+                  changePercent: 1.71,
+                  volume: '32,456',
+              },
+              {
+                  symbol: '2454',
+                  name: '聯發科',
+                  price: 1280.0,
+                  change: 25.0,
+                  changePercent: 1.99,
+                  volume: '8,234',
+              },
+              {
+                  symbol: '2317',
+                  name: '鴻海',
+                  price: 156.0,
+                  change: 3.5,
+                  changePercent: 2.29,
+                  volume: '45,678',
+              },
+              {
+                  symbol: '2382',
+                  name: '廣達',
+                  price: 312.0,
+                  change: 8.0,
+                  changePercent: 2.63,
+                  volume: '12,345',
+              },
+              {
+                  symbol: '3711',
+                  name: '日月光投控',
+                  price: 178.5,
+                  change: 4.5,
+                  changePercent: 2.58,
+                  volume: '9,876',
+              },
+          ];
 ---
 
-<div class="glass-card panel glow-wrapper">
-    <div class={`glow-bg ${variant}-glow`}></div>
-    <div class="panel-header">
-        <div class="panel-title-group">
-            <span
-                class={`panel-icon text-${variant === 'pos' ? 'success' : variant === 'neg' ? 'danger' : 'accent'}`}
-                >{icon}</span
-            >
-            <h2
-                class={`panel-title text-${variant === 'pos' ? 'success' : variant === 'neg' ? 'danger' : 'accent'}`}
-            >
-                {title}
-            </h2>
-        </div>
+<section
+    class:list={['glass-card glow-interactive flex flex-col', className]}
+    id={`movers-${type}`}
+>
+    <!-- Header -->
+    <div class="flex items-center justify-between px-5 py-3 border-b border-border">
+        <h2 class="text-sm font-bold tracking-wide text-text-primary">{displayTitle}</h2>
+        <span class="text-xs text-text-muted font-mono">{displayItems.length} 檔</span>
     </div>
-    <div class="panel-content">
-        {stocks.map((s: any) => <StockCard stock={mapToStock(s)} />)}
+
+    <!-- Stock List -->
+    <div class="flex-1 divide-y divide-border/50">
+        {
+            displayItems.map((stock, i) => (
+                <a
+                    href={`/stocks/${stock.symbol}`}
+                    class="flex items-center justify-between px-5 py-3 transition-colors hover:bg-glass-hover group"
+                    data-astro-prefetch
+                >
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-mono text-text-muted w-5 text-right">
+                            {i + 1}
+                        </span>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors">
+                                    {stock.name}
+                                </span>
+                                <span class="text-xs text-text-muted font-mono">
+                                    {stock.symbol}
+                                </span>
+                            </div>
+                            <span class="text-xs text-text-muted font-mono">{stock.volume} 張</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="data-value text-sm">{stock.price.toFixed(1)}</div>
+                        <span
+                            class:list={[
+                                'text-xs font-mono font-semibold',
+                                isGainer ? 'text-bullish' : 'text-bearish',
+                            ]}
+                        >
+                            {isGainer ? '+' : ''}
+                            {stock.changePercent.toFixed(2)}%
+                        </span>
+                    </div>
+                </a>
+            ))
+        }
     </div>
-</div>
-
-<style>
-    .panel {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .panel-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--c-border);
-        background: rgba(255, 255, 255, 0.01);
-    }
-
-    .panel-title-group {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .panel-title {
-        font-size: 15px;
-        font-weight: 700;
-        margin: 0;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .panel-icon {
-        font-size: 18px;
-    }
-
-    .text-success {
-        color: var(--c-success);
-    }
-    .text-danger {
-        color: var(--c-danger);
-    }
-    .text-accent {
-        color: var(--c-accent);
-    }
-</style>
+</section>

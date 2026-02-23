@@ -1,0 +1,239 @@
+---
+/**
+ * MainTerminal.astro — Quantum Terminal Shell (Top-Nav Edition)
+ * The outermost layout for all pages.
+ * Full-width viewport + top navigation bar (desktop) / bottom-nav (mobile)
+ */
+import { ClientRouter } from 'astro:transitions';
+import BaseHead from './BaseHead.astro';
+import '../styles/global.css';
+
+interface Props {
+    title: string;
+    description?: string;
+    /** If true, removes content padding (e.g. for chart-heavy pages) */
+    fullWidth?: boolean;
+}
+
+const { title, description, fullWidth = false } = Astro.props;
+const currentPath = Astro.url.pathname;
+const isActive = (path: string) =>
+    currentPath === path || (path !== '/' && currentPath.startsWith(path));
+
+const navItems = [
+    { label: 'DASHBOARD', zh: '總覽', path: '/', icon: '📊' },
+    { label: 'SCREENER', zh: '選股', path: '/screener', icon: '🔍' },
+    { label: 'ANALYSIS', zh: '分析', path: '/stocks', icon: '📈' },
+    { label: 'EXPLORER', zh: '數據觀測', path: '/database', icon: '🗃️' },
+];
+---
+
+<!doctype html>
+<html lang="zh-TW" class="dark">
+    <head>
+        <BaseHead title={title} description={description} />
+        <ClientRouter />
+    </head>
+    <body class="flex flex-col h-[100dvh] overflow-hidden bg-base text-text-primary">
+        <!-- ═══ Top Navigation Bar ═══ -->
+        <header class="top-nav-bar flex-shrink-0 z-50" id="top-header">
+            <div
+                class="flex items-center justify-between h-14 px-4 lg:px-6 max-w-[1800px] mx-auto w-full"
+            >
+                <!-- Left: Brand + Nav Tabs -->
+                <div class="flex items-center gap-1 lg:gap-2">
+                    <!-- Brand -->
+                    <a
+                        href="/"
+                        class="flex items-center gap-2 no-underline mr-4 lg:mr-6 flex-shrink-0"
+                        data-astro-prefetch
+                    >
+                        <span
+                            class="font-mono text-base lg:text-lg font-extrabold tracking-tight text-text-primary"
+                        >
+                            TWStock
+                        </span>
+                        <span
+                            class="text-[8px] lg:text-[9px] font-black tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm bg-accent/20 text-accent"
+                        >
+                            PRO
+                        </span>
+                    </a>
+
+                    <!-- Desktop Navigation Tabs -->
+                    <nav class="hidden md:flex items-center" aria-label="主要導覽" id="desktop-nav">
+                        <div class="top-nav-tabs">
+                            {
+                                navItems.map(item => (
+                                    <a
+                                        href={item.path}
+                                        class:list={[
+                                            'top-nav-tab',
+                                            isActive(item.path) && 'active',
+                                        ]}
+                                        data-astro-prefetch
+                                    >
+                                        <span class="tab-icon">{item.icon}</span>
+                                        <span class="tab-label">{item.label}</span>
+                                        <span class="tab-zh">{item.zh}</span>
+                                    </a>
+                                ))
+                            }
+                            <div class="tab-indicator" id="tab-indicator"></div>
+                        </div>
+                    </nav>
+                </div>
+
+                <!-- Right: Search + Market Selector + Status -->
+                <div class="flex items-center gap-3">
+                    <!-- Search Bar -->
+                    <div class="hidden lg:flex items-center">
+                        <div class="search-input-wrapper">
+                            <svg
+                                class="w-3.5 h-3.5 text-text-muted mr-2 flex-shrink-0"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <input
+                                type="text"
+                                placeholder="搜尋代號或名稱..."
+                                class="bg-transparent border-none outline-none text-sm text-text-primary placeholder:text-text-muted w-full font-mono"
+                                id="global-search-input"
+                            />
+                            <kbd
+                                class="hidden xl:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-text-muted border border-border rounded"
+                            >
+                                ⌘K
+                            </kbd>
+                        </div>
+                    </div>
+
+                    <!-- Market Type Selector -->
+                    <select class="market-type-select" id="market-type-select">
+                        <option value="TWSE">上市 TWSE</option>
+                        <option value="OTC">上櫃 OTC</option>
+                        <option value="ETF">ETF</option>
+                    </select>
+
+                    <!-- System Status Indicator -->
+                    <div
+                        class="hidden md:flex items-center gap-2 text-xs text-text-muted pl-3 border-l border-border/50"
+                    >
+                        <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
+                        <span class="font-mono text-[10px] tracking-wider">LIVE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtle bottom gradient line -->
+            <div class="nav-glow-line"></div>
+        </header>
+
+        <!-- ═══ Main Workspace ═══ -->
+        <main
+            class:list={[
+                'flex-1 overflow-y-auto overflow-x-hidden',
+                fullWidth ? 'p-0' : 'p-4 lg:p-6',
+            ]}
+            id="main-workspace"
+        >
+            <div class:list={[fullWidth ? '' : 'max-w-[1400px] mx-auto w-full']}>
+                <slot />
+            </div>
+        </main>
+
+        <!-- ═══ Mobile Bottom Navigation ═══ -->
+        <nav
+            class="md:hidden fixed bottom-0 inset-x-0 z-50 mobile-bottom-nav"
+            id="mobile-bottom-nav"
+            aria-label="行動裝置導覽"
+        >
+            {
+                navItems.map(item => (
+                    <a
+                        href={item.path}
+                        class:list={['mobile-nav-item', isActive(item.path) && 'active']}
+                        data-astro-prefetch
+                    >
+                        <span class="text-lg">{item.icon}</span>
+                        <span class="text-[10px] font-semibold tracking-wider">{item.zh}</span>
+                    </a>
+                ))
+            }
+        </nav>
+
+        <!-- ═══ Global Scripts ═══ -->
+        <script>
+            // Tab indicator positioning
+            function updateTabIndicator() {
+                const activeTab = document.querySelector('.top-nav-tab.active') as HTMLElement;
+                const indicator = document.getElementById('tab-indicator') as HTMLElement;
+                if (activeTab && indicator) {
+                    const tabsContainer = activeTab.parentElement as HTMLElement;
+                    const containerRect = tabsContainer.getBoundingClientRect();
+                    const tabRect = activeTab.getBoundingClientRect();
+                    indicator.style.width = `${tabRect.width}px`;
+                    indicator.style.transform = `translateX(${tabRect.left - containerRect.left}px)`;
+                    indicator.style.opacity = '1';
+                }
+            }
+
+            // Run on load and after view transitions
+            updateTabIndicator();
+            document.addEventListener('astro:page-load', updateTabIndicator);
+
+            // Hover preview for tabs
+            document.querySelectorAll<HTMLElement>('.top-nav-tab').forEach(tab => {
+                tab.addEventListener('mouseenter', () => {
+                    const indicator = document.getElementById('tab-indicator') as HTMLElement;
+                    const tabsContainer = tab.parentElement as HTMLElement;
+                    if (indicator && tabsContainer) {
+                        const containerRect = tabsContainer.getBoundingClientRect();
+                        const tabRect = tab.getBoundingClientRect();
+                        indicator.style.width = `${tabRect.width}px`;
+                        indicator.style.transform = `translateX(${tabRect.left - containerRect.left}px)`;
+                    }
+                });
+            });
+
+            // Reset indicator on mouse leave from tab container
+            document.querySelector('.top-nav-tabs')?.addEventListener('mouseleave', () => {
+                updateTabIndicator();
+            });
+
+            // Interactive Glow Tracker — follows cursor on .glow-interactive elements
+            document.addEventListener('mousemove', (e: MouseEvent) => {
+                const elements = document.querySelectorAll<HTMLElement>('.glow-interactive');
+                elements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                    el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+                });
+            });
+
+            // Keyboard shortcut: Cmd/Ctrl+K → focus search
+            document.addEventListener('keydown', (e: KeyboardEvent) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const search = document.getElementById(
+                        'global-search-input'
+                    ) as HTMLInputElement;
+                    search?.focus();
+                }
+            });
+
+            console.log(
+                '%c TWStock Quantum Terminal %c v4.0 — Top Nav ',
+                'background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px 0 0 4px; font-weight: bold;',
+                'background: #1e293b; color: #94a3b8; padding: 4px 8px; border-radius: 0 4px 4px 0;'
+            );
+        </script>
+    </body>
+</html>

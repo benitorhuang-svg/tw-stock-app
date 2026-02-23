@@ -1,6 +1,6 @@
 /**
  * 取得上市公司月報 (P/E, 殖利率, 股淨比)
- * 
+ *
  * 來源: TWSE (index04 數據)
  * 輸出: public/data/monthly_stats.json
  */
@@ -22,7 +22,7 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
         try {
             const res = await fetch(url, {
                 signal: controller.signal,
-                headers: { 'User-Agent': 'Mozilla/5.0' }
+                headers: { 'User-Agent': 'Mozilla/5.0' },
             });
             clearTimeout(timeout);
             if (res.ok) return await res.json();
@@ -62,10 +62,11 @@ async function main() {
         dividendYear: row[3],
         peRatio: parseFloat(row[4]) || 0,
         pbRatio: parseFloat(row[5]) || 0,
-        fiscalPeriod: row[6]
+        fiscalPeriod: row[6],
     }));
 
-    if (!fs.existsSync(path.dirname(OUTPUT_FILE))) fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
+    if (!fs.existsSync(path.dirname(OUTPUT_FILE)))
+        fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(stats, null, 2), 'utf-8');
 
     console.log(`\n✅ 已儲存 ${stats.length} 檔股票統計至 monthly_stats.json`);

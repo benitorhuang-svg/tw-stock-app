@@ -1,0 +1,258 @@
+---
+/**
+ * TabChips.astro — Institutional Chips Tab (005-tab-chips)
+ * Three institutional investors momentum + combo divergence chart
+ */
+import { getInstitutionalData, getLatestInstitutional, getConsecutiveDays } from '../../data/institutional';
+import type { InstitutionalData } from '../../data/institutional';
+
+interface Props {
+    symbol: string;
+    price: number;
+}
+
+const { symbol, price } = Astro.props;
+
+const institutionalData = getInstitutionalData(symbol);
+const latest = getLatestInstitutional(symbol);
+const foreignDays = getConsecutiveDays(symbol, 'foreign');
+const investDays = getConsecutiveDays(symbol, 'invest');
+const dealerDays = getConsecutiveDays(symbol, 'dealer');
+
+const entities = [
+    {
+        name: '外資',
+        en: 'Foreign',
+        net: latest?.foreignNet ?? 0,
+        days: foreignDays,
+        color: 'accent',
+        trend: institutionalData.slice(0, 5).map(d => d.foreignNet),
+    },
+    {
+        name: '投信',
+        en: 'Trust',
+        net: latest?.investNet ?? 0,
+        days: investDays,
+        color: 'warning',
+        trend: institutionalData.slice(0, 5).map(d => d.investNet),
+    },
+    {
+        name: '自營商',
+        en: 'Dealer',
+        net: latest?.dealerNet ?? 0,
+        days: dealerDays,
+        color: 'text-secondary',
+        trend: institutionalData.slice(0, 5).map(d => d.dealerNet),
+    },
+    {
+        name: '三大法人',
+        en: 'Total',
+        net: latest?.totalNet ?? 0,
+        days: getConsecutiveDays(symbol, 'total'),
+        color: 'bullish',
+        trend: institutionalData.slice(0, 5).map(d => d.totalNet),
+    },
+];
+
+const fmtNet = (n: number) => {
+    if (n === 0) return '—';
+    const prefix = n > 0 ? '+' : '';
+    return `${prefix}${n.toLocaleString('zh-TW')}`;
+};
+
+// Chart data for combo divergence (last 5 days, reversed for chronological order)
+const chartData = [...institutionalData].reverse();
+const maxNet = Math.max(...chartData.map(d => Math.abs(d.totalNet)), 1);
+
+// Sparkline helper: create SVG points from trend data
+const sparkPoints = (data: number[]) => {
+    if (data.length === 0) return '';
+    const max = Math.max(...data.map(Math.abs), 1);
+    const mid = 20;
+    return data.map((v, i) => {
+        const x = (i / Math.max(data.length - 1, 1)) * 80 + 5;
+        const y = mid - (v / max) * 15;
+        return `${x},${y}`;
+    }).join(' ');
+};
+---
+
+<div class="space-y-6">
+    <!-- Institutional Momentum Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
+        {entities.map((entity) => {
+            const isPos = entity.net > 0;
+            const glowClass = isPos
+                ? 'shadow-[0_0_12px_hsl(142,71%,45%,0.15)]'
+                : entity.net < 0
+                    ? 'shadow-[0_0_12px_hsl(346,77%,50%,0.15)]'
+                    : '';
+            return (
+                <div class:list={[
+                    'glass-card glow-interactive px-4 py-3 flex flex-col gap-2 border-t-2',
+                    isPos ? 'border-t-bullish/40' : entity.net < 0 ? 'border-t-bearish/40' : 'border-t-border',
+                    glowClass
+                ]}>
+                    <div class="flex items-center justify-between">
+                        <span class="terminal-label">{entity.name}</span>
+                        {entity.days !== 0 && (
+                            <span class:list={[
+                                'text-[10px] font-bold font-mono px-1.5 py-0.5 rounded',
+                                entity.days > 0
+                                    ? 'bg-bullish/15 text-bullish'
+                                    : 'bg-bearish/15 text-bearish'
+                            ]}>
+                                連{Math.abs(entity.days)}日{entity.days > 0 ? '買' : '賣'}超
+                            </span>
+                        )}
+                    </div>
+                    <span class:list={[
+                        'data-value text-xl',
+                        isPos ? 'text-bullish' : entity.net < 0 ? 'text-bearish' : 'text-text-muted'
+                    ]}>
+                        {fmtNet(entity.net)}<span class="text-xs text-text-muted ml-1">張</span>
+                    </span>
+                    <!-- Sparkline -->
+                    {entity.trend.length > 0 && (
+                        <svg viewBox="0 0 90 40" class="w-full h-8 mt-1">
+                            <line x1="5" y1="20" x2="85" y2="20" stroke="hsl(0,0%,100%,0.05)" stroke-width="0.5"/>
+                            <polyline
+                                points={sparkPoints(entity.trend)}
+                                fill="none"
+                                stroke={isPos ? 'hsl(142,71%,45%)' : entity.net < 0 ? 'hsl(346,77%,50%)' : 'hsl(240,4%,40%)'}
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    )}
+                </div>
+            );
+        })}
+    </div>
+
+    <!-- Combo Divergence Chart -->
+    <div class="glass-card p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="terminal-label mb-1">複合背離圖</h3>
+                <p class="text-xs text-text-muted">股價 × 三大法人買賣超 — 雙軸堆疊</p>
+            </div>
+            <div class="flex items-center gap-3 text-[10px]">
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-bearish/60"></span> 外資</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-warning/60"></span> 投信</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-text-muted"></span> 自營</span>
+            </div>
+        </div>
+
+        {chartData.length > 0 ? (
+            <div class="relative h-[320px]">
+                <!-- Y-axis labels -->
+                <div class="absolute left-0 top-0 bottom-8 w-12 flex flex-col justify-between text-[9px] font-mono text-text-muted">
+                    <span>+{(maxNet/1000).toFixed(0)}K</span>
+                    <span>0</span>
+                    <span>-{(maxNet/1000).toFixed(0)}K</span>
+                </div>
+                <!-- Chart area -->
+                <div class="ml-14 mr-4 h-full flex flex-col">
+                    <div class="flex-1 relative">
+                        <!-- Zero line -->
+                        <div class="absolute left-0 right-0 top-1/2 border-t border-white/[0.08]"></div>
+                        <!-- Grid -->
+                        <div class="absolute left-0 right-0 top-1/4 border-t border-dashed border-white/[0.03]"></div>
+                        <div class="absolute left-0 right-0 top-3/4 border-t border-dashed border-white/[0.03]"></div>
+
+                        <!-- Stacked bars -->
+                        <div class="absolute inset-0 flex items-center justify-around px-2">
+                            {chartData.map((d) => {
+                                const fPct = (d.foreignNet / maxNet) * 45;
+                                const iPct = (d.investNet / maxNet) * 45;
+                                const dPct = (d.dealerNet / maxNet) * 45;
+                                const totalPct = (d.totalNet / maxNet) * 45;
+                                return (
+                                    <div class="flex flex-col items-center gap-0.5 group relative" style="width: 16%">
+                                        {/* Stacked bar segments */}
+                                        <div class="w-full flex flex-col items-center" style="height: 90%">
+                                            {/* Foreign */}
+                                            <div
+                                                class="w-3/4 rounded-sm transition-all duration-300 group-hover:w-full"
+                                                style={`height: ${Math.abs(fPct)}%; margin-top: ${fPct < 0 ? '0' : 'auto'}; margin-bottom: ${fPct >= 0 ? '0' : 'auto'}; background: ${fPct >= 0 ? 'hsl(346,77%,50%,0.6)' : 'hsl(142,71%,45%,0.6)'}; transform: translateY(${fPct >= 0 ? '-' : ''}0%);`}
+                                            ></div>
+                                        </div>
+                                        {/* Date label */}
+                                        <span class="text-[8px] font-mono text-text-muted mt-1 whitespace-nowrap">
+                                            {d.date.slice(5)}
+                                        </span>
+                                        {/* Tooltip on hover */}
+                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-base border border-border rounded-lg text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap shadow-elevated">
+                                            <div class="text-text-primary mb-1 font-bold">{d.date}</div>
+                                            <div class="text-bearish/80">外資: {fmtNet(d.foreignNet)}</div>
+                                            <div class="text-warning/80">投信: {fmtNet(d.investNet)}</div>
+                                            <div class="text-text-muted">自營: {fmtNet(d.dealerNet)}</div>
+                                            <div class:list={['font-bold mt-1 pt-1 border-t border-border', d.totalNet > 0 ? 'text-bullish' : 'text-bearish']}>
+                                                合計: {fmtNet(d.totalNet)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        ) : (
+            <div class="h-[320px] flex flex-col items-center justify-center">
+                <span class="text-3xl mb-3">🏦</span>
+                <p class="text-sm text-text-muted">尚無此檔籌碼資料</p>
+                <p class="text-xs text-text-muted mt-1">Institutional data unavailable for {symbol}</p>
+            </div>
+        )}
+    </div>
+
+    <!-- Ownership Distribution -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="glass-card p-5 glow-interactive">
+            <h3 class="terminal-label mb-3">大戶持股比率趨勢</h3>
+            <div class="h-[120px] flex items-end justify-around gap-1 px-2">
+                {[68, 70, 69, 72, 74, 73, 75, 76, 74, 77, 78, 80].map((v, i) => (
+                    <div class="flex flex-col items-center gap-1 flex-1">
+                        <div
+                            class="w-full rounded-t-sm bg-accent/40 hover:bg-accent/60 transition-colors"
+                            style={`height: ${(v / 100) * 100}%`}
+                        ></div>
+                        {i % 3 === 0 && <span class="text-[7px] font-mono text-text-muted">{12 - i}M</span>}
+                    </div>
+                ))}
+            </div>
+            <div class="flex items-center justify-between mt-3 text-xs text-text-muted font-mono">
+                <span>400張以上大戶</span>
+                <span class="text-bullish font-bold">80.2%</span>
+            </div>
+        </div>
+
+        <div class="glass-card p-5 glow-interactive">
+            <h3 class="terminal-label mb-3">股東結構分佈</h3>
+            <div class="flex items-center justify-center h-[120px] gap-6">
+                <!-- Donut ring via SVG -->
+                <svg viewBox="0 0 100 100" class="w-24 h-24">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(217,91%,60%,0.3)" stroke-width="12"/>
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="hsl(217,91%,60%,0.8)" stroke-width="12"
+                        stroke-dasharray={`${0.80 * 251.3} ${251.3}`} stroke-dashoffset="0"
+                        transform="rotate(-90 50 50)" stroke-linecap="round"/>
+                    <text x="50" y="48" text-anchor="middle" fill="white" font-size="14" font-weight="bold" font-family="var(--font-mono)">80%</text>
+                    <text x="50" y="62" text-anchor="middle" fill="hsl(240,4%,40%)" font-size="8">大戶</text>
+                </svg>
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-accent"></span>
+                        <span class="text-text-secondary">千張大股東 <span class="font-mono text-accent font-bold">80%</span></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-accent/30"></span>
+                        <span class="text-text-secondary">50張以下散戶 <span class="font-mono text-text-muted font-bold">20%</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

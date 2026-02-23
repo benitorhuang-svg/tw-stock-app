@@ -13,14 +13,14 @@ function makeFile(content: string, name = 'test.csv'): File {
 }
 
 describe('Data Import', () => {
-
     // ========================================
     // importPriceCSV
     // ========================================
 
     describe('importPriceCSV', () => {
         it('應正確匯入標準 CSV', async () => {
-            const csv = 'Date,Open,High,Low,Close,Volume\n2024/01/15,100,105,98,103,50000\n2024/01/16,103,108,101,106,60000';
+            const csv =
+                'Date,Open,High,Low,Close,Volume\n2024/01/15,100,105,98,103,50000\n2024/01/16,103,108,101,106,60000';
             const file = makeFile(csv);
 
             const result = await importPriceCSV(file, '2330');
@@ -41,7 +41,7 @@ describe('Data Import', () => {
         });
 
         it('檔案內容不足應回報錯誤', async () => {
-            const csv = 'Date,Close';  // 只有標題，沒有資料行
+            const csv = 'Date,Close'; // 只有標題，沒有資料行
             const file = makeFile(csv);
 
             const result = await importPriceCSV(file, '2330');
@@ -154,7 +154,7 @@ describe('Data Import', () => {
         });
 
         it('檔案內容不足應回報錯誤', async () => {
-            const csv = 'Year,Cash';  // 只有一行
+            const csv = 'Year,Cash'; // 只有一行
             const file = makeFile(csv);
 
             const result = await importDividendCSV(file, '2330');

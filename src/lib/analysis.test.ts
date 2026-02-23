@@ -7,7 +7,7 @@ import {
     sharpeRatio,
     maxDrawdown,
     calculateReturns,
-    analyzeRisk
+    analyzeRisk,
 } from './analysis';
 
 describe('Analysis Functions', () => {

@@ -5,6 +5,8 @@ async function test() {
         const data = await response.json();
         console.log(`Received ${data.length} records.`);
         if (data.length > 0) console.log('Sample:', data[0]);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+    }
 }
 test();

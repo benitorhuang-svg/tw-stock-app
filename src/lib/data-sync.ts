@@ -30,7 +30,7 @@ let syncTimer: ReturnType<typeof setInterval> | null = null;
 let currentStatus: SyncMeta = {
     lastSyncTime: 0,
     syncStatus: 'idle',
-    stockCount: 0
+    stockCount: 0,
 };
 
 // ================== 核心函式 ==================
@@ -45,7 +45,7 @@ export function getLastSyncTime(): number {
             const parsed = JSON.parse(meta) as SyncMeta;
             return parsed.lastSyncTime;
         }
-    } catch (e) { }
+    } catch (e) {}
     return 0;
 }
 
@@ -58,7 +58,7 @@ export function getSyncStatus(): SyncMeta {
         if (meta) {
             return JSON.parse(meta) as SyncMeta;
         }
-    } catch (e) { }
+    } catch (e) {}
     return currentStatus;
 }
 
@@ -88,7 +88,7 @@ export async function syncFromAPI(): Promise<boolean> {
     try {
         // 取得全部股票
         const response = await fetch('/api/screener', {
-            method: 'GET'
+            method: 'GET',
         });
 
         if (!response.ok) {
@@ -102,7 +102,7 @@ export async function syncFromAPI(): Promise<boolean> {
             const localData: LocalStockData = {
                 stocks: data.stocks,
                 fundamentals: data.fundamentals || [],
-                timestamp: Date.now()
+                timestamp: Date.now(),
             };
 
             localStorage.setItem(STOCK_DATA_KEY, JSON.stringify(localData));
@@ -130,7 +130,7 @@ export function getLocalData(): LocalStockData | null {
         if (data) {
             return JSON.parse(data) as LocalStockData;
         }
-    } catch (e) { }
+    } catch (e) {}
     return null;
 }
 
@@ -186,7 +186,7 @@ export function clearLocalData(): void {
     currentStatus = {
         lastSyncTime: 0,
         syncStatus: 'idle',
-        stockCount: 0
+        stockCount: 0,
     };
     console.log('[Sync] Local data cleared');
 }
@@ -202,13 +202,15 @@ function updateSyncStatus(
         lastSyncTime: status === 'success' ? Date.now() : currentStatus.lastSyncTime,
         syncStatus: status,
         stockCount: stockCount ?? currentStatus.stockCount,
-        errorMessage
+        errorMessage,
     };
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(currentStatus));
 
     // 發送自訂事件通知 UI 更新
-    window.dispatchEvent(new CustomEvent('sync-status-changed', {
-        detail: currentStatus
-    }));
+    window.dispatchEvent(
+        new CustomEvent('sync-status-changed', {
+            detail: currentStatus,
+        })
+    );
 }

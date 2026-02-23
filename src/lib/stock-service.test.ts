@@ -5,7 +5,7 @@ vi.mock('./database', () => ({
     query: vi.fn(),
     execute: vi.fn(),
     batchInsert: vi.fn(),
-    saveDatabase: vi.fn()
+    saveDatabase: vi.fn(),
 }));
 
 import { query, execute, batchInsert } from './database';
@@ -25,7 +25,7 @@ describe('Stock Service', () => {
         it('應返回所有股票列表', async () => {
             const mockStocks = [
                 { symbol: '2330', name: '台積電', industry: '半導體' },
-                { symbol: '2317', name: '鴻海', industry: '電腦及週邊設備' }
+                { symbol: '2317', name: '鴻海', industry: '電腦及週邊設備' },
             ];
             mockQuery.mockResolvedValue(mockStocks);
 
@@ -85,7 +85,7 @@ describe('Stock Service', () => {
         it('應返回股票歷史行情', async () => {
             const mockPrices = [
                 { symbol: '2330', date: '2025-01-01', close: 600 },
-                { symbol: '2330', date: '2025-01-02', close: 605 }
+                { symbol: '2330', date: '2025-01-02', close: 605 },
             ];
             mockQuery.mockResolvedValue(mockPrices);
 
@@ -124,7 +124,15 @@ describe('Stock Service', () => {
 
             const { saveDailyPrices } = await import('./stock-service');
             await saveDailyPrices([
-                { symbol: '2330', date: '2025-01-01', open: 600, high: 605, low: 598, close: 602, volume: 10000 }
+                {
+                    symbol: '2330',
+                    date: '2025-01-01',
+                    open: 600,
+                    high: 605,
+                    low: 598,
+                    close: 602,
+                    volume: 10000,
+                },
             ]);
 
             expect(mockBatchInsert).toHaveBeenCalled();
@@ -134,9 +142,7 @@ describe('Stock Service', () => {
     // ================== 投資組合 ==================
     describe('getPortfolio', () => {
         it('應返回投資組合', async () => {
-            const mockPortfolio = [
-                { id: 1, symbol: '2330', shares: 100, avg_cost: 500 }
-            ];
+            const mockPortfolio = [{ id: 1, symbol: '2330', shares: 100, avg_cost: 500 }];
             mockQuery.mockResolvedValue(mockPortfolio);
 
             const { getPortfolio } = await import('./stock-service');
@@ -154,7 +160,7 @@ describe('Stock Service', () => {
             const result = await addToPortfolio({
                 symbol: '2330',
                 shares: 100,
-                avg_cost: 500
+                avg_cost: 500,
             });
 
             expect(result).toBe(1);
@@ -209,7 +215,7 @@ describe('Stock Service', () => {
                 type: 'buy',
                 shares: 100,
                 price: 500,
-                date: '2025-01-15'
+                date: '2025-01-15',
             });
 
             expect(result).toBe(1);
@@ -218,9 +224,7 @@ describe('Stock Service', () => {
 
     describe('getTransactions', () => {
         it('應返回所有交易紀錄', async () => {
-            const mockTx = [
-                { id: 1, symbol: '2330', type: 'buy', shares: 100, price: 500 }
-            ];
+            const mockTx = [{ id: 1, symbol: '2330', type: 'buy', shares: 100, price: 500 }];
             mockQuery.mockResolvedValue(mockTx);
 
             const { getTransactions } = await import('./stock-service');

@@ -45,15 +45,15 @@ const defaultSettings: UserSettings = {
     language: 'zh-TW',
     notifications: {
         priceAlert: false,
-        dividendReminder: true
-    }
+        dividendReminder: true,
+    },
 };
 
 const defaultProfile: UserProfile = {
     id: generateUserId(),
     name: '投資者',
     createdAt: new Date().toISOString(),
-    lastLoginAt: new Date().toISOString()
+    lastLoginAt: new Date().toISOString(),
 };
 
 function generateUserId(): string {
@@ -84,7 +84,7 @@ export function getUserData(): UserData {
         watchlist: [],
         portfolioIds: [],
         recentViewed: [],
-        customStrategies: []
+        customStrategies: [],
     };
     saveUserData(defaultData);
     return defaultData;
