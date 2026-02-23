@@ -1,542 +1,335 @@
 ---
-/**
- * 專業金融風格頂部導航列 - 全整合版
- */
-// 模擬通知資料
-const MOCK_NOTIFS = [
-    { id: 1, text: '台積電 (2330) 股價突破 700 元大關', time: '10:30' },
-    { id: 2, text: '市場成交量創下本月新高', time: '09:45' },
-    { id: 3, text: '個股分析模型更新完成', time: '08:20' },
-];
+// ProTopHeader.astro
+const currentPath = Astro.url.pathname;
+// A placeholder time, to be updated dynamically client-side
+const lastUpdatedDate = new Date().toLocaleString('zh-TW', {
+    hour12: false,
+});
 ---
 
-<div class="pro-top-header" id="top-header">
-    <!-- Left: Search -->
-    <div class="header-left">
-        <div class="search-input-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="header-search-input" placeholder="輸入股票代號 (例: 2330)..." />
-            <button id="header-search-btn" class="header-search-btn">取得資料</button>
-        </div>
-    </div>
-
-    <!-- Right: Statuses & Actions -->
-    <div class="header-right">
-        <!-- Update Interval Settings -->
-        <div class="interval-settings">
-            <button class="settings-btn" id="update-settings-btn" title="設定更新頻率"> ⚙️ </button>
-            <div class="interval-panel" id="update-interval-panel">
-                <div class="panel-header-sm">更新頻率設定</div>
-                <div class="interval-options">
-                    <button class="opt" data-seconds="10">10秒</button>
-                    <button class="opt" data-seconds="30">30秒</button>
-                    <button class="opt" data-seconds="60">1分</button>
-                    <button class="opt" data-seconds="300">5分</button>
-                </div>
-                <div class="custom-interval">
-                    <input
-                        type="number"
-                        id="custom-interval-input"
-                        placeholder="自定義(秒)"
-                        min="5"
-                    />
-                    <button id="apply-custom-interval">套用</button>
+<header class="pro-top-header">
+    <!-- Left: Global Search Component -->
+    <div class="search-section">
+        <form class="global-search-form" id="global-search-form" action="javascript:void(0);">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    id="global-search-input"
+                    class="search-input"
+                    placeholder="輸入股票代號 (例: 2330)..."
+                    autocomplete="off"
+                />
+                <div class="shortcut-hint">
+                    <kbd>Ctrl</kbd>+<kbd>K</kbd>
                 </div>
             </div>
-        </div>
-
-        <!-- Last Updated Clock -->
-        <div class="status-container" id="header-status">
-            <span class="status-dot"></span>
-            <span class="status-label">最後更新時間</span>
-            <span class="status-text mono" id="header-status-time">--:--:--</span>
-        </div>
-
-        <!-- System Actions -->
-        <div class="header-actions">
-            <!-- Theme Toggle -->
-            <button id="header-theme-toggle" class="action-btn" aria-label="切換亮/暗模式">
-                🌙
-            </button>
-
-            <!-- Notifications -->
-            <div class="notification-wrapper">
-                <button id="header-notifications-btn" class="action-btn" aria-label="系統通知">
-                    🔔
-                    <span class="badge" id="header-notification-badge">3</span>
-                </button>
-
-                <!-- Notifications Panel -->
-                <div class="notifications-panel" id="header-notifications-panel">
-                    <div class="panel-header">
-                        <h3>系統通知</h3>
-                        <button class="clear-all" id="header-clear-notifications"
-                            >全部標為已讀</button
-                        >
-                    </div>
-                    <div class="notifications-list" id="header-notifications-list">
-                        {
-                            MOCK_NOTIFS.map(notif => (
-                                <div class="notification-item-row" data-id={notif.id}>
-                                    <div class="notif-content">
-                                        <p class="notif-text">{notif.text}</p>
-                                        <span class="notif-time">{notif.time}</span>
-                                    </div>
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
+            <button type="submit" class="fetch-btn">取得資料</button>
+        </form>
     </div>
-</div>
+
+    <!-- Right: Status & Utilities -->
+    <div class="utils-section">
+        <!-- Settings -->
+        <button class="icon-btn" aria-label="Settings" title="系統設定">
+            <span class="icon">⚙️</span>
+        </button>
+
+        <!-- Last Updated -->
+        <div class="timestamp-badge">
+            <span class="pulse-dot"></span>
+            <span class="label">最後更新時間</span>
+            <span class="time mono" id="last-updated-time">2026/02/22 21:14:04</span>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button
+            class="icon-btn theme-toggle"
+            id="theme-toggle"
+            aria-label="Toggle Theme"
+            title="深色/亮色切換"
+        >
+            <span class="icon light-icon" style="display:none;">☀️</span>
+            <span class="icon dark-icon">🌙</span>
+        </button>
+
+        <!-- Notification Bell -->
+        <button class="icon-btn notification-btn" aria-label="Notifications" title="通知">
+            <span class="icon">🔔</span>
+            <span class="badge">3</span>
+        </button>
+
+        <!-- Mobile Hamburger (Hidden on Desktop) -->
+        <button class="mobile-menu-btn icon-btn" id="header-mobile-menu">
+            <span class="icon">☰</span>
+        </button>
+    </div>
+</header>
 
 <style>
     .pro-top-header {
-        height: 64px;
+        height: 72px;
+        width: 100%;
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
         padding: 0 24px;
+
+        /* Premium Glassmorphism */
         background: var(--c-bg-glass);
         backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         border-bottom: 1px solid var(--c-border);
+
         position: sticky;
         top: 0;
-        z-index: 90;
+        z-index: 30;
     }
 
-    .header-left {
+    /* Left: Search Bar */
+    .search-section {
         flex: 1;
-        max-width: 400px;
+        max-width: 500px;
     }
 
-    .search-input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        height: 40px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--c-border);
-        border-radius: 10px;
-    }
-
-    .search-icon {
-        padding: 0 12px;
-        color: var(--c-text-muted);
-    }
-
-    #header-search-input {
-        background: transparent;
-        border: none;
-        color: var(--c-text-primary);
-        font-size: 14px;
-        outline: none;
-        width: 100%;
-    }
-
-    .header-right {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-    }
-
-    .status-container {
+    .global-search-form {
         display: flex;
         align-items: center;
         gap: 8px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--c-border);
+        border-radius: 20px;
+        padding: 4px;
+        padding-left: 16px;
+        transition: all 0.3s var(--ease-out);
+    }
+    .global-search-form:focus-within {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 12px rgba(var(--c-accent-rgb), 0.3);
+        background: rgba(0, 0, 0, 0.4);
     }
 
-    .status-dot {
+    .search-input-wrapper {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        gap: 12px;
+    }
+
+    .search-icon {
+        font-size: 14px;
+        opacity: 0.6;
+    }
+
+    .search-input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--c-text-primary);
+        font-size: 14px;
+        flex: 1;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .search-input::placeholder {
+        color: var(--c-text-muted);
+    }
+
+    .shortcut-hint {
+        display: flex;
+        gap: 4px;
+        opacity: 0.7;
+    }
+
+    .shortcut-hint kbd {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-family: inherit;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .fetch-btn {
+        background: var(--c-accent);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 16px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+
+    .fetch-btn:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(var(--c-accent-rgb), 0.4);
+    }
+
+    /* Right: Utilities */
+    .utils-section {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .timestamp-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-right: 1px solid rgba(255, 255, 255, 0.1); /* Separator feel */
+    }
+
+    .pulse-dot {
         width: 8px;
         height: 8px;
         background: var(--c-success);
         border-radius: 50%;
-        box-shadow: 0 0 10px var(--c-success);
+        box-shadow: 0 0 8px var(--c-success);
+        animation: pulse 2s infinite;
     }
 
-    .status-label {
-        font-size: 11px;
+    .timestamp-badge .label {
+        font-size: 12px;
         color: var(--c-text-muted);
-        text-transform: uppercase;
-        font-weight: 700;
     }
 
-    .status-text {
+    .timestamp-badge .time {
         font-size: 14px;
-        color: var(--c-text-primary);
         font-weight: 700;
+        color: var(--c-text-primary);
     }
 
-    .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .action-btn {
+    .icon-btn {
         width: 40px;
         height: 40px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--c-border);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--c-border);
-        border-radius: 10px;
         color: var(--c-text-primary);
-        cursor: pointer;
-        position: relative;
         transition: all 0.2s;
+        position: relative;
     }
 
-    .action-btn:hover {
-        background: rgba(var(--c-accent-rgb), 0.1);
-        border-color: var(--c-accent);
-        color: var(--c-accent);
+    .icon-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
     }
 
-    .badge {
+    .icon-btn.notification-btn .badge {
         position: absolute;
         top: -4px;
         right: -4px;
         background: var(--c-danger);
         color: white;
         font-size: 10px;
-        padding: 2px 6px;
-        border-radius: 10px;
         font-weight: 800;
-    }
-
-    /* Notification Panel Styles */
-    .notification-wrapper {
-        position: relative;
-    }
-
-    .notifications-panel {
-        position: absolute;
-        top: 52px;
-        right: 0;
-        width: 340px;
-        background: #ffffff;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 16px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        display: none;
-        flex-direction: column;
-        z-index: 100;
-        overflow: hidden;
-    }
-
-    .notifications-panel.visible {
-        display: flex;
-        animation: slideDown 0.3s var(--ease-out);
-    }
-
-    .panel-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #f8fafc;
-    }
-
-    .panel-header h3 {
-        font-size: 14px;
-        font-weight: 800;
-        color: #1e293b;
-    }
-
-    .clear-all {
-        font-size: 11px;
-        color: var(--c-accent);
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-weight: 600;
-    }
-
-    .notifications-list {
-        max-height: 400px;
-        overflow-y: auto;
-    }
-
-    .notification-item-row {
-        padding: 16px 20px;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        transition: background 0.2s;
-        cursor: pointer;
-    }
-
-    .notification-item-row:hover {
-        background: #f1f5f9;
-    }
-
-    .notif-text {
-        font-size: 13px;
-        margin-bottom: 6px;
-        color: #334155;
-        line-height: 1.4;
-    }
-
-    .notif-time {
-        font-size: 11px;
-        color: #94a3b8;
-    }
-
-    /* Interval Settings Styles */
-    .interval-settings {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .settings-btn {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-        opacity: 0.5;
-        transition: all 0.2s;
-        padding: 4px;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 4px;
+        border: 2px solid var(--c-bg-app);
     }
 
-    .settings-btn:hover {
-        opacity: 1;
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .interval-panel {
-        position: absolute;
-        top: 30px;
-        right: 0;
-        width: 180px;
-        background: var(--c-bg-glass-heavy);
-        backdrop-filter: var(--glass-blur);
-        border: 1px solid var(--c-border);
-        border-radius: 12px;
-        box-shadow: var(--panel-shadow);
-        padding: 12px;
+    .mobile-menu-btn {
         display: none;
-        flex-direction: column;
-        gap: 10px;
-        z-index: 110;
     }
 
-    .interval-panel.visible {
-        display: flex;
-    }
-
-    .panel-header-sm {
-        font-size: 11px;
-        font-weight: 800;
-        color: var(--c-text-muted);
-        text-transform: uppercase;
-        border-bottom: 1px solid var(--c-border);
-        padding-bottom: 6px;
-    }
-
-    .interval-options {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-    }
-
-    .opt {
-        padding: 6px;
-        font-size: 12px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--c-border);
-        border-radius: 6px;
-        color: var(--c-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .opt:hover {
-        background: rgba(var(--c-accent-rgb), 0.1);
-        border-color: var(--c-accent);
-    }
-
-    .opt.active {
-        background: var(--c-accent);
-        color: white;
-        border-color: var(--c-accent);
-    }
-
-    .custom-interval {
-        display: flex;
-        gap: 4px;
-        margin-top: 4px;
-    }
-
-    #custom-interval-input {
-        width: 100%;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--c-border);
-        border-radius: 4px;
-        padding: 4px 8px;
-        color: var(--c-text-primary);
-        font-size: 11px;
-        outline: none;
-    }
-
-    #apply-custom-interval {
-        font-size: 10px;
-        background: var(--c-accent);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 0 8px;
-        cursor: pointer;
-        white-space: nowrap;
-    }
-
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
+    @keyframes pulse {
+        0% {
+            opacity: 0.6;
+            box-shadow: 0 0 4px var(--c-success);
         }
-        to {
+        50% {
             opacity: 1;
-            transform: translateY(0);
+            box-shadow: 0 0 12px var(--c-success);
+        }
+        100% {
+            opacity: 0.6;
+            box-shadow: 0 0 4px var(--c-success);
         }
     }
-    .header-search-btn {
-        background: var(--c-accent);
-        color: white;
-        border: none;
-        padding: 0 16px;
-        height: 100%;
-        border-radius: 0 10px 10px 0;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 13px;
-        transition: opacity 0.2s;
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .pro-top-header {
+            padding: 0 16px;
+            gap: 16px;
+        }
+        .timestamp-badge .label {
+            display: none;
+        }
+        .search-section {
+            max-width: none;
+        }
     }
-    .header-search-btn:hover {
-        opacity: 0.9;
+
+    @media (max-width: 768px) {
+        .mobile-menu-btn {
+            display: flex;
+        }
+        .timestamp-badge {
+            display: none;
+        }
+        .search-input-wrapper .shortcut-hint {
+            display: none; /* Hide shortcut hint on mobile */
+        }
     }
 </style>
 
 <script>
-    // Search Logic
-    function initSearch() {
-        const oldInput = document.getElementById('header-search-input');
-        const oldBtn = document.getElementById('header-search-btn');
+    // Theme Toggle Logic
+    const themeBtn = document.getElementById('theme-toggle');
+    const root = document.documentElement;
 
-        if (!oldInput || !oldBtn) return;
-
-        // Clone to strip listeners
-        const newInput = oldInput.cloneNode(true) as HTMLInputElement;
-        const newBtn = oldBtn.cloneNode(true) as HTMLElement;
-
-        oldInput.replaceWith(newInput);
-        oldBtn.replaceWith(newBtn);
-
-        function performSearch() {
-            // Important: Read value from the NEW input element
-            const query = newInput.value.trim();
-            if (query) {
-                window.location.href = `/live?symbol=${query}`;
-            }
+    themeBtn?.addEventListener('click', () => {
+        const isDark = root.getAttribute('data-theme') !== 'light';
+        if (isDark) {
+            root.setAttribute('data-theme', 'light');
+            localStorage.setItem('tw-stock-theme', 'light');
+        } else {
+            root.removeAttribute('data-theme');
+            localStorage.setItem('tw-stock-theme', 'dark');
         }
-
-        newBtn.addEventListener('click', performSearch);
-        newInput.addEventListener('keypress', e => {
-            if (e.key === 'Enter') performSearch();
-        });
-    }
-
-    // Initialize on load and after Astro swaps
-    document.addEventListener('astro:page-load', initSearch);
-    document.addEventListener('DOMContentLoaded', initSearch);
-
-    // Theme Management
-    const themeToggle = document.getElementById('header-theme-toggle');
-    themeToggle?.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('tw-stock-theme', newTheme);
     });
 
-    // Real-time Clock Logic
-    function updateHeaderTime() {
-        const timeEl = document.getElementById('header-status-time');
+    // Ctrl+K Shortcut for Global Search focus
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('global-search-input')?.focus();
+        }
+    });
+
+    // Live Clock Update
+    function updateClock() {
+        const timeEl = document.getElementById('last-updated-time');
         if (timeEl) {
             const now = new Date();
-            const dateStr = now.toLocaleDateString('zh-TW', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            });
-            const timeStr = now.toLocaleTimeString('zh-TW', { hour12: false });
-            timeEl.textContent = `${dateStr} ${timeStr}`;
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const HH = String(now.getHours()).padStart(2, '0');
+            const MM = String(now.getMinutes()).padStart(2, '0');
+            const SS = String(now.getSeconds()).padStart(2, '0');
+            timeEl.textContent = `${yyyy}/${mm}/${dd} ${HH}:${MM}:${SS}`;
         }
     }
-    setInterval(updateHeaderTime, 1000);
-    updateHeaderTime();
 
-    // Notification Panel Toggle
-    const notifBtn = document.getElementById('header-notifications-btn');
-    const notifPanel = document.getElementById('header-notifications-panel');
-    notifBtn?.addEventListener('click', e => {
-        e.stopPropagation();
-        notifPanel?.classList.toggle('visible');
-    });
-
-    // Clear All Notifications Logic
-    const clearBtn = document.getElementById('header-clear-notifications');
-    clearBtn?.addEventListener('click', e => {
-        e.stopPropagation();
-        const list = document.getElementById('header-notifications-list');
-        const badge = document.getElementById('header-notification-badge');
-
-        if (list) {
-            list.innerHTML = `
-                <div style="padding: 40px 20px; text-align: center; color: #94a3b8;">
-                    <div style="font-size: 24px; margin-bottom: 10px;">📭</div>
-                    <div style="font-size: 13px;">目前沒有新通知</div>
-                </div>
-            `;
-        }
-
-        if (badge) {
-            badge.style.display = 'none';
-        }
-    });
-
-    // Interval Settings Toggle
-    const settingsBtn = document.getElementById('update-settings-btn');
-    const intervalPanel = document.getElementById('update-interval-panel');
-    settingsBtn?.addEventListener('click', e => {
-        e.stopPropagation();
-        intervalPanel?.classList.toggle('visible');
-    });
-
-    // Close panels when clicking outside
-    window.addEventListener('click', () => {
-        notifPanel?.classList.remove('visible');
-        intervalPanel?.classList.remove('visible');
-    });
-
-    // Interval Logic
-    const intervalOpts = document.querySelectorAll('.opt');
-    intervalOpts.forEach(btn => {
-        btn.addEventListener('click', e => {
-            const seconds = (e.currentTarget as HTMLElement).dataset.seconds;
-            if (seconds) {
-                console.log('Update interval set to:', seconds, 's');
-                localStorage.setItem('tw-update-interval', seconds);
-                intervalOpts.forEach(b => b.classList.remove('active'));
-                (e.currentTarget as HTMLElement).classList.add('active');
-            }
-        });
-    });
+    // Update every second
+    setInterval(updateClock, 1000);
+    // Initial call
+    updateClock();
 </script>

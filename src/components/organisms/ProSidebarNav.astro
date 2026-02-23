@@ -1,174 +1,242 @@
 ---
-/**
- * 專業金融風格側邊導航欄 - 全整合版 (純導航版)
- */
+// ProSidebarNav.astro
+const currentPath = Astro.url.pathname;
+const isCurrentPath = (path: string) =>
+    currentPath === path || (path !== '/' && currentPath.startsWith(path));
 
 const navItems = [
-    { label: '個股分析', icon: '📊', href: '/stocks' },
-    { label: '智能篩選', icon: '🔍', href: '/filter' },
-    { label: '策略中心', icon: '🎯', href: '/strategies' },
-    { label: '股利查詢', icon: '💰', href: '/dividends' },
-    { label: '自選股', icon: '⭐', href: '/watchlist' },
-    { label: '投資組合', icon: '💼', href: '/portfolio' },
+    { label: 'Valuation (估值)', path: '/valuation', icon: '💰' },
+    { label: 'Chips (籌碼)', path: '/chips', icon: '🤝' },
+    { label: 'Technical (技術)', path: '/technical', icon: '📈' },
 ];
 
-const bottomItems = [{ label: '用戶選單', icon: '👤', href: '/settings' }];
+const btmItems: { label: string; path: string; icon: string }[] = [];
 ---
 
-<nav class="pro-sidebar-nav" id="sidebar-nav">
-    <!-- Logo Section -->
-    <div class="nav-header">
-        <a href="/" class="logo">
-            <span class="logo-icon">📈</span>
-            <span class="logo-text">TW Stock</span>
+<aside class="sidebar-container" id="app-sidebar">
+    <div class="sidebar-logo">
+        <a href="/">
+            <div class="logo-icon">▲</div>
+            <span class="logo-text font-display">TWStock</span>
         </a>
     </div>
 
-    <!-- Main Navigation -->
-    <div class="nav-items">
+    <nav class="sidebar-nav main-nav">
         {
             navItems.map(item => (
-                <a href={item.href} class="nav-item">
-                    <span class="item-icon">{item.icon}</span>
-                    <span class="item-label">{item.label}</span>
+                <a
+                    href={item.path}
+                    class={`nav-item ${isCurrentPath(item.path) ? 'active' : ''}`}
+                    title={item.label}
+                >
+                    <span class="nav-icon">{item.icon}</span>
+                    <span class="nav-label">{item.label}</span>
+                    {isCurrentPath(item.path) && <div class="active-indicator" />}
                 </a>
             ))
         }
-    </div>
+    </nav>
 
-    <!-- User Menu (Bottom) -->
-    <div class="nav-bottom">
+    <div class="spacer"></div>
+
+    <nav class="sidebar-nav bottom-nav">
         {
-            bottomItems.map(item => (
-                <a href={item.href} class="nav-item">
-                    <span class="item-icon">{item.icon}</span>
-                    <span class="item-label">{item.label}</span>
+            btmItems.map(item => (
+                <a
+                    href={item.path}
+                    class={`nav-item ${isCurrentPath(item.path) ? 'active' : ''}`}
+                    title={item.label}
+                >
+                    <span class="nav-icon">{item.icon}</span>
+                    <span class="nav-label">{item.label}</span>
                 </a>
             ))
         }
-    </div>
-</nav>
+    </nav>
+</aside>
 
 <style>
-    .pro-sidebar-nav {
-        width: 70px;
-        height: 100vh;
-        height: 100dvh;
-        background: var(--c-bg-glass);
-        backdrop-filter: var(--glass-blur);
-        border-right: 1px solid var(--c-border);
-        display: flex;
-        flex-direction: column;
-        padding: 12px;
+    /* Premium Sidebar Configuration */
+    .sidebar-container {
         position: fixed;
         left: 0;
         top: 0;
-        z-index: 100;
-        transition:
-            width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-            box-shadow 0.3s;
+        bottom: 0;
+        width: 72px; /* Collapsed Width */
+        background: var(--c-bg-app); /* Deep Background */
+        border-right: 1px solid var(--c-border);
+        display: flex;
+        flex-direction: column;
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 40;
+        overflow: hidden;
     }
 
-    .pro-sidebar-nav:hover {
-        width: 240px;
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+    /* Premium Glow Border Effect */
+    .sidebar-container::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(
+            180deg,
+            transparent 0%,
+            rgba(var(--c-accent-rgb), 0.5) 50%,
+            transparent 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
     }
 
-    /* Logo Section */
-    .nav-header {
+    .sidebar-container:hover {
+        width: 240px; /* Expanded Width */
+        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar-container:hover::after {
+        opacity: 1; /* Reveal glowing edge */
+    }
+
+    /* Logo Area */
+    .sidebar-logo {
+        height: 72px;
         display: flex;
         align-items: center;
-        margin: 12px 0 20px 0;
-        height: 48px;
+        padding-left: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        flex-shrink: 0;
     }
 
-    .logo {
+    .sidebar-logo a {
         display: flex;
         align-items: center;
-        gap: 12px;
-        color: var(--c-text-primary);
-        font-weight: 800;
+        gap: 16px;
         text-decoration: none;
-        font-size: 16px;
+        color: var(--c-text-primary);
+        width: 100%;
     }
 
     .logo-icon {
-        font-size: 20px;
-        min-width: 46px;
+        width: 32px;
+        height: 32px;
+        background: var(--c-accent);
+        color: white;
         display: flex;
+        align-items: center;
         justify-content: center;
+        border-radius: 8px;
+        font-weight: 800;
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.5);
+        flex-shrink: 0;
     }
 
-    .logo-text,
-    .item-label {
-        opacity: 0;
-        transition: opacity 0.2s;
+    .logo-text {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
         white-space: nowrap;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.2s 0.1s;
     }
 
-    .pro-sidebar-nav:hover .logo-text,
-    .pro-sidebar-nav:hover .item-label {
+    .sidebar-container:hover .logo-text {
         opacity: 1;
+        transform: translateX(0);
     }
 
-    /* Nav Items */
-    .nav-items {
+    /* Navigation Common */
+    .sidebar-nav {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        padding: 16px 12px;
+        gap: 8px;
+    }
+
+    .spacer {
         flex: 1;
     }
 
+    /* Nav Item */
     .nav-item {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px;
-        border-radius: 8px;
-        color: var(--c-text-secondary);
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.2s;
         height: 48px;
+        padding: 0 12px;
+        border-radius: 12px;
+        color: var(--c-text-muted);
+        text-decoration: none;
+        position: relative;
+        transition: all 0.2s var(--ease-out);
+        overflow: hidden;
     }
 
+    .nav-icon {
+        font-size: 20px;
+        min-width: 24px;
+        display: flex;
+        justify-content: center;
+        z-index: 2;
+    }
+
+    .nav-label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 16px;
+        white-space: nowrap;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.2s;
+        z-index: 2;
+    }
+
+    .sidebar-container:hover .nav-label {
+        opacity: 1;
+        transform: translateX(0);
+        transition-delay: 0.1s;
+    }
+
+    /* Hover & Active States */
     .nav-item:hover {
-        background: rgba(var(--c-accent-rgb), 0.1);
         color: var(--c-text-primary);
+        background: rgba(255, 255, 255, 0.05);
     }
 
     .nav-item.active {
-        background: rgba(var(--c-accent-rgb), 0.15);
-        color: var(--c-accent);
-        font-weight: 700;
+        color: var(--c-text-primary);
+        background: rgba(59, 130, 246, 0.15); /* Accent tint */
     }
 
-    .item-icon {
-        font-size: 18px;
-        min-width: 46px;
-        display: flex;
-        justify-content: center;
+    .active-indicator {
+        position: absolute;
+        left: 0;
+        top: 25%;
+        height: 50%;
+        width: 3px;
+        background: var(--c-accent);
+        border-radius: 0 4px 4px 0;
+        box-shadow: 0 0 10px var(--c-accent);
     }
 
-    .nav-bottom {
-        border-top: 1px solid var(--c-border);
-        padding-top: 12px;
-    }
+    /* Responsive */
+    @media (max-width: 768px) {
+        /* On mobile, sidebar is hidden unless toggled. 
+           Mobile layout uses Bottom Tab Bar normally */
+        .sidebar-container {
+            transform: translateX(-100%);
+            width: 240px; /* Force wide on mobile drawer */
+        }
 
-    /* Global item style for small screens hack */
-    .pro-sidebar-nav:not(:hover) .nav-item {
-        padding: 12px 0;
+        .sidebar-container.mobile-open {
+            transform: translateX(0);
+        }
+
+        .logo-text,
+        .nav-label {
+            opacity: 1 !important;
+            transform: translateX(0) !important;
+        }
     }
 </style>
-
-<script>
-    // Path Marking
-    const currentPath = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(item => {
-        const href = item.getAttribute('href') || '';
-        if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
-            item.classList.add('active');
-        }
-    });
-</script>

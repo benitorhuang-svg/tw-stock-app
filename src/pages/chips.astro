@@ -1,0 +1,175 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const symbol = '2330 台積電';
+const latestPrice = 115.5;
+
+const chips = {
+    foreign: -26235,
+    trust: 11504,
+    dealer: -3847,
+    marginLong: 38063,
+    marginShort: 1015,
+    marginRatio: 2.67,
+};
+const totalNet = chips.foreign + chips.trust + chips.dealer;
+---
+
+<Layout title="籌碼面數據">
+    <header class="page-header">
+        <h1 class="page-title">籌碼面分析 <span class="page-symbol">/ Institutional Flow</span></h1>
+        <div class="mono" style="text-align: right;">
+            <div style="font-size: 28px; font-weight: 800;">
+                {latestPrice.toFixed(2)}
+                <span style="font-size: 14px; color: var(--c-text-muted); font-weight: 500;"
+                    >TWD</span>
+            </div>
+            <div class="text-pos" style="font-size: 13px;">+1.50 (1.31%)</div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <section class="glass-panel" style="padding: 20px;">
+            <div class="section-header" style="padding: 0 0 12px 0; border: none;">
+                <h2 class="section-title">三大法人買賣超</h2>
+            </div>
+            <div class="data-grid-2x2">
+                <div class="c-card">
+                    <span class="label">外資</span>
+                    <span class={`val mono ${chips.foreign >= 0 ? 'text-pos' : 'text-neg'}`}
+                        >{chips.foreign.toLocaleString()} <span class="unit">張</span></span
+                    >
+                </div>
+                <div class="c-card">
+                    <span class="label">投信</span>
+                    <span class={`val mono ${chips.trust >= 0 ? 'text-pos' : 'text-neg'}`}
+                        >+{chips.trust.toLocaleString()} <span class="unit">張</span></span
+                    >
+                </div>
+                <div class="c-card">
+                    <span class="label">自營商</span>
+                    <span class={`val mono ${chips.dealer >= 0 ? 'text-pos' : 'text-neg'}`}
+                        >{chips.dealer.toLocaleString()} <span class="unit">張</span></span
+                    >
+                </div>
+                <div class="c-card sum-card">
+                    <span class="label">合計</span>
+                    <span class={`val mono ${totalNet >= 0 ? 'text-pos' : 'text-neg'}`}
+                        >{totalNet.toLocaleString()} <span class="unit">張</span></span
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel" style="padding: 20px;">
+            <div class="section-header" style="padding: 0 0 12px 0; border: none;">
+                <h2 class="section-title">融資融券分析</h2>
+            </div>
+            <div class="data-grid-2x2">
+                <div class="c-card">
+                    <span class="label">融資餘額</span>
+                    <span class="val mono" style="color:#fff;"
+                        >{chips.marginLong.toLocaleString()} <span class="unit">張</span></span
+                    >
+                </div>
+                <div class="c-card">
+                    <span class="label">融券餘額</span>
+                    <span class="val mono" style="color:#fff;"
+                        >{chips.marginShort.toLocaleString()} <span class="unit">張</span></span
+                    >
+                </div>
+                <div class="c-card">
+                    <span class="label">券資比</span>
+                    <span class="val mono text-warning"
+                        >{chips.marginRatio.toFixed(2)} <span class="unit">%</span></span
+                    >
+                </div>
+                <div class="c-card">
+                    <span class="label">融資使用率</span>
+                    <span class="val mono text-accent">38.06 <span class="unit">%</span></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel full-width">
+            <div class="section-header">
+                <h2 class="section-title">籌碼動向趨勢</h2>
+            </div>
+            <div class="chart-area mono">
+                <span style="opacity: 0.5;">[ 籌碼長條圖預留畫布區 ]</span>
+                <div class="mock-bars">
+                    <div class="m-bar pos" style="height: 40px;"></div>
+                    <div class="m-bar pos" style="height: 20px;"></div>
+                    <div class="m-bar neg" style="height: 50px;"></div>
+                    <div class="m-bar pos" style="height: 80px;"></div>
+                    <div class="m-bar neg" style="height: 30px;"></div>
+                    <div class="m-bar neg" style="height: 60px;"></div>
+                    <div class="m-bar pos" style="height: 90px;"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+</Layout>
+
+<style>
+    .c-card {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--c-border);
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .c-card .label {
+        font-size: 13px;
+        color: var(--c-text-secondary);
+    }
+    .c-card .val {
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+    .c-card .unit {
+        font-size: 12px;
+        color: var(--c-text-muted);
+    }
+
+    .sum-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .chart-area {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 24px;
+    }
+    .mock-bars {
+        position: absolute;
+        bottom: 24px;
+        left: 24px;
+        right: 24px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        opacity: 0.3;
+        z-index: 0;
+    }
+    .m-bar {
+        width: 40px;
+        border-radius: 4px 4px 0 0;
+    }
+    .m-bar.pos {
+        background: var(--c-success);
+    }
+    .m-bar.neg {
+        background: var(--c-danger);
+    }
+</style>

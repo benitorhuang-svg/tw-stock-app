@@ -2,16 +2,64 @@
 
 > 最後更新：2026-02-22 · Version 3.0
 
-## 一、四項核心模組總覽
+## 一、核心模組與資料分析流程圖 (Architecture & Data Flow)
 
-本專案採用四項核心模組（Data Ingestion → Analytics → Screening → Alerting）架構：
+本專案採用五項核心模組架構，將原始資料轉化為可操作的金融情報：
+
+```mermaid
+flowchart TD
+    %% Define styles
+    classDef layer1 fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff
+    classDef layer2 fill:#1e293b,stroke:#10b981,stroke-width:2px,color:#fff
+    classDef layer3 fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
+    classDef layer4 fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#fff
+    classDef db fill:#0f172a,stroke:#64748b,stroke-width:2px,stroke-dasharray: 5 5,color:#fff
+
+    subgraph M1["M1: 資料採集層 (Data Ingestion)"]
+        A1("TWSE / MOPS API") --> A2("Node.js 爬蟲腳本")
+        A2 --> A3("原始 CSV / JSON 檔案")
+    end
+    class M1 layer1
+
+    subgraph M2["M2: 建構與特徵工程 (Build & Feature Engineering)"]
+        B1("讀取原始檔案") --> B2("計算技術指標 (MA, MACD, RSI)")
+        B1 --> B3("提煉籌碼/基本面特徵")
+        B2 --> B4[("高效能 SQLite (stocks.db)")]
+        B3 --> B4
+    end
+    class M2 layer2
+
+    subgraph M3["M3: 業務邏輯與篩選層 (Screening & Scoring)"]
+        C1("O(1) 複合索引查詢")
+        C2("Screener 條件過濾器")
+        C3("跨指標交集驗證")
+        B4 ==> C1
+        C1 --> C2
+        C1 --> C3
+    end
+    class M3 layer3
+
+    subgraph M45["M4 & M5: 監控警示與視覺化 UI (UI Layout & Alerting)"]
+        D1{"5 大核心分析分頁"}
+        D2("📊 技術/籌碼圖表 (Chart Engine)")
+        D3("🤖 AI 報告與智能警示")
+        D1 --> D2
+        D1 --> D3
+        C2 --> D1
+        C3 --> D1
+    end
+    class M45 layer4
+
+    A3 -.-> B1
+```
 
 | 模組 | 名稱 | 對應目錄與規格 | 核心職責 |
 |----|------|----------|----------|
-| M1 | 資料採集層 | `001-data-ingestion/` | 外部 API 抓取、ETL 轉換、SQLite 儲存 |
-| M2 | 策略計算層 | `002-analytics-engine/` | 技術指標、風險分析、基本/籌碼面運算 |
-| M3 | 選股濾鏡與權重層 | `003-screening-scoring/` | 多層快取、業務封裝、綜合多面向策略濾鏡 |
-| M4 | 監控與警示層 | `004-monitoring-alerting/` | 前端視覺看板、元件設計規範、警示推播 |
+| M1 | 資料採集層 | `001-data-ingestion/` | 外部 API 抓取、原始資料落地儲存 (CSV/JSON) |
+| M2 | 特徵工程層 | `001-data-ingestion/002-data-build.md`| 離線計算技術/籌碼指標，寫入 SQLite 並建立索引 |
+| M3 | 選股濾鏡與權重層 | `003-screening-scoring/` | SQL 查詢封裝、條件邏輯判斷、多面向策略濾鏡 |
+| M4 | 監控與警示層 | `004-monitoring-alerting/` | 元件狀態管理、Toast 推播、條件自動警示與通知 |
+| M5 | 介面版面與動線 | `005-ui-layout/` | 全站跨裝置佈局 (5 大分析分頁)、組件空間劃分、UX 高級動線 |
 
 ## 二、核心原則
 
@@ -53,6 +101,9 @@
 - 禁止 `mousemove` 頻繁執行 DOM 查詢 (`querySelectorAll`)，優先使用 CSS Variables 紀錄游標位置。
 - CSS 動畫僅使用 `transform` 與 `opacity` 以觸發 GPU 加速。
 
+### VII. Strict Specification Adherence
+- **規格絕對至上**：系統中不該存在於規劃外（`.specify/specs/`）的程式碼與元件。如果某項多餘元件或功能必須留存，就**必須先正式納入規格規劃中**，確保規格與實作的一致性（Single Source of Truth）。
+
 ## 三、技術棧
 
 | 類別 | 技術 | 版本 |
@@ -93,11 +144,23 @@
 5. Mobile viewport 100vh 佈局跳動
 6. IndexedDB 容量未監控
 
-## 七、開發工作流
+## 七、SDD 開發工作流與輔助腳本 (Workflow & Automation)
+
+我們的開發嚴格遵循 Spec-Driven Development (SDD) 架構。為確保架構不偏移，所有新功能的發起與驗證，都必須透過 `.specify/scripts/powershell/` 中的自動化腳本進行把關：
 
 ```
-Specify → Plan → Tasks → Test(Red) → Implement(Green) → Refactor → Verify
+1. 啟動 (Specify) → 2. 釐清 (Clarify) → 3. 計畫 (Plan) → 4. 拆解 (Tasks) → 5. 實作 (Implement)
 ```
+
+### 輔助腳本使用時機：
+
+| 步驟 | 觸發腳本 / 時機 | 腳本功能說明 |
+| :-- | :--- | :--- |
+| **1. 啟動** | `./create-new-feature.ps1` | 當接到新需求時執行。自動根據需求名稱建立 Branch，並建立 `specs/.../spec.md` 規格書。 |
+| **2. 釐清** | `./setup-clarify.ps1` | 在撰寫程式前的架構盲區探討。自動產生 `clarification.md` 逼迫開發者填寫資料來源、邊界條件與效能 O(N) 評估。 |
+| **3. 計畫** | `./setup-plan.ps1` | 釐清需求後執行。生成 `plan.md` 實作計畫，決定要新增哪些檔案與函數介面。 |
+| *(同步)* | `./update-agent-context.ps1`| 自動讀取 `plan.md` 的變更，更新全專案的 `.cursorrules` / `CLAUDE.md` 等 AI Agent 上下文，讓所有 AI 保持資訊同步。 |
+| **4. 驗證** | `./check-prerequisites.ps1` | **必經之門**。在正式動手寫 Code 之前，檢查是否已確實繳交 `clarification.md` 與 `plan.md`。若未完成，拒絕進入實作階段。 |
 
 ## 八、命名與資料夾規範
 

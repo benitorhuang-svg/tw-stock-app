@@ -19,6 +19,7 @@ param(
     [switch]$Json,
     [switch]$RequireTasks,
     [switch]$IncludeTasks,
+    [switch]$RequireClarify,
     [switch]$PathsOnly,
     [switch]$Help
 )
@@ -74,7 +75,8 @@ if ($PathsOnly) {
             IMPL_PLAN    = $paths.IMPL_PLAN
             TASKS        = $paths.TASKS
         } | ConvertTo-Json -Compress
-    } else {
+    }
+    else {
         Write-Output "REPO_ROOT: $($paths.REPO_ROOT)"
         Write-Output "BRANCH: $($paths.CURRENT_BRANCH)"
         Write-Output "FEATURE_DIR: $($paths.FEATURE_DIR)"
@@ -105,12 +107,20 @@ if ($RequireTasks -and -not (Test-Path $paths.TASKS -PathType Leaf)) {
     exit 1
 }
 
+# Check for clarification.md if required
+if ($RequireClarify -and -not (Test-Path (Join-Path $paths.FEATURE_DIR 'clarification.md' ) -PathType Leaf)) {
+    Write-Output "ERROR: clarification.md not found in $($paths.FEATURE_DIR)"
+    Write-Output "Run /speckit.clarify first to outline edge cases and data sources."
+    exit 1
+}
+
 # Build list of available documents
 $docs = @()
 
 # Always check these optional docs
 if (Test-Path $paths.RESEARCH) { $docs += 'research.md' }
 if (Test-Path $paths.DATA_MODEL) { $docs += 'data-model.md' }
+if (Test-Path (Join-Path $paths.FEATURE_DIR 'clarification.md')) { $docs += 'clarification.md' }
 
 # Check contracts directory (only if it exists and has files)
 if ((Test-Path $paths.CONTRACTS_DIR) -and (Get-ChildItem -Path $paths.CONTRACTS_DIR -ErrorAction SilentlyContinue | Select-Object -First 1)) { 
@@ -128,10 +138,11 @@ if ($IncludeTasks -and (Test-Path $paths.TASKS)) {
 if ($Json) {
     # JSON output
     [PSCustomObject]@{ 
-        FEATURE_DIR = $paths.FEATURE_DIR
+        FEATURE_DIR    = $paths.FEATURE_DIR
         AVAILABLE_DOCS = $docs 
     } | ConvertTo-Json -Compress
-} else {
+}
+else {
     # Text output
     Write-Output "FEATURE_DIR:$($paths.FEATURE_DIR)"
     Write-Output "AVAILABLE_DOCS:"
@@ -139,6 +150,7 @@ if ($Json) {
     # Show status of each potential document
     Test-FileExists -Path $paths.RESEARCH -Description 'research.md' | Out-Null
     Test-FileExists -Path $paths.DATA_MODEL -Description 'data-model.md' | Out-Null
+    Test-FileExists -Path (Join-Path $paths.FEATURE_DIR 'clarification.md') -Description 'clarification.md' | Out-Null
     Test-DirHasFiles -Path $paths.CONTRACTS_DIR -Description 'contracts/' | Out-Null
     Test-FileExists -Path $paths.QUICKSTART -Description 'quickstart.md' | Out-Null
     

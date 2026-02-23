@@ -10,153 +10,193 @@ interface Props {
 const { strategy, variant = 'default', count } = Astro.props;
 
 const categoryLabels: Record<string, string> = {
-    fundamental: '基本面',
-    technical: '技術面',
-    sentiment: '籌碼面',
+    fundamental: 'FUND',
+    technical: 'TECH',
+    sentiment: 'SENT',
 };
 
 const categoryColors: Record<string, string> = {
-    fundamental: '#00d4aa',
-    technical: '#0099ff',
-    sentiment: '#ff9500',
+    fundamental: '#10b981', // green
+    technical: '#3b82f6', // blue
+    sentiment: '#f59e0b', // orange
 };
+
+const isPos = strategy.category === 'fundamental';
+const isNeu = strategy.category === 'technical';
 ---
 
-<a href={`/strategies/${strategy.id}`} class={`strategy-card variant-${variant}`}>
-    <div class="card-top">
-        <div class="icon-wrapper">
-            {strategy.icon}
-        </div>
-        <div class="badges">
-            {count !== undefined && <span class="count-badge">{count} 檔</span>}
-            <span
-                class="category-tag"
-                style={`--badge-color: ${categoryColors[strategy.category]}; --badge-color-rgb: ${strategy.category === 'fundamental' ? '0, 212, 170' : strategy.category === 'technical' ? '0, 153, 255' : '255, 149, 0'}`}
-            >
-                {categoryLabels[strategy.category]}
-            </span>
-        </div>
-    </div>
+<a href={`/strategies/${strategy.id}`} class="strategy-card glass-card glow-wrapper">
+    <div class={`glow-bg ${isPos ? 'pos-glow' : isNeu ? 'accent-glow' : 'warn-glow'}`}></div>
 
-    <div class="strategy-info">
-        <h3 class="strategy-name">{strategy.name}</h3>
-        {variant === 'default' && <p class="strategy-desc">{strategy.description}</p>}
-    </div>
-
-    {
-        variant === 'default' && (
-            <div class="card-footer">
-                {strategy.conditions.slice(0, 3).map(cond => (
-                    <span class="tag">{cond}</span>
-                ))}
-                {strategy.conditions.length > 3 && (
-                    <span class="tag">+{strategy.conditions.length - 3} more</span>
-                )}
+    <div class="card-content">
+        <div class="card-top">
+            <div class="icon-wrapper glass-icon">
+                {strategy.icon}
             </div>
-        )
-    }
+            <div class="badges mono">
+                <span
+                    class="category-tag"
+                    style={`--bc: ${categoryColors[strategy.category]}; color: var(--bc); border-color: var(--bc); background: rgba(0,0,0,0.2);`}
+                >
+                    {categoryLabels[strategy.category]}
+                </span>
+                {count !== undefined && <span class="count-badge">{count} MATCH</span>}
+            </div>
+        </div>
+
+        <div class="strategy-info">
+            <h3 class="strategy-name mono">{strategy.name}</h3>
+            {
+                variant === 'default' && (
+                    <p class="strategy-desc text-muted mono">{strategy.description}</p>
+                )
+            }
+        </div>
+
+        {
+            variant === 'default' && (
+                <div class="card-footer mono">
+                    {strategy.conditions.slice(0, 3).map(cond => (
+                        <span class="tag">{cond}</span>
+                    ))}
+                </div>
+            )
+        }
+    </div>
 </a>
 
 <style>
     .strategy-card {
         display: block;
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--c-border);
         text-decoration: none;
-        transition: var(--transition-premium);
-        background: transparent;
+        color: inherit;
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
+        border-radius: 12px;
         position: relative;
         overflow: hidden;
-    }
-
-    .strategy-card::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 0;
-        background: var(--c-accent-secondary);
-        transition: var(--transition-premium);
+        transition:
+            transform 0.2s,
+            border-color 0.2s;
+        height: 100%;
     }
 
     .strategy-card:hover {
-        background: var(--c-bg-glass-hover);
-        padding-left: 24px;
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.2);
     }
 
-    .strategy-card:hover::before {
-        width: 4px;
+    .glow-wrapper {
+        position: relative;
+    }
+    .glow-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .strategy-card:hover .glow-bg {
+        opacity: 1;
+    }
+
+    .pos-glow {
+        --glow-color: rgba(16, 185, 129, 0.1);
+    }
+    .accent-glow {
+        --glow-color: rgba(59, 130, 246, 0.1);
+    }
+    .warn-glow {
+        --glow-color: rgba(245, 158, 11, 0.1);
+    }
+
+    .card-content {
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        height: 100%;
     }
 
     .card-top {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
+        align-items: flex-start;
+    }
+    .icon-wrapper {
+        font-size: 24px;
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .badges {
         display: flex;
-        align-items: center;
-        gap: 8px;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
     }
 
+    .category-tag,
     .count-badge {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--c-text-primary);
-        background: rgba(255, 255, 255, 0.1);
-        padding: 3px 8px;
+        padding: 2px 8px;
         border-radius: 4px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .icon-wrapper {
-        font-size: 18px;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--c-border);
-    }
-
-    .category-tag {
-        font-family: 'Inter', sans-serif;
         font-size: 9px;
         font-weight: 800;
-        text-transform: uppercase;
-        color: var(--badge-color);
-        padding: 4px 8px;
-        border-radius: 4px;
-        background: rgba(var(--badge-color-rgb), 0.1);
-        border: 1px solid rgba(var(--badge-color-rgb), 0.2);
-        letter-spacing: 0.05em;
+        letter-spacing: 1px;
+        border: 1px solid;
+    }
+    .count-badge {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: var(--c-text-muted);
     }
 
+    .strategy-info {
+        flex: 1;
+    }
     .strategy-name {
-        font-family: 'Outfit', sans-serif;
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--c-text-primary);
-        margin: 0 0 4px 0;
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        letter-spacing: 1px;
+        color: #fff;
     }
-
     .strategy-desc {
-        color: var(--c-text-secondary);
-        font-size: 12px;
-        line-height: 1.5;
+        margin: 0;
+        font-size: 10px;
+        line-height: 1.4;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        opacity: 0.8;
     }
 
     .card-footer {
-        display: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    .tag {
+        font-size: 9px;
+        padding: 2px 6px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+        color: var(--c-text-muted);
+        white-space: nowrap;
     }
 </style>

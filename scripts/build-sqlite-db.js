@@ -29,16 +29,28 @@ try {
 
 const DATA_DIR = path.join(__dirname, '../public/data');
 const PRICES_DIR = path.join(DATA_DIR, 'prices');
-const OUTPUT_DB = path.join(DATA_DIR, 'stocks.db');
-const STOCKS_JSON = path.join(__dirname, '../src/content/stocks/list.json');
+const STOCKS_JSON = path.join(DATA_DIR, 'stocks.json');
 const LATEST_PRICES_JSON = path.join(DATA_DIR, 'latest_prices.json');
+const REVENUE_JSON = path.join(DATA_DIR, 'revenue.json');
+const CHIPS_DIR = path.join(DATA_DIR, 'chips');
+const FINANCIALS_JSON = path.join(DATA_DIR, 'financials.json');
+const MONTHLY_STATS_JSON = path.join(DATA_DIR, 'monthly_stats.json');
+const OUTPUT_DB = process.env.DB_PATH || path.join(DATA_DIR, 'stocks.db');
 
-console.log('🔧 Building SQLite Database...\n');
+console.log(`🔧 Building SQLite Database at: ${OUTPUT_DB}\n`);
 
 // 刪除舊的資料庫
 if (fs.existsSync(OUTPUT_DB)) {
-    fs.unlinkSync(OUTPUT_DB);
-    console.log('📦 Removed old database');
+    try {
+        fs.unlinkSync(OUTPUT_DB);
+        console.log('📦 Removed old database');
+    } catch (e) {
+        if (e.code === 'EBUSY') {
+            console.warn('⚠️  Database file is busy. Attempting to overwrite without deleting...');
+        } else {
+            throw e;
+        }
+    }
 }
 
 // 建立新資料庫
@@ -49,33 +61,65 @@ db.pragma('journal_mode = WAL');
 db.pragma('synchronous = NORMAL');
 db.pragma('cache_size = 10000');
 db.pragma('temp_store = MEMORY');
+db.pragma('foreign_keys = OFF');
 
 console.log('📁 Creating tables...\n');
 
 // 建立資料表
 db.exec(`
+    DROP TABLE IF EXISTS latest_prices;
+    DROP TABLE IF EXISTS fundamentals;
+    DROP TABLE IF EXISTS chips;
+    DROP TABLE IF EXISTS price_history;
+    DROP TABLE IF EXISTS stocks;
+
     -- 股票基本資料
     CREATE TABLE stocks (
         symbol TEXT PRIMARY KEY,
         name TEXT NOT NULL,
-        market TEXT
+        market TEXT,
+        sector TEXT
     );
 
     -- 最新價格 (用於首頁/列表快速查詢)
     CREATE TABLE latest_prices (
         symbol TEXT PRIMARY KEY,
         date TEXT,
-        open REAL,
-        high REAL,
-        low REAL,
-        close REAL,
+        open REAL,  high REAL,
+        low REAL,   close REAL,
         volume INTEGER,
         turnover REAL,
-        change REAL,
-        change_pct REAL,
+        change REAL,  change_pct REAL,
         pe REAL DEFAULT 0,
         pb REAL DEFAULT 0,
         yield REAL DEFAULT 0,
+        ma5 REAL DEFAULT 0,
+        ma20 REAL DEFAULT 0,
+        rsi REAL DEFAULT 0,
+        FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+    );
+
+    -- 基本面數據 (EPS, 三率, 營收 YoY)
+    CREATE TABLE fundamentals (
+        symbol TEXT PRIMARY KEY,
+        year INTEGER,
+        quarter INTEGER,
+        eps REAL,
+        gross_margin REAL,
+        operating_margin REAL,
+        net_margin REAL,
+        revenue_yoy REAL,
+        FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+    );
+
+    -- 籌碼面資料 (三大法人買賣超)
+    CREATE TABLE chips (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        foreign_inv INTEGER,
+        invest_trust INTEGER,
+        dealer INTEGER,
+        PRIMARY KEY (symbol, date),
         FOREIGN KEY (symbol) REFERENCES stocks(symbol)
     );
 
@@ -83,14 +127,11 @@ db.exec(`
     CREATE TABLE price_history (
         symbol TEXT NOT NULL,
         date TEXT NOT NULL,
-        open REAL,
-        high REAL,
-        low REAL,
-        close REAL,
+        open REAL,  high REAL,
+        low REAL,   close REAL,
         volume INTEGER,
         turnover REAL,
-        change REAL,
-        change_pct REAL,
+        change REAL,  change_pct REAL,
         PRIMARY KEY (symbol, date),
         FOREIGN KEY (symbol) REFERENCES stocks(symbol)
     );
@@ -108,11 +149,46 @@ console.log('📊 Loading stock list...');
 const stockList = JSON.parse(fs.readFileSync(STOCKS_JSON, 'utf-8'));
 console.log(`   Found ${stockList.length} stocks\n`);
 
+// 產業分類邏輯 (從 stockDataService.ts 遷移)
+function getSectorBySymbol(symbol) {
+    const overrides = {
+        '2330': 'semiconductor', '2454': 'semiconductor', '3034': 'semiconductor',
+        '2317': 'electronics', '2308': 'electronics', '2382': 'electronics',
+        '2412': 'communication', '3008': 'optoelectronics', '1301': 'plastic',
+        '2002': 'steel', '2603': 'shipping', '2609': 'shipping',
+        '9910': 'sports-leisure', '9914': 'sports-leisure', '9921': 'sports-leisure'
+    };
+    if (overrides[symbol]) return overrides[symbol];
+    const prefix = symbol.substring(0, 2);
+    if (prefix === '00' || prefix === '01' || prefix === '03') return 'etf';
+    if (prefix === '11') return 'construction';
+    if (prefix === '12') return 'food';
+    if (prefix === '13') return 'plastic';
+    if (prefix === '14') return 'textile';
+    if (prefix === '17') return 'chemical';
+    if (prefix === '18') return 'construction';
+    if (prefix === '19') return 'paper';
+    if (prefix === '20') return 'steel';
+    if (prefix === '21') return 'rubber';
+    if (prefix === '22') return 'auto';
+    if (prefix === '23') return 'semiconductor';
+    if (prefix === '24') return 'computer';
+    if (prefix === '25') return 'construction';
+    if (prefix === '26') return 'shipping';
+    if (prefix === '27') return 'tourism';
+    if (prefix === '28') return 'finance';
+    if (prefix === '29') return 'trading';
+    if (prefix === '30') return 'electronics';
+    if (prefix === '34') return 'optoelectronics';
+    if (prefix === '41') return 'biotech';
+    return 'other';
+}
+
 // 插入股票基本資料
-const insertStock = db.prepare('INSERT OR REPLACE INTO stocks (symbol, name, market) VALUES (?, ?, ?)');
+const insertStock = db.prepare('INSERT OR REPLACE INTO stocks (symbol, name, market, sector) VALUES (?, ?, ?, ?)');
 const insertStockBatch = db.transaction((stocks) => {
     for (const stock of stocks) {
-        insertStock.run(stock.symbol, stock.name, stock.market);
+        insertStock.run(stock.symbol, stock.name, stock.market, getSectorBySymbol(stock.symbol));
     }
 });
 insertStockBatch(stockList);
@@ -148,8 +224,83 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
             );
         }
     });
+
     insertLatestBatch(latestPrices);
     console.log(`✅ Inserted ${Object.keys(latestPrices).length} latest prices\n`);
+}
+
+// 載入每月統計 (補齊 PE, Yield)
+if (fs.existsSync(MONTHLY_STATS_JSON)) {
+    console.log('📊 Updating Latest Prices with Monthly Stats (PE/Yield)...');
+    const stats = JSON.parse(fs.readFileSync(MONTHLY_STATS_JSON, 'utf-8'));
+    const updateStats = db.prepare('UPDATE latest_prices SET pe = ?, pb = ?, yield = ? WHERE symbol = ?');
+    const updateBatch = db.transaction((list) => {
+        for (const item of list) {
+            updateStats.run(item.peRatio, item.pbRatio, item.dividendYield, item.symbol);
+        }
+    });
+    updateBatch(stats);
+    console.log('✅ Updated Monthly Stats\n');
+}
+
+// 載入財報數據
+if (fs.existsSync(FINANCIALS_JSON)) {
+    console.log('📈 Loading Financials...');
+    const financials = JSON.parse(fs.readFileSync(FINANCIALS_JSON, 'utf-8'));
+    const insertFin = db.prepare(`
+        INSERT OR REPLACE INTO fundamentals (symbol, year, quarter, eps, gross_margin, operating_margin, net_margin)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    // 獲取營收 YoY 對照
+    let revenueMap = {};
+    if (fs.existsSync(REVENUE_JSON)) {
+        const revData = JSON.parse(fs.readFileSync(REVENUE_JSON, 'utf-8'));
+        revData.forEach(r => revenueMap[r.symbol] = r.revenueYoY);
+    }
+
+    const insertBatch = db.transaction((list) => {
+        for (const item of list) {
+            insertFin.run(
+                item.symbol,
+                item.year || 0,
+                item.quarter || 0,
+                item.eps || 0,
+                item.grossMargin || 0,
+                item.operatingMargin || 0,
+                item.netMargin || 0
+            );
+            // 更新營收 YoY
+            if (revenueMap[item.symbol]) {
+                db.prepare('UPDATE fundamentals SET revenue_yoy = ? WHERE symbol = ?').run(revenueMap[item.symbol], item.symbol);
+            }
+        }
+    });
+    insertBatch(financials);
+    console.log(`✅ Inserted ${financials.length} financial records\n`);
+}
+
+// 載入籌碼數據
+if (fs.existsSync(CHIPS_DIR)) {
+    console.log('🤝 Loading Chips Data...');
+    const files = fs.readdirSync(CHIPS_DIR).filter(f => f.endsWith('.json'));
+    const insertChips = db.prepare(`
+        INSERT OR REPLACE INTO chips (symbol, date, foreign_inv, invest_trust, dealer)
+        VALUES (?, ?, ?, ?, ?)
+    `);
+
+    const chipsBatch = db.transaction((data, date) => {
+        for (const item of data) {
+            insertChips.run(item.symbol, date, item.foreign_inv, item.invest_trust, item.dealer);
+        }
+    });
+
+    for (const file of files) {
+        const date = file.replace('.json', '');
+        const data = JSON.parse(fs.readFileSync(path.join(CHIPS_DIR, file), 'utf-8'));
+        chipsBatch(data, date);
+    }
+    console.log(`✅ Loaded chips data from ${files.length} dates\n`);
 }
 
 // 處理 CSV 歷史價格
@@ -231,6 +382,19 @@ for (let i = 0; i < csvFiles.length; i += BATCH_SIZE) {
     const progress = Math.round((i + batch.length) / csvFiles.length * 100);
     process.stdout.write(`\r   Progress: ${progress}% (${processedFiles}/${csvFiles.length} files, ${totalRecords.toLocaleString()} records)`);
 }
+
+console.log('\n\n📈 Calculating technical indicators (MA5, MA20)...');
+const symbols = db.prepare('SELECT symbol FROM latest_prices').all();
+const updateTech = db.prepare('UPDATE latest_prices SET ma5 = ?, ma20 = ? WHERE symbol = ?');
+const calcBatch = db.transaction((list) => {
+    for (const { symbol } of list) {
+        const ma5Row = db.prepare('SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 5)').get(symbol);
+        const ma20Row = db.prepare('SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 20)').get(symbol);
+        updateTech.run(ma5Row.v || 0, ma20Row.v || 0, symbol);
+    }
+});
+calcBatch(symbols);
+console.log('✅ Technical indicators calculated');
 
 console.log('\n');
 

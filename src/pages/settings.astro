@@ -1,296 +1,565 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/molecules/PageHero.astro';
 ---
 
-<Layout title="設定">
-    <h1>⚙️ 設定</h1>
-    <p class="page-desc">管理您的個人設定、資料備份與匯出。</p>
+<Layout title="Settings | TW Stock App">
+    <div class="settings-container">
+        <!-- Hero Header -->
+        <!-- Hero Header -->
+        <PageHero
+            icon="⚙️"
+            title="SYSTEM_CONFIG"
+            subtitle="Manage parameters, backups & exports"
+            glowClass="neutral-glow"
+        />
 
-    <!-- 個人資料 -->
-    <section class="section card">
-        <h2>👤 個人資料</h2>
-        <div class="form-group">
-            <label>使用者名稱</label>
-            <input type="text" id="user-name" placeholder="投資者" class="input" />
-        </div>
-        <button id="save-profile-btn" class="btn-primary">儲存</button>
-    </section>
+        <div class="settings-grid">
+            <!-- Left Column -->
+            <div class="settings-col">
+                <!-- User Profile -->
+                <section
+                    class="settings-panel glass-card glow-wrapper cyber-reveal"
+                    style="animation-delay: 0.2s;"
+                >
+                    <div class="glow-bg neutral-glow"></div>
+                    <header class="panel-header">
+                        <h2 class="mono">USER_PROFILE</h2>
+                    </header>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="mono text-muted">TERMINAL_OPERATOR_NAME</label>
+                            <input
+                                type="text"
+                                id="user-name"
+                                placeholder="ex: Trader One"
+                                class="cyber-input mono"
+                            />
+                        </div>
+                        <button id="save-profile-btn" class="cyber-btn mono">
+                            <span class="icon">✓</span> COMMIT_CHANGES
+                        </button>
+                    </div>
+                </section>
 
-    <!-- 顯示設定 -->
-    <section class="section card">
-        <h2>🎨 顯示設定</h2>
-        <div class="setting-row">
-            <span>主題</span>
-            <select id="theme-select" class="select">
-                <option value="dark">深色模式</option>
-                <option value="light">淺色模式</option>
-            </select>
-        </div>
-        <div class="setting-row">
-            <span>預設顯示方式</span>
-            <select id="view-select" class="select">
-                <option value="grid">卡片</option>
-                <option value="list">列表</option>
-            </select>
-        </div>
-        <div class="setting-row">
-            <span>顯示成交量</span>
-            <label class="toggle">
-                <input type="checkbox" id="show-volume" checked />
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="setting-row">
-            <span>顯示均線</span>
-            <label class="toggle">
-                <input type="checkbox" id="show-ma" checked />
-                <span class="slider"></span>
-            </label>
-        </div>
-    </section>
+                <!-- UI Preferences -->
+                <section
+                    class="settings-panel glass-card glow-wrapper cyber-reveal"
+                    style="animation-delay: 0.3s;"
+                >
+                    <div class="glow-bg accent-glow"></div>
+                    <header class="panel-header">
+                        <h2 class="mono">INTERFACE_PREFERENCES</h2>
+                    </header>
+                    <div class="panel-body">
+                        <div class="setting-row">
+                            <span class="mono">COLOR_THEME</span>
+                            <select id="theme-select" class="cyber-select mono">
+                                <option value="dark">DARK_MATRIX</option>
+                                <option value="light">LIGHT_CANVAS</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <span class="mono">MKT_VOL_INDICATOR</span>
+                            <label class="cyber-toggle">
+                                <input type="checkbox" id="show-volume" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="setting-row">
+                            <span class="mono">MOVING_AVG_OVERLAY</span>
+                            <label class="cyber-toggle">
+                                <input type="checkbox" id="show-ma" checked />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-    <!-- 資料管理 -->
-    <section class="section card">
-        <h2>💾 資料管理</h2>
-        <div class="data-actions">
-            <button id="backup-btn" class="btn-secondary">📤 備份資料 (JSON)</button>
-            <button id="restore-btn" class="btn-secondary">📥 還原資料</button>
-            <input type="file" id="restore-file" accept=".json" class="hidden" />
-        </div>
-        <div class="storage-info">
-            <span id="storage-used">使用中: 計算中...</span>
-        </div>
-    </section>
+            <!-- Right Column -->
+            <div class="settings-col">
+                <!-- Data Management -->
+                <section
+                    class="settings-panel glass-card glow-wrapper cyber-reveal"
+                    style="animation-delay: 0.4s;"
+                >
+                    <div class="glow-bg pos-glow"></div>
+                    <header class="panel-header">
+                        <h2 class="mono">DATA_MANAGEMENT</h2>
+                    </header>
+                    <div class="panel-body">
+                        <div class="data-actions">
+                            <button id="backup-btn" class="sys-btn mono">📤 EXPORT_JSON</button>
+                            <button id="restore-btn" class="sys-btn mono">📥 RESTORE_JSON</button>
+                            <input
+                                type="file"
+                                id="restore-file"
+                                accept=".json"
+                                style="display:none;"
+                            />
+                        </div>
+                        <div class="storage-info mono text-muted">
+                            <span class="pulse-dot pos"></span>
+                            <span id="storage-used">MEM_USAGE: CALCULATING...</span>
+                        </div>
+                    </div>
+                </section>
 
-    <!-- 離線匯出 -->
-    <section class="section card highlight">
-        <h2>📦 離線 HTML 匯出</h2>
-        <p class="description">一鍵匯出完整的離線版本，無需網路即可瀏覽所有資料。</p>
-        <div class="export-options">
-            <label class="checkbox-label">
-                <input type="checkbox" id="export-portfolio" checked />
-                包含投資組合
-            </label>
-            <label class="checkbox-label">
-                <input type="checkbox" id="export-watchlist" checked />
-                包含自選股
-            </label>
-        </div>
-        <button id="export-html-btn" class="btn-primary btn-large">
-            🚀 一鍵匯出離線 HTML
-        </button>
-    </section>
+                <!-- Offline Export -->
+                <section
+                    class="settings-panel glass-card glow-wrapper highlight-panel cyber-reveal"
+                    style="animation-delay: 0.5s;"
+                >
+                    <div class="glow-bg accent-glow"></div>
+                    <header class="panel-header">
+                        <h2 class="mono text-accent">OFFLINE_BUNDLE_COMPILER</h2>
+                    </header>
+                    <div class="panel-body">
+                        <p class="desc text-muted mono">
+                            Compile static HTML package for zero-connectivity environments.
+                        </p>
 
-    <!-- 危險區域 -->
-    <section class="section card danger">
-        <h2>⚠️ 危險區域</h2>
-        <p class="warning-text">以下操作不可復原，請謹慎操作。</p>
-        <button id="clear-cache-btn" class="btn-danger">清除快取</button>
-        <button id="reset-all-btn" class="btn-danger">重設所有資料</button>
-    </section>
+                        <div class="export-options">
+                            <label class="cyber-checkbox-wrap mono">
+                                <input
+                                    type="checkbox"
+                                    id="export-portfolio"
+                                    class="cyber-checkbox"
+                                    checked
+                                />
+                                <span>INCLUDE_PORTFOLIO</span>
+                            </label>
+                            <label class="cyber-checkbox-wrap mono">
+                                <input
+                                    type="checkbox"
+                                    id="export-watchlist"
+                                    class="cyber-checkbox"
+                                    checked
+                                />
+                                <span>INCLUDE_WATCHLIST</span>
+                            </label>
+                        </div>
+
+                        <button id="export-html-btn" class="cyber-btn huge mono">
+                            <span class="icon">🚀</span> COMPILE_BUNDLE
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Danger Zone -->
+                <section
+                    class="settings-panel glass-card glow-wrapper danger-panel cyber-reveal"
+                    style="animation-delay: 0.6s;"
+                >
+                    <div class="glow-bg neg-glow"></div>
+                    <header class="panel-header">
+                        <h2 class="mono text-neg">DANGER_ZONE</h2>
+                    </header>
+                    <div class="panel-body">
+                        <p class="desc text-neg mono" style="opacity: 0.8">
+                            WARNING: IRREVERSIBLE_OPERATIONS
+                        </p>
+                        <div class="danger-actions">
+                            <button id="clear-cache-btn" class="sys-btn danger mono"
+                                >PURGE_CACHE</button
+                            >
+                            <button id="reset-all-btn" class="sys-btn danger-solid mono"
+                                >FACTORY_RESET</button
+                            >
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
 </Layout>
 
 <style>
-    .page-desc {
-        color: var(--c-text-secondary, #888);
-        margin-bottom: 32px;
+    .settings-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-bottom: 40px;
     }
 
-    /* Container for settings sections */
-    h1 + .page-desc + .section,
-    .section + .section {
-        max-width: 600px;
-    }
-
-    .section {
-        margin-bottom: 24px;
-    }
-
-    .card {
-        background: var(--c-bg-glass, rgba(255, 255, 255, 0.02));
-        border: 1px solid var(--c-border, rgba(255, 255, 255, 0.1));
+    /* Glass Card Base */
+    .glass-card {
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
         border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Glow Effect */
+    .glow-wrapper {
+        position: relative;
+    }
+    .glow-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .glow-wrapper:hover .glow-bg {
+        opacity: 1;
+    }
+
+    .neutral-glow {
+        --glow-color: rgba(200, 200, 210, 0.05);
+    }
+    .accent-glow {
+        --glow-color: rgba(59, 130, 246, 0.1);
+    }
+    .pos-glow {
+        --glow-color: rgba(16, 185, 129, 0.1);
+    }
+    .neg-glow {
+        --glow-color: rgba(244, 63, 94, 0.1);
+    }
+
+    /* Page Hero */
+    .page-hero {
+        display: flex;
+        align-items: center;
+        padding: 32px;
+        z-index: 10;
+    }
+    .hero-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        z-index: 1;
+    }
+    .icon-box {
+        width: 64px;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+    .hero-left h1 {
+        font-size: 20px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .hero-left p {
+        font-size: 11px;
+        margin: 4px 0 0;
+    }
+
+    /* Grid Layout */
+    .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        z-index: 1;
+    }
+    .settings-col {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Panel Components */
+    .settings-panel {
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 1;
+    }
+    .panel-header h2 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: 1.5px;
+    }
+    .panel-body {
         padding: 24px;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 
-    .section h2 {
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-    }
-
+    /* Forms */
     .form-group {
-        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
-
     .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--text-secondary);
-        font-size: 0.9rem;
+        font-size: 10px;
+        letter-spacing: 1px;
     }
 
-    .input, .select {
-        padding: 12px 16px;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--text-primary);
-        font-size: 1rem;
+    .cyber-input,
+    .cyber-select {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 12px 14px;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s;
         width: 100%;
         max-width: 300px;
+    }
+    .cyber-input:focus,
+    .cyber-select:focus {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.2);
     }
 
     .setting-row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--border);
+        padding-bottom: 16px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
     }
-
     .setting-row:last-child {
         border-bottom: none;
+        padding-bottom: 0;
+    }
+    .setting-row > span {
+        font-size: 12px;
     }
 
-    .toggle {
+    /* Toggles */
+    .cyber-toggle {
         position: relative;
-        width: 50px;
-        height: 26px;
+        width: 44px;
+        height: 22px;
     }
-
-    .toggle input {
+    .cyber-toggle input {
         opacity: 0;
         width: 0;
         height: 0;
     }
-
     .slider {
         position: absolute;
         cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--border);
-        border-radius: 26px;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 22px;
         transition: 0.3s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .slider:before {
         position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 3px;
-        bottom: 3px;
+        content: '';
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
         background: white;
         border-radius: 50%;
         transition: 0.3s;
     }
-
-    .toggle input:checked + .slider {
-        background: var(--accent);
+    .cyber-toggle input:checked + .slider {
+        background: var(--c-accent);
+        border-color: var(--c-accent);
+    }
+    .cyber-toggle input:checked + .slider:before {
+        transform: translateX(22px);
     }
 
-    .toggle input:checked + .slider:before {
-        transform: translateX(24px);
+    /* Buttons */
+    .cyber-btn {
+        background: linear-gradient(135deg, var(--c-accent), #2563eb);
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(var(--c-accent-rgb), 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+        max-width: fit-content;
+    }
+    .cyber-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(var(--c-accent-rgb), 0.5);
+    }
+    .cyber-btn.huge {
+        max-width: none;
+        width: 100%;
+        padding: 16px;
+        font-size: 14px;
     }
 
+    .sys-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--c-text-secondary);
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 11px;
+        cursor: pointer;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+    }
+    .sys-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .sys-btn.danger {
+        color: var(--c-danger);
+        border-color: rgba(244, 63, 94, 0.3);
+    }
+    .sys-btn.danger:hover {
+        background: rgba(244, 63, 94, 0.1);
+    }
+    .sys-btn.danger-solid {
+        background: rgba(244, 63, 94, 0.1);
+        color: var(--c-danger);
+        border-color: var(--c-danger);
+    }
+    .sys-btn.danger-solid:hover {
+        background: var(--c-danger);
+        color: #fff;
+        box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+    }
+
+    /* Data actions */
     .data-actions {
         display: flex;
         gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
     }
-
     .storage-info {
-        color: var(--text-secondary);
-        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 10px;
+        margin-top: 8px;
+    }
+    .pulse-dot.pos {
+        width: 6px;
+        height: 6px;
+        background: var(--c-success);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--c-success);
     }
 
-    .btn-primary {
-        padding: 12px 24px;
-        background: var(--accent);
-        color: #000;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
+    .desc {
+        font-size: 12px;
+        margin: 0;
+        line-height: 1.5;
     }
 
-    .btn-secondary {
-        padding: 12px 24px;
-        background: var(--bg-card);
-        color: var(--text-primary);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        cursor: pointer;
+    /* Highlight panel */
+    .highlight-panel {
+        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
     }
-
-    .btn-danger {
-        padding: 12px 24px;
-        background: rgba(255, 71, 87, 0.1);
-        color: #ff4757;
-        border: 1px solid rgba(255, 71, 87, 0.3);
-        border-radius: 8px;
-        cursor: pointer;
-        margin-right: 12px;
-    }
-
-    .btn-large {
-        padding: 16px 32px;
-        font-size: 1.1rem;
-    }
-
-    .highlight {
-        border: 1px solid var(--accent) !important;
-        background: rgba(0, 212, 170, 0.05) !important;
-    }
-
-    .danger {
-        border: 1px solid rgba(255, 71, 87, 0.3) !important;
-    }
-
-    .description {
-        color: var(--text-secondary);
-        margin-bottom: 16px;
+    .danger-panel {
+        border: 1px solid rgba(244, 63, 94, 0.3);
     }
 
     .export-options {
         display: flex;
-        gap: 24px;
-        margin-bottom: 20px;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
     }
-
-    .checkbox-label {
+    .cyber-checkbox-wrap {
         display: flex;
         align-items: center;
         gap: 8px;
+        font-size: 12px;
         cursor: pointer;
     }
 
-    .warning-text {
-        color: #ff4757;
-        margin-bottom: 16px;
-        font-size: 0.9rem;
+    .cyber-checkbox {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--c-text-muted);
+        border-radius: 4px;
+        background: transparent;
+        position: relative;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .cyber-checkbox:checked {
+        background: var(--c-accent);
+        border-color: var(--c-accent);
+        box-shadow: 0 0 10px var(--c-accent);
+    }
+    .cyber-checkbox:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-size: 10px;
+        font-weight: 900;
     }
 
-    .hidden {
-        display: none;
+    @media (max-width: 900px) {
+        .settings-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <script>
+    // Glow Tracker
+    document.addEventListener('mousemove', e => {
+        const wrappers = document.querySelectorAll('.glow-wrapper');
+        wrappers.forEach(wrapper => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            (wrapper as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+            (wrapper as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+
     // 載入設定
     function loadSettings() {
         const userData = JSON.parse(localStorage.getItem('tw-stock-user') || '{}');
-        
+
         if (userData.profile?.name) {
-            (document.getElementById('user-name') as HTMLInputElement).value = userData.profile.name;
+            (document.getElementById('user-name') as HTMLInputElement).value =
+                userData.profile.name;
         }
-        
+
         if (userData.settings?.theme) {
-            (document.getElementById('theme-select') as HTMLSelectElement).value = userData.settings.theme;
+            (document.getElementById('theme-select') as HTMLSelectElement).value =
+                userData.settings.theme;
         }
     }
 
@@ -305,7 +574,8 @@ import Layout from '../layouts/Layout.astro';
             }
         }
         const kb = (total / 1024).toFixed(2);
-        document.getElementById('storage-used')!.textContent = `使用中: ${kb} KB`;
+        const storeEl = document.getElementById('storage-used');
+        if (storeEl) storeEl.textContent = `MEM_USAGE: ${kb} KB`;
     }
     calculateStorage();
 
@@ -316,11 +586,11 @@ import Layout from '../layouts/Layout.astro';
         userData.profile = userData.profile || {};
         userData.profile.name = name;
         localStorage.setItem('tw-stock-user', JSON.stringify(userData));
-        alert('已儲存！');
+        alert('PROFILE_COMMITTED');
     });
 
     // 主題變更
-    document.getElementById('theme-select')?.addEventListener('change', (e) => {
+    document.getElementById('theme-select')?.addEventListener('change', e => {
         const theme = (e.target as HTMLSelectElement).value;
         if (theme === 'light') {
             document.documentElement.setAttribute('data-theme', 'light');
@@ -336,9 +606,9 @@ import Layout from '../layouts/Layout.astro';
             user: JSON.parse(localStorage.getItem('tw-stock-user') || '{}'),
             portfolio: JSON.parse(localStorage.getItem('tw-portfolio') || '[]'),
             watchlist: JSON.parse(localStorage.getItem('tw-watchlist') || '[]'),
-            theme: localStorage.getItem('tw-stock-theme')
+            theme: localStorage.getItem('tw-stock-theme'),
         };
-        
+
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -353,68 +623,72 @@ import Layout from '../layouts/Layout.astro';
         document.getElementById('restore-file')?.click();
     });
 
-    document.getElementById('restore-file')?.addEventListener('change', async (e) => {
+    document.getElementById('restore-file')?.addEventListener('change', async e => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (!file) return;
 
         try {
             const text = await file.text();
             const data = JSON.parse(text);
-            
+
             if (data.user) localStorage.setItem('tw-stock-user', JSON.stringify(data.user));
-            if (data.portfolio) localStorage.setItem('tw-portfolio', JSON.stringify(data.portfolio));
-            if (data.watchlist) localStorage.setItem('tw-watchlist', JSON.stringify(data.watchlist));
+            if (data.portfolio)
+                localStorage.setItem('tw-portfolio', JSON.stringify(data.portfolio));
+            if (data.watchlist)
+                localStorage.setItem('tw-watchlist', JSON.stringify(data.watchlist));
             if (data.theme) localStorage.setItem('tw-stock-theme', data.theme);
-            
-            alert('還原成功！頁面將重新載入...');
+
+            alert('RESTORE_SUCCESS! Reloading...');
             location.reload();
         } catch (err) {
-            alert('還原失敗：檔案格式錯誤');
+            alert('RESTORE_FAILURE: Invalid Format');
         }
     });
 
     // 離線 HTML 匯出
     document.getElementById('export-html-btn')?.addEventListener('click', async () => {
         const btn = document.getElementById('export-html-btn') as HTMLButtonElement;
-        btn.textContent = '⏳ 正在匯出...';
+        btn.innerHTML = '<span class="icon">⏳</span> COMPILING...';
         btn.disabled = true;
 
         try {
             // 動態載入匯出模組
             const { exportOfflineHTML } = await import('../lib/offline-export');
             await exportOfflineHTML({
-                includePortfolio: (document.getElementById('export-portfolio') as HTMLInputElement).checked,
-                includeWatchlist: (document.getElementById('export-watchlist') as HTMLInputElement).checked
+                includePortfolio: (document.getElementById('export-portfolio') as HTMLInputElement)
+                    .checked,
+                includeWatchlist: (document.getElementById('export-watchlist') as HTMLInputElement)
+                    .checked,
             });
-            btn.textContent = '✅ 匯出成功！';
+            btn.innerHTML = '<span class="icon">✅</span> EXPORT_COMPLETE';
         } catch (err) {
             console.error(err);
-            btn.textContent = '❌ 匯出失敗';
+            btn.innerHTML = '<span class="icon">❌</span> EXPORT_FAILED';
         }
 
         setTimeout(() => {
-            btn.textContent = '🚀 一鍵匯出離線 HTML';
+            btn.innerHTML = '<span class="icon">🚀</span> COMPILE_BUNDLE';
             btn.disabled = false;
-        }, 2000);
+        }, 3000);
     });
 
     // 清除快取
     document.getElementById('clear-cache-btn')?.addEventListener('click', () => {
-        if (confirm('確定要清除所有快取嗎？')) {
+        if (confirm('Acknowledge cache purge?')) {
             Object.keys(localStorage)
                 .filter(k => k.startsWith('tw-cache-'))
                 .forEach(k => localStorage.removeItem(k));
-            alert('已清除快取');
+            alert('CACHE_PURGED');
             calculateStorage();
         }
     });
 
     // 重設所有資料
     document.getElementById('reset-all-btn')?.addEventListener('click', () => {
-        if (confirm('⚠️ 此操作將刪除所有資料，確定要繼續嗎？')) {
-            if (confirm('最後確認：您確定要刪除所有資料嗎？')) {
+        if (confirm('⚠️ WARNING: ALL_DATA_DESTRUCTION. Proceed?')) {
+            if (confirm('FINAL_CONFIRMATION: Delete all user data?')) {
                 localStorage.clear();
-                alert('已重設所有資料。頁面將重新載入...');
+                alert('FACTORY_RESET_COMPLETE. Reloading...');
                 location.reload();
             }
         }

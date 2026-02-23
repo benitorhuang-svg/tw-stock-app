@@ -1,35 +1,33 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { getStocksWithPrices } from "../../utils/stockDataService";
+import Layout from '../../layouts/Layout.astro';
+import { getTopVolume } from '../../utils/marketService';
 
-// Load real stock data with full details
-const allStocks = await getStocksWithPrices();
+// Load real stock data with full details from SQLite
+const allStocks = getTopVolume(500);
 
-// Format stocks for client-side usage (keep payload minimal but sufficient)
-const stockList = allStocks.map(s => ({
+// Format stocks for client-side usage
+const stockList = allStocks.map((s: any) => ({
     symbol: s.symbol,
     name: s.name,
     price: s.price,
     change: s.change,
-    changePercent: s.changePercent,
+    changePercent: s.change_pct,
     volume: s.volume,
     pe: s.pe,
     yield: s.yield,
-    // Pre-calculate trend for sparklines to save client computation if needed,
-    // but here we'll simulate it in JS for visual effect
 }));
 ---
 
 <Layout title="個股分析">
     <div class="page-container">
         <!-- Floating Header Section -->
-        <div class="page-header">
+        <div class="page-header glass-card">
             <div class="header-content">
                 <div class="title-group">
                     <h1>📊 個股分析</h1>
                     <p class="subtitle">全市場 {stockList.length} 檔股票即時監控</p>
                 </div>
-                
+
                 <!-- Search Box -->
                 <div class="search-box-wrapper">
                     <span class="search-icon">🔍</span>
@@ -37,7 +35,7 @@ const stockList = allStocks.map(s => ({
                         type="text"
                         id="stock-search"
                         placeholder="搜尋代號或名稱 (例: 2330)..."
-                        class="premium-search-input"
+                        class="premium-search-input mono"
                     />
                     <div class="search-shortcut">/</div>
                 </div>
@@ -50,11 +48,11 @@ const stockList = allStocks.map(s => ({
         </div>
 
         <!-- Floating Pagination -->
-        <div class="pagination-bar">
+        <div class="pagination-bar glass-card">
             <button id="prev-page" class="nav-btn" disabled>
                 <span class="icon">←</span>
             </button>
-            <span id="page-info" class="page-counter">Page 1</span>
+            <span id="page-info" class="page-counter mono">Page 1</span>
             <button id="next-page" class="nav-btn">
                 <span class="icon">→</span>
             </button>
@@ -67,27 +65,27 @@ const stockList = allStocks.map(s => ({
     const stocks = initialStocks;
     let filteredStocks = [...stocks];
     let currentPage = 1;
-    const pageSize = 50;
+    const pageSize = 48; // Best for grid layouts
 
     // --- DOM Elements ---
-    const stockListElement = document.getElementById("stock-list");
-    const searchInput = document.getElementById("stock-search");
-    const pageInfo = document.getElementById("page-info");
-    const prevBtn = document.getElementById("prev-page");
-    const nextBtn = document.getElementById("next-page");
+    const stockListElement = document.getElementById('stock-list');
+    const searchInput = document.getElementById('stock-search');
+    const pageInfo = document.getElementById('page-info');
+    const prevBtn = document.getElementById('prev-page');
+    const nextBtn = document.getElementById('next-page');
 
     // --- Helper: Generate Sparkline HTML ---
     function getSparklineBars(isGainer) {
         const colorClass = isGainer ? 'pos' : 'neg';
-        // Generate pseudo-random heights for visual flair (since we don't have real 7-day history in this view)
-        // In a real app, pass the 7d history array.
-        const heights = isGainer 
-            ? [30, 45, 40, 60, 55, 75, 90] 
-            : [80, 70, 60, 65, 40, 30, 20];
-        
-        return heights.map((h, i) => `
+        const heights = isGainer ? [30, 45, 40, 60, 55, 75, 90] : [80, 70, 60, 65, 40, 30, 20];
+
+        return heights
+            .map(
+                (h, i) => `
             <div class="spark-bar ${colorClass}" style="height: ${h}%; left: ${i * 16}%"></div>
-        `).join('');
+        `
+            )
+            .join('');
     }
 
     // --- Render Function ---
@@ -114,48 +112,39 @@ const stockList = allStocks.map(s => ({
             return;
         }
 
-        // Generate HTML string for maximum performance
-        const html = pageStocks.map(stock => {
-            const isGainer = stock.change >= 0;
-            const trendClass = isGainer ? 'pos' : 'neg';
-            const sign = isGainer ? '+' : '';
-            const price = stock.price.toFixed(2);
-            const change = Math.abs(stock.changePercent).toFixed(2);
-            
-            return `
-            <a href="/stocks/${stock.symbol}/" class="stock-card-pro fade-in">
-                <!-- Hover Effect Layer -->
-                <div class="card-glow"></div>
+        const html = pageStocks
+            .map(stock => {
+                const isGainer = stock.change >= 0;
+                const trendClass = isGainer ? 'pos' : 'neg';
+                const sign = isGainer ? '+' : '';
+                const price = stock.price.toFixed(2);
+                const change = Math.abs(stock.changePercent).toFixed(2);
+
+                return `
+            <a href="/stocks/${stock.symbol}/" class="stock-card-pro glass-card glow-wrapper fade-in">
+                <div class="glow-bg ${isGainer ? 'pos-glow' : 'neg-glow'}"></div>
                 
                 <div class="card-main">
-                    <!-- 1. Identity -->
                     <div class="col-identity">
-                        <span class="symbol">${stock.symbol}</span>
+                        <span class="symbol mono">${stock.symbol}</span>
                         <span class="name">${stock.name}</span>
                     </div>
 
-                    <!-- 2. Mini Trend (Visual) -->
                     <div class="col-chart">
                          <div class="sparkline-box">
                              ${getSparklineBars(isGainer)}
                          </div>
                     </div>
 
-                    <!-- 3. Metrics -->
                     <div class="col-price">
-                        <span class="price">${price}</span>
-                        <span class="change ${trendClass}">${sign}${change}%</span>
-                    </div>
-                    
-                    <!-- 4. Quick Stats (Hover Reveal) -->
-                    <div class="col-stats">
-                         <div class="stat-pill">本益比 ${stock.pe || '-'}</div>
-                         <div class="stat-pill">殖利率 ${stock.yield || '-'}%</div>
+                        <span class="price mono">${price}</span>
+                        <span class="change mono ${trendClass}">${sign}${change}%</span>
                     </div>
                 </div>
             </a>
             `;
-        }).join('');
+            })
+            .join('');
 
         stockListElement.innerHTML = html;
 
@@ -163,19 +152,31 @@ const stockList = allStocks.map(s => ({
         pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
         if (prevBtn) prevBtn.disabled = currentPage === 1;
         if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+
+        // Re-init glows
+        initGlows();
+    }
+
+    function initGlows() {
+        document.querySelectorAll('.glow-wrapper').forEach(wrapper => {
+            wrapper.addEventListener('mousemove', e => {
+                const rect = wrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                wrapper.style.setProperty('--mouse-x', `${x}px`);
+                wrapper.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
     }
 
     // --- Event Listeners ---
-    
-    // Search with Debounce
     let debounceTimer;
-    searchInput?.addEventListener("input", (e) => {
+    searchInput?.addEventListener('input', e => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             const query = e.target.value.toLowerCase().trim();
-            filteredStocks = stocks.filter(s => 
-                s.symbol.includes(query) || 
-                s.name.toLowerCase().includes(query)
+            filteredStocks = stocks.filter(
+                s => s.symbol.includes(query) || s.name.toLowerCase().includes(query)
             );
             currentPage = 1;
             renderPage();
@@ -183,15 +184,14 @@ const stockList = allStocks.map(s => ({
         }, 300);
     });
 
-    // Keyboard Shortcut for Search
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
         if (e.key === '/' && document.activeElement !== searchInput) {
             e.preventDefault();
             searchInput?.focus();
         }
     });
 
-    prevBtn?.addEventListener("click", () => {
+    prevBtn?.addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
             renderPage();
@@ -199,7 +199,7 @@ const stockList = allStocks.map(s => ({
         }
     });
 
-    nextBtn?.addEventListener("click", () => {
+    nextBtn?.addEventListener('click', () => {
         const totalPages = Math.ceil(filteredStocks.length / pageSize);
         if (currentPage < totalPages) {
             currentPage++;
@@ -208,28 +208,19 @@ const stockList = allStocks.map(s => ({
         }
     });
 
-    // Initial Render
     renderPage();
 </script>
 
 <style>
-    /* 
-     * Cyber-Premium Page Styles 
-     * Inherits CSS variables from Layout.astro 
-     */
-
     .page-container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding-bottom: 80px; /* Space for pagination */
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding-bottom: 100px;
     }
 
-    /* --- Floating Header --- */
     .page-header {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 40px;
-        position: relative;
+        padding: 24px 32px;
     }
 
     .header-content {
@@ -237,18 +228,12 @@ const stockList = allStocks.map(s => ({
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        background: var(--c-bg-glass);
-        backdrop-filter: var(--glass-blur);
-        border: 1px solid var(--c-border);
-        padding: 20px 30px;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
     .title-group h1 {
         font-size: 24px;
         font-weight: 800;
-        margin-bottom: 4px;
+        margin: 0;
         background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -257,9 +242,9 @@ const stockList = allStocks.map(s => ({
     .subtitle {
         color: var(--c-text-secondary);
         font-size: 13px;
+        margin: 4px 0 0;
     }
 
-    /* --- Floating Search --- */
     .search-box-wrapper {
         position: relative;
         width: 350px;
@@ -276,7 +261,6 @@ const stockList = allStocks.map(s => ({
         border-radius: 12px;
         font-size: 14px;
         transition: all 0.3s;
-        font-family: 'JetBrains Mono', monospace;
     }
 
     .premium-search-input:focus {
@@ -297,8 +281,8 @@ const stockList = allStocks.map(s => ({
     .search-shortcut {
         position: absolute;
         right: 12px;
-        background: rgba(255,255,255,0.1);
-        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 4px;
         padding: 2px 8px;
         font-size: 10px;
@@ -306,35 +290,25 @@ const stockList = allStocks.map(s => ({
         pointer-events: none;
     }
 
-    /* --- Stock Grid --- */
     .stock-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 16px;
+        gap: 20px;
     }
 
-    /* --- Pro Stock Card --- */
-    :global(.stock-card-pro) {
+    .stock-card-pro {
         display: block;
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 16px;
-        padding: 16px;
+        padding: 20px;
         text-decoration: none;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-        height: 100px;
+        height: 110px;
+        transition: transform 0.3s var(--ease-out);
     }
 
-    :global(.stock-card-pro:hover) {
+    .stock-card-pro:hover {
         transform: translateY(-4px);
-        background: var(--c-bg-glass-hover);
-        border-color: rgba(var(--c-accent-rgb), 0.4);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    :global(.card-main) {
+    .card-main {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -343,126 +317,97 @@ const stockList = allStocks.map(s => ({
         z-index: 2;
     }
 
-    /* Column 1: Identity */
-    :global(.col-identity) {
+    .col-identity {
         display: flex;
         flex-direction: column;
-        width: 80px;
+        width: 100px;
     }
 
-    :global(.symbol) {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
+    .symbol {
+        font-size: 16px;
         font-weight: 800;
         color: var(--c-accent);
-        letter-spacing: -0.5px;
     }
 
-    :global(.name) {
+    .name {
         font-size: 13px;
         color: var(--c-text-primary);
         font-weight: 600;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        opacity: 0.9;
     }
 
-    /* Column 2: Sparkline */
-    :global(.col-chart) {
+    .col-chart {
         flex: 1;
         height: 40px;
-        position: relative;
-        margin: 0 16px;
-        opacity: 0.7;
+        margin: 0 20px;
+        opacity: 0.6;
     }
 
-    :global(.sparkline-box) {
+    .sparkline-box {
         width: 100%;
         height: 100%;
         display: flex;
         align-items: flex-end;
-        gap: 2px;
+        gap: 3px;
     }
 
-    :global(.spark-bar) {
-        width: 6px; /* Fat bars */
+    .spark-bar {
+        width: 8px;
         background: currentColor;
         border-radius: 2px 2px 0 0;
-        opacity: 0.5;
     }
-    :global(.spark-bar.pos) { background: var(--c-success); box-shadow: 0 0 8px rgba(var(--c-success-rgb), 0.3); }
-    :global(.spark-bar.neg) { background: var(--c-danger); box-shadow: 0 0 8px rgba(var(--c-danger-rgb), 0.3); }
+    .spark-bar.pos {
+        background: var(--c-success);
+    }
+    .spark-bar.neg {
+        background: var(--c-danger);
+    }
 
-    /* Column 3: Price */
-    :global(.col-price) {
+    .col-price {
         text-align: right;
         display: flex;
         flex-direction: column;
-        min-width: 70px;
     }
 
-    :global(.price) {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 16px;
-        font-weight: 700;
+    .price {
+        font-size: 18px;
+        font-weight: 800;
         color: #fff;
     }
 
-    :global(.change) {
-        font-size: 12px;
-        font-weight: 600;
-        margin-top: 2px;
+    .change {
+        font-size: 13px;
+        font-weight: 700;
     }
-    :global(.change.pos) { color: var(--c-success); }
-    :global(.change.neg) { color: var(--c-danger); }
-
-    /* Column 4: Stats (Hidden by default, shown/animated maybe) */
-    :global(.col-stats) {
-        display: none; /* Can be enabled for larger cards */
+    .change.pos {
+        color: var(--c-success);
+    }
+    .change.neg {
+        color: var(--c-danger);
     }
 
-    /* Holographic Glow */
-    :global(.card-glow) {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 50% 0%, rgba(var(--c-accent-rgb), 0.15), transparent 70%);
-        opacity: 0;
-        transition: opacity 0.3s;
-        z-index: 1;
-        pointer-events: none;
-    }
-    :global(.stock-card-pro:hover .card-glow) {
-        opacity: 1;
-    }
-
-    /* --- Pagination --- */
     .pagination-bar {
         position: fixed;
         bottom: 30px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(15, 23, 42, 0.8);
-        backdrop-filter: blur(20px);
-        padding: 8px 16px;
-        border-radius: 50px;
-        border: 1px solid var(--c-border);
+        padding: 10px 20px;
         display: flex;
         align-items: center;
         gap: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         z-index: 50;
+        border-radius: 50px;
     }
 
     .nav-btn {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
         color: #fff;
         display: flex;
         align-items: center;
@@ -474,7 +419,6 @@ const stockList = allStocks.map(s => ({
     .nav-btn:hover:not(:disabled) {
         background: var(--c-accent);
         border-color: var(--c-accent);
-        transform: scale(1.1);
     }
 
     .nav-btn:disabled {
@@ -483,49 +427,27 @@ const stockList = allStocks.map(s => ({
     }
 
     .page-counter {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 700;
         color: var(--c-text-secondary);
-        min-width: 80px;
+        min-width: 100px;
         text-align: center;
     }
 
-    /* --- No Results --- */
-    :global(.no-results) {
+    .no-results {
         grid-column: 1 / -1;
         text-align: center;
-        padding: 60px;
-        color: var(--c-text-muted);
-    }
-    :global(.no-results .emoji) {
-        font-size: 48px;
-        display: block;
-        margin-bottom: 20px;
+        padding: 100px 0;
     }
 
-    /* --- Animation --- */
-    :global(.fade-in) {
-        animation: fadeIn 0.4s ease-out forwards;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Responsive */
     @media (max-width: 768px) {
         .header-content {
             flex-direction: column;
             gap: 20px;
-            align-items: flex-start;
+            align-items: stretch;
         }
         .search-box-wrapper {
             width: 100%;
-        }
-        .stock-grid {
-            grid-template-columns: 1fr;
         }
     }
 </style>

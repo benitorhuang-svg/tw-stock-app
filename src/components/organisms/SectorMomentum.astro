@@ -1,0 +1,143 @@
+---
+/**
+ * SectorMomentum Organism
+ *
+ * Displays sector performance bars.
+ */
+import { getIndustry } from '../../data/industries';
+
+interface Props {
+    rawSectorPerf: any[];
+}
+
+const { rawSectorPerf } = Astro.props;
+
+// Enrich sector data with metadata
+const sectorPerf = rawSectorPerf
+    .map((s: any) => {
+        const meta = getIndustry(s.id);
+        return {
+            ...s,
+            name: meta?.name || s.id,
+            icon: meta?.icon || '📦',
+        };
+    })
+    .slice(0, 8);
+---
+
+<div class="glass-card panel sector-panel glow-wrapper">
+    <div class="glow-bg accent-glow"></div>
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <span class="panel-icon">🧭</span>
+            <h2 class="panel-title">Sector Momentum</h2>
+        </div>
+    </div>
+    <div class="panel-content sector-list">
+        {
+            sectorPerf.map((sector: any) => (
+                <div class="sector-row">
+                    <div class="sector-info">
+                        <span class="sector-icon">{sector.icon}</span>
+                        <span class="sector-name">{sector.name}</span>
+                    </div>
+                    <div class="sector-bar-container">
+                        <div
+                            class={`sector-bar ${sector.avgChange >= 0 ? 'bg-success' : 'bg-danger'}`}
+                            style={`width: ${Math.min(Math.max(Math.abs(sector.avgChange) * 20, 5), 100)}%`}
+                        />
+                    </div>
+                    <div
+                        class={`sector-value mono ${sector.avgChange >= 0 ? 'text-success' : 'text-danger'}`}
+                    >
+                        {sector.avgChange > 0 ? '+' : ''}
+                        {sector.avgChange.toFixed(2)}%
+                    </div>
+                </div>
+            ))
+        }
+    </div>
+</div>
+
+<style>
+    .panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--c-border);
+        background: rgba(255, 255, 255, 0.01);
+    }
+
+    .panel-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Sector Moment Styles */
+    .sector-list {
+        padding: 12px 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sector-row {
+        display: grid;
+        grid-template-columns: 100px 1fr 60px;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 20px;
+        transition: background 0.2s;
+    }
+
+    .sector-row:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .sector-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .sector-bar-container {
+        height: 6px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .sector-bar {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sector-value {
+        font-size: 12px;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    .bg-success {
+        background: var(--c-success);
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+    }
+    .bg-danger {
+        background: var(--c-danger);
+        box-shadow: 0 0 10px rgba(244, 63, 94, 0.3);
+    }
+    .text-success {
+        color: var(--c-success);
+    }
+    .text-danger {
+        color: var(--c-danger);
+    }
+</style>

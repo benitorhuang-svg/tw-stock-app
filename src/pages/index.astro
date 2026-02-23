@@ -1,1064 +1,220 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import StockCard from '../components/organisms/StockCard.astro';
-import { getStocksWithPrices } from '../utils/stockDataService';
-import { industries } from '../data/industries';
-
 /**
- * Dashboard Index Page
- * 3-Column Layout: Gainers | Losers | Stats (vertical stack)
+ * Premium Dashboard Index Page
+ *
+ * Clean-Slate Refactor using Spec 002 Architecture.
  */
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/molecules/PageHero.astro';
+import MarketBreadth from '../components/organisms/MarketBreadth.astro';
+import MoversPanel from '../components/organisms/MoversPanel.astro';
+import SectorMomentum from '../components/organisms/SectorMomentum.astro';
+import StockCard from '../components/organisms/StockCard.astro';
+import {
+    getMarketBreadth,
+    getTopGainers,
+    getTopLosers,
+    getTopVolume,
+    getTopChips,
+    getGrowthStars,
+    getSectorPerformance,
+} from '../utils/marketService';
 
-// 1. Data Fetching
-const allStocks = await getStocksWithPrices();
+const breadth = getMarketBreadth();
+const topGainers = getTopGainers(5);
+const topLosers = getTopLosers(5);
+const growthStars = getGrowthStars(5);
+const topChips = getTopChips(5);
+const rawSectorPerf = getSectorPerformance();
 
-// 2. Sector Filtering Logic
-const sectorId = Astro.url.searchParams.get('sector') || 'all';
-
-let displayStocks = allStocks;
-if (sectorId !== 'all') {
-    // OLD: displayStocks = allStocks.filter(s => stockIndustryMap[s.symbol] === sectorId);
-    // NEW: Use enriched sector data directly
-    displayStocks = allStocks.filter(s => s.sector === sectorId);
-}
-
-// 3. Stats Calculation (Sector-Aware)
-const statsData = {
-    total: displayStocks.length,
-    up: displayStocks.filter(s => s.change > 0).length,
-    down: displayStocks.filter(s => s.change < 0).length,
-    flat: displayStocks.filter(s => s.change === 0).length,
-};
-
-// 4. Gainers & Losers (Sector-Aware)
-const formatStock = (s: any) => ({
+// Mapping for growth/chips cards
+const mapGrowthToStock = (s: any) => ({
     symbol: s.symbol,
     name: s.name,
-    price: s.price,
-    change: s.change,
-    changePercent: s.changePercent,
-    volume: s.volume,
-    pe: s.pe || 0,
-    pb: s.pb || 0,
-    yield: s.yield || 0,
-    roe: s.roe || 0,
-    eps: s.eps || 0,
+    price: s.price || 0,
+    change: 0,
+    changePercent: s.change_pct || 0,
+    volume: 0,
+    pe: 0,
+    pb: 0,
+    yield: 0,
+    roe: 0,
+    eps: 0,
+    revenueYoY: s.revenue_yoy,
 });
 
-const topGainers = displayStocks
-    .filter(s => s.changePercent > 0)
-    .sort((a, b) => b.changePercent - a.changePercent)
-    .slice(0, 10)
-    .map(formatStock);
-
-const topLosers = displayStocks
-    .filter(s => s.changePercent < 0)
-    .sort((a, b) => a.changePercent - b.changePercent)
-    .slice(0, 10)
-    .map(formatStock);
-
-const currentIndustryName = industries.find(i => i.id === sectorId)?.name || '全市場';
-
-// 5. Treemap Logic (Server Side for Initial Render)
-// Needed for SSR HTML generation
-interface Rect {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-}
-interface Node {
-    value: number;
-    data: any;
-    rect?: Rect;
-}
-
-function layoutBinary(nodes: Node[], rect: Rect) {
-    if (nodes.length === 0) return;
-    if (nodes.length === 1) {
-        nodes[0].rect = rect;
-        return;
-    }
-    const totalValue = nodes.reduce((sum, n) => sum + n.value, 0);
-    const halfValue = totalValue / 2;
-    let currentSum = 0;
-    let mid = 0;
-    for (let i = 0; i < nodes.length; i++) {
-        currentSum += nodes[i].value;
-        if (currentSum >= halfValue) {
-            mid = i;
-            break;
-        }
-    }
-    if (mid >= nodes.length - 1 && mid > 0) mid = nodes.length - 2;
-
-    const leftNodes = nodes.slice(0, mid + 1);
-    const rightNodes = nodes.slice(mid + 1);
-
-    const leftValue = leftNodes.reduce((sum, n) => sum + n.value, 0);
-    const leftRatio = leftValue / totalValue;
-
-    if (rect.w >= rect.h) {
-        const leftW = rect.w * leftRatio;
-        const leftRect = { x: rect.x, y: rect.y, w: leftW, h: rect.h };
-        const rightRect = { x: rect.x + leftW, y: rect.y, w: rect.w - leftW, h: rect.h };
-        layoutBinary(leftNodes, leftRect);
-        layoutBinary(rightNodes, rightRect);
-    } else {
-        const topH = rect.h * leftRatio;
-        const topRect = { x: rect.x, y: rect.y, w: rect.w, h: topH };
-        const bottomRect = { x: rect.x, y: rect.y + topH, w: rect.w, h: rect.h - topH };
-        layoutBinary(leftNodes, topRect);
-        layoutBinary(rightNodes, bottomRect);
-    }
-}
-
-function computeLayout(data: any[]) {
-    if (data.length === 0) return [];
-    const nodes: Node[] = data.map(s => ({ value: s.volume, data: s }));
-    layoutBinary(nodes, { x: 0, y: 0, w: 100, h: 100 });
-    return nodes;
-}
-
-const topVolumeForTreemap = displayStocks
-    .filter(s => s.price > 0 && s.volume > 0)
-    .sort((a, b) => b.volume - a.volume)
-    .slice(0, 60);
-
-const treemapData = computeLayout(topVolumeForTreemap);
+const mapChipsToStock = (s: any) => ({
+    symbol: s.symbol,
+    name: s.name,
+    price: 0,
+    change: 0,
+    changePercent: s.change_pct || 0,
+    volume: 0,
+    pe: 0,
+    pb: 0,
+    yield: 0,
+    roe: 0,
+    eps: 0,
+    foreignInv: s.foreign_inv,
+});
 ---
 
-<Layout title="Dashboard">
-    <div class="dashboard-container">
-        <!-- Dashboard Header Removed as per user request -->
+<Layout title="Premium Market Dashboard">
+    <div class="dashboard-wrapper">
+        <!-- Dashboard Header -->
+        <PageHero
+            icon="📊"
+            title="MARKET_INTELLIGENCE"
+            subtitle="Premium Real-time Financial Terminal"
+            glowClass="neutral-glow"
+        >
+            <div class="sys-status" slot="action">
+                <span class="pulse-dot text-success"></span>
+                <span class="mono text-success">TERMINAL ONLINE</span>
+            </div>
+        </PageHero>
 
-        <!-- 3-Column Main Grid: Gainers | Losers | Stats -->
-        <div class="main-grid-3col">
-            <!-- Left: Gainers -->
-            <div class="panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">🔥 本日市場領漲 (Daily Gainers)</h2>
-                </div>
-                <div class="list-scroll" id="gainers-list">
-                    {topGainers.map(stock => <StockCard stock={stock} />)}
-                </div>
+        <!-- Market Breadth Overview (Organism) -->
+        <MarketBreadth breadth={breadth} />
+
+        <!-- Main Workspace Grid -->
+        <div class="dashboard-grid cyber-reveal">
+            <!-- Column 1: Price Action -->
+            <div class="grid-col">
+                <MoversPanel title="Price Gainers" stocks={topGainers} variant="pos" icon="🔥" />
+
+                <MoversPanel title="Price Losers" stocks={topLosers} variant="neg" icon="📉" />
             </div>
 
-            <!-- Center: Losers -->
-            <div class="panel">
-                <div class="panel-header">
-                    <h2 class="panel-title">📉 本日市場領跌 (Daily Losers)</h2>
-                </div>
-                <div class="list-scroll" id="losers-list">
-                    {topLosers.map(stock => <StockCard stock={stock} />)}
-                </div>
-            </div>
+            <!-- Column 2: Fundamentals & Capital -->
+            <div class="grid-col">
+                <!-- Sector Momentum (Organism) -->
+                <SectorMomentum rawSectorPerf={rawSectorPerf} />
 
-            <!-- Right: Stats Panel (Vertical Stack) -->
-            <div class="stats-panel">
-                <!-- Sector Selector -->
-                <div class="stat-card">
-                    <span class="stat-label">產業分類</span>
-                    <div class="stat-value">
-                        <select id="sector-select" class="premium-select-full">
-                            <option value="all" selected={sectorId === 'all'}>全市場 (All)</option>
-                            {
-                                industries.map(ind => (
-                                    <option value={ind.id} selected={sectorId === ind.id}>
-                                        {ind.icon} {ind.name}
-                                    </option>
-                                ))
-                            }
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Stats Grid (2x2) -->
-                <div class="stats-grid-2x2">
-                    <!-- Total -->
-                    <div class="stat-card neutral">
-                        <span class="stat-label">總股數</span>
-                        <div class="stat-value mono" id="stat-total">
-                            {statsData.total.toLocaleString()}
+                <!-- Growth Stars -->
+                <div class="glass-card panel glow-wrapper">
+                    <div class="glow-bg accent-glow"></div>
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon text-accent">🚀</span>
+                            <h2 class="panel-title text-accent">Growth Stars</h2>
                         </div>
                     </div>
-
-                    <!-- Flat -->
-                    <div class="stat-card neutral">
-                        <span class="stat-label">平盤</span>
-                        <div class="stat-value mono">
-                            <span id="stat-flat">{statsData.flat}</span>
-                            <span class="unit">支</span>
-                        </div>
-                    </div>
-
-                    <!-- Up -->
-                    <div class="stat-card pos">
-                        <span class="stat-label">上漲</span>
-                        <div class="stat-value mono">
-                            <span id="stat-up">{statsData.up}</span>
-                            <span class="unit">支</span>
-                        </div>
-                    </div>
-
-                    <!-- Down -->
-                    <div class="stat-card neg">
-                        <span class="stat-label">下跌</span>
-                        <div class="stat-value mono">
-                            <span id="stat-down">{statsData.down}</span>
-                            <span class="unit">支</span>
-                        </div>
+                    <div class="panel-content">
+                        {
+                            growthStars.map((s: any) => (
+                                <div class="insight-row">
+                                    <StockCard
+                                        stock={mapGrowthToStock(s)}
+                                        showWatchlistBtn={false}
+                                    />
+                                    <div class="insight-badge text-success">
+                                        +{s.revenue_yoy.toFixed(1)}% Rev
+                                    </div>
+                                </div>
+                            ))
+                        }
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Bottom: Market Heatmap -->
-        <div class="heatmap-section">
-            <div class="heatmap-container reveal-grid">
-                <div class="heatmap-header">
-                    <h3>🔥 市場熱力圖 (Volume Treemap)</h3>
-                    <p>區塊大小代表交易量 (Volume)，顏色代表漲跌幅。</p>
-                </div>
-
-                <div class="treemap-viewport" id="heatmap-viewport">
-                    {
-                        treemapData.map(node => {
-                            const stock = node.data;
-                            const pct = stock.changePercent;
-                            const r = node.rect;
-                            if (!r) return null;
-
-                            let colorClass = 'neutral';
-                            if (pct > 5) colorClass = 'gain-high';
-                            else if (pct > 2) colorClass = 'gain-mid';
-                            else if (pct > 0) colorClass = 'gain-low';
-                            else if (pct < -5) colorClass = 'loss-high';
-                            else if (pct < -2) colorClass = 'loss-mid';
-                            else if (pct < 0) colorClass = 'loss-low';
-
-                            const showText = r.w > 4 && r.h > 4;
-                            const showDetail = r.w > 8 && r.h > 8;
-
-                            return (
-                                <a
-                                    href={`/stocks/${stock.symbol}/`}
-                                    class={`treemap-item ${colorClass}`}
-                                    style={`left: ${r.x}%; top: ${r.y}%; width: ${r.w}%; height: ${r.h}%;`}
-                                    title={`${stock.name} (${stock.symbol})\n漲跌: ${pct}%\n成交量: ${stock.volume.toLocaleString()}`}
-                                >
-                                    {showText && (
-                                        <div class="content">
-                                            <span
-                                                class="symbol"
-                                                style={`font-size: clamp(10px, 1.2vw, 24px)`}
-                                            >
-                                                {stock.symbol}
-                                            </span>
-                                            {showDetail && <span class="name">{stock.name}</span>}
-                                            <span class="pct">{pct}%</span>
-                                        </div>
-                                    )}
-                                </a>
-                            );
-                        })
-                    }
+                <!-- Capital Flow -->
+                <div class="glass-card panel glow-wrapper">
+                    <div class="glow-bg accent-glow"></div>
+                    <div class="panel-header">
+                        <div class="panel-title-group">
+                            <span class="panel-icon text-accent">🏛️</span>
+                            <h2 class="panel-title text-accent">Capital Inflow (Foreign)</h2>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        {
+                            topChips.map((s: any) => (
+                                <div class="insight-row">
+                                    <StockCard
+                                        stock={mapChipsToStock(s)}
+                                        showWatchlistBtn={false}
+                                    />
+                                    <div class="insight-badge text-accent">
+                                        {(s.foreign_inv / 1000).toFixed(0)}k Shrs
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </Layout>
 
-<style is:global>
-    .dashboard-container {
+<style>
+    .dashboard-wrapper {
         display: flex;
         flex-direction: column;
         gap: 24px;
-        max-width: 1800px;
+        padding-bottom: 40px;
+        max-width: 1400px;
         margin: 0 auto;
-        width: 100%;
-        animation: fadeIn 0.6s var(--ease-out);
     }
 
-    /* Header Row */
-    .dashboard-header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-
-    .dashboard-title {
-        font-family: 'Outfit', sans-serif;
-        font-size: 24px;
-        font-weight: 800;
-        color: var(--c-text-primary);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .dashboard-title .subtitle {
-        font-size: 14px;
-        font-weight: 400;
-        color: var(--c-text-muted);
-        opacity: 0.7;
-    }
-
-    /* 3-Column Main Grid */
-    .main-grid-3col {
+    .dashboard-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr 280px;
-        gap: 20px;
-        /* Force alignment to prevent stretching */
-        align-items: start;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
     }
 
-    /* Panels */
-    .panel {
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 16px;
-        overflow: hidden;
+    .grid-col {
         display: flex;
         flex-direction: column;
-        backdrop-filter: var(--glass-blur);
-        height: 320px; /* Reduced height to show approx 4 rows */
+        gap: 24px;
+    }
+
+    .panel {
+        display: flex;
+        flex-direction: column;
     }
 
     .panel-header {
-        padding: 12px 16px; /* Compact header */
+        padding: 16px 20px;
         border-bottom: 1px solid var(--c-border);
-        background: rgba(255, 255, 255, 0.02);
-        flex-shrink: 0;
     }
 
     .panel-title {
-        font-size: 14px;
-        font-weight: 800;
-        color: var(--c-text-primary);
-    }
-
-    .list-scroll {
-        padding: 0;
-        overflow-y: auto;
-        flex: 1;
-        /* Custom Scrollbar */
-        scrollbar-width: thin;
-        scrollbar-color: var(--c-border) transparent;
-    }
-
-    .list-scroll::-webkit-scrollbar {
-        width: 6px;
-    }
-    .list-scroll::-webkit-scrollbar-thumb {
-        background-color: var(--c-border);
-        border-radius: 3px;
-    }
-
-    /* Stats Panel (Right Column) - Optimized for Height */
-    .stats-panel {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        height: 320px; /* Force match with .panel height */
-    }
-
-    /* Grid for the count stats to save vertical space */
-    .stats-grid-2x2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 1fr 1fr; /* Force 2 equal rows to fill space */
-        gap: 10px;
-        flex: 1; /* Grow to fill remaining vertical space */
-        min-height: 0;
-    }
-
-    .stat-card {
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 12px;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        backdrop-filter: var(--glass-blur);
-        transition: var(--transition-premium);
-        justify-content: center;
-    }
-
-    /* Only grid items should fill their cell height */
-    .stats-grid-2x2 .stat-card {
-        height: 100%;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-2px);
-        border-color: rgba(var(--c-accent-rgb), 0.3);
-    }
-
-    .stat-card.pos {
-        border-left: 3px solid var(--c-success);
-    }
-    .stat-card.neg {
-        border-left: 3px solid var(--c-danger);
-    }
-    .stat-card.neutral {
-        border-left: 3px solid var(--c-text-muted);
-    }
-
-    .stat-label {
-        font-size: 10px;
+        font-size: 15px;
         font-weight: 700;
-        color: var(--c-text-muted);
+        margin: 0;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
     }
 
-    .stat-value {
-        font-size: 20px; /* Slightly smaller */
+    .insight-row {
+        position: relative;
+    }
+
+    .insight-badge {
+        position: absolute;
+        right: 12px;
+        top: 14px;
+        font-size: 10px;
         font-weight: 800;
-        color: var(--c-text-primary);
-    }
-
-    .stat-value .unit {
-        font-size: 11px;
-        font-weight: 500;
-        color: var(--c-text-muted);
-        margin-left: 2px;
-    }
-
-    .premium-select-full {
-        width: 100%;
-        background: #ffffff; /* Explicit White Background */
-        border: 1px solid var(--c-border);
-        color: #0f172a; /* Explicit Dark Text */
-        font-size: 13px;
-        font-weight: 600;
-        padding: 8px 12px;
-        border-radius: 8px;
-        outline: none;
-        cursor: pointer;
-        transition: all 0.2s;
-        appearance: none; /* Remove default arrow to control styling if needed, but keeping default for robust OS dropdown */
-    }
-
-    .premium-select-full option {
-        background: #ffffff;
-        color: #0f172a;
-        padding: 8px;
-    }
-
-    .premium-select-full:hover {
-        border-color: var(--c-accent);
-        box-shadow: 0 0 0 3px rgba(var(--c-accent-rgb), 0.1);
-    }
-
-    /* Heatmap Section */
-    .heatmap-section {
-        width: 100%;
-    }
-
-    /* Transitions */
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .main-grid-3col {
-            grid-template-columns: 1fr 1fr;
-        }
-        .stats-panel {
-            grid-column: span 2;
-            flex-direction: row;
-            flex-wrap: wrap;
-        }
-        .stat-card {
-            flex: 1 1 calc(50% - 12px);
-            min-width: 150px;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .main-grid-3col {
-            grid-template-columns: 1fr;
-        }
-        .stats-panel {
-            grid-column: span 1;
-            flex-direction: column;
-        }
-        .stat-card {
-            flex: 1 1 100%;
-        }
-    }
-
-    /* Treemap Styles (from Heatmap.astro) */
-    .heatmap-container {
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 16px;
-        padding: 24px;
-        backdrop-filter: var(--glass-blur);
-        display: flex;
-        flex-direction: column;
-        height: 500px;
-    }
-
-    .heatmap-header {
-        margin-bottom: 16px;
-        flex-shrink: 0;
-    }
-
-    .heatmap-header h3 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 4px;
-        color: var(--c-text-primary);
-    }
-
-    .heatmap-header p {
-        font-size: 0.9rem;
-        color: var(--c-text-secondary);
-    }
-
-    .treemap-viewport {
-        position: relative;
-        flex: 1;
-        width: 100%;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .treemap-item {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        text-decoration: none;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        box-sizing: border-box;
-        overflow: hidden;
-        transition:
-            transform 0.2s,
-            z-index 0.2s;
-    }
-
-    .treemap-item:hover {
-        z-index: 10;
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-        border-color: #fff;
-    }
-
-    .treemap-item .content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        line-height: 1.2;
-        padding: 2px;
-        width: 100%;
-        overflow: hidden;
-    }
-
-    .treemap-item .symbol {
-        font-weight: 800;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 2px 8px;
+        border-radius: 10px;
+        border: 1px solid currentColor;
+        pointer-events: none;
         font-family: 'JetBrains Mono', monospace;
-        font-size: clamp(10px, 1.2vw, 24px);
     }
 
-    .treemap-item .name {
-        font-size: clamp(9px, 0.9vw, 14px);
-        white-space: nowrap;
-        opacity: 0.9;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 90%;
-    }
-
-    .treemap-item .pct {
-        font-size: clamp(9px, 0.9vw, 16px);
-        font-weight: 700;
-        margin-top: 2px;
-    }
-
-    /* Treemap Colors */
-    .treemap-item.gain-high {
-        background: #10b981;
-    }
-    .treemap-item.gain-mid {
-        background: #059669;
-    }
-    .treemap-item.gain-low {
-        background: #047857;
-    }
-    .treemap-item.loss-high {
-        background: #ef4444;
-    }
-    .treemap-item.loss-mid {
-        background: #dc2626;
-    }
-    .treemap-item.loss-low {
-        background: #b91c1c;
-    }
-    .treemap-item.neutral {
-        background: #64748b;
-    }
-
-    /* StockCard Global Styles (for hydration) */
-    .stock-card {
-        display: grid;
-        grid-template-columns: 32px 1fr 100px 90px; /* Star | Info | Spark | Price */
-        align-items: center;
-        width: 100%;
-        padding: 10px 12px;
-        background: rgba(255, 255, 255, 0.01);
-        border-bottom: 1px solid var(--c-border);
-        text-decoration: none;
-        transition: var(--transition-premium);
-        position: relative;
-        overflow: hidden;
-        height: 64px;
-    }
-
-    .stock-card:hover {
-        background: var(--c-bg-glass-hover);
-        padding-left: 20px;
-    }
-
-    .stock-card::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        background: var(--c-accent);
-        opacity: 0;
-        transition: var(--transition-premium);
-        z-index: 2;
-    }
-
-    .stock-card:hover::before {
-        opacity: 1;
-    }
-
-    .info-group {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .symbol-badge {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--c-accent);
-        letter-spacing: 0.5px;
-    }
-
-    .stock-name {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--c-text-primary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .sparkline-box {
-        height: 24px;
-        width: 100%;
-        max-width: 80px;
-        margin: 0 16px;
-        position: relative;
-        display: flex;
-        align-items: flex-end;
-        gap: 2px;
-    }
-
-    .spark-bar {
-        width: 16%;
-        position: absolute;
-        bottom: 0;
-        background: currentColor;
-        opacity: 0.4;
-        border-radius: 2px 2px 0 0;
-    }
-
-    .spark-bar.pos {
-        background: var(--c-success);
-    }
-    .spark-bar.neg {
-        background: var(--c-danger);
-    }
-
-    .price-group {
-        text-align: right;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .stock-price {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--c-text-primary);
-    }
-
-    .stock-change {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    .stock-change.pos {
+    .text-success {
         color: var(--c-success);
     }
-    .stock-change.neg {
-        color: var(--c-danger);
+    .text-accent {
+        color: var(--c-accent);
     }
 
-    .watchlist-btn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 24px;
-        height: 24px;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        padding: 0;
-        z-index: 10;
-        opacity: 0.5;
-        transition: all 0.2s;
-        margin-right: 8px;
-    }
-
-    .watchlist-btn:hover,
-    .watchlist-btn.active {
-        opacity: 1;
-        transform: scale(1.1);
-    }
-
-    .star {
-        font-size: 16px;
-        line-height: 1;
-        color: #ddd;
-    }
-
-    .watchlist-btn.active .star {
-        color: #fbbf24;
-        text-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    @media (max-width: 1024px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
-
-<script>
-    // Client-Side Logic for Dashboard Filtering
-
-    // Interfaces for Type Safety
-    interface StockData {
-        symbol: string;
-        name: string;
-        price: number;
-        change: number;
-        changePercent: number;
-        volume: number;
-        sector?: string;
-    }
-
-    // 1. Data Definitions
-
-    let allStocks: StockData[] = [];
-    try {
-        const el = document.getElementById('stock-data');
-        if (el && el.textContent && el.textContent.trim().startsWith('[')) {
-            allStocks = JSON.parse(el.textContent);
-        } else {
-            console.warn(
-                'Stock data element missing or invalid content:',
-                el?.textContent?.substring(0, 100)
-            );
-        }
-
-        // All sectors are now pre-populated by stockDataService.ts
-    } catch (e) {
-        console.error('Failed to load stock data', e);
-    }
-
-    // 2. DOM Elements
-    const sectorSelect = document.getElementById('sector-select') as HTMLSelectElement | null;
-    const containerGainers = document.getElementById('gainers-list');
-    const containerLosers = document.getElementById('losers-list');
-    const containerHeatmap = document.getElementById('heatmap-viewport');
-
-    const statTotal = document.getElementById('stat-total');
-    const statUp = document.getElementById('stat-up');
-    const statDown = document.getElementById('stat-down');
-    const statFlat = document.getElementById('stat-flat');
-
-    // 3. Helper: Treemap Layout (Binary Partition) - Client-side definition
-    interface ClientRect {
-        x: number;
-        y: number;
-        w: number;
-        h: number;
-    }
-    interface ClientNode {
-        value: number;
-        data: StockData;
-        rect?: ClientRect;
-    }
-
-    function layoutBinaryClient(nodes: ClientNode[], rect: ClientRect) {
-        if (nodes.length === 0) return;
-        if (nodes.length === 1) {
-            nodes[0].rect = rect;
-            return;
-        }
-        const totalValue = nodes.reduce((sum, n) => sum + n.value, 0);
-        if (totalValue <= 0) return; // Prevent divide by zero
-
-        const halfValue = totalValue / 2;
-        let currentSum = 0;
-        let mid = 0;
-        for (let i = 0; i < nodes.length; i++) {
-            currentSum += nodes[i].value;
-            if (currentSum >= halfValue) {
-                mid = i;
-                break;
-            }
-        }
-        if (mid >= nodes.length - 1 && mid > 0) mid = nodes.length - 2;
-
-        const leftNodes = nodes.slice(0, mid + 1);
-        const rightNodes = nodes.slice(mid + 1);
-        const leftValue = leftNodes.reduce((sum, n) => sum + n.value, 0);
-        const leftRatio = leftValue / totalValue;
-
-        if (rect.w >= rect.h) {
-            const leftW = rect.w * leftRatio;
-            const leftRect = { x: rect.x, y: rect.y, w: leftW, h: rect.h };
-            const rightRect = { x: rect.x + leftW, y: rect.y, w: rect.w - leftW, h: rect.h };
-            layoutBinaryClient(leftNodes, leftRect);
-            layoutBinaryClient(rightNodes, rightRect);
-        } else {
-            const topH = rect.h * leftRatio;
-            const topRect = { x: rect.x, y: rect.y, w: rect.w, h: topH };
-            const bottomRect = { x: rect.x, y: rect.y + topH, w: rect.w, h: rect.h - topH };
-            layoutBinaryClient(leftNodes, topRect);
-            layoutBinaryClient(rightNodes, bottomRect);
-        }
-    }
-
-    // 4. Create Stock Card HTML (Client-Side implementation of StockCard.astro)
-    function createStockCardHTML(stock: StockData) {
-        const isPos = (stock.changePercent || 0) >= 0;
-        const colorClass = isPos ? 'pos' : 'neg';
-        const sign = isPos ? '+' : '';
-        const price = typeof stock.price === 'number' ? stock.price.toFixed(2) : stock.price;
-        const pct =
-            typeof stock.changePercent === 'number'
-                ? stock.changePercent.toFixed(2)
-                : stock.changePercent;
-
-        // Watchlist Check
-        const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
-        const isInWatchlist = watchlist.includes(stock.symbol);
-        const starChar = isInWatchlist ? '★' : '☆';
-        const activeClass = isInWatchlist ? 'active' : '';
-
-        return `
-        <a href="/stocks/${stock.symbol}/" class="stock-card" data-symbol="${stock.symbol}">
-            <button class="watchlist-btn ${activeClass}" data-symbol="${stock.symbol}" onclick="event.preventDefault(); event.stopPropagation();">
-                <span class="star">${starChar}</span>
-            </button>
-            <div class="info-group">
-                <span class="symbol-badge">${stock.symbol}</span>
-                <span class="stock-name">${stock.name}</span>
-            </div>
-            <div class="sparkline-box">
-                ${
-                    isPos
-                        ? `
-                    <div class="spark-bar pos" style="height: 40%; left: 0"></div>
-                    <div class="spark-bar pos" style="height: 50%; left: 20%"></div>
-                    <div class="spark-bar pos" style="height: 45%; left: 40%"></div>
-                    <div class="spark-bar pos" style="height: 70%; left: 60%"></div>
-                    <div class="spark-bar pos" style="height: 90%; left: 80%"></div>
-                `
-                        : `
-                    <div class="spark-bar neg" style="height: 80%; left: 0"></div>
-                    <div class="spark-bar neg" style="height: 60%; left: 20%"></div>
-                    <div class="spark-bar neg" style="height: 70%; left: 40%"></div>
-                    <div class="spark-bar neg" style="height: 40%; left: 60%"></div>
-                    <div class="spark-bar neg" style="height: 30%; left: 80%"></div>
-                `
-                }
-            </div>
-            <div class="price-group">
-                <span class="stock-price">${price}</span>
-                <span class="stock-change ${colorClass}">${sign}${pct}%</span>
-            </div>
-        </a>`;
-    }
-
-    // 5. Update Dashboard Logic
-    function updateDashboard(sectorId: string) {
-        // A. Filter Stocks
-        let filteredStocks = allStocks;
-        if (sectorId !== 'all') {
-            filteredStocks = allStocks.filter(s => s.sector === sectorId);
-        }
-
-        // B. Update Output Stats
-        if (statTotal) statTotal.textContent = filteredStocks.length.toLocaleString();
-        if (statUp) statUp.textContent = filteredStocks.filter(s => s.change > 0).length.toString();
-        if (statDown)
-            statDown.textContent = filteredStocks.filter(s => s.change < 0).length.toString();
-        if (statFlat)
-            statFlat.textContent = filteredStocks.filter(s => s.change === 0).length.toString();
-
-        // C. Update Lists (Gainers / Losers)
-        const topGainers = [...filteredStocks]
-            .filter(s => s.changePercent > 0)
-            .sort((a, b) => b.changePercent - a.changePercent)
-            .slice(0, 10);
-        const topLosers = [...filteredStocks]
-            .filter(s => s.changePercent < 0)
-            .sort((a, b) => a.changePercent - b.changePercent)
-            .slice(0, 10);
-
-        if (containerGainers)
-            containerGainers.innerHTML = topGainers.map(createStockCardHTML).join('');
-        if (containerLosers)
-            containerLosers.innerHTML = topLosers.map(createStockCardHTML).join('');
-
-        // D. Update Heatmap
-        const topVolume = [...filteredStocks]
-            .filter(s => s.price > 0 && s.volume > 0)
-            .sort((a, b) => b.volume - a.volume)
-            .slice(0, 60);
-
-        const nodes: ClientNode[] = topVolume.map(s => ({ value: s.volume, data: s }));
-
-        if (nodes.length > 0) {
-            layoutBinaryClient(nodes, { x: 0, y: 0, w: 100, h: 100 });
-
-            if (containerHeatmap) {
-                containerHeatmap.innerHTML = nodes
-                    .map(node => {
-                        const stock = node.data;
-                        const pct = stock.changePercent;
-                        const r = node.rect;
-                        // Strict Validation for Rect
-                        if (!r || isNaN(r.x) || isNaN(r.y) || isNaN(r.w) || isNaN(r.h)) return '';
-
-                        let colorClass = 'neutral';
-                        if (pct > 5) colorClass = 'gain-high';
-                        else if (pct > 2) colorClass = 'gain-mid';
-                        else if (pct > 0) colorClass = 'gain-low';
-                        else if (pct < -5) colorClass = 'loss-high';
-                        else if (pct < -2) colorClass = 'loss-mid';
-                        else if (pct < 0) colorClass = 'loss-low';
-
-                        const showText = r.w > 4 && r.h > 4;
-                        const showDetail = r.w > 8 && r.h > 8;
-
-                        const style = `left: ${r.x}%; top: ${r.y}%; width: ${r.w}%; height: ${r.h}%;`;
-                        const title = `${stock.name} (${stock.symbol})\n漲跌: ${pct}%\n成交量: ${stock.volume.toLocaleString()}`;
-                        const symbolSize = `font-size: clamp(10px, 1.2vw, 24px)`;
-
-                        return `
-                    <a href="/stocks/${stock.symbol}/" class="treemap-item ${colorClass}" style="${style}" title="${title}">
-                        ${
-                            showText
-                                ? `
-                        <div class="content">
-                            <span class="symbol" style="${symbolSize}">${stock.symbol}</span>
-                            ${showDetail ? `<span class="name">${stock.name}</span>` : ''}
-                            <span class="pct">${pct.toFixed(2)}%</span>
-                        </div>`
-                                : ''
-                        }
-                    </a>`;
-                    })
-                    .join('');
-            }
-        } else {
-            // Empty State for Heatmap
-            if (containerHeatmap)
-                containerHeatmap.innerHTML =
-                    '<div style="display:flex;justify-content:center;align-items:center;height:100%;color:#888;">無資料 (No Data)</div>';
-        }
-    }
-
-    // 6. Bind Event
-    if (sectorSelect) {
-        sectorSelect.addEventListener('change', (e: Event) => {
-            const target = e.target as HTMLSelectElement;
-            const val = target.value;
-
-            updateDashboard(val);
-
-            // Update URL State
-            const url = new URL(window.location.href);
-            if (val === 'all') url.searchParams.delete('sector');
-            else url.searchParams.set('sector', val);
-            window.history.replaceState({}, '', url);
-        });
-    }
-
-    // 7. Watchlist Click Delegation (for hydrated cards)
-    document.addEventListener('click', e => {
-        const btn = (e.target as HTMLElement).closest('.watchlist-btn');
-        if (!btn) return;
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        const symbol = btn.getAttribute('data-symbol');
-        if (!symbol) return;
-
-        const watchlist = JSON.parse(localStorage.getItem('tw-watchlist') || '[]');
-        const index = watchlist.indexOf(symbol);
-        const star = btn.querySelector('.star');
-
-        if (index >= 0) {
-            watchlist.splice(index, 1);
-            btn.classList.remove('active');
-            if (star) star.textContent = '☆';
-        } else {
-            watchlist.push(symbol);
-            btn.classList.add('active');
-            if (star) star.textContent = '★';
-        }
-
-        localStorage.setItem('tw-watchlist', JSON.stringify(watchlist));
-    });
-
-    // Initial Load
-    const initialUrl = new URL(window.location.href);
-    const initialSector = initialUrl.searchParams.get('sector') || 'all';
-
-    if (initialSector !== 'all') {
-        if (sectorSelect) {
-            sectorSelect.value = initialSector;
-            updateDashboard(initialSector);
-        }
-    }
-</script>
-
-<!-- Inject Data -->
-<script id="stock-data" type="application/json" set:html={JSON.stringify(allStocks)} />

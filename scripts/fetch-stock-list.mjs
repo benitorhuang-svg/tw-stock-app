@@ -18,6 +18,47 @@ const TWSE_URL = 'https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=
 // TPEx 上櫃股票 API  
 const TPEX_URL = 'https://www.tpex.org.tw/web/stock/aftertrading/daily_close_quotes/stk_quote_result.php?l=zh-tw&o=json';
 
+// 設定
+const REQUEST_TIMEOUT = 5000;
+const MAX_RETRIES = 3;
+const BASE_DELAY = 1000;
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * 帶超時與重試的 fetch
+ */
+async function fetchWithRetry(url, options = {}, retries = MAX_RETRIES) {
+    for (let attempt = 0; attempt < retries; attempt++) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
+            if (response.ok) return response;
+
+            if (response.status === 429 && attempt < retries - 1) {
+                await delay(BASE_DELAY * Math.pow(2, attempt));
+                continue;
+            }
+
+            return response;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (attempt === retries - 1) throw error;
+            await delay(BASE_DELAY * Math.pow(2, attempt));
+        }
+    }
+    throw new Error('Max retries exceeded');
+}
+
 /**
  * 取得上市股票清單
  */
@@ -25,7 +66,7 @@ async function fetchTWSEStocks() {
     console.log('📥 取得上市股票清單...');
 
     try {
-        const response = await fetch(TWSE_URL, {
+        const response = await fetchWithRetry(TWSE_URL, {
             headers: {
                 'User-Agent': 'Mozilla/5.0'
             }
@@ -71,7 +112,7 @@ async function fetchTPExStocks() {
     console.log('📥 取得上櫃股票清單...');
 
     try {
-        const response = await fetch(TPEX_URL, {
+        const response = await fetchWithRetry(TPEX_URL, {
             headers: {
                 'User-Agent': 'Mozilla/5.0'
             }

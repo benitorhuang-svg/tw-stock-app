@@ -1,10 +1,10 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { strategies, getStrategy } from "../../data/strategies";
-import { stockList } from "../../data/stocks";
+import Layout from '../../layouts/Layout.astro';
+import { strategies, getStrategy } from '../../data/strategies';
+import { stockList } from '../../data/stocks';
 
 export function getStaticPaths() {
-    return strategies.map((strategy) => ({
+    return strategies.map(strategy => ({
         params: { id: strategy.id },
     }));
 }
@@ -13,20 +13,19 @@ const { id } = Astro.params;
 const strategy = getStrategy(id!);
 
 if (!strategy) {
-    return Astro.redirect("/strategies");
+    return Astro.redirect('/strategies');
 }
 
-// 模擬符合條件的股票
 function getMatchingStocks(strategyId: string) {
     switch (strategyId) {
-        case "low-pe":
-            return stockList.filter((s) => s.pe < 15 && s.pe > 0);
-        case "low-pb":
-            return stockList.filter((s) => s.pb < 1.5);
-        case "high-dividend":
-            return stockList.filter((s) => s.yield > 5);
-        case "high-roe":
-            return stockList.filter((s) => s.roe > 15);
+        case 'low-pe':
+            return stockList.filter(s => s.pe < 15 && s.pe > 0);
+        case 'low-pb':
+            return stockList.filter(s => s.pb < 1.5);
+        case 'high-dividend':
+            return stockList.filter(s => s.yield > 5);
+        case 'high-roe':
+            return stockList.filter(s => s.roe > 15);
         default:
             return stockList.slice(0, 4);
     }
@@ -34,231 +33,479 @@ function getMatchingStocks(strategyId: string) {
 
 const matchingStocks = getMatchingStocks(id!);
 const categoryLabels = {
-    fundamental: "基本面",
-    technical: "技術面",
-    sentiment: "籌碼面",
+    fundamental: 'FUNDAMENTAL',
+    technical: 'TECHNICAL',
+    sentiment: 'SENTIMENT',
 };
+const catColors = {
+    fundamental: '#10b981',
+    technical: '#3b82f6',
+    sentiment: '#f59e0b',
+};
+const bc = catColors[strategy.category];
 ---
 
-<Layout title={strategy.name}>
-    <div class="strategy-header">
-        <a href="/strategies" class="back-link">← 返回策略列表</a>
-        <div class="strategy-title">
-            <span class="strategy-icon">{strategy.icon}</span>
-            <h1>{strategy.name}</h1>
-            <span class="category-badge"
-                >{categoryLabels[strategy.category]}</span
-            >
-        </div>
-        <p class="strategy-desc">{strategy.description}</p>
-    </div>
+<Layout title={`${strategy.name} | TW Stock App`}>
+    <div class="strategy-detail-container">
+        <a href="/strategies" class="back-link mono">← RETURN_TO_MATRIX</a>
 
-    <!-- 篩選條件 -->
-    <section class="section">
-        <h2>📋 篩選條件</h2>
-        <div class="conditions-list">
-            {
-                strategy.conditions.map((condition, index) => (
-                    <div class="condition-item">
-                        <span class="condition-number">{index + 1}</span>
-                        <span class="condition-text">{condition}</span>
-                    </div>
-                ))
-            }
-        </div>
-    </section>
-
-    <!-- 符合條件的股票 -->
-    <section class="section">
-        <h2>📊 符合條件的股票 ({matchingStocks.length} 檔)</h2>
-        {
-            matchingStocks.length > 0 ? (
-                <div class="stock-table">
-                    <div class="table-header">
-                        <span>代號</span>
-                        <span>名稱</span>
-                        <span>股價</span>
-                        <span>本益比</span>
-                        <span>殖利率</span>
-                        <span>ROE</span>
-                    </div>
-                    {matchingStocks.map((stock) => (
-                        <a href={`/stocks/${stock.symbol}`} class="table-row">
-                            <span class="symbol">{stock.symbol}</span>
-                            <span class="name">{stock.name}</span>
-                            <span class="price">{stock.price}</span>
-                            <span>{stock.pe}</span>
-                            <span class="yield">{stock.yield}%</span>
-                            <span>{stock.roe}%</span>
-                        </a>
-                    ))}
+        <!-- Hero Header -->
+        <header
+            class="page-hero glass-card glow-wrapper cyber-reveal"
+            style="animation-delay: 0.1s;"
+        >
+            <div class="glow-bg" style={`--glow-color: ${bc}22`}></div>
+            <div class="hero-left">
+                <div
+                    class="icon-box"
+                    style={`color: ${bc}; border-color: ${bc}66; background: ${bc}22;`}
+                >
+                    <span class="icon">{strategy.icon}</span>
                 </div>
-            ) : (
-                <p class="no-results">目前沒有符合條件的股票</p>
-            )
-        }
-    </section>
+                <div class="title-group">
+                    <div class="title-row">
+                        <h1 class="mono">{strategy.name}</h1>
+                        <span class="cat-badge mono" style={`color:${bc}; border-color:${bc};`}
+                            >{categoryLabels[strategy.category]}</span
+                        >
+                    </div>
+                    <p class="text-muted mono">{strategy.description}</p>
+                </div>
+            </div>
+            <div class="sys-status">
+                <span class="pulse-dot" style={`background:${bc}; box-shadow: 0 0 8px ${bc};`}
+                ></span>
+                <span class="mono" style={`color:${bc};`}>ALGO_ACTIVE</span>
+            </div>
+        </header>
 
-    <!-- 策略說明 -->
-    <section class="section">
-        <h2>💡 策略說明</h2>
-        <div class="card">
-            <p>
-                本策略透過篩選符合上述條件的股票，幫助投資人快速找到潛在的投資標的。
-            </p>
-            <br />
-            <p><strong>注意事項：</strong></p>
-            <ul>
-                <li>本資料僅供參考，不構成投資建議</li>
-                <li>投資前請自行評估風險</li>
-                <li>建議搭配其他指標綜合判斷</li>
-            </ul>
+        <div class="workspace-grid">
+            <!-- Left Panel: Conditions -->
+            <div class="left-col cyber-reveal" style="animation-delay: 0.2s;">
+                <section class="glass-card panel glow-wrapper">
+                    <div class="glow-bg neutral-glow"></div>
+                    <header class="panel-header">
+                        <h2 class="mono">EXECUTION_PARAMETERS //</h2>
+                    </header>
+                    <div class="cond-list">
+                        {
+                            strategy.conditions.map((condition, index) => (
+                                <div class="cond-item">
+                                    <span class="cond-num mono text-accent">{index + 1}</span>
+                                    <span class="cond-text mono">{condition}</span>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </section>
+
+                <section
+                    class="glass-card panel info-panel glow-wrapper"
+                    style="animation-delay: 0.3s; animation: cyber-reveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;"
+                >
+                    <div class="glow-bg neutral-glow"></div>
+                    <header class="panel-header">
+                        <h2 class="mono">SYSTEM_NOTICE //</h2>
+                    </header>
+                    <div
+                        class="panel-content mono text-muted"
+                        style="font-size: 11px; line-height: 1.6;"
+                    >
+                        <p>
+                            This algorithm screens matching assets based on the defined parameters.
+                        </p>
+                        <ul style="margin-top:8px; padding-left:16px;">
+                            <li>Data provided is for reference only.</li>
+                            <li>Does not constitute investment advice.</li>
+                            <li>Evaluate risk independently before execution.</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Panel: Matching Assets -->
+            <div class="right-col cyber-reveal" style="animation-delay: 0.3s;">
+                <section class="glass-card panel glow-wrapper">
+                    <div class="glow-bg" style={`--glow-color: ${bc}11`}></div>
+                    <header
+                        class="panel-header"
+                        style="display:flex; justify-content:space-between;"
+                    >
+                        <h2 class="mono">MATCHING_ASSETS //</h2>
+                        <span class="mono" style={`color:${bc}; font-weight:800; font-size:12px;`}
+                            >{matchingStocks.length} FOUND</span
+                        >
+                    </header>
+                    <div class="panel-content" style="padding:0;">
+                        {
+                            matchingStocks.length > 0 ? (
+                                <div class="table-scroll">
+                                    <table class="premium-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="mono">SYMBOL</th>
+                                                <th class="mono">MKT_PRICE</th>
+                                                <th class="mono">P/E_RATIO</th>
+                                                <th class="mono">YIELD_%</th>
+                                                <th class="mono">ROE_%</th>
+                                                <th class="mono">ACTION</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {matchingStocks.map(stock => (
+                                                <tr>
+                                                    <td class="sticky-col">
+                                                        <span class="symbol mono">
+                                                            {stock.symbol}
+                                                        </span>
+                                                        <span class="name text-muted">
+                                                            {stock.name}
+                                                        </span>
+                                                    </td>
+                                                    <td class="mono">{stock.price.toFixed(2)}</td>
+                                                    <td class="mono">{stock.pe}</td>
+                                                    <td class="mono text-pos">{stock.yield}%</td>
+                                                    <td class="mono">{stock.roe}%</td>
+                                                    <td>
+                                                        <a
+                                                            href={`/stocks/${stock.symbol}`}
+                                                            class="terminal-link mono"
+                                                        >
+                                                            DATA
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div class="empty-state mono text-muted">
+                                    -- NO_MATCHES_FOUND --
+                                </div>
+                            )
+                        }
+                    </div>
+                </section>
+            </div>
         </div>
-    </section>
+    </div>
 </Layout>
 
 <style>
-    .strategy-header {
-        margin-bottom: 40px;
+    .strategy-detail-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-bottom: 60px;
     }
 
     .back-link {
-        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--c-text-muted);
         text-decoration: none;
-        font-size: 0.9rem;
-        display: inline-block;
-        margin-bottom: 16px;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: inline-flex;
+        width: max-content;
+        transition: 0.2s;
     }
-
     .back-link:hover {
-        color: var(--accent);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
     }
 
-    .strategy-title {
+    /* Glass Base & Glows */
+    .glass-card {
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+    .glow-wrapper {
+        position: relative;
+    }
+    .glow-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .glow-wrapper:hover .glow-bg {
+        opacity: 1;
+    }
+    .neutral-glow {
+        --glow-color: rgba(200, 200, 210, 0.05);
+    }
+
+    /* Hero */
+    .page-hero {
         display: flex;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 12px;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 32px;
+        z-index: 10;
     }
-
-    .strategy-icon {
-        font-size: 2.5rem;
-    }
-
-    .category-badge {
-        font-size: 0.8rem;
-        padding: 4px 12px;
-        background: var(--accent);
-        color: #000;
-        border-radius: 12px;
-        font-weight: 600;
-    }
-
-    .strategy-desc {
-        color: var(--text-secondary);
-        font-size: 1.1rem;
-    }
-
-    .section {
-        margin-bottom: 48px;
-    }
-
-    .conditions-list {
+    .hero-left {
         display: flex;
-        flex-direction: column;
-        gap: 12px;
+        align-items: flex-start;
+        gap: 24px;
+        z-index: 1;
     }
-
-    .condition-item {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 16px 20px;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-    }
-
-    .condition-number {
-        width: 32px;
-        height: 32px;
-        background: var(--accent);
-        color: #000;
-        border-radius: 50%;
+    .icon-box {
+        width: 72px;
+        height: 72px;
+        border: 1px solid;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
+        font-size: 32px;
+        text-shadow: 0 0 15px currentColor;
+        box-shadow: 0 0 20px currentColor inset;
     }
-
-    .condition-text {
-        font-size: 1rem;
+    .title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
-
-    .stock-table {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        overflow: hidden;
-    }
-
-    .table-header,
-    .table-row {
-        display: grid;
-        grid-template-columns: 80px 1fr 100px 80px 80px 80px;
-        padding: 16px 24px;
+    .title-row {
+        display: flex;
         align-items: center;
+        gap: 16px;
+    }
+    .title-row h1 {
+        font-size: 24px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .cat-badge {
+        font-size: 10px;
+        font-weight: 800;
+        padding: 4px 10px;
+        border: 1px solid;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.3);
+    }
+    .title-group p {
+        font-size: 12px;
+        margin: 0;
+        max-width: 600px;
+        line-height: 1.5;
     }
 
-    .table-header {
-        background: rgba(0, 0, 0, 0.2);
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: var(--text-secondary);
+    .sys-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        z-index: 1;
+        font-weight: 800;
+    }
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        opacity: 0.8;
     }
 
-    .table-row {
-        text-decoration: none;
-        color: var(--text-primary);
-        border-top: 1px solid var(--border);
-        transition: background 0.15s;
+    /* Grid Workspace */
+    .workspace-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+    .left-col {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
     }
 
-    .table-row:hover {
-        background: rgba(0, 212, 170, 0.05);
+    .panel {
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-header {
+        padding: 16px 24px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 1;
+    }
+    .panel-header h2 {
+        font-size: 12px;
+        margin: 0;
+        color: var(--c-text-muted);
+        letter-spacing: 2px;
+    }
+
+    .cond-list {
+        display: flex;
+        flex-direction: column;
+        padding: 12px;
+        z-index: 1;
+        position: relative;
+    }
+    .cond-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        transition: 0.2s;
+    }
+    .cond-item:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .cond-num {
+        font-size: 14px;
+        font-weight: 800;
+        width: 24px;
+        text-align: center;
+    }
+    .cond-text {
+        font-size: 11px;
+        color: #fff;
+        line-height: 1.4;
+    }
+
+    .info-panel .panel-content {
+        padding: 20px 24px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Results Table */
+    .table-scroll {
+        overflow-x: auto;
+        position: relative;
+        z-index: 1;
+    }
+    .table-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    .table-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+
+    .premium-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: right;
+        border-top: none !important;
+    }
+    .premium-table th {
+        background: rgba(10, 15, 25, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 10;
+        font-size: 10px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--c-text-muted);
+        position: sticky;
+        top: 0;
+        text-align: right;
+    }
+    .premium-table td {
+        padding: 14px 20px;
+        font-size: 12px;
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+        transition: 0.2s;
+    }
+    .premium-table tbody tr {
+        background: transparent;
+    }
+    .premium-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.04);
+    }
+    .premium-table th.sticky-col,
+    .premium-table td.sticky-col {
+        position: sticky;
+        left: 0;
+        text-align: left;
+        background: var(--c-bg-glass);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        z-index: 11;
     }
 
     .symbol {
-        font-weight: 700;
-        color: var(--accent);
+        color: var(--c-accent);
+        font-weight: 800;
+        font-size: 14px;
+        display: block;
+        border-left: 2px solid var(--c-border);
+        padding-left: 8px;
+        margin-left: -20px;
     }
-
     .name {
-        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        opacity: 0.7;
+        font-size: 10px;
+        margin-left: -10px;
     }
 
-    .price {
-        font-weight: 700;
+    .terminal-link {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--c-accent);
+        text-decoration: none;
+        padding: 4px 10px;
+        border: 1px solid var(--c-accent);
+        border-radius: 4px;
+        transition: 0.2s;
+        background: rgba(var(--c-accent-rgb), 0.1);
+    }
+    .terminal-link:hover {
+        background: rgba(var(--c-accent-rgb), 0.3);
+        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.4);
+        color: #fff;
     }
 
-    .yield {
-        color: var(--positive);
-        font-weight: 600;
-    }
-
-    .no-results {
-        color: var(--text-secondary);
-        padding: 40px;
+    .empty-state {
+        padding: 60px;
         text-align: center;
     }
 
-    .card ul {
-        margin-left: 24px;
-        margin-top: 8px;
-    }
-
-    .card li {
-        margin-bottom: 8px;
-        color: var(--text-secondary);
+    @media (max-width: 1024px) {
+        .workspace-grid {
+            grid-template-columns: 1fr;
+        }
+        .page-hero {
+            flex-direction: column;
+            gap: 20px;
+        }
     }
 </style>
+
+<script>
+    // Glow Tracker
+    document.addEventListener('mousemove', e => {
+        const wrappers = document.querySelectorAll('.glow-wrapper');
+        wrappers.forEach(wrapper => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            (wrapper as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+            (wrapper as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+</script>

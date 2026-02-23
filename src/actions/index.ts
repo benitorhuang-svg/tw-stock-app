@@ -1,44 +1,42 @@
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
-import { filterStocks } from '../lib/stock-service';
+import { screenStocks } from '../utils/marketService';
 
 export const server = {
     screenStocks: defineAction({
         input: z.object({
-            pe: z.object({ max: z.number().optional() }).optional(),
-            pb: z.object({ max: z.number().optional() }).optional(),
-            dividendYield: z.object({ min: z.number().optional() }).optional(),
-            roe: z.object({ min: z.number().optional() }).optional(),
+            pe: z.number().optional(),
+            pb: z.number().optional(),
+            dividendYield: z.number().optional(),
+            roe: z.number().optional(),
+            goldenCross: z.boolean().optional(),
+            rsiOversold: z.boolean().optional(),
+            macdBullish: z.boolean().optional(),
         }),
         handler: async (input) => {
-            const { pe, pb, dividendYield, roe } = input;
+            const results = screenStocks(input);
 
-            const conditions: any = {};
-            if (pe?.max !== undefined) conditions.maxPE = pe.max;
-            if (dividendYield?.min !== undefined) conditions.minYield = dividendYield.min;
-            if (roe?.min !== undefined) conditions.minROE = roe.min;
-
-            const results = await filterStocks(conditions);
-
-            return results.map(r => {
+            return results.map((r: any) => {
                 const matchedStrategies: string[] = [];
-                if (pe?.max && r.pe && r.pe > 0 && r.pe <= pe.max) matchedStrategies.push('低本益比');
-                if (pb?.max && r.pb && r.pb <= pb.max) matchedStrategies.push('低P/B');
-                if (dividendYield?.min && r.dividend_yield && r.dividend_yield >= dividendYield.min) matchedStrategies.push('高殖利率');
-                if (roe?.min && r.roe && r.roe >= roe.min) matchedStrategies.push('高ROE');
+                if (input.pe && r.pe > 0 && r.pe <= input.pe) matchedStrategies.push('低本益比');
+                if (input.pb && r.pb > 0 && r.pb <= input.pb) matchedStrategies.push('低P/B');
+                if (input.dividendYield && r.yield >= input.dividendYield) matchedStrategies.push('高殖利率');
+                if (input.roe && r.roe >= input.roe) matchedStrategies.push('高ROE');
+                if (input.goldenCross && r.ma5 > r.ma20) matchedStrategies.push('黃金交叉');
 
                 return {
                     symbol: r.symbol,
                     name: r.name,
                     matchedStrategies,
                     price: r.price,
-                    changePercent: r.change_percent,
+                    change: r.change,
+                    changePercent: r.change_pct,
                     pe: r.pe,
                     pb: r.pb,
-                    dividendYield: r.dividend_yield,
+                    dividendYield: r.yield,
                     roe: r.roe
                 };
-            }).filter(r => r.matchedStrategies.length > 0);
+            });
         }
     })
 }

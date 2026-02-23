@@ -1,0 +1,271 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const symbol = '2330 台積電';
+const latestPrice = 115.5;
+
+const valuation = {
+    pe: 18.57,
+    yield: 3.3,
+    pb: 1.63,
+    eps: 6.22,
+    cheap: 74.64,
+    fair: 93.3,
+    expensive: 124.4,
+    current: 115.5,
+};
+---
+
+<Layout title="估值與基本面數據">
+    <header class="page-header">
+        <h1 class="page-title">估值分析 <span class="page-symbol">/ Valuation</span></h1>
+        <div class="mono" style="text-align: right;">
+            <div style="font-size: 28px; font-weight: 800;">
+                {latestPrice.toFixed(2)}
+                <span style="font-size: 14px; color: var(--c-text-muted); font-weight: 500;"
+                    >TWD</span>
+            </div>
+            <div class="text-pos" style="font-size: 13px;">+1.50 (1.31%)</div>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <!-- Top Left: Metrics 2x2 Grid -->
+        <section class="glass-panel" style="padding: 20px;">
+            <div class="section-header" style="padding: 0 0 12px 0; border: none;">
+                <h2 class="section-title">核心基本面</h2>
+            </div>
+            <div class="data-grid-2x2">
+                <div class="v-card hover-glow">
+                    <span class="label">本益比 (P/E)</span>
+                    <span class="val mono">{valuation.pe} <span class="unit">倍</span></span>
+                </div>
+                <div class="v-card hover-glow">
+                    <span class="label">殖利率</span>
+                    <span class="val mono"
+                        >{valuation.yield.toFixed(2)} <span class="unit">%</span></span
+                    >
+                </div>
+                <div class="v-card hover-glow">
+                    <span class="label">股價淨值比 (P/B)</span>
+                    <span class="val mono">{valuation.pb} <span class="unit">倍</span></span>
+                </div>
+                <div class="v-card hover-glow">
+                    <span class="label">每股盈餘 (EPS)</span>
+                    <span class="val mono">{valuation.eps} <span class="unit">元</span></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Right: Fair Value 2x2 Grid -->
+        <section class="glass-panel" style="padding: 20px;">
+            <div class="section-header" style="padding: 0 0 12px 0; border: none;">
+                <h2 class="section-title">合理價值評估</h2>
+            </div>
+            <div class="data-grid-2x2">
+                <div class="v-card fv-cheap">
+                    <span class="label">便宜價</span>
+                    <span class="val mono"
+                        >{valuation.cheap.toFixed(2)} <span class="unit">元</span></span
+                    >
+                </div>
+                <div class="v-card fv-fair">
+                    <span class="label">合理價</span>
+                    <span class="val mono"
+                        >{valuation.fair.toFixed(2)} <span class="unit">元</span></span
+                    >
+                </div>
+                <div class="v-card fv-expensive">
+                    <span class="label">昂貴價</span>
+                    <span class="val mono"
+                        >{valuation.expensive.toFixed(2)} <span class="unit">元</span></span
+                    >
+                </div>
+                <div class="v-card fv-current">
+                    <span class="label">目前股價</span>
+                    <span class="val mono" style="color: var(--c-accent);"
+                        >{valuation.current.toFixed(2)} <span class="unit">元</span></span
+                    >
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom: River Chart -->
+        <section class="glass-panel full-width">
+            <div class="section-header">
+                <h2 class="section-title">本益比河流圖</h2>
+                <div class="river-legend mono">
+                    <span class="r-leg"><span class="r-box r-price"></span>股價</span>
+                    <span class="r-leg"><span class="r-box r-cheap"></span>便宜價(12x)</span>
+                    <span class="r-leg"><span class="r-box r-fair"></span>合理價(15x)</span>
+                    <span class="r-leg"><span class="r-box r-exp"></span>昂貴價(20x)</span>
+                </div>
+            </div>
+
+            <div class="river-chart-area">
+                <div class="river-backdrop">
+                    <div class="band band-exp"></div>
+                    <div class="band band-fair"></div>
+                    <div class="band band-cheap"></div>
+
+                    <svg class="river-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+                        <polyline
+                            points="0,38 10,38 20,35 30,36 40,25 50,26 60,18 70,10 80,15 90,8 100,5"
+                            fill="none"
+                            stroke="#3b82f6"
+                            stroke-width="2"
+                            vector-effect="non-scaling-stroke"></polyline>
+                        <circle cx="10" cy="38" r="1.5" fill="#3b82f6"></circle>
+                        <circle cx="30" cy="36" r="1.5" fill="#3b82f6"></circle>
+                        <circle cx="50" cy="26" r="1.5" fill="#3b82f6"></circle>
+                        <circle cx="70" cy="10" r="1.5" fill="#3b82f6"></circle>
+                        <circle cx="90" cy="8" r="1.5" fill="#3b82f6"></circle>
+                    </svg>
+                </div>
+            </div>
+        </section>
+    </div>
+</Layout>
+
+<style>
+    .v-card {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 8px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--c-border);
+        background: rgba(255, 255, 255, 0.02);
+        transition: border-color 0.2s;
+    }
+
+    .hover-glow:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .v-card .label {
+        font-size: 13px;
+        color: var(--c-text-secondary);
+    }
+    .v-card .val {
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+    .v-card .unit {
+        font-size: 12px;
+        color: var(--c-text-muted);
+    }
+
+    .fv-cheap {
+        border-left: 3px solid var(--c-success);
+    }
+    .fv-cheap .val {
+        color: var(--c-success);
+    }
+
+    .fv-fair {
+        border-left: 3px solid var(--c-warning);
+    }
+    .fv-fair .val {
+        color: var(--c-warning);
+    }
+
+    .fv-expensive {
+        border-left: 3px solid var(--c-danger);
+    }
+    .fv-expensive .val {
+        color: var(--c-danger);
+    }
+
+    .fv-current {
+        border-left: 3px solid var(--c-accent);
+        background:
+            radial-gradient(circle at left, rgba(59, 130, 246, 0.1), transparent 80%),
+            rgba(255, 255, 255, 0.02);
+    }
+
+    /* River Chart Layout */
+    .river-legend {
+        display: flex;
+        gap: 16px;
+        font-size: 11px;
+        color: var(--c-text-secondary);
+    }
+    .r-leg {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .r-box {
+        width: 12px;
+        height: 3px;
+        border-radius: 2px;
+    }
+    .r-price {
+        background: var(--c-accent);
+        height: 2px;
+    }
+    .r-cheap {
+        background: var(--c-success);
+        border-style: dashed;
+        border-width: 1px;
+    }
+    .r-fair {
+        background: var(--c-warning);
+        border-style: dashed;
+        border-width: 1px;
+    }
+    .r-exp {
+        background: var(--c-danger);
+        border-style: dashed;
+        border-width: 1px;
+    }
+
+    .river-chart-area {
+        padding: 24px;
+        flex: 1; /* Expands to fill rest of bottom area */
+        position: relative;
+        min-height: 200px;
+    }
+    .river-backdrop {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .band {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        border-top: 1px dashed;
+        opacity: 0.5;
+    }
+    .band-exp {
+        top: 20%;
+        border-color: var(--c-danger);
+    }
+    .band-fair {
+        top: 50%;
+        border-color: var(--c-warning);
+    }
+    .band-cheap {
+        top: 80%;
+        border-color: var(--c-success);
+    }
+
+    .river-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        overflow: visible;
+        filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.5));
+    }
+</style>

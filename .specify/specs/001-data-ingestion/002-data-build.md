@@ -1,158 +1,83 @@
-# 002 — 資料建構 ETL (Data Build Pipeline)
+# 002 — 資料建構與特徵工程 ETL (Data Build & Feature Engineering Pipeline)
 
-> Layer 2：將 Layer 1 產出的原始檔案（CSV / JSON）轉換為高效能的 SQLite 資料庫。
+> Layer 2：將 Layer 1 的原始 CSV/JSON 進行運算，並轉化為**包含所有技術指標與運算結果的高效能 SQLite 資料庫**。這顆 SQLite 不只是讀取介面，更是我們「全機本地端即時分析」與「選股」的核心。
 
-## 職責定義
+## 職責定義與架構翻轉
+在一般的網頁應用中，MACD 等指標是透過瀏覽器即時算的。**但為了支援強大的「全臺股 1700 檔股票的技術+籌碼條件跨維度選股」**以及**儲備給機器學習訓練的特徵值**，我們在 `build-sqlite-db.js` 這個 ETL 階段，就必須把所有衍生數據「算好並寫入資料庫」。
 
-本層負責 **Extract-Transform-Load (ETL)** 流程：
-1. **Extract**：讀取 `stocks.json`、`latest_prices.json`、1,077 個 CSV 檔案
-2. **Transform**：解析 CSV 行、型別轉換、計算衍生欄位
-3. **Load**：批次寫入 SQLite 資料庫，建立索引，執行 VACUUM / ANALYZE 優化
+## ETL 執行流程 (Extract, Transform, Feature Engineer, Load)
 
-本層是**離線批次執行**的，不在使用者請求路徑上，執行一次即可供後續所有層級使用。
+執行命令：`node scripts/build-sqlite-db.js`
 
-## 核心腳本：build-sqlite-db.js
+### Step 1: 初始化 SQLite (WAL 模式)
+建立一顆極度優化的 `stocks.db`，開啟 `WAL (Write-Ahead Logging)` 與記憶體暫存表提升寫入極限。
 
-- **執行方式**：`npm run refresh-db` = `node scripts/build-sqlite-db.js`
-- **輸入**：
-  | 檔案 | 來源 |
-  |------|------|
-  | `src/content/stocks/list.json` | 股票清單（代號、名稱、市場） |
-  | `public/data/latest_prices.json` | 最新價格快照（含 pe, pb, yield） |
-  | `public/data/prices/*.csv` (1,077 檔) | 5 年歷史日K |
-- **輸出**：`public/data/stocks.db`（約 150MB）
-
-## ETL 流程詳解
-
-### Step 1: 刪除舊資料庫並初始化
-
-```javascript
-if (fs.existsSync(OUTPUT_DB)) fs.unlinkSync(OUTPUT_DB);
-const db = new Database(OUTPUT_DB);
-db.pragma('journal_mode = WAL');       // Write-Ahead Logging
-db.pragma('synchronous = NORMAL');     // 平衡效能與安全
-db.pragma('cache_size = 10000');       // 10000 pages ≈ 40MB cache
-db.pragma('temp_store = MEMORY');      // 暫存表使用記憶體
-```
-
-### Step 2: 建立 Schema
+### Step 2: 建立機器學習等級的 Schema (定義表結構)
 
 ```sql
--- 股票基本資料 (1,077 rows)
-CREATE TABLE stocks (
-    symbol TEXT PRIMARY KEY,
-    name   TEXT NOT NULL,
-    market TEXT            -- 'TSE' | 'OTC'
+-- 1. 基礎字典表 (Stocks)
+CREATE TABLE stocks (symbol TEXT PRIMARY KEY, name TEXT, market TEXT);
+
+-- 2. 歷史價格與技術面特徵表 (Technical Features)
+-- 不只存 OHLCV，直接把技術指標算好存進來，以利快速 SELECT 篩選
+CREATE TABLE tech_features (
+    symbol TEXT,
+    date TEXT,
+    open REAL, high REAL, low REAL, close REAL, volume INTEGER,
+    ma_5 REAL, ma_20 REAL, ma_60 REAL,
+    macd_dif REAL, macd_macd REAL, macd_hist REAL,  -- MACD指標
+    kdj_k REAL, kdj_d REAL, kdj_j REAL,             -- KD指標
+    rsi_14 REAL,                                    -- RSI
+    wave_label TEXT,                                -- 波浪理論標籤 (如 W3, W4, NULL)
+    PRIMARY KEY (symbol, date)
 );
 
--- 最新價格快照 (1,077 rows) — 用於首頁 / 列表快速查詢
-CREATE TABLE latest_prices (
-    symbol     TEXT PRIMARY KEY,
-    date       TEXT,
-    open       REAL,  high       REAL,
-    low        REAL,  close      REAL,
-    volume     INTEGER,
-    turnover   REAL,
-    change     REAL,  change_pct REAL,
-    pe         REAL DEFAULT 0,
-    pb         REAL DEFAULT 0,
-    yield      REAL DEFAULT 0,
-    FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+-- 3. 籌碼與信用交易特徵表 (Institutional & Margin Features)
+-- 完美支援 005_tab_chips.md 畫面所需的雙軸對比
+CREATE TABLE chip_features (
+    symbol TEXT,
+    date TEXT,
+    foreign_net INTEGER,    -- 外資淨買超
+    trust_net INTEGER,      -- 投信淨買超
+    dealer_net INTEGER,     -- 自營商淨買超
+    margin_bal INTEGER,     -- 融資餘額
+    short_bal INTEGER,      -- 融券餘額
+    PRIMARY KEY (symbol, date)
 );
 
--- 基本面進階資料 (EPS, ROE, 現金流等)
-CREATE TABLE fundamentals (
-    symbol     TEXT PRIMARY KEY,
-    eps_yoy    REAL,
-    roe        REAL,
-    cash_flow  REAL,
-    peg        REAL,
-    FOREIGN KEY (symbol) REFERENCES stocks(symbol)
-);
-
--- 籌碼面資料 (三大法人買賣超、籌碼集中度等)
-CREATE TABLE chips (
-    symbol     TEXT NOT NULL,
-    date       TEXT NOT NULL,
-    foreign_inv INTEGER,   -- 外資買賣超
-    invest_trust INTEGER,  -- 投信買賣超
-    dealer      INTEGER,   -- 自營商買賣超
-    concentration REAL,    -- 籌碼集中度
-    PRIMARY KEY (symbol, date),
-    FOREIGN KEY (symbol) REFERENCES stocks(symbol)
-);
-
--- 歷史價格 (~1,300,000 rows) — 用於圖表 / 選股 / 技術分析
-CREATE TABLE price_history (
-    symbol     TEXT NOT NULL,
-    date       TEXT NOT NULL,
-    open       REAL,  high       REAL,
-    low        REAL,  close      REAL,
-    volume     INTEGER,
-    turnover   REAL,
-    change     REAL,  change_pct REAL,
-    PRIMARY KEY (symbol, date),
-    FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+-- 4. 估值與基本面表 (Valuation & Fundamentals)
+-- 完美支援 006_tab_fundamentals.md 的河流圖繪製
+CREATE TABLE valuation_features (
+    symbol TEXT,
+    date TEXT,
+    pe_ratio REAL,          -- 當日 本益比
+    pb_ratio REAL,          -- 當日 股淨比
+    div_yield REAL,         -- 當日 殖利率
+    monthly_rev INTEGER,    -- 當月營收
+    rev_yoy REAL,           -- 營收年增率
+    margin_gross REAL,      -- 毛利率
+    PRIMARY KEY (symbol, date)
 );
 ```
 
-### Step 3: 建立索引
+### Step 3: 特徵計算與向量化 (Transform & Compute)
+- 讀取某檔股票的歷史 OHLCV 陣列。
+- **呼叫 Node.js 的技術指標計算庫** (如 `technicalindicators` npm package)。
+- 一口氣算出該股 5 年的 MA20, MACD_hist, RSI。
+- **機器學習準備**：如果遇到無效天數（上市第一天沒有 MA20），存為 `NULL` 或是填補平均值 (Imputation)，保持資料庫整潔。
 
+### Step 4: 建立高速檢索索引 (Indexing)
+為了支撐前端 Screener 的「即時篩選」與 Data Explorer 的無遲滯瀏覽，建立極端的複合索引：
 ```sql
-CREATE INDEX idx_history_symbol      ON price_history(symbol);
-CREATE INDEX idx_history_date        ON price_history(date);
-CREATE INDEX idx_history_symbol_date ON price_history(symbol, date DESC);
-CREATE INDEX idx_latest_change_pct   ON latest_prices(change_pct DESC);
-CREATE INDEX idx_latest_volume       ON latest_prices(volume DESC);
+-- 查詢某檔股票全歷史
+CREATE INDEX idx_tech_symbol_date ON tech_features(symbol, date DESC);
+
+-- 查詢「今日投信買超排名」、「今日MACD黃金交叉」
+CREATE INDEX idx_chip_date_trust ON chip_features(date DESC, trust_net DESC);
+CREATE INDEX idx_tech_date_macd ON tech_features(date DESC, macd_hist DESC);
 ```
 
-**索引設計意圖**：
-- `idx_history_symbol_date`：個股歷史查詢（最常用，DESC 排序直接輸出最新在前）
-- `idx_latest_change_pct`：漲跌排行榜（首頁 Top 10 漲跌）
-- `idx_latest_volume`：成交量排行榜
-
-### Step 4: 批次寫入
-
-- 股票清單 → `INSERT OR REPLACE INTO stocks` (transaction 包裝)
-- 最新價格 → `INSERT OR REPLACE INTO latest_prices` (transaction 包裝)
-- 歷史價格 → **每 50 個 CSV 檔案一批** transaction 插入：
-  ```javascript
-  // 從檔名提取代號: "2330_台積電.csv" → symbol = "2330"
-  const symbol = file.split('_')[0];
-  // 逐行解析 CSV (跳過標題行)
-  cols[0]=Date, cols[1]=Open, ..., cols[8]=ChangePct
-  ```
-
-### Step 5: 最佳化
-
-```javascript
-db.pragma('optimize');  // 更新查詢計畫統計
-db.exec('VACUUM');      // 壓縮資料庫檔案
-db.exec('ANALYZE');     // 更新索引統計
-```
-
-## 其他建構腳本
-
-| 腳本 | 功能 | 輸出 |
-|------|------|------|
-| `scripts/build-price-snapshot.js` | 從所有 CSV 提取最後一筆作為最新價格 | `latest_prices.json` |
-| `scripts/generate-price-index.js` | 建立 symbol → filename 的映射索引 | `price_index.json` |
-| `scripts/optimize-data.mjs` | 資料壓縮與清理 | — |
-| `scripts/audit-sectors-final.mjs` | 產業分類正確性稽核 | 稽核報告 |
-| `scripts/setup-data.ps1` | 首次資料初始化（一鍵執行全部腳本） | — |
-
-## 效能數據
-
-| 指標 | 數值 |
-|------|------|
-| CSV 檔案數 | 1,077 |
-| 歷史紀錄總數 | ~1,300,000 rows |
-| 建構時間 | ~30 秒 |
-| 輸出 DB 大小 | ~150 MB |
-| 原始 CSV 總大小 | ~185 MB |
-
-## 待辦任務
-
-- [ ] **T2-01**: 加入增量更新機制（只匯入新增的 CSV 資料，而非全部重建）
-- [ ] **T2-02**: 加入 DB 版本號（metadata 表），用於 Client 端判斷是否需要重新下載
-- [ ] **T2-03**: 將 `build-sqlite-db.js` 從 CommonJS 遷移至 ESM（統一模組格式）
+## 效能與架構優勢
+1. **Screener O(1) 複雜度**：當使用者想篩選「MACD 翻紅 且 投信連買」的股票，直接是一體成型的 SQL `SELECT`，能在 `10ms` 內從全台股 1700 檔撈出結果，不用前端算到當機。
+2. **Tab 渲染零延遲**：Stock Terminal 前端切換技術面或籌碼面時，因為資料庫裡已經有 `macd_hist` 或 `foreign_net` 的絕對數值，Chart.js / ECharts 拿到資料就能直接繪圖，完全無需迴圈邏輯。
+3. **ML Ready**：這顆 SQLite `.db` 檔案隨時可以直接丟進 Python Pandas 的 `read_sql` 函數，無縫接軌 Scikit-learn 或 TensorFlow 進行模型訓練。

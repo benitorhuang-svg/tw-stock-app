@@ -10,7 +10,14 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "fetch": "node scripts/fetch-yahoo.mjs",
-    "refresh-db": "node scripts/build-sqlite-db.js"
+    "fetch:list": "node scripts/fetch-stock-list.mjs",
+    "fetch:revenue": "node scripts/fetch-revenue.mjs",
+    "fetch:stats": "node scripts/fetch-monthly-stats.mjs",
+    "fetch:financials": "node scripts/fetch-financials.mjs",
+    "fetch:chips": "node scripts/fetch-chips.mjs",
+    "fetch:all": "npm run fetch:list && npm run fetch:revenue && npm run fetch:stats && npm run fetch:financials && npm run fetch:chips",
+    "build:db": "node scripts/build-sqlite-db.js",
+    "refresh-db": "npm run fetch:all && npm run build:db"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

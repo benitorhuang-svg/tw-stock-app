@@ -1,224 +1,442 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/molecules/PageHero.astro';
 ---
 
-<Layout title="股利歷史">
-    <h1>💰 股利歷史查詢</h1>
-    <p class="page-desc">查看個股歷年股利發放紀錄。</p>
+<Layout title="Dividend History | TW Stock App">
+    <div class="div-container">
+        <!-- Hero Header -->
+        <!-- Hero Header -->
+        <PageHero
+            icon="💰"
+            title="DIVIDEND_ARCHIVE"
+            subtitle="Historical yield distributions & payout metrics"
+            glowClass="accent-glow"
+        >
+            <div class="sys-status" slot="action">
+                <span class="pulse-dot"></span>
+                <span class="mono">DATABASE_SYNCED</span>
+            </div>
+        </PageHero>
 
-    <div class="reveal-grid">
-        <!-- 搜尋 -->
-        <div class="search-section delay-1">
-            <input
-                type="text"
-                id="stock-search"
-                placeholder="🔍 輸入股票代號 (例: 2330)"
-                class="search-input"
-            />
-            <button id="search-btn" class="btn-primary">查詢</button>
+        <!-- Search Section -->
+        <section class="search-panel glass-card cyber-reveal" style="animation-delay: 0.2s;">
+            <div class="cyber-search-box">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    id="stock-search"
+                    class="cyber-input mono"
+                    placeholder="ENTER SYMBOL FOR YIELD HISTORY (ex: 2330)..."
+                    autocomplete="off"
+                />
+                <button id="search-btn" class="cyber-btn mono">EXECUTE_QUERY</button>
+            </div>
+        </section>
+
+        <!-- Empty State -->
+        <div
+            id="empty-state"
+            class="empty-state glass-card cyber-reveal"
+            style="animation-delay: 0.3s;"
+        >
+            <span class="state-icon">📊</span>
+            <h3 class="mono">AWAITING_INPUT</h3>
+            <p class="text-muted">Enter a symbol above to retrieve historical dividend data.</p>
         </div>
 
-        <!-- 股利摘要 -->
-        <div id="dividend-summary" class="summary-cards hidden delay-2">
-            <div class="card summary-card">
-                <div class="card-header">近 10 年平均現金股利</div>
-                <div id="avg-cash" class="card-value positive">$0</div>
+        <!-- Metric Cards -->
+        <div id="dividend-summary" class="metric-grid" style="display:none;">
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.1s;"
+            >
+                <div class="glow-bg pos-glow"></div>
+                <span class="m-label mono">10YR_AVG_CASH</span>
+                <span id="avg-cash" class="m-val mono text-pos">$0</span>
             </div>
-            <div class="card summary-card">
-                <div class="card-header">近 10 年平均殖利率</div>
-                <div id="avg-yield" class="card-value">0%</div>
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.2s;"
+            >
+                <div class="glow-bg accent-glow"></div>
+                <span class="m-label mono">10YR_AVG_YIELD</span>
+                <span id="avg-yield" class="m-val mono text-accent">0%</span>
             </div>
-            <div class="card summary-card">
-                <div class="card-header">連續配息年數</div>
-                <div id="consecutive-years" class="card-value">0 年</div>
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.3s;"
+            >
+                <div class="glow-bg neutral-glow"></div>
+                <span class="m-label mono">CONSEC_PAYOUTS</span>
+                <span id="consecutive-years" class="m-val mono">0 YEARS</span>
             </div>
-            <div class="card summary-card">
-                <div class="card-header">填息成功率</div>
-                <div id="fill-rate" class="card-value">0%</div>
-            </div>
-        </div>
-
-        <!-- 股利圖表 -->
-        <div id="dividend-chart-section" class="section hidden delay-3">
-            <h2>📊 歷年股利走勢</h2>
-            <div class="chart-container">
-                <canvas id="dividend-chart"></canvas>
-            </div>
-        </div>
-
-        <!-- 股利明細表 -->
-        <div id="dividend-table-section" class="section hidden delay-4">
-            <h2>📋 股利明細</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>年度</th>
-                            <th>現金股利</th>
-                            <th>股票股利</th>
-                            <th>合計</th>
-                            <th>殖利率</th>
-                            <th>備註</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dividend-body"></tbody>
-                </table>
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.4s;"
+            >
+                <div class="glow-bg neutral-glow"></div>
+                <span class="m-label mono">FILL_RATE</span>
+                <span id="fill-rate" class="m-val mono">0%</span>
             </div>
         </div>
 
-        <!-- 空狀態 -->
-        <div id="empty-state" class="empty-state delay-2">
-            <div class="empty-icon">📊</div>
-            <h3>查詢股利歷史</h3>
-            <p>輸入股票代號開始查詢歷年股利發放紀錄</p>
+        <!-- Main Workspace (Chart + Table) -->
+        <div class="workspace-grid">
+            <!-- Chart -->
+            <section
+                id="dividend-chart-section"
+                class="chart-panel glass-card glow-wrapper cyber-reveal"
+                style="display:none; animation-delay: 0.5s;"
+            >
+                <div class="glow-bg neutral-glow"></div>
+                <header class="panel-header">
+                    <h2 class="mono">HISTORICAL_TREND //</h2>
+                </header>
+                <div class="chart-container">
+                    <canvas id="dividend-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Table -->
+            <section
+                id="dividend-table-section"
+                class="table-panel glass-card glow-wrapper cyber-reveal"
+                style="display:none; animation-delay: 0.6s;"
+            >
+                <div class="glow-bg neutral-glow"></div>
+                <header class="panel-header">
+                    <h2 class="mono">PAYOUT_RECORDS //</h2>
+                </header>
+                <div class="table-scroll">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th class="mono">YEAR</th>
+                                <th class="mono">CASH_UNIT</th>
+                                <th class="mono">STOCK_UNIT</th>
+                                <th class="mono">TOTAL</th>
+                                <th class="mono">YIELD_%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dividend-body"></tbody>
+                    </table>
+                </div>
+            </section>
         </div>
     </div>
 </Layout>
 
 <style>
-    .page-desc {
-        color: var(--c-text-secondary);
-        margin-bottom: 24px;
-    }
-
-    .search-section {
+    .div-container {
         display: flex;
-        gap: 12px;
-        margin-bottom: 32px;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-bottom: 40px;
     }
 
-    .search-input {
-        padding: 14px 20px;
+    /* Glass Effect Base */
+    .glass-card {
         background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 12px;
-        color: var(--c-text-primary);
-        font-size: 1rem;
-        width: 250px;
         backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
+        border-radius: 16px;
+        position: relative;
+    }
+    .glow-wrapper {
+        position: relative;
+        overflow: hidden;
+        border-radius: 16px;
+    }
+    .glow-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .glow-wrapper:hover .glow-bg {
+        opacity: 1;
+    }
+    .neutral-glow {
+        --glow-color: rgba(200, 200, 210, 0.05);
+    }
+    .accent-glow {
+        --glow-color: rgba(59, 130, 246, 0.1);
+    }
+    .pos-glow {
+        --glow-color: rgba(16, 185, 129, 0.1);
     }
 
-    .btn-primary {
-        padding: 14px 24px;
-        background: var(--c-accent);
+    /* Hero */
+    .page-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 32px;
+        z-index: 10;
+    }
+    .hero-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        z-index: 1;
+    }
+    .icon-box {
+        width: 56px;
+        height: 56px;
+        background: rgba(var(--c-accent-rgb), 0.1);
+        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .hero-left h1 {
+        font-size: 16px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .hero-left p {
+        font-size: 11px;
+        margin: 4px 0 0;
+    }
+    .sys-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        z-index: 1;
+        color: var(--c-text-muted);
+    }
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--c-success);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--c-success);
+    }
+
+    /* Search */
+    .search-panel {
+        padding: 24px;
+        z-index: 5;
+    }
+    .cyber-search-box {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 4px;
+        transition: 0.3s;
+    }
+    .cyber-search-box:focus-within {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.2);
+    }
+    .search-icon {
+        padding: 0 16px;
+        opacity: 0.5;
+    }
+    .cyber-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 16px;
+        padding: 16px 0;
+        outline: none;
+    }
+    .cyber-btn {
+        background: linear-gradient(135deg, var(--c-accent), #2563eb);
         color: #fff;
         border: none;
-        border-radius: 12px;
-        font-weight: 600;
+        padding: 14px 24px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-size: 12px;
         cursor: pointer;
-        transition: var(--transition-premium);
+        transition: 0.3s;
+        margin-left: 8px;
+    }
+    .cyber-btn:hover {
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.5);
     }
 
-    .btn-primary:hover {
-        background: var(--c-accent-secondary);
-        box-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.4);
-        transform: translateY(-2px);
-    }
-
-    .summary-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-        margin-bottom: 32px;
-    }
-
-    .summary-card {
+    /* Empty State */
+    .empty-state {
+        padding: 80px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
+        gap: 16px;
+        border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    .state-icon {
+        font-size: 48px;
+        opacity: 0.5;
+    }
+    .empty-state h3 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+
+    /* Metrics */
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    .metric-card {
         padding: 20px;
-        border-radius: 16px;
-        backdrop-filter: var(--glass-blur);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .m-label {
+        font-size: 10px;
+        color: var(--c-text-muted);
+        position: relative;
+        z-index: 1;
+        letter-spacing: 1px;
+    }
+    .m-val {
+        font-size: 24px;
+        font-weight: 800;
+        color: #fff;
+        position: relative;
+        z-index: 1;
     }
 
-    .section {
-        margin-bottom: 32px;
+    /* Workspace */
+    .workspace-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: start;
     }
 
+    .panel-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 1;
+    }
+    .panel-header h2 {
+        font-size: 12px;
+        margin: 0;
+        color: var(--c-text-muted);
+        letter-spacing: 2px;
+    }
+
+    .chart-panel {
+        display: flex;
+        flex-direction: column;
+    }
     .chart-container {
-        height: 300px;
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: var(--glass-blur);
+        padding: 24px;
+        height: 350px;
+        position: relative;
+        z-index: 1;
     }
-
     #dividend-chart {
         width: 100%;
         height: 100%;
     }
 
-    .table-container {
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: 16px;
-        overflow-x: auto;
-        backdrop-filter: var(--glass-blur);
+    .table-panel {
+        display: flex;
+        flex-direction: column;
+    }
+    .table-scroll {
+        max-height: 400px;
+        overflow-y: auto;
+        position: relative;
+        z-index: 1;
+    }
+    .table-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    .table-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
     }
 
-    table {
+    .premium-table {
         width: 100%;
         border-collapse: collapse;
-    }
-
-    th,
-    td {
-        padding: 14px 16px;
         text-align: right;
-        border-bottom: 1px solid var(--c-border);
-        color: var(--c-text-primary);
     }
-
-    th:first-child,
-    td:first-child {
+    .premium-table th {
+        background: rgba(10, 15, 25, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 10;
+        font-size: 10px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--c-text-muted);
+        position: sticky;
+        top: 0;
+    }
+    .premium-table td {
+        padding: 14px 20px;
+        font-size: 13px;
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+        transition: 0.2s;
+    }
+    .premium-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.04);
+    }
+    .premium-table th:first-child,
+    .premium-table td:first-child {
         text-align: left;
     }
 
-    th {
-        background: rgba(0, 0, 0, 0.2);
-        color: var(--c-text-secondary);
-        font-size: 0.85rem;
+    @media (max-width: 1024px) {
+        .metric-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .workspace-grid {
+            grid-template-columns: 1fr;
+        }
     }
-
-    tr:hover {
-        background: rgba(var(--c-accent-rgb), 0.05);
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 24px;
-        background: var(--c-bg-glass);
-        border: 1px dashed var(--c-border);
-        border-radius: 16px;
-        backdrop-filter: var(--glass-blur);
-    }
-
-    .empty-icon {
-        font-size: 4rem;
-        margin-bottom: 16px;
-    }
-
-    .empty-state h3 {
-        margin-bottom: 8px;
-        color: var(--c-text-primary);
-    }
-
-    .empty-state p {
-        color: var(--c-text-secondary);
-    }
-
-    .hidden {
-        display: none !important;
+    @media (max-width: 600px) {
+        .metric-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <script>
-    // 模擬股利資料
-    const mockDividends: Record<
-        string,
-        { year: number; cash: number; stock: number; yield: number }[]
-    > = {
+    // Glow Tracker
+    document.addEventListener('mousemove', e => {
+        const wrappers = document.querySelectorAll('.glow-wrapper');
+        wrappers.forEach(wrapper => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            (wrapper as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+            (wrapper as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+
+    const mockDividends = {
         '2330': [
             { year: 2024, cash: 13.0, stock: 0, yield: 2.2 },
             { year: 2023, cash: 11.5, stock: 0, yield: 2.1 },
@@ -246,7 +464,7 @@ import Layout from '../layouts/Layout.astro';
     };
 
     const searchBtn = document.getElementById('search-btn');
-    const searchInput = document.getElementById('stock-search') as HTMLInputElement;
+    const searchInput = document.getElementById('stock-search');
 
     searchBtn?.addEventListener('click', searchDividends);
     searchInput?.addEventListener('keydown', e => {
@@ -258,119 +476,99 @@ import Layout from '../layouts/Layout.astro';
         if (!symbol) return;
 
         const data = mockDividends[symbol];
+        if (!data) return alert('ERR_NO_DATA_FOUND_FOR_SYMBOL');
 
-        if (!data) {
-            alert('找不到此股票的股利資料');
-            return;
-        }
+        document.getElementById('empty-state').style.display = 'none';
 
-        // 隱藏空狀態
-        document.getElementById('empty-state')!.classList.add('hidden');
+        const sum = document.getElementById('dividend-summary');
+        const crt = document.getElementById('dividend-chart-section');
+        const tbl = document.getElementById('dividend-table-section');
 
-        // 顯示各區塊
-        document.getElementById('dividend-summary')!.classList.remove('hidden');
-        document.getElementById('dividend-chart-section')!.classList.remove('hidden');
-        document.getElementById('dividend-table-section')!.classList.remove('hidden');
+        sum.style.display = 'grid';
+        crt.style.display = 'flex';
+        tbl.style.display = 'flex';
 
-        // 計算摘要
-        const avgCash = data.reduce((sum, d) => sum + d.cash, 0) / data.length;
-        const avgYield = data.reduce((sum, d) => sum + d.yield, 0) / data.length;
-        const consecutiveYears = data.length;
+        const avgCash = data.reduce((s, d) => s + d.cash, 0) / data.length;
+        const avgYield = data.reduce((s, d) => s + d.yield, 0) / data.length;
 
-        document.getElementById('avg-cash')!.textContent = `$${avgCash.toFixed(2)}`;
-        document.getElementById('avg-yield')!.textContent = `${avgYield.toFixed(1)}%`;
-        document.getElementById('consecutive-years')!.textContent = `${consecutiveYears} 年`;
-        document.getElementById('fill-rate')!.textContent = '80%'; // 模擬資料
+        document.getElementById('avg-cash').textContent = `$${avgCash.toFixed(2)}`;
+        document.getElementById('avg-yield').textContent = `${avgYield.toFixed(1)}%`;
+        document.getElementById('consecutive-years').textContent = `${data.length} YEARS`;
+        document.getElementById('fill-rate').textContent = '80%'; // Mock
 
-        // 繪製圖表
         drawDividendChart(data);
 
-        // 填充表格
-        const tbody = document.getElementById('dividend-body')!;
+        const tbody = document.getElementById('dividend-body');
         tbody.innerHTML = data
             .map(
                 d => `
             <tr>
-                <td>${d.year}</td>
-                <td class="positive">$${d.cash.toFixed(2)}</td>
+                <td style="color:var(--c-text-muted)">${d.year}</td>
+                <td class="text-pos">${d.cash.toFixed(2)}</td>
                 <td>${d.stock > 0 ? d.stock.toFixed(2) : '-'}</td>
-                <td>$${(d.cash + d.stock).toFixed(2)}</td>
+                <td style="font-weight:800">${(d.cash + d.stock).toFixed(2)}</td>
                 <td>${d.yield.toFixed(1)}%</td>
-                <td>-</td>
             </tr>
         `
             )
             .join('');
     }
 
-    function drawDividendChart(data: { year: number; cash: number; stock: number }[]) {
-        const canvas = document.getElementById('dividend-chart') as HTMLCanvasElement;
+    function drawDividendChart(data) {
+        const canvas = document.getElementById('dividend-chart');
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // 設定尺寸
-        const container = canvas.parentElement!;
+        const container = canvas.parentElement;
         canvas.width = container.offsetWidth * window.devicePixelRatio;
         canvas.height = container.offsetHeight * window.devicePixelRatio;
         ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
         const width = container.offsetWidth;
         const height = container.offsetHeight;
-        const padding = { top: 20, right: 40, bottom: 40, left: 50 };
+        const padding = { top: 20, right: 20, bottom: 40, left: 40 };
         const chartWidth = width - padding.left - padding.right;
         const chartHeight = height - padding.top - padding.bottom;
 
-        // 反轉資料（舊到新）
         const reversed = [...data].reverse();
-
-        // 計算範圍
         const maxValue = Math.max(...reversed.map(d => d.cash + d.stock)) * 1.1;
-        const barWidth = (chartWidth / reversed.length) * 0.6;
-        const barGap = (chartWidth / reversed.length) * 0.4;
+        const barWidth = (chartWidth / reversed.length) * 0.5;
+        const barGap = (chartWidth / reversed.length) * 0.5;
 
-        // 清空
         ctx.clearRect(0, 0, width, height);
 
-        // 繪製 Y 軸網格
+        // Y Grid
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.fillStyle = '#a0a0b0';
-        ctx.font = '11px Inter';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.font = '10px JetBrains Mono';
         for (let i = 0; i <= 5; i++) {
             const y = padding.top + (chartHeight / 5) * i;
-            const value = maxValue - (maxValue / 5) * i;
-
+            const val = maxValue - (maxValue / 5) * i;
             ctx.beginPath();
             ctx.moveTo(padding.left, y);
             ctx.lineTo(width - padding.right, y);
             ctx.stroke();
-
             ctx.textAlign = 'right';
-            ctx.fillText(value.toFixed(1), padding.left - 8, y + 4);
+            ctx.fillText(val.toFixed(1), padding.left - 8, y + 4);
         }
 
-        // 繪製柱狀圖
+        // Bars
         reversed.forEach((d, i) => {
             const x = padding.left + (chartWidth / reversed.length) * i + barGap / 2;
             const barHeight = (d.cash / maxValue) * chartHeight;
             const y = padding.top + chartHeight - barHeight;
 
-            // 現金股利
-            ctx.fillStyle = '#00d4aa';
+            const grad = ctx.createLinearGradient(0, y, 0, y + barHeight);
+            grad.addColorStop(0, '#10b981'); // success
+            grad.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
+
+            ctx.fillStyle = grad;
             ctx.fillRect(x, y, barWidth, barHeight);
 
-            // 年份標籤
-            ctx.fillStyle = '#a0a0b0';
+            // Labels
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.textAlign = 'center';
             ctx.fillText(d.year.toString(), x + barWidth / 2, height - padding.bottom + 20);
         });
-
-        // 圖例
-        ctx.fillStyle = '#00d4aa';
-        ctx.fillRect(width - padding.right - 100, padding.top, 12, 12);
-        ctx.fillStyle = '#f0f0f0';
-        ctx.textAlign = 'left';
-        ctx.fillText('現金股利', width - padding.right - 82, padding.top + 10);
     }
 </script>

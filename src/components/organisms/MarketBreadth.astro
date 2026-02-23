@@ -1,0 +1,141 @@
+---
+/**
+ * MarketBreadth Organism
+ *
+ * Displays advancing/declining stats.
+ */
+interface Props {
+    breadth: {
+        total: number;
+        up: number;
+        down: number;
+        flat: number;
+        upRatio: number;
+        downRatio: number;
+    };
+}
+
+const { breadth } = Astro.props;
+---
+
+<section class="market-breadth cyber-reveal">
+    <!-- Up -->
+    <div class="glass-card stat-card glow-wrapper">
+        <div class="glow-bg pos-glow"></div>
+        <div class="stat-content">
+            <div class="stat-icon text-success">▲</div>
+            <div class="stat-info">
+                <span class="stat-label">Advancing</span>
+                <div class="stat-value-group">
+                    <span class="stat-value text-success mono">{breadth.up}</span>
+                    <span class="stat-ratio text-success">{breadth.upRatio.toFixed(1)}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Down -->
+    <div class="glass-card stat-card glow-wrapper">
+        <div class="glow-bg neg-glow"></div>
+        <div class="stat-content">
+            <div class="stat-icon text-danger">▼</div>
+            <div class="stat-info">
+                <span class="stat-label">Declining</span>
+                <div class="stat-value-group">
+                    <span class="stat-value text-danger mono">{breadth.down}</span>
+                    <span class="stat-ratio text-danger">{breadth.downRatio.toFixed(1)}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flat -->
+    <div class="glass-card stat-card glow-wrapper">
+        <div class="glow-bg neutral-glow"></div>
+        <div class="stat-content">
+            <div class="stat-icon text-muted">━</div>
+            <div class="stat-info">
+                <span class="stat-label">Unchanged</span>
+                <div class="stat-value-group">
+                    <span class="stat-value mono">{breadth.flat}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total -->
+    <div class="glass-card stat-card glow-wrapper">
+        <div class="glow-bg accent-glow"></div>
+        <div class="stat-content">
+            <div class="stat-icon text-accent">◈</div>
+            <div class="stat-info">
+                <span class="stat-label">Market Depth</span>
+                <div class="stat-value-group">
+                    <span class="stat-value mono">{breadth.total.toLocaleString()}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .market-breadth {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+
+    .stat-card {
+        padding: 20px;
+    }
+
+    .stat-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .stat-icon {
+        font-size: 24px;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-info .stat-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--c-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-value-group {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .stat-ratio {
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0.8;
+    }
+
+    @media (max-width: 1024px) {
+        .market-breadth {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>

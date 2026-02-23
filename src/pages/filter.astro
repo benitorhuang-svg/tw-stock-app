@@ -1,450 +1,658 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/molecules/PageHero.astro';
 
-// P0 Optimization: Use server pagination instead of loading all stocks
-// Initial page load with default filters (no heavy data transfer)
-// Actual filtering happens via /api/screener with pagination
 const initialResults = {
     success: true,
     pagination: { page: 1, limit: 50, total: 0, pages: 0 },
     count: 0,
-    results: []
+    results: [],
 };
 ---
 
-<Layout title="智能篩選">
-    <h1>🔍 智能篩選器</h1>
-    <p class="page-desc">設定多個條件，找出符合您投資策略的股票。</p>
-
-    <!-- 篩選條件面板 -->
-    <div class="filter-panel hud-panel">
-        <header class="panel-header" id="criteria-header">
-            <div class="panel-label">CRITERIA_CONFIG</div>
-            <div class="header-content">
-                <h2>📋 篩選條件</h2>
-                <button id="toggle-criteria" class="toggle-icon-btn">
-                    <span class="chevron">▾</span>
-                </button>
+<Layout title="Smart Scanner | TW Stock App">
+    <div class="filter-container">
+        <!-- Hero Header -->
+        <PageHero
+            icon="🔍"
+            title="ADVANCED_SCANNER"
+            subtitle="Parametric filtering & deep screening matrix"
+            glowClass="accent-glow"
+        >
+            <div class="sys-status" slot="action">
+                <span class="pulse-dot"></span>
+                <span class="mono">PAGINATION_ACTIVE</span>
             </div>
-        </header>
+        </PageHero>
 
-        <div id="collapsible-criteria" class="collapsible-content">
-            <div class="panel-body">
-                <div class="filter-grid">
-                    <!-- 本益比 -->
-                    <div class="filter-group-hud">
-                        <label class="filter-label">
-                            <input type="checkbox" id="pe-enabled" />
-                            <span class="label-text">本益比 (P/E)</span>
-                        </label>
-                        <div class="filter-inputs">
-                            <input type="number" id="pe-min" placeholder="最小" step="0.1" />
-                            <span class="sep">~</span>
-                            <input type="number" id="pe-max" placeholder="最大" step="0.1" />
+        <!-- Filter Config Panel -->
+        <section class="filter-panel glass-card cyber-reveal" style="animation-delay: 0.2s;">
+            <header class="panel-header" id="criteria-header">
+                <div>
+                    <h2 class="mono">CRITERIA_CONFIG //</h2>
+                    <span class="text-muted mono" style="font-size:10px;"
+                        >Click to collapse parameters</span
+                    >
+                </div>
+                <button class="sys-btn icon-only toggle-icon-btn">▾</button>
+            </header>
+
+            <div id="collapsible-criteria" class="collapsible-content">
+                <div class="panel-body">
+                    <div class="quick-selectors">
+                        <span class="mono text-muted" style="font-size:10px; margin-right:8px;"
+                            >PRESET_MACROS:</span
+                        >
+                        <button class="sys-btn mini mono quick-tag" data-preset="high-dividend"
+                            >YIELD_>5%</button
+                        >
+                        <button class="sys-btn mini mono quick-tag" data-preset="low-pe"
+                            >P/E_<15</button
+                        >
+                        <button class="sys-btn mini mono quick-tag" data-preset="high-roe"
+                            >ROE_>15%</button
+                        >
+                        <button class="sys-btn mini mono quick-tag" data-preset="value"
+                            >P/B_<1.5</button
+                        >
+                    </div>
+
+                    <div class="filter-grid">
+                        <div class="filter-group-hud transition-border">
+                            <label class="filter-label mono text-muted">
+                                <input type="checkbox" /> P/E_RATIO
+                            </label>
+                            <div class="filter-inputs">
+                                <input
+                                    type="number"
+                                    id="pe-min"
+                                    class="cyber-input mono"
+                                    placeholder="MIN"
+                                    step="0.1"
+                                />
+                                <span class="sep">-</span>
+                                <input
+                                    type="number"
+                                    id="pe-max"
+                                    class="cyber-input mono"
+                                    placeholder="MAX"
+                                    step="0.1"
+                                />
+                            </div>
+                        </div>
+                        <div class="filter-group-hud transition-border">
+                            <label class="filter-label mono text-muted">
+                                <input type="checkbox" /> YIELD_%
+                            </label>
+                            <div class="filter-inputs">
+                                <input
+                                    type="number"
+                                    id="yield-min"
+                                    class="cyber-input mono"
+                                    placeholder="MIN"
+                                    step="0.1"
+                                />
+                                <span class="sep">-</span>
+                                <input
+                                    type="number"
+                                    id="yield-max"
+                                    class="cyber-input mono"
+                                    placeholder="MAX"
+                                    step="0.1"
+                                />
+                            </div>
+                        </div>
+                        <div class="filter-group-hud transition-border">
+                            <label class="filter-label mono text-muted">
+                                <input type="checkbox" /> ROE_%
+                            </label>
+                            <div class="filter-inputs">
+                                <input
+                                    type="number"
+                                    id="roe-min"
+                                    class="cyber-input mono"
+                                    placeholder="MIN"
+                                    step="0.1"
+                                />
+                                <span class="sep">-</span>
+                                <input
+                                    type="number"
+                                    id="roe-max"
+                                    class="cyber-input mono"
+                                    placeholder="MAX"
+                                    step="0.1"
+                                />
+                            </div>
+                        </div>
+                        <div class="filter-group-hud transition-border">
+                            <label class="filter-label mono text-muted">
+                                <input type="checkbox" /> P/B_RATIO
+                            </label>
+                            <div class="filter-inputs">
+                                <input
+                                    type="number"
+                                    id="pb-min"
+                                    class="cyber-input mono"
+                                    placeholder="MIN"
+                                    step="0.1"
+                                />
+                                <span class="sep">-</span>
+                                <input
+                                    type="number"
+                                    id="pb-max"
+                                    class="cyber-input mono"
+                                    placeholder="MAX"
+                                    step="0.1"
+                                />
+                            </div>
+                        </div>
+                        <div class="filter-group-hud transition-border">
+                            <label class="filter-label mono text-muted">
+                                <input type="checkbox" /> EPS_(TTM)
+                            </label>
+                            <div class="filter-inputs">
+                                <input
+                                    type="number"
+                                    id="eps-min"
+                                    class="cyber-input mono"
+                                    placeholder="MIN"
+                                    step="0.1"
+                                />
+                                <span class="sep">-</span>
+                                <input
+                                    type="number"
+                                    id="eps-max"
+                                    class="cyber-input mono"
+                                    placeholder="MAX"
+                                    step="0.1"
+                                />
+                            </div>
+                        </div>
+                        <div class="filter-group-hud transition-border">
+                            <label class="filter-label mono text-muted">
+                                <input type="checkbox" /> MKT_PRICE
+                            </label>
+                            <div class="filter-inputs">
+                                <input
+                                    type="number"
+                                    id="price-min"
+                                    class="cyber-input mono"
+                                    placeholder="MIN"
+                                    step="1"
+                                />
+                                <span class="sep">-</span>
+                                <input
+                                    type="number"
+                                    id="price-max"
+                                    class="cyber-input mono"
+                                    placeholder="MAX"
+                                    step="1"
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 殖利率 -->
-                    <div class="filter-group-hud">
-                        <label class="filter-label">
-                            <input type="checkbox" id="yield-enabled" />
-                            <span class="label-text">殖利率 (%)</span>
-                        </label>
-                        <div class="filter-inputs">
-                            <input type="number" id="yield-min" placeholder="最小" step="0.1" />
-                            <span class="sep">~</span>
-                            <input type="number" id="yield-max" placeholder="最大" step="0.1" />
-                        </div>
-                    </div>
-
-                    <!-- ROE -->
-                    <div class="filter-group-hud">
-                        <label class="filter-label">
-                            <input type="checkbox" id="roe-enabled" />
-                            <span class="label-text">ROE (%)</span>
-                        </label>
-                        <div class="filter-inputs">
-                            <input type="number" id="roe-min" placeholder="最小" step="0.1" />
-                            <span class="sep">~</span>
-                            <input type="number" id="roe-max" placeholder="最大" step="0.1" />
-                        </div>
-                    </div>
-
-                    <!-- 股價淨值比 -->
-                    <div class="filter-group-hud">
-                        <label class="filter-label">
-                            <input type="checkbox" id="pb-enabled" />
-                            <span class="label-text">股價淨值比 (P/B)</span>
-                        </label>
-                        <div class="filter-inputs">
-                            <input type="number" id="pb-min" placeholder="最小" step="0.1" />
-                            <span class="sep">~</span>
-                            <input type="number" id="pb-max" placeholder="最大" step="0.1" />
-                        </div>
-                    </div>
-
-                    <!-- EPS -->
-                    <div class="filter-group-hud">
-                        <label class="filter-label">
-                            <input type="checkbox" id="eps-enabled" />
-                            <span class="label-text">EPS</span>
-                        </label>
-                        <div class="filter-inputs">
-                            <input type="number" id="eps-min" placeholder="最小" step="0.1" />
-                            <span class="sep">~</span>
-                            <input type="number" id="eps-max" placeholder="最大" step="0.1" />
-                        </div>
-                    </div>
-
-                    <!-- 股價 -->
-                    <div class="filter-group-hud">
-                        <label class="filter-label">
-                            <input type="checkbox" id="price-enabled" />
-                            <span class="label-text">股價</span>
-                        </label>
-                        <div class="filter-inputs">
-                            <input type="number" id="price-min" placeholder="最小" step="1" />
-                            <span class="sep">~</span>
-                            <input type="number" id="price-max" placeholder="最大" step="1" />
-                        </div>
+                    <div class="filter-actions-hud">
+                        <button id="apply-filter" class="cyber-btn mono">EXECUTE_SCAN</button>
+                        <button id="reset-filter" class="sys-btn mono">RESTORE_DEFAULTS</button>
                     </div>
                 </div>
-
-                <div class="filter-actions-hud">
-                    <button id="apply-filter" class="btn-terminal">EXECUTOR_SCAN</button>
-                    <button id="reset-filter" class="btn-terminal secondary">RESTORE_DEFAULTS</button>
-                    <button id="save-filter" class="btn-terminal secondary">CACHE_PROFILE</button>
-                </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- 快速篩選 -->
-    <div class="quick-selectors">
-        <div class="selectors-label">PRESET_MACROS:</div>
-        <button class="quick-tag" data-preset="high-dividend">💴 高股息 (&gt; 5%)</button>
-        <button class="quick-tag" data-preset="low-pe">💰 低本益比 (&lt; 15)</button>
-        <button class="quick-tag" data-preset="high-roe">🏆 高 ROE (&gt; 15%)</button>
-        <button class="quick-tag" data-preset="value">📊 價值投資 (P/B &lt; 1.5)</button>
-    </div>
-
-    <!-- 結果統計 -->
-    <div class="stats-bar hud-panel">
-        <div class="panel-label">MATCH_STATS</div>
-        <div class="stats-content">
-            <span class="label">LIVE_MATCH_BUFFER</span>
-            <span id="result-count" class="mono text-pos">Calculating...</span>
-        </div>
-    </div>
-
-    <!-- P0 Optimization: Server-side pagination for filter results -->
-    <!-- 結果表格 -->
-    <div class="results-container hud-panel">
-        <div class="panel-label">QUERY_RESULT_DUMP</div>
-        <div class="table-wrapper">
-            <table class="terminal-grid">
-                <thead>
-                    <tr>
-                        <th class="mono">UID_CODE</th>
-                        <th class="mono">ENTITY_NAME</th>
-                        <th class="mono">CUR_PRICE</th>
-                        <th class="mono" data-sort="pe">RATIO_PE ↕</th>
-                        <th class="mono" data-sort="yield">YIELD_PCT ↕</th>
-                        <th class="mono" data-sort="roe">ROE_PCT ↕</th>
-                        <th class="mono">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody id="results-body">
-                    <!-- P0: Client-side rendered from API -->
-                </tbody>
-            </table>
+        <!-- Stats Bar -->
+        <div class="stats-bar glass-card cyber-reveal" style="animation-delay: 0.3s;">
+            <span class="mono text-muted">MATCH_BUFFER //</span>
+            <span id="result-count" class="mono text-accent" style="font-weight:800;"
+                >AWAITING_QUERY...</span
+            >
         </div>
 
-        <!-- P0 Optimization: Pagination controls -->
-        <div class="pagination-controls">
-            <button id="prev-page" class="btn-pagination" disabled>← Previous</button>
-            <span id="page-info" class="page-info">Page 1</span>
-            <button id="next-page" class="btn-pagination" disabled>Next →</button>
-        </div>
+        <!-- Result Table -->
+        <main
+            class="results-container glass-card glow-wrapper cyber-reveal"
+            style="animation-delay: 0.4s;"
+        >
+            <div class="glow-bg neutral-glow"></div>
+
+            <header class="panel-header">
+                <h2 class="mono">QUERY_RESULT_DUMP //</h2>
+            </header>
+
+            <div class="table-scroll">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col mono">SYMBOL</th>
+                            <th class="mono">MKT_PRICE</th>
+                            <th class="mono">P/E_RATIO</th>
+                            <th class="mono">YIELD_%</th>
+                            <th class="mono">ROE_%</th>
+                            <th class="mono">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                        <tr
+                            ><td
+                                colspan="6"
+                                class="mono text-muted"
+                                style="text-align:center; padding: 40px;">-- NO_DATA --</td
+                            ></tr
+                        >
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-controls">
+                <button id="prev-page" class="sys-btn mono" disabled>&lt; PREV</button>
+                <span id="page-info" class="mono text-muted" style="font-size:12px;">PAGE 1</span>
+                <button id="next-page" class="sys-btn mono" disabled>NEXT &gt;</button>
+            </div>
+        </main>
     </div>
 </Layout>
 
 <style>
-    /* Collapsible Logic */
-    .collapsible-content {
-        max-height: 2000px;
-        overflow: hidden;
-        transition: max-height 0.5s var(--ease-out), opacity 0.3s;
+    .filter-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding-bottom: 40px;
     }
-    
+
+    /* Glass Base & Glows */
+    .glass-card {
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+    .glow-wrapper {
+        position: relative;
+    }
+    .glow-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .glow-wrapper:hover .glow-bg {
+        opacity: 1;
+    }
+    .neutral-glow {
+        --glow-color: rgba(200, 200, 210, 0.05);
+    }
+    .accent-glow {
+        --glow-color: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Hero */
+    .page-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 32px;
+        z-index: 10;
+    }
+    .hero-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        z-index: 1;
+    }
+    .icon-box {
+        width: 56px;
+        height: 56px;
+        background: rgba(var(--c-accent-rgb), 0.1);
+        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .hero-left h1 {
+        font-size: 16px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .hero-left p {
+        font-size: 11px;
+        margin: 4px 0 0;
+    }
+    .sys-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        z-index: 1;
+        color: var(--c-text-muted);
+    }
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: var(--c-success);
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--c-success);
+    }
+
+    /* Filter Panel */
+    .filter-panel {
+        display: flex;
+        flex-direction: column;
+    }
+    .panel-header {
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+    .panel-header h2 {
+        font-size: 12px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+
+    .collapsible-content {
+        max-height: 1000px;
+        overflow: hidden;
+        transition:
+            max-height 0.4s ease,
+            opacity 0.3s ease;
+    }
     .filter-panel.collapsed .collapsible-content {
         max-height: 0;
         opacity: 0;
     }
-
-    .filter-panel.collapsed .chevron { transform: rotate(-90deg); }
-
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 24px;
-        cursor: pointer;
+    .filter-panel.collapsed .toggle-icon-btn {
+        transform: rotate(-90deg);
     }
-    
-    .panel-body { padding: 0 24px 24px 24px; }
-
     .toggle-icon-btn {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255,255,255,0.02);
-        border: 1px solid var(--c-border);
-        border-radius: 50%;
-        color: var(--c-accent);
         transition: 0.3s;
     }
-    
-    .toggle-icon-btn:hover { background: rgba(var(--c-accent-rgb), 0.1); }
-    .chevron { transition: transform 0.3s; display: block; font-size: 18px; }
 
-    /* HUD Styling */
-    .hud-panel {
-        background: var(--c-bg-glass);
-        border: 1px solid var(--c-border);
-        border-radius: var(--radius);
-        position: relative;
-        backdrop-filter: var(--glass-blur);
-        margin-bottom: 20px;
-        box-shadow: var(--panel-shadow);
+    .panel-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
     }
-    
-    .panel-header h2 { font-size: 16px; font-weight: 700; color: #fff; margin:0;}
 
-    .panel-label {
-        position: absolute;
-        top: -8px; left: 16px;
-        background: var(--c-bg-app);
-        padding: 0 8px;
-        font-size: 9px;
+    .quick-selectors {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .sys-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--c-text-secondary);
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 11px;
+        cursor: pointer;
+        transition: 0.2s;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+    .sys-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+    .sys-btn.mini {
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+    .sys-btn.icon-only {
+        padding: 4px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-size: 16px;
+    }
+
+    .cyber-btn {
+        background: linear-gradient(135deg, var(--c-accent), #2563eb);
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
         font-weight: 800;
-        color: var(--c-accent);
-        letter-spacing: 1px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(var(--c-accent-rgb), 0.3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    .cyber-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(var(--c-accent-rgb), 0.5);
     }
 
     .filter-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 16px;
-        margin-bottom: 24px;
     }
-
     .filter-group-hud {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid var(--c-border);
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 8px;
-        padding: 14px;
-        transition: border-color 0.3s;
-        min-width: 0;
+        padding: 12px 16px;
+        transition: 0.3s;
     }
-    
-    .filter-group-hud:hover { border-color: rgba(var(--c-accent-rgb), 0.3); }
+    .filter-group-hud:hover {
+        border-color: rgba(var(--c-accent-rgb), 0.3);
+    }
 
     .filter-label {
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-weight: 600;
-        margin-bottom: 10px;
+        gap: 8px;
+        font-size: 10px;
+        margin-bottom: 12px;
         cursor: pointer;
-        color: var(--c-text-secondary);
     }
-    .filter-label input[type="checkbox"] { 
-        accent-color: var(--c-accent); 
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-    }
-    .label-text { font-size: 12px; letter-spacing: 0.2px; white-space: nowrap; }
-
-    .filter-inputs { 
-        display: flex; 
-        align-items: center; 
-        gap: 6px; 
+    .filter-label input[type='checkbox'] {
+        accent-color: var(--c-accent);
+        cursor: pointer;
     }
 
-    .filter-inputs input {
+    .filter-inputs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .cyber-input {
         flex: 1;
-        min-width: 0;
         width: 100%;
+        min-width: 0;
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
         padding: 8px 10px;
-        background: rgba(0,0,0,0.3);
-        border: 1px solid var(--c-border);
-        border-radius: 4px;
         color: #fff;
-        font-family: 'JetBrains Mono';
-        font-size: 11px;
+        font-size: 12px;
+        outline: none;
+        transition: 0.3s;
     }
-    
-    .filter-inputs input:focus { border-color: var(--c-accent); outline: none; }
-    .filter-inputs input::placeholder { color: var(--c-text-muted); font-size: 10px; }
-    .sep { color: var(--c-text-muted); font-size: 11px; flex-shrink: 0; }
+    .cyber-input:focus {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.2);
+    }
+    .sep {
+        color: var(--c-text-muted);
+    }
 
-    .filter-actions-hud { display: flex; gap: 12px; flex-wrap: wrap; }
+    .filter-actions-hud {
+        display: flex;
+        gap: 12px;
+        margin-top: 8px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.05);
+        padding-top: 24px;
+    }
 
-    .btn-terminal {
-        padding: 10px 20px;
-        background: var(--c-accent);
+    /* Stats & Results */
+    .stats-bar {
+        padding: 16px 24px;
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+    }
+
+    .results-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 400px;
+    }
+    .table-scroll {
+        flex: 1;
+        overflow-x: auto;
+        position: relative;
+        z-index: 1;
+    }
+    .table-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    .table-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+
+    .premium-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: right;
+    }
+    .premium-table th {
+        background: rgba(10, 15, 25, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 10;
+        font-size: 10px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--c-text-muted);
+        position: sticky;
+        top: 0;
+    }
+    .premium-table td {
+        padding: 14px 20px;
+        font-size: 13px;
         color: #fff;
-        border: none;
-        border-radius: 4px;
-        font-weight: 800;
-        font-family: 'JetBrains Mono';
-        font-size: 11px;
-        letter-spacing: 1px;
-        cursor: pointer;
-        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.3);
+        font-family: 'JetBrains Mono', monospace;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
         transition: 0.2s;
     }
-    
-    .btn-terminal:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(var(--c-accent-rgb), 0.5); }
-    
-    .btn-terminal.secondary {
-        background: rgba(255,255,255,0.05);
-        color: var(--c-text-secondary);
-        box-shadow: none;
-        border: 1px solid var(--c-border);
+    .premium-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.04);
     }
-    .btn-terminal.secondary:hover { background: rgba(255,255,255,0.1); color: #fff; }
-
-    /* Quick Selectors */
-    .quick-selectors {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 24px;
-        padding: 0 4px;
-        flex-wrap: wrap;
+    .premium-table th.sticky-col,
+    .premium-table td.sticky-col {
+        position: sticky;
+        left: 0;
+        text-align: left;
+        background: var(--c-bg-glass);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        z-index: 11;
     }
-    
-    .selectors-label { font-size: 10px; font-weight: 800; color: var(--c-text-muted); letter-spacing: 1px; }
 
-    .quick-tag {
-        padding: 6px 14px;
-        background: rgba(255,255,255,0.02);
-        border: 1px solid var(--c-border);
-        border-radius: 99px;
-        color: var(--c-text-secondary);
-        font-size: 11px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s;
+    .symbol {
+        color: var(--c-accent) !important;
+        font-weight: 800;
+        font-size: 14px !important;
+        display: block;
     }
-    .quick-tag:hover { border-color: var(--c-accent); color: var(--c-accent); background: rgba(var(--c-accent-rgb), 0.1); }
+    .name {
+        font-family: 'Inter', sans-serif !important;
+        color: var(--c-text-muted) !important;
+        font-size: 11px !important;
+    }
 
-    /* Stats Bar */
-    .stats-bar { padding: 16px 24px; display: flex; align-items: center; }
-    .stats-content { display: flex; align-items: baseline; gap: 12px; }
-    .stats-content .label { font-size: 10px; font-weight: 800; color: var(--c-text-muted); letter-spacing: 1px; }
-    .stats-content .mono { font-size: 18px; font-weight: 700; }
-
-    /* Data Table */
-    .results-container { flex: 1; padding: 24px 0 0 0; overflow: hidden; display: flex; flex-direction: column; }
-    .table-wrapper { flex: 1; overflow: auto; padding: 0 24px; }
-
-    .terminal-grid { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
-    
-    .terminal-grid th {
-        text-align: right;
-        padding: 12px;
+    .terminal-link {
         font-size: 10px;
+        font-weight: 800;
         color: var(--c-accent);
-        border-bottom: 2px solid rgba(var(--c-accent-rgb), 0.2);
-        position: sticky; top: 0; background: var(--c-bg-app); z-index: 10;
+        text-decoration: none;
+        padding: 4px 8px;
+        border: 1px solid var(--c-accent);
+        border-radius: 4px;
+        transition: 0.2s;
+    }
+    .terminal-link:hover {
+        background: rgba(var(--c-accent-rgb), 0.2);
+        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.2);
     }
 
-    .terminal-grid td {
-        padding: 10px 12px;
-        text-align: right;
-        background: rgba(255,255,255,0.01);
-        color: var(--c-text-secondary);
-        font-size: 13px;
-        border-bottom: 1px solid rgba(255,255,255,0.02);
-    }
-    
-    .terminal-grid tr:hover td { background: rgba(255,255,255,0.04); color: #fff; }
-    .symbol { color: var(--c-accent); font-weight: 700; border-left: 2px solid var(--c-border); }
-    .name { text-align: left; }
-    .terminal-link { font-size: 10px; font-weight: 800; color: var(--c-accent); text-decoration: underline; opacity: 0.7; }
-    .terminal-link:hover { opacity: 1; }
-
-    /* P0 Optimization: Pagination controls */
     .pagination-controls {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        gap: 16px;
-        padding: 24px;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        padding: 16px 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 1;
     }
-
-    .btn-pagination {
-        padding: 8px 16px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--c-border);
-        border-radius: 4px;
-        color: var(--c-text-secondary);
-        font-family: 'JetBrains Mono';
-        font-size: 11px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .btn-pagination:hover:not(:disabled) {
-        background: rgba(255,255,255,0.1);
-        color: #fff;
-        border-color: var(--c-accent);
-    }
-
-    .btn-pagination:disabled {
-        opacity: 0.4;
+    .sys-btn:disabled {
+        opacity: 0.3;
         cursor: not-allowed;
     }
-
-    .page-info {
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--c-text-muted);
-        min-width: 100px;
-        text-align: center;
-    }
-
 </style>
 
 <script>
-    // Collapsible Logic
-    const criteriaHeader = document.getElementById("criteria-header");
-    const filterPanel = document.querySelector(".filter-panel");
-    
-    criteriaHeader?.addEventListener("click", () => {
-        filterPanel?.classList.toggle("collapsed");
+    // Glow Tracker
+    document.addEventListener('mousemove', e => {
+        const wrappers = document.querySelectorAll('.glow-wrapper');
+        wrappers.forEach(wrapper => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            (wrapper as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+            (wrapper as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
+        });
     });
 
-    // P0 Optimization: Client-side cache for filter results
-    const resultCache = new Map<string, { data: any; timestamp: number }>();
-    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+    // Collapsible Logic
+    const criteriaHeader = document.getElementById('criteria-header');
+    const filterPanel = document.querySelector('.filter-panel');
+
+    criteriaHeader?.addEventListener('click', () => {
+        filterPanel?.classList.toggle('collapsed');
+    });
+
+    // Cache & Pagination Logic
+    const resultCache = new Map();
+    const CACHE_TTL = 5 * 60 * 1000;
     let currentPage = 1;
-    let currentFilters = {};
     const ITEMS_PER_PAGE = 50;
 
-    function getCacheKey(filters: any): string {
+    function getCacheKey(filters) {
         return JSON.stringify(filters);
     }
 
-    function getCachedResult(key: string): any | null {
+    function getCachedResult(key) {
         const cached = resultCache.get(key);
         if (!cached) return null;
         if (Date.now() - cached.timestamp > CACHE_TTL) {
@@ -454,70 +662,49 @@ const initialResults = {
         return cached.data;
     }
 
-    function setCacheResult(key: string, data: any): void {
+    function setCacheResult(key, data) {
         resultCache.set(key, { data, timestamp: Date.now() });
         if (resultCache.size > 20) {
-            const oldest = Array.from(resultCache.entries())
-                .sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+            const oldest = Array.from(resultCache.entries()).sort(
+                (a, b) => a[1].timestamp - b[1].timestamp
+            )[0];
             if (oldest) resultCache.delete(oldest[0]);
         }
     }
 
-    async function fetchFilterResults(page: number = 1) {
-        const pe = {
-            min: parseFloat((document.getElementById("pe-min") as HTMLInputElement)?.value) || undefined,
-            max: parseFloat((document.getElementById("pe-max") as HTMLInputElement)?.value) || undefined
-        };
-        const dividendYield = {
-            min: parseFloat((document.getElementById("yield-min") as HTMLInputElement)?.value) || undefined,
-            max: parseFloat((document.getElementById("yield-max") as HTMLInputElement)?.value) || undefined
-        };
-        const roe = {
-            min: parseFloat((document.getElementById("roe-min") as HTMLInputElement)?.value) || undefined,
-            max: parseFloat((document.getElementById("roe-max") as HTMLInputElement)?.value) || undefined
-        };
-        const pb = {
-            min: parseFloat((document.getElementById("pb-min") as HTMLInputElement)?.value) || undefined,
-            max: parseFloat((document.getElementById("pb-max") as HTMLInputElement)?.value) || undefined
-        };
-        const eps = {
-            min: parseFloat((document.getElementById("eps-min") as HTMLInputElement)?.value) || undefined,
-            max: parseFloat((document.getElementById("eps-max") as HTMLInputElement)?.value) || undefined
-        };
-        const price = {
-            min: parseFloat((document.getElementById("price-min") as HTMLInputElement)?.value) || undefined,
-            max: parseFloat((document.getElementById("price-max") as HTMLInputElement)?.value) || undefined
+    async function fetchFilterResults(page = 1) {
+        const p = id => parseFloat(document.getElementById(id)?.value) || undefined;
+
+        const filters = {
+            pe: { min: p('pe-min'), max: p('pe-max') },
+            dividendYield: { min: p('yield-min'), max: p('yield-max') },
+            roe: { min: p('roe-min'), max: p('roe-max') },
+            pb: { min: p('pb-min'), max: p('pb-max') },
+            eps: { min: p('eps-min'), max: p('eps-max') },
+            price: { min: p('price-min'), max: p('price-max') },
         };
 
-        const filterKey = getCacheKey({ pe, dividendYield, roe, pb, eps, price });
-        currentFilters = { pe, dividendYield, roe, pb, eps, price };
-
-        // P0: Try cache first
-        const cached = getCachedResult(filterKey);
-        let result = cached;
+        const filterKey = getCacheKey(filters);
+        let result = getCachedResult(filterKey);
 
         if (!result) {
             try {
+                // Formatting payload
+                const payload = { page, limit: ITEMS_PER_PAGE };
+                Object.keys(filters).forEach(k => {
+                    if (filters[k].min !== undefined || filters[k].max !== undefined)
+                        payload[k] = filters[k];
+                });
+
                 const response = await fetch('/api/screener', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pe: pe.min || pe.max ? pe : undefined,
-                        dividendYield: dividendYield.min || dividendYield.max ? dividendYield : undefined,
-                        roe: roe.min || roe.max ? roe : undefined,
-                        pb: pb.min || pb.max ? pb : undefined,
-                        eps: eps.min || eps.max ? eps : undefined,
-                        price: price.min || price.max ? price : undefined,
-                        page,
-                        limit: ITEMS_PER_PAGE
-                    })
+                    body: JSON.stringify(payload),
                 });
-
                 result = await response.json();
                 setCacheResult(filterKey, result);
             } catch (error) {
-                console.error('Filter API error:', error);
-                document.getElementById("result-count")!.textContent = "Error fetching results";
+                document.getElementById('result-count').textContent = 'DATA_ERR';
                 return;
             }
         }
@@ -526,105 +713,88 @@ const initialResults = {
         updatePagination(result);
     }
 
-    function renderResults(data: any) {
-        const tbody = document.getElementById("results-body")!;
+    function renderResults(data) {
+        const tbody = document.getElementById('results-body');
         tbody.innerHTML = '';
 
         if (!data.results || data.results.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">No matching stocks found</td></tr>';
-            document.getElementById("result-count")!.textContent = "0 檔符合";
+            tbody.innerHTML =
+                '<tr><td colspan="6" class="mono text-muted" style="text-align:center; padding: 40px;">-- NO_DATA_MATCHED --</td></tr>';
+            document.getElementById('result-count').textContent = '0 ASSETS';
             return;
         }
 
-        data.results.forEach((stock: any) => {
-            const row = document.createElement('tr');
-            row.setAttribute('data-symbol', stock.symbol);
-            row.setAttribute('data-pe', stock.pe);
-            row.setAttribute('data-yield', stock.yield);
-            row.setAttribute('data-roe', stock.roe);
-            row.innerHTML = `
-                <td class="symbol mono">${stock.symbol}</td>
-                <td class="name">${stock.name}</td>
-                <td class="price mono">${stock.price.toFixed(2)}</td>
-                <td class="mono">${stock.pe.toFixed(2)}</td>
-                <td class="yield mono">${stock.yield.toFixed(2)}%</td>
-                <td class="mono">${stock.roe.toFixed(2)}%</td>
-                <td><a href="/stocks/${stock.symbol}" class="terminal-link">ACCESS_DATA</a></td>
+        data.results.forEach(stock => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="sticky-col">
+                    <span class="symbol mono">${stock.symbol}</span>
+                    <span class="name text-muted">${stock.name}</span>
+                </td>
+                <td class="mono">${stock.price.toFixed(2)}</td>
+                <td class="mono">${stock.pe ? stock.pe.toFixed(2) : '-'}</td>
+                <td class="mono text-pos">${stock.yield ? stock.yield.toFixed(2) + '%' : '-'}</td>
+                <td class="mono">${stock.roe ? stock.roe.toFixed(2) + '%' : '-'}</td>
+                <td><a href="/stocks/${stock.symbol}" class="terminal-link">ACCESS</a></td>
             `;
-            tbody.appendChild(row);
+            tbody.appendChild(tr);
         });
 
-        document.getElementById("result-count")!.textContent = `${data.pagination.total} 檔符合 (showing ${data.count})`;
+        document.getElementById('result-count').textContent =
+            `${data.pagination.total} ASSETS MATCHED`;
     }
 
-    function updatePagination(data: any) {
+    function updatePagination(data) {
         currentPage = data.pagination.page;
-        const prevBtn = document.getElementById("prev-page") as HTMLButtonElement;
-        const nextBtn = document.getElementById("next-page") as HTMLButtonElement;
-        const pageInfo = document.getElementById("page-info")!;
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
 
-        pageInfo.textContent = `Page ${data.pagination.page} of ${data.pagination.pages}`;
+        document.getElementById('page-info').textContent =
+            `PAGE ${data.pagination.page} / ${data.pagination.pages}`;
         prevBtn.disabled = data.pagination.page <= 1;
         nextBtn.disabled = data.pagination.page >= data.pagination.pages;
     }
 
-    // Event listeners
-    document.getElementById("apply-filter")?.addEventListener("click", () => {
+    // Events
+    document.getElementById('apply-filter')?.addEventListener('click', () => {
         currentPage = 1;
         fetchFilterResults(1);
     });
 
-    document.getElementById("reset-filter")?.addEventListener("click", () => {
-        document.querySelectorAll('.filter-group-hud input[type="checkbox"]').forEach(cb => (cb as HTMLInputElement).checked = false);
-        document.querySelectorAll('.filter-group-hud input[type="number"]').forEach(i => (i as HTMLInputElement).value = "");
+    document.getElementById('reset-filter')?.addEventListener('click', () => {
+        document.querySelectorAll('.filter-group-hud input').forEach(i => {
+            if (i.type === 'checkbox') i.checked = false;
+            else i.value = '';
+        });
         currentPage = 1;
-        currentFilters = {};
         resultCache.clear();
-        document.getElementById("results-body")!.innerHTML = '';
-        document.getElementById("result-count")!.textContent = 'Calculating...';
+        document.getElementById('results-body').innerHTML =
+            '<tr><td colspan="6" class="mono text-muted" style="text-align:center; padding: 40px;">-- NO_DATA --</td></tr>';
+        document.getElementById('result-count').textContent = 'AWAITING_QUERY...';
     });
 
-    document.getElementById("save-filter")?.addEventListener("click", () => {
-        const filters = {
-            pe: { min: (document.getElementById("pe-min") as HTMLInputElement)?.value, max: (document.getElementById("pe-max") as HTMLInputElement)?.value },
-            yield: { min: (document.getElementById("yield-min") as HTMLInputElement)?.value, max: (document.getElementById("yield-max") as HTMLInputElement)?.value },
-            roe: { min: (document.getElementById("roe-min") as HTMLInputElement)?.value, max: (document.getElementById("roe-max") as HTMLInputElement)?.value }
-        };
-        localStorage.setItem('filter-profile', JSON.stringify(filters));
-        alert('Profile saved!');
-    });
-
-    document.querySelectorAll(".quick-tag").forEach((btn) => {
-        btn.addEventListener("click", () => {
+    document.querySelectorAll('.quick-tag').forEach(btn => {
+        btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-group-hud input').forEach(i => {
-                if((i as HTMLInputElement).type === 'checkbox') (i as HTMLInputElement).checked = false;
-                else (i as HTMLInputElement).value = "";
+                if (i.type === 'checkbox') i.checked = false;
+                else i.value = '';
             });
 
-            const preset = btn.getAttribute("data-preset");
-            if (preset === "high-dividend") {
-                (document.getElementById("yield-min") as HTMLInputElement).value = "5";
-            } else if (preset === "low-pe") {
-                (document.getElementById("pe-max") as HTMLInputElement).value = "15";
-            } else if (preset === "high-roe") {
-                (document.getElementById("roe-min") as HTMLInputElement).value = "15";
-            } else if (preset === "value") {
-                (document.getElementById("pb-max") as HTMLInputElement).value = "1.5";
-            }
+            const preset = btn.getAttribute('data-preset');
+            if (preset === 'high-dividend') document.getElementById('yield-min').value = '5';
+            else if (preset === 'low-pe') document.getElementById('pe-max').value = '15';
+            else if (preset === 'high-roe') document.getElementById('roe-min').value = '15';
+            else if (preset === 'value') document.getElementById('pb-max').value = '1.5';
+
             currentPage = 1;
             fetchFilterResults(1);
         });
     });
 
-    // Pagination event listeners
-    document.getElementById("prev-page")?.addEventListener("click", () => {
-        if (currentPage > 1) {
-            fetchFilterResults(currentPage - 1);
-        }
+    document.getElementById('prev-page')?.addEventListener('click', () => {
+        if (currentPage > 1) fetchFilterResults(currentPage - 1);
     });
-
-    document.getElementById("next-page")?.addEventListener("click", () => {
+    document.getElementById('next-page')?.addEventListener('click', () => {
         fetchFilterResults(currentPage + 1);
     });
 </script>
-

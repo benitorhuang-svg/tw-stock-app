@@ -1,110 +1,175 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getStocksWithPrices } from '../utils/stockDataService';
+import { getTopVolume } from '../utils/marketService';
+import PageHero from '../components/molecules/PageHero.astro';
 
-const allStocks = await getStocksWithPrices();
+const allStocks = getTopVolume(100);
 ---
 
-<Layout title="投資組合">
-    <div class="page-header">
-        <h1>💼 投資組合</h1>
-        <div class="header-actions">
-            <button id="add-stock-btn" class="btn-primary">➕ 新增持股</button>
-            <button id="export-btn" class="btn-secondary">📥 匯出 CSV</button>
+<Layout title="Portfolio | TW Stock App">
+    <div class="portfolio-container">
+        <!-- Header -->
+        <PageHero
+            icon="💼"
+            title="PORTFOLIO_TRACKER"
+            subtitle="Real-time valuation & Performance matrix"
+            glowClass="accent-glow"
+        >
+            <div class="header-actions" slot="action">
+                <button id="add-stock-btn" class="cyber-btn mono">
+                    <span class="icon">+</span> ADD_POSITION
+                </button>
+                <button id="export-btn" class="sys-btn mono">
+                    <span class="icon">⤓</span> EXPORT_CSV
+                </button>
+            </div>
+        </PageHero>
+
+        <!-- Overview Cards -->
+        <div class="overview-grid">
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.2s;"
+            >
+                <div class="glow-bg neutral-glow"></div>
+                <span class="m-label mono">TOTAL_COST</span>
+                <span id="total-cost" class="m-val mono">$0</span>
+            </div>
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.3s;"
+            >
+                <div class="glow-bg accent-glow"></div>
+                <span class="m-label mono">MARKET_VALUE</span>
+                <span id="total-value" class="m-val mono text-accent">$0</span>
+            </div>
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.4s;"
+            >
+                <div class="glow-bg neutral-glow"></div>
+                <span class="m-label mono">UNREALIZED_P&L</span>
+                <span id="total-pl" class="m-val mono">$0</span>
+            </div>
+            <div
+                class="metric-card glass-card glow-wrapper cyber-reveal"
+                style="animation-delay: 0.5s;"
+            >
+                <div class="glow-bg neutral-glow"></div>
+                <span class="m-label mono">TOTAL_RETURN</span>
+                <span id="total-return" class="m-val mono">0.00%</span>
+            </div>
         </div>
+
+        <!-- Main Table -->
+        <main
+            class="portfolio-workspace glass-card glow-wrapper cyber-reveal"
+            style="animation-delay: 0.6s;"
+        >
+            <div class="glow-bg neutral-glow"></div>
+
+            <header class="workspace-header">
+                <h2 class="mono">CURRENT_POSITIONS //</h2>
+                <div class="sys-status">
+                    <span class="pulse-dot"></span>
+                    <span class="mono">AUTO_SYNC_ACTIVE</span>
+                </div>
+            </header>
+
+            <div id="portfolio-empty" class="state-overlay" style="display:none;">
+                <div class="state-icon text-muted">📋</div>
+                <div class="state-msg mono">NO_POSITIONS_DETECTED</div>
+                <button
+                    class="sys-btn mono"
+                    style="margin-top:16px;"
+                    onclick="document.getElementById('add-stock-btn').click();"
+                    >INITIALIZE_FIRST_ENTRY</button
+                >
+            </div>
+
+            <div class="table-scroll" id="portfolio-table">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col mono">IDENTITY</th>
+                            <th class="mono">SHARES</th>
+                            <th class="mono">AVG_COST</th>
+                            <th class="mono">MKT_PRICE</th>
+                            <th class="mono">TOTAL_VAL</th>
+                            <th class="mono">P&L</th>
+                            <th class="mono">RETURN%</th>
+                            <th class="mono">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="portfolio-body">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
     </div>
-    <p class="page-desc">追蹤您的持股、計算損益，資料儲存在本地瀏覽器中。</p>
 
-    <!-- 總覽卡片 -->
-    <div class="overview-cards grid grid-4">
-        <div class="card overview-card">
-            <div class="card-header">總成本</div>
-            <div id="total-cost" class="card-value">$0</div>
-        </div>
-        <div class="card overview-card">
-            <div class="card-header">總市值</div>
-            <div id="total-value" class="card-value">$0</div>
-        </div>
-        <div class="card overview-card">
-            <div class="card-header">未實現損益</div>
-            <div id="total-pl" class="card-value">$0</div>
-        </div>
-        <div class="card overview-card">
-            <div class="card-header">報酬率</div>
-            <div id="total-return" class="card-value">0%</div>
-        </div>
-    </div>
-
-    <!-- 持股列表 -->
-    <section class="section">
-        <h2>📊 持股明細</h2>
-        <div id="portfolio-empty" class="empty-state">
-            <div class="empty-icon">📋</div>
-            <h3>尚無持股</h3>
-            <p>點擊「新增持股」開始追蹤您的投資組合</p>
-        </div>
-        <div id="portfolio-table" class="table-container hidden">
-            <table>
-                <thead>
-                    <tr>
-                        <th>代號</th>
-                        <th>名稱</th>
-                        <th>持股</th>
-                        <th>成本</th>
-                        <th>現價</th>
-                        <th>市值</th>
-                        <th>損益</th>
-                        <th>報酬率</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="portfolio-body"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <!-- 新增/編輯對話框 -->
-    <div id="add-modal" class="modal hidden">
+    <!-- Modal Form -->
+    <div id="add-modal" class="cyber-modal-container" style="display:none;">
         <div class="modal-backdrop"></div>
-        <div class="modal-content card">
-            <h3 id="modal-title">新增持股</h3>
-            <form id="add-form">
-                <div class="form-group">
-                    <label>股票代號</label>
-                    <input type="text" id="input-symbol" placeholder="例: 2330" required />
+        <div class="cyber-modal glass-card glow-wrapper">
+            <div class="glow-bg accent-glow"></div>
+
+            <header class="modal-header">
+                <h3 class="mono">ENTRY_MODIFICATION //</h3>
+                <button type="button" class="close-btn" id="modal-close">×</button>
+            </header>
+
+            <form id="add-form" class="modal-body">
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label class="mono text-muted">SYMBOL_ID</label>
+                        <input
+                            type="text"
+                            id="input-symbol"
+                            class="cyber-input mono"
+                            placeholder="ex: 2330"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="mono text-muted">QUANTITY (SHARES)</label>
+                        <input
+                            type="number"
+                            id="input-shares"
+                            class="cyber-input mono"
+                            placeholder="ex: 1000"
+                            min="1"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="mono text-muted">UNIT_COST (TWD)</label>
+                        <input
+                            type="number"
+                            id="input-cost"
+                            class="cyber-input mono"
+                            placeholder="ex: 580.0"
+                            step="0.01"
+                            min="0"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label class="mono text-muted">SYSTEM_DATE</label>
+                        <input type="date" id="input-date" class="cyber-input mono" />
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>持股數量（股）</label>
-                    <input
-                        type="number"
-                        id="input-shares"
-                        placeholder="例: 1000"
-                        min="1"
-                        required
-                    />
+                <div class="form-group" style="margin-top:16px;">
+                    <label class="mono text-muted">OP_NOTES (OPTIONAL)</label>
+                    <textarea
+                        id="input-notes"
+                        class="cyber-input mono"
+                        placeholder="Strategy or logic notes..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label>平均成本</label>
-                    <input
-                        type="number"
-                        id="input-cost"
-                        placeholder="例: 580"
-                        step="0.01"
-                        min="0"
-                        required
-                    />
-                </div>
-                <div class="form-group">
-                    <label>買入日期</label>
-                    <input type="date" id="input-date" />
-                </div>
-                <div class="form-group">
-                    <label>備註</label>
-                    <textarea id="input-notes" placeholder="選填"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" id="cancel-btn" class="btn-secondary">取消</button>
-                    <button type="submit" class="btn-primary">儲存</button>
+                <div class="modal-actions">
+                    <button type="button" id="cancel-btn" class="sys-btn mono">ABORT</button>
+                    <button type="submit" class="cyber-btn mono">COMMIT_ENTRY</button>
                 </div>
             </form>
         </div>
@@ -112,13 +177,93 @@ const allStocks = await getStocksWithPrices();
 </Layout>
 
 <style>
-    .page-header {
+    .portfolio-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+    /* Glass Card Base */
+    .glass-card {
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Trackers */
+    .glow-wrapper {
+        position: relative;
+    }
+    .glow-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .glow-wrapper:hover .glow-bg {
+        opacity: 1;
+    }
+
+    .pos-glow {
+        --glow-color: rgba(34, 197, 94, 0.1);
+    }
+    .neg-glow {
+        --glow-color: rgba(244, 63, 94, 0.1);
+    }
+    .neutral-glow {
+        --glow-color: rgba(200, 200, 210, 0.05);
+    }
+    .accent-glow {
+        --glow-color: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Header */
+    .portfolio-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 8px;
-        flex-wrap: wrap;
-        gap: 16px;
+        padding: 24px 32px;
+        z-index: 10;
+        border-bottom: 1px solid rgba(var(--c-accent-rgb), 0.3);
+    }
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .icon-box {
+        width: 56px;
+        height: 56px;
+        background: rgba(var(--c-accent-rgb), 0.1);
+        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .header-left h1 {
+        font-size: 16px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .header-left p {
+        font-size: 11px;
+        margin: 4px 0 0;
     }
 
     .header-actions {
@@ -126,192 +271,367 @@ const allStocks = await getStocksWithPrices();
         gap: 12px;
     }
 
-    .btn-primary {
-        padding: 10px 20px;
-        background: var(--accent);
-        color: #000;
+    .cyber-btn {
+        background: linear-gradient(135deg, var(--c-accent), #2563eb);
+        color: #fff;
         border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(var(--c-accent-rgb), 0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .cyber-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(var(--c-accent-rgb), 0.5);
+    }
+
+    .sys-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--c-text-secondary);
+        padding: 10px 16px;
         border-radius: 8px;
         font-weight: 600;
+        font-size: 11px;
         cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .sys-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
     }
 
-    .btn-secondary {
-        padding: 10px 20px;
-        background: var(--bg-card);
-        color: var(--text-primary);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        cursor: pointer;
+    /* Overview Grid */
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        z-index: 5;
+    }
+    .metric-card {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .m-label {
+        font-size: 11px;
+        color: var(--c-text-muted);
+        position: relative;
+        z-index: 1;
+        letter-spacing: 1px;
+    }
+    .m-val {
+        font-size: 32px;
+        font-weight: 800;
+        color: #fff;
+        position: relative;
+        z-index: 1;
     }
 
-    .page-desc {
-        color: var(--text-secondary);
-        margin-bottom: 32px;
+    /* Main Table Workspace */
+    .portfolio-workspace {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 400px;
+    }
+    .workspace-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+    .workspace-header h2 {
+        font-size: 12px;
+        margin: 0;
+        color: var(--c-text-muted);
+        letter-spacing: 2px;
     }
 
-    .overview-cards {
-        margin-bottom: 48px;
+    .sys-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 10px;
+        color: var(--c-success);
+    }
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: currentColor;
+        border-radius: 50%;
+        animation: p 2s infinite;
+    }
+    @keyframes p {
+        0%,
+        100% {
+            opacity: 0.4;
+        }
+        50% {
+            opacity: 1;
+        }
     }
 
-    .overview-card {
-        text-align: center;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 24px;
-        background: var(--bg-card);
-        border: 1px dashed var(--border);
-        border-radius: 16px;
-    }
-
-    .empty-icon {
-        font-size: 4rem;
-        margin-bottom: 16px;
-    }
-
-    .empty-state h3 {
-        margin-bottom: 8px;
-    }
-
-    .empty-state p {
-        color: var(--text-secondary);
-    }
-
-    .table-container {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
+    .table-scroll {
+        flex: 1;
+        overflow-y: auto;
         overflow-x: auto;
+        position: relative;
+        z-index: 1;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
     }
-
-    table {
+    .premium-table {
         width: 100%;
         border-collapse: collapse;
-    }
-
-    th,
-    td {
-        padding: 14px 16px;
         text-align: right;
-        border-bottom: 1px solid var(--border);
+    }
+    .premium-table th {
+        position: sticky;
+        top: 0;
+        background: rgba(10, 15, 25, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 10;
+        font-size: 10px;
+        color: var(--c-text-muted);
+        padding: 14px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .premium-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: var(--c-text-secondary);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+    }
+    .premium-table tbody tr {
+        transition: background 0.2s;
+    }
+    .premium-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
     }
 
-    th:first-child,
-    td:first-child {
-        text-align: left;
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        text-align: left !important;
+        background: inherit;
+        z-index: 11;
+    }
+    .premium-table tbody tr .sticky-col {
+        background: var(--c-bg-glass);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    th {
-        background: rgba(0, 0, 0, 0.2);
-        font-size: 0.85rem;
-        color: var(--text-secondary);
+    .col-symbol {
+        font-size: 16px;
+        font-weight: 800;
+        color: var(--c-accent);
+        text-decoration: none;
+        transition: 0.2s;
+        display: block;
+    }
+    .col-symbol:hover {
+        text-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.5);
+    }
+    .col-name {
+        font-size: 11px;
+        color: var(--c-text-muted);
+        font-family: 'Inter', sans-serif;
     }
 
-    .symbol {
-        font-weight: 700;
-        color: var(--accent);
-    }
-
-    .action-btns {
+    .action-group {
         display: flex;
         gap: 8px;
         justify-content: flex-end;
     }
-
     .action-btn {
-        background: none;
-        border: none;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid transparent;
+        border-radius: 4px;
+        padding: 4px 8px;
+        color: var(--c-text-muted);
+        font-size: 12px;
         cursor: pointer;
-        font-size: 1.1rem;
-        padding: 4px;
+        transition: 0.2s;
+    }
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+    .action-btn.del:hover {
+        background: rgba(244, 63, 94, 0.2);
+        color: var(--c-danger);
     }
 
-    .hidden {
-        display: none !important;
+    .state-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        background: rgba(10, 15, 25, 0.5);
+        backdrop-filter: blur(5px);
+    }
+    .state-icon {
+        font-size: 40px;
+    }
+    .state-msg {
+        font-size: 12px;
+        margin-top: 10px;
+        color: var(--c-text-muted);
+        letter-spacing: 2px;
     }
 
     /* Modal */
-    .modal {
+    .cyber-modal-container {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1000;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-
     .modal-backdrop {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        inset: 0;
         background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
     }
-
-    .modal-content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
-        max-width: 450px;
-    }
-
-    .modal-content h3 {
-        margin-bottom: 24px;
-    }
-
-    .form-group {
-        margin-bottom: 16px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-    }
-
-    .form-group input,
-    .form-group textarea {
+    .cyber-modal {
+        position: relative;
         width: 100%;
-        padding: 12px;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--text-primary);
-        font-size: 1rem;
+        max-width: 500px;
+        z-index: 101;
+        background: var(--c-bg-app);
     }
 
-    .form-group textarea {
+    .modal-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+    .modal-header h3 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: var(--c-text-muted);
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .close-btn:hover {
+        color: #fff;
+    }
+
+    .modal-body {
+        padding: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    .input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .form-group label {
+        font-size: 10px;
+    }
+
+    .cyber-input {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        padding: 10px 14px;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s;
+    }
+    .cyber-input:focus {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.2);
+    }
+    textarea.cyber-input {
         min-height: 80px;
         resize: vertical;
     }
 
-    .form-actions {
+    .modal-actions {
         display: flex;
-        gap: 12px;
         justify-content: flex-end;
+        gap: 12px;
         margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 1024px) {
+        .overview-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    @media (max-width: 600px) {
+        .overview-grid {
+            grid-template-columns: 1fr;
+        }
+        .input-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <script define:vars={{ initialStocks: allStocks }}>
-    // 使用真實股價資料
     const stockMap = {};
     initialStocks.forEach(s => {
-        stockMap[s.symbol] = { name: s.name, price: s.price };
+        stockMap[s.symbol] = {
+            symbol: s.symbol,
+            name: s.name,
+            price: s.price,
+            change: s.change,
+            changePercent: s.change_pct,
+            volume: s.volume,
+            pe: s.pe,
+            pb: s.pb,
+            yield: s.yield,
+            roe: s.roe,
+            eps: s.eps,
+        };
     });
 
-    const STORAGE_KEY = 'tw-portfolio';
+    const STORAGE_KEY = 'tw-portfolio-v2';
 
     function getPortfolio() {
         return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     }
-
     function savePortfolio(items) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }
@@ -325,24 +645,21 @@ const allStocks = await getStocksWithPrices();
         if (!tbody || !emptyState || !tableContainer) return;
 
         if (items.length === 0) {
-            emptyState.classList.remove('hidden');
-            tableContainer.classList.add('hidden');
+            emptyState.style.display = 'flex';
+            tableContainer.style.display = 'none';
             updateOverview(0, 0);
             return;
         }
 
-        emptyState.classList.add('hidden');
-        tableContainer.classList.remove('hidden');
+        emptyState.style.display = 'none';
+        tableContainer.style.display = 'block';
 
         let totalCost = 0;
         let totalValue = 0;
 
         tbody.innerHTML = items
             .map(item => {
-                const stockInfo = stockMap[item.symbol] || {
-                    name: item.name || item.symbol,
-                    price: item.avgCost,
-                };
+                const stockInfo = stockMap[item.symbol] || { name: 'Unknown', price: item.avgCost };
                 const currentPrice = stockInfo.price;
                 const cost = item.shares * item.avgCost;
                 const value = item.shares * currentPrice;
@@ -352,22 +669,25 @@ const allStocks = await getStocksWithPrices();
                 totalCost += cost;
                 totalValue += value;
 
-                const plClass = pl >= 0 ? 'positive' : 'negative';
+                const isPos = pl >= 0;
+                const colorClass = isPos ? 'text-pos' : 'text-neg';
+                const sign = isPos ? '+' : '';
 
                 return `
                 <tr>
-                    <td class="symbol">${item.symbol}</td>
-                    <td>${stockInfo.name}</td>
-                    <td>${item.shares.toLocaleString()}</td>
-                    <td>${item.avgCost.toFixed(2)}</td>
-                    <td>${currentPrice.toFixed(2)}</td>
-                    <td>${value.toLocaleString()}</td>
-                    <td class="${plClass}">${pl >= 0 ? '+' : ''}${pl.toLocaleString()}</td>
-                    <td class="${plClass}">${pl >= 0 ? '+' : ''}${plPercent}%</td>
+                    <td class="sticky-col">
+                        <a href="/stocks/${item.symbol}" class="col-symbol mono">${item.symbol}</a>
+                        <span class="col-name">${stockInfo.name}</span>
+                    </td>
+                    <td class="mono">${item.shares.toLocaleString()}</td>
+                    <td class="mono">${item.avgCost.toFixed(2)}</td>
+                    <td class="mono">${currentPrice.toFixed(2)}</td>
+                    <td class="mono" style="font-weight:800;">${value.toLocaleString()}</td>
+                    <td class="mono ${colorClass}">${sign}${pl.toLocaleString()}</td>
+                    <td class="mono ${colorClass}">${sign}${plPercent}%</td>
                     <td>
-                        <div class="action-btns">
-                            <button class="action-btn edit-btn" data-id="${item.id}" title="編輯">✏️</button>
-                            <button class="action-btn delete-btn" data-id="${item.id}" title="刪除">🗑️</button>
+                        <div class="action-group">
+                            <button class="action-btn del delete-btn mono" data-id="${item.id}">DEL</button>
                         </div>
                     </td>
                 </tr>
@@ -377,13 +697,13 @@ const allStocks = await getStocksWithPrices();
 
         updateOverview(totalCost, totalValue);
 
-        // 綁定刪除按鈕
+        // Bind delete
         tbody.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                const id = btn.getAttribute('data-id');
-                if (confirm('確定要刪除這筆持股嗎？')) {
-                    const items = getPortfolio().filter(item => item.id !== id);
-                    savePortfolio(items);
+                if (confirm('Acknowledge deletion of position?')) {
+                    const id = btn.getAttribute('data-id');
+                    const updated = getPortfolio().filter(i => i.id !== id);
+                    savePortfolio(updated);
                     renderPortfolio();
                 }
             });
@@ -393,7 +713,8 @@ const allStocks = await getStocksWithPrices();
     function updateOverview(totalCost, totalValue) {
         const pl = totalValue - totalCost;
         const returnRate = totalCost > 0 ? ((pl / totalCost) * 100).toFixed(2) : '0.00';
-        const plClass = pl >= 0 ? 'positive' : 'negative';
+        const isPos = pl >= 0;
+        const sign = isPos ? '+' : '';
 
         const costEl = document.getElementById('total-cost');
         if (costEl) costEl.textContent = `$${totalCost.toLocaleString()}`;
@@ -403,109 +724,89 @@ const allStocks = await getStocksWithPrices();
 
         const plElement = document.getElementById('total-pl');
         if (plElement) {
-            plElement.textContent = `${pl >= 0 ? '+' : ''}$${pl.toLocaleString()}`;
-            plElement.className = `card-value ${plClass}`;
+            plElement.textContent = `${sign}$${pl.toLocaleString()}`;
+            plElement.className = `m-val mono ${isPos ? 'text-pos' : 'text-neg'}`;
+            // Find parent and update glow
+            const parent = plElement.closest('.glass-card');
+            const glow = parent.querySelector('.glow-bg');
+            if (glow) glow.className = `glow-bg ${isPos ? 'pos-glow' : 'neg-glow'}`;
         }
 
         const returnElement = document.getElementById('total-return');
         if (returnElement) {
-            returnElement.textContent = `${pl >= 0 ? '+' : ''}${returnRate}%`;
-            returnElement.className = `card-value ${plClass}`;
+            returnElement.textContent = `${sign}${returnRate}%`;
+            returnElement.className = `m-val mono ${isPos ? 'text-pos' : 'text-neg'}`;
+            const parent = returnElement.closest('.glass-card');
+            const glow = parent.querySelector('.glow-bg');
+            if (glow) glow.className = `glow-bg ${isPos ? 'pos-glow' : 'neg-glow'}`;
         }
     }
 
-    // Modal 控制
+    // Modal Logic
     const modal = document.getElementById('add-modal');
-    const addForm = document.getElementById('add-form');
+    const form = document.getElementById('add-form');
 
-    document.getElementById('add-stock-btn')?.addEventListener('click', () => {
-        modal?.classList.remove('hidden');
-        if (addForm instanceof HTMLFormElement) addForm.reset();
+    document.getElementById('add-stock-btn').addEventListener('click', () => {
+        modal.style.display = 'flex';
+        form.reset();
     });
+    document
+        .getElementById('cancel-btn')
+        .addEventListener('click', () => (modal.style.display = 'none'));
+    document
+        .getElementById('modal-close')
+        .addEventListener('click', () => (modal.style.display = 'none'));
+    document
+        .querySelector('.modal-backdrop')
+        .addEventListener('click', () => (modal.style.display = 'none'));
 
-    document.getElementById('cancel-btn')?.addEventListener('click', () => {
-        modal?.classList.add('hidden');
-    });
-
-    modal?.querySelector('.modal-backdrop')?.addEventListener('click', () => {
-        modal.classList.add('hidden');
-    });
-
-    addForm?.addEventListener('submit', e => {
+    form.addEventListener('submit', e => {
         e.preventDefault();
-
-        const symbol = document.getElementById('input-symbol').value.trim();
-        const shares = parseInt(document.getElementById('input-shares').value);
-        const avgCost = parseFloat(document.getElementById('input-cost').value);
-        const buyDate = document.getElementById('input-date').value;
-        const notes = document.getElementById('input-notes').value;
-
         const items = getPortfolio();
         items.push({
             id: Date.now().toString(),
-            symbol,
-            name: stockMap[symbol]?.name || symbol,
-            shares,
-            avgCost,
-            buyDate: buyDate || undefined,
-            notes: notes || undefined,
+            symbol: document.getElementById('input-symbol').value.trim(),
+            shares: parseInt(document.getElementById('input-shares').value),
+            avgCost: parseFloat(document.getElementById('input-cost').value),
+            buyDate: document.getElementById('input-date').value || undefined,
+            notes: document.getElementById('input-notes').value || undefined,
         });
-
         savePortfolio(items);
-        modal?.classList.add('hidden');
+        modal.style.display = 'none';
         renderPortfolio();
     });
 
-    // 匯出 CSV
-    document.getElementById('export-btn')?.addEventListener('click', () => {
+    // Export Logic
+    document.getElementById('export-btn').addEventListener('click', () => {
         const items = getPortfolio();
-        if (items.length === 0) {
-            alert('沒有資料可匯出');
-            return;
-        }
+        if (!items.length) return alert('No data to export.');
 
-        const headers = ['代號', '名稱', '持股數', '平均成本', '買入日期', '備註'];
-        const rows = items.map(item => [
-            item.symbol,
-            item.name,
-            item.shares,
-            item.avgCost,
-            item.buyDate || '',
-            item.notes || '',
-        ]);
+        const headers = ['SYMBOL', 'SHARES', 'AVG_COST', 'DATE', 'NOTES'];
+        const csv =
+            '\\uFEFF' +
+            headers.join(',') +
+            '\\n' +
+            items
+                .map(
+                    i =>
+                        `${i.symbol},${i.shares},${i.avgCost},${i.buyDate || ''},"${(i.notes || '').replace(/"/g, '""')}"`
+                )
+                .join('\\n');
 
-        const BOM = '\uFEFF';
-        const csv = BOM + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = `portfolio_${new Date().toISOString().split('T')[0]}.csv`;
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+        a.download = `port_export_${new Date().getTime()}.csv`;
         a.click();
-        URL.revokeObjectURL(url);
     });
 
-    // 初始化
+    // Init with dummy data if needed
     if (getPortfolio().length === 0) {
         savePortfolio([
-            {
-                id: '1',
-                symbol: '2330',
-                name: '台積電',
-                shares: 1000,
-                avgCost: 580,
-                buyDate: '2023-10-01',
-            },
-            {
-                id: '2',
-                symbol: '2317',
-                name: '鴻海',
-                shares: 2000,
-                avgCost: 105,
-                buyDate: '2023-11-15',
-            },
+            { id: '1', symbol: '2330', shares: 500, avgCost: 590, buyDate: '2023-11-01' },
+            { id: '2', symbol: '2317', shares: 3000, avgCost: 102, buyDate: '2023-10-15' },
         ]);
     }
+
+    // View transitions support
     renderPortfolio();
 </script>

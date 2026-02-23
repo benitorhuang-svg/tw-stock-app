@@ -1,0 +1,179 @@
+---
+/**
+ * StockHero Component
+ *
+ * Top dynamic card for the Stock Terminal.
+ */
+
+interface Props {
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+    changePct: number;
+    market: string;
+    sector: string;
+}
+
+const { symbol, name, price, change, changePct, market, sector } = Astro.props;
+const isPos = change >= 0;
+const colorClass = isPos ? 'text-pos' : 'text-neg';
+const sign = isPos ? '+' : '';
+---
+
+<div class="stock-hero-container">
+    <div class="hero-main glass-panel glow-wrapper">
+        <div class="glow-bg"></div>
+
+        <div class="hero-content">
+            <div class="header-left">
+                <div class="symbol-badge mono">
+                    {symbol}
+                    <span class="market-tag">{market}</span>
+                </div>
+                <h1 class="stock-name">{name}</h1>
+                <div class="sector-label mono">{sector}</div>
+            </div>
+
+            <div class="header-right">
+                <div class="price-container">
+                    <div class="current-price mono">{price.toFixed(2)}</div>
+                    <div class={`price-change mono ${colorClass}`}>
+                        {sign}{change.toFixed(2)} ({sign}{changePct.toFixed(2)}%)
+                    </div>
+                </div>
+                <div class="action-bar">
+                    <button class="watchlist-btn glass-btn" data-symbol={symbol}>
+                        <span class="icon">★</span> WATCHLIST
+                    </button>
+                    <button class="share-btn glass-btn">
+                        <span class="icon">↗</span> SHARE
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stock-hero-container {
+        width: 100%;
+    }
+
+    .hero-main {
+        padding: 32px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative;
+        z-index: 2;
+    }
+
+    .symbol-badge {
+        font-size: 14px;
+        color: var(--c-accent);
+        background: rgba(59, 130, 246, 0.1);
+        padding: 4px 12px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .market-tag {
+        font-size: 10px;
+        opacity: 0.7;
+        padding-left: 8px;
+        border-left: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stock-name {
+        font-size: 42px;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -1px;
+    }
+
+    .sector-label {
+        font-size: 13px;
+        color: #94a3b8;
+        margin-top: 8px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .header-right {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .current-price {
+        font-size: 48px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .price-change {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    .action-bar {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+
+    .glass-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--c-accent);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .text-pos {
+        color: #10b981;
+    }
+    .text-neg {
+        color: #ef4444;
+    }
+
+    @media (max-width: 768px) {
+        .hero-content {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 32px;
+        }
+        .header-right {
+            text-align: left;
+            width: 100%;
+        }
+        .action-bar {
+            justify-content: flex-start;
+        }
+    }
+</style>

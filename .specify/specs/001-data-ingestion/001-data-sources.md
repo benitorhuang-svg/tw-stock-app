@@ -1,110 +1,38 @@
-# 001 — 原始資料來源 (External Data Sources)
+# 001 — 原始資料與機器學習特徵源 (Raw Data & ML Feature Sources)
 
-> Layer 1：系統最底層，負責從外部服務取得原始股票資料。
+> Layer 1：系統最底層，負責從外部服務取得原始股價、籌碼、財報資料，為後續的「本端即時分析」與「機器學習 (ML) 模型訓練」儲備特徵庫。
 
-## 職責定義
+## 職責定義與哲學轉換 (Paradigm Shift)
+過去我們依賴前端在瀏覽器即時運算 MACD 或 KD 等技術指標。為了支援**全盤掃描選股 (Screener)** 與未來的 **ML 模型特徵工程 (Feature Engineering)**，本層的職責已經轉換為：**「盡可能抓取最細顆粒度的原始資料，並落地儲存為 JSON/CSV 備用」**。
 
-本層唯一的職責是**從外部 API 下載原始資料並儲存為本地檔案**。
-不做任何資料轉換、計算或展示，僅負責「取得」與「落地」。
+## 資料來源與特徵清單 (Data Sources)
 
-## 資料來源清單
+| 資料集類別 | 抓取腳本 / 來源 | 落地檔案 | 機器學習特徵價值 (ML Value) |
+| :--- | :--- | :--- | :--- |
+| **股票清單** | `fetch-stock-list.mjs` | `stocks.json` | Ticker 映射與產業分類標籤 (Categorical Features)。 |
+| **歷史價格 (OHLCV)** | `fetch-yahoo.mjs`<br>`fetch-twse-daily.mjs` | `prices/*.csv` | 最核心的時間序列 (Time-Series) 特徵基底，衍生所有技術指標。 |
+| **估值水準 (P/E, P/B, 殖利率)** | `fetch-bwibbu.mjs` | `valuations/*.csv` | 訓練長線投資模型、回歸預測目標價的定錨特徵 (Anchor Features)。 |
+| **三大法人籌碼動向** | `fetch-institutional.mjs` | `chips_inst/*.csv` | 外資/投信淨買賣超，捕捉大資金流向，屬於極強的預測因變數。 |
+| **信用交易 (融資融券)** | `fetch-margin.mjs` | `chips_margin/*.csv` | 散戶看多/看空情緒指標 (Sentiment Features)。 |
+| **公司營收與三率** | `fetch-financials.mjs` | `financials.json` | 獲利與成長動能標籤，用於剔除地雷股的模型邊界。 |
+| **即時 TICK (盤中限定)** | `twse-websocket.ts` | 不落地 (即時更新 DB) | 供單日當沖模型判定日內走勢，繪製微型走勢與五檔。 |
 
-| 來源 | 腳本 | 輸出 | 取得內容 |
-|------|------|------|----------|
-| TWSE 證交所 | `scripts/fetch-stock-list.mjs` | `public/data/stocks.json` | 上市股票清單 (代號、名稱、市場) |
-| TPEx 櫃買中心 | `scripts/fetch-stock-list.mjs` | `public/data/stocks.json` | 上櫃股票清單 |
-| Yahoo Finance | `scripts/fetch-yahoo.mjs` | `public/data/prices/*.csv` | 5 年歷史日K (OHLCV) |
-| TWSE 即時 API | `src/lib/twse-api.ts` | 即時回應 (不落地) | 即時報價、本益比、殖利率 |
-| TWSE / TPEx | *(待開發)* `scripts/fetch-chips.mjs` | `public/data/chips.json` | 三大法人買賣超、籌碼集中度 |
-| MOPS 公開資訊 | *(待開發)* `scripts/fetch-financials.mjs` | `public/data/financials.json` | 財務報表 (EPS, ROE, 現金流) |
+## 重點腳本詳解 (Scripts Detail)
 
-## 腳本詳解
+### 1. `fetch-yahoo.mjs` / `fetch-twse-daily.mjs`
+- **功能**：下載每支股票 5 年以上的歷史價格。
+- **資料深度**：為了滿足機器學習至少需要 3~5 個景氣循環的訓練資料，盡可能拉長歷史區間。
+- **輸出格式**：CSV，保持 `Date,Open,High,Low,Close,Volume` 格式。
 
-### fetch-stock-list.mjs
+### 2. `fetch-institutional.mjs` (籌碼面)
+- **API 來源**：TWSE `fund/T86` (三大法人買賣超日報)
+- **資料提煉**：不只要抓每日總計，需要提煉出**外資淨額**、**投信淨額**、**自營商淨額**。
 
-- **功能**：下載台灣上市 + 上櫃股票清單
-- **API 端點**：
-  - TWSE: `https://www.twse.com.tw/exchangeReport/STOCK_DAY_ALL?response=json`
-  - TPEx: `https://www.tpex.org.tw/web/stock/aftertrading/daily_close_quotes/stk_quote_result.php?l=zh-tw&o=json`
-- **過濾規則**：只取 4 位數代號的普通股 (`/^\d{4}$/`)
-- **輸出格式**：`[{ symbol: "2330", name: "台積電", market: "TSE" }]`
-- **緊急備用**：API 全部失敗時回退至內建的 ~50 檔核心股票硬編碼清單
-- **執行方式**：`node scripts/fetch-stock-list.mjs`
+### 3. `fetch-bwibbu.mjs` (估值面)
+- **API 來源**：TWSE `exchangeReport/BWIBBU_d`
+- **資料提煉**：逐日記錄 P/E (本益比), P/B (股價淨值比), Yield (殖利率)。為了之後在 DB 內畫「河流圖」做歷史數據儲備。
 
-### fetch-yahoo.mjs
-
-- **功能**：逐一下載每支股票 5 年歷史價格
-- **API 端點**：`https://query1.finance.yahoo.com/v8/finance/chart/{symbol}.TW?period1={start}&period2={end}&interval=1d`
-- **回應解析**：
-  ```
-  data.chart.result[0].timestamp[]     → 日期 (Unix → YYYY-MM-DD)
-  data.chart.result[0].indicators.quote[0].open/high/low/close/volume
-  ```
-- **衍生計算**：
-  - `change = close - prevClose`
-  - `changePct = (change / prevClose) × 100`
-  - `volumeInLots = volume / 1000`（股→張）
-  - `turnover = (high + low) / 2 × volume`（估算成交金額）
-- **輸出格式**：CSV，檔名 `{symbol}_{name}.csv`
-  ```
-  Date,Open,High,Low,Close,Volume,Turnover,Change,ChangePct
-  2024-01-02,595.0,600.0,590.0,598.0,28456,17000000000,3.0,0.5
-  ```
-- **斷點續傳**：進度存於 `progress.json`，失敗記錄存於 `failed.json`
-- **速率控制**：每次請求間隔 1.5 秒
-- **執行方式**：
-  ```bash
-  node scripts/fetch-yahoo.mjs              # 自動續傳
-  node scripts/fetch-yahoo.mjs --retry      # 重試失敗
-  node scripts/fetch-yahoo.mjs --force      # 全部重下
-  node scripts/fetch-yahoo.mjs 2330 2317    # 指定股票
-  ```
-
-### fetch-chips.mjs (待開發)
-
-- **功能**：下載三大法人買賣超與主力籌碼集中度資料
-- **API 端點**：TWSE/TPEx 公開資料 API
-- **衍生計算**：
-  - 統計前 N 大分點券商買超比例
-  - 紀錄投信與外資連續買超天數
-- **輸出格式**：`public/data/chips.json` 或拆分 `chips/*.csv`
-
-### fetch-financials.mjs (待開發)
-
-- **功能**：下載季報與財務比率 (EPS, ROE, 營業現金流)
-- **API 端點**：公開資訊觀測站 (MOPS)
-- **衍生計算**：
-  - 計算 EPS 年成長率 (YoY)
-  - 結合即時股價估算 PEG (本益成長比)
-- **輸出格式**：`public/data/financials.json`
-
-### twse-api.ts（即時 API）
-
-- **功能**：即時查詢 TWSE 公開 API（不落地為檔案，直接回應）
-- **提供 4 個函式**：
-  | 函式 | 用途 | API 路徑 |
-  |------|------|----------|
-  | `getPERatio(date, symbol)` | 個股本益比/殖利率/股淨比 | `/exchangeReport/BWIBBU_d` |
-  | `getStockDay(date, symbol)` | 個股月成交行情 | `/exchangeReport/STOCK_DAY` |
-  | `getAllPERatios(date)` | 全部股票本益比 | `/exchangeReport/BWIBBU_ALL` |
-  | `getDailyQuotes(date)` | 當日全部收盤行情 | `/exchangeReport/MI_INDEX` |
-- **資料轉換**：TWSE 回傳的千分位逗號數字 `"1,234"` → `parseInt/parseFloat` 清理
-- **已知問題**：
-  - ❌ 無 timeout 設定
-  - ❌ 無重試 / backoff 機制
-  - ❌ 無測試覆蓋
-
-## 輸出檔案清單
-
-| 檔案 | 數量 | 說明 |
-|------|------|------|
-| `public/data/stocks.json` | 1 | 1,077 支股票基本資料 |
-| `public/data/prices/*.csv` | 1,077 | 每支股票 5 年日K 資料 |
-| `public/data/failed.json` | 1 | 下載失敗清單 |
-| `public/data/progress.json` | 1 | 下載進度紀錄 |
-
-## 待辦任務
-
-- [ ] **T1-01**: 為 `twse-api.ts` 新增完整測試（mock fetch、timeout、404/500 錯誤處理）
-- [ ] **T1-02**: 為 `twse-api.ts` 加入 timeout（5 秒）與指數退避重試（最多 3 次）
-- [ ] **T1-03**: 統一 `fetch-stock-list.mjs` 與 `twse-api.ts` 的錯誤處理模式
+## 資料落地策略 (Local-First Ingestion)
+1. **目錄結構**：所有腳本抓取回來的資料，統一存放在 `.data/raw/` 目錄下（此目錄應加入 `.gitignore` 避免污染 Git Repo，或透過 DVC 版控）。
+2. **斷點續傳**：因 API 呼叫次數極大（每日上千次 request），所有 fetch 腳本必須實作 `progress.json` 保存點機制。
+3. **無損壓縮**：舊日期的 CSV 資料可透過去除重複標頭等方式進行壓縮整理，但絕對保留真實的數值（不提前做標準化 Normalization，以防未來更換 ML 模型需求）。

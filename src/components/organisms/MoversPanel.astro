@@ -1,0 +1,92 @@
+---
+/**
+ * MoversPanel Organism
+ *
+ * Lists top movers in a glass panel.
+ */
+import StockCard from './StockCard.astro';
+
+interface Props {
+    title: string;
+    stocks: any[];
+    variant?: 'pos' | 'neg' | 'accent';
+    icon: string;
+}
+
+const { title, stocks, variant = 'accent', icon } = Astro.props;
+
+const mapToStock = (s: any) => ({
+    symbol: s.symbol,
+    name: s.name,
+    price: s.price || 0,
+    change: s.change || 0,
+    changePercent: s.change_pct || 0,
+    volume: s.volume || 0,
+    pe: s.pe || 0,
+    pb: s.pb || 0,
+    yield: s.yield || 0,
+    roe: 0,
+    eps: 0,
+});
+---
+
+<div class="glass-card panel glow-wrapper">
+    <div class={`glow-bg ${variant}-glow`}></div>
+    <div class="panel-header">
+        <div class="panel-title-group">
+            <span
+                class={`panel-icon text-${variant === 'pos' ? 'success' : variant === 'neg' ? 'danger' : 'accent'}`}
+                >{icon}</span
+            >
+            <h2
+                class={`panel-title text-${variant === 'pos' ? 'success' : variant === 'neg' ? 'danger' : 'accent'}`}
+            >
+                {title}
+            </h2>
+        </div>
+    </div>
+    <div class="panel-content">
+        {stocks.map((s: any) => <StockCard stock={mapToStock(s)} />)}
+    </div>
+</div>
+
+<style>
+    .panel {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--c-border);
+        background: rgba(255, 255, 255, 0.01);
+    }
+
+    .panel-title-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .panel-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .panel-icon {
+        font-size: 18px;
+    }
+
+    .text-success {
+        color: var(--c-success);
+    }
+    .text-danger {
+        color: var(--c-danger);
+    }
+    .text-accent {
+        color: var(--c-accent);
+    }
+</style>

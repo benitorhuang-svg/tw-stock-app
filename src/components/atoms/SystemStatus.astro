@@ -1,0 +1,76 @@
+---
+interface Props {
+    id?: string;
+    text?: string;
+    color?: string;
+    animate?: boolean;
+    className?: string;
+}
+
+const { id, text, color = 'accent', animate = false, className = '' } = Astro.props;
+---
+
+<div class={`sys-status ${className}`} id={id}>
+    <span class={`pulse-dot bg-${color} ${animate ? 'anim' : ''}`}></span>
+    <span class={`mono text-${color} text-content`}>
+        {text && text}
+        <slot />
+    </span>
+</div>
+
+<style>
+    .sys-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        padding: 8px 16px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 20px;
+        font-weight: 800;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
+    }
+
+    .bg-accent {
+        background: var(--c-accent);
+        color: var(--c-accent);
+    }
+    .bg-success {
+        background: var(--c-success);
+        color: var(--c-success);
+    }
+    .bg-danger {
+        background: var(--c-danger);
+        color: var(--c-danger);
+    }
+    .bg-warning {
+        background: var(--c-warning, #f59e0b);
+        color: var(--c-warning, #f59e0b);
+    }
+    .bg-neutral {
+        background: var(--c-text-muted);
+        color: var(--c-text-muted);
+    }
+
+    .pulse-dot.anim {
+        animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+        0% {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+</style>

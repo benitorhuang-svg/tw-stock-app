@@ -1,7 +1,5 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import ProSidebarNav from '../components/organisms/ProSidebarNav.astro';
-import ProTopHeader from '../components/organisms/ProTopHeader.astro';
 
 interface Props {
     title: string;
@@ -9,352 +7,565 @@ interface Props {
 
 const { title } = Astro.props;
 const currentPath = Astro.url.pathname;
+const isCurrentPath = (path: string) =>
+    currentPath === path || (path !== '/' && currentPath.startsWith(path));
+
+const navItems = [
+    { label: 'DASHBOARD (總覽)', path: '/' },
+    { label: 'SCREENER (選股)', path: '/screener' },
+    { label: 'WATCHLIST (自選)', path: '/watchlist' },
+    { label: 'ANALYSIS (分析)', path: '/stocks' },
+    { label: 'COMPARE (比較)', path: '/compare' },
+    { label: 'PORTFOLIO (部位)', path: '/portfolio' },
+];
 ---
 
 <!doctype html>
 <html lang="zh-TW">
     <head>
         <meta charset="UTF-8" />
-        <meta name="description" content="台灣股票 analysis 與選股策略平台" />
+        <meta name="description" content="TWStock Data Terminal" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-
-        <!-- DNS Prefetch for CDN -->
-        <link rel="dns-prefetch" href="https://unpkg.com" />
-
-        <!-- Fonts -->
+        <title>{title} | TW Stock App</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Outfit:wght@800;900&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&display=swap"
             rel="stylesheet"
         />
-        <title>{title} | TW Stock App</title>
         <ClientRouter />
-        <script is:inline>
-            // Initialize theme before page render to avoid flash
-            const theme = localStorage.getItem('tw-stock-theme') || 'dark';
-            if (theme === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
+        <style is:global>
+            :root {
+                /* PURE BLACK BASE */
+                --c-bg-app: #000000;
+
+                /* PREMIUM GLASSMORPHISM ON BLACK */
+                --c-bg-glass: rgba(255, 255, 255, 0.02);
+                --c-bg-glass-hover: rgba(255, 255, 255, 0.05);
+                --c-border: rgba(255, 255, 255, 0.08);
+                --c-border-highlight: rgba(255, 255, 255, 0.15);
+
+                /* TEXT COLORS */
+                --c-text-primary: #ffffff;
+                --c-text-secondary: #a1a1aa; /* Zinc 400 */
+                --c-text-muted: #52525b; /* Zinc 600 */
+
+                /* ACCENTS */
+                --c-accent: #3b82f6; /* Blue */
+                --c-success: #10b981; /* Emerald */
+                --c-danger: #ef4444; /* Red */
+                --c-warning: #f59e0b; /* Amber */
+
+                /* SHADOWS & BLUR */
+                --glass-blur: blur(24px);
+                --radius: 12px;
+                --radius-sm: 8px;
+                --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
             }
-        </script>
+
+            body {
+                background-color: var(--c-bg-app);
+                color: var(--c-text-primary);
+                font-family: 'Inter', system-ui, sans-serif;
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                overflow-x: hidden;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                -webkit-font-smoothing: antialiased;
+
+                /* Subtle Glow Accents */
+                background-image:
+                    radial-gradient(circle at 15% 0%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                    radial-gradient(
+                        circle at 85% 100%,
+                        rgba(16, 185, 129, 0.05) 0%,
+                        transparent 40%
+                    );
+                background-attachment: fixed;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            /* Common Typography & Colors */
+            .mono {
+                font-family: 'JetBrains Mono', monospace;
+                font-variant-numeric: tabular-nums;
+            }
+            .text-accent {
+                color: var(--c-accent);
+            }
+            .text-success {
+                color: var(--c-success);
+            }
+            .text-danger {
+                color: var(--c-danger);
+            }
+            .text-muted {
+                color: var(--c-text-muted);
+            }
+            .text-secondary {
+                color: var(--c-text-secondary);
+            }
+
+            /* Premium Glassmorphism Utilities */
+            .glass-card {
+                background: var(--c-bg-glass);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                border: 1px solid var(--c-border);
+                border-radius: 16px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .glow-wrapper {
+                position: relative;
+            }
+
+            .glow-bg {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                pointer-events: none;
+                z-index: 0;
+                transition: opacity 0.3s var(--ease-out);
+                background: radial-gradient(
+                    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                    var(--glow-color, rgba(255, 255, 255, 0.05)),
+                    transparent 40%
+                );
+            }
+            .glow-wrapper:hover .glow-bg {
+                opacity: 1;
+            }
+
+            .accent-glow {
+                --glow-color: rgba(59, 130, 246, 0.15);
+            }
+            .pos-glow {
+                --glow-color: rgba(16, 185, 129, 0.15);
+            }
+            .neg-glow {
+                --glow-color: rgba(244, 63, 94, 0.15);
+            }
+            .neutral-glow {
+                --glow-color: rgba(255, 255, 255, 0.05);
+            }
+
+            /* Dashboard & Listing Panels */
+            .panel {
+                display: flex;
+                flex-direction: column;
+            }
+            .panel-header {
+                padding: 16px 20px;
+                border-bottom: 1px solid var(--c-border);
+                background: rgba(255, 255, 255, 0.01);
+            }
+            .panel-title {
+                font-size: 15px;
+                font-weight: 700;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .panel-content {
+                padding: 12px 16px;
+            }
+
+            /* Cyber Buttons */
+            .cyber-btn {
+                background: linear-gradient(135deg, var(--c-accent), #2563eb);
+                color: #fff;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-weight: 800;
+                font-size: 12px;
+                cursor: pointer;
+                transition: all 0.3s;
+                box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+            }
+            .cyber-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+            }
+
+            .sys-btn {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: var(--c-text-secondary);
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 11px;
+                cursor: pointer;
+                transition: 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                text-decoration: none;
+            }
+            .sys-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+            }
+            h1,
+            h2,
+            h3,
+            h4 {
+                color: var(--c-text-primary);
+                font-weight: 600;
+                margin: 0;
+            }
+
+            /* Utilities */
+            .text-pos {
+                color: var(--c-success);
+            }
+            .text-neg {
+                color: var(--c-danger);
+            }
+            .text-warning {
+                color: var(--c-warning);
+            }
+            .text-accent {
+                color: var(--c-accent);
+            }
+
+            /* Premium Glass Panels */
+            .glass-panel {
+                background: var(--c-bg-glass);
+                backdrop-filter: var(--glass-blur);
+                -webkit-backdrop-filter: var(--glass-blur);
+                border: 1px solid var(--c-border);
+                border-radius: var(--radius);
+                position: relative;
+                overflow: hidden;
+                transition:
+                    border-color 0.3s ease,
+                    background 0.3s ease;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .glass-panel:hover {
+                background: var(--c-bg-glass-hover);
+                border-color: var(--c-border-highlight);
+            }
+
+            /* Top Nav Styling */
+            .top-nav {
+                flex-shrink: 0;
+                border-radius: 0;
+                border-top: none;
+                border-left: none;
+                border-right: none;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 50;
+            }
+
+            .nav-container {
+                display: flex;
+                align-items: center;
+                max-width: 1400px;
+                margin: 0 auto;
+                padding: 0 24px;
+                height: 60px;
+                gap: 40px;
+            }
+
+            .nav-brand {
+                font-size: 18px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                font-family: 'JetBrains Mono', monospace;
+                color: inherit;
+                text-decoration: none;
+            }
+
+            .nav-links {
+                display: flex;
+                gap: 8px;
+                height: 100%;
+            }
+
+            .nav-item {
+                display: flex;
+                align-items: center;
+                padding: 0 16px;
+                color: var(--c-text-secondary);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 14px;
+                transition: all 0.2s var(--ease-out);
+                position: relative;
+                height: 100%;
+            }
+
+            .nav-item:hover {
+                color: var(--c-text-primary);
+            }
+            .nav-item.active {
+                color: var(--c-text-primary);
+            }
+
+            .nav-item.active::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 16px;
+                right: 16px;
+                height: 2px;
+                background: var(--c-accent);
+                box-shadow: 0 -2px 10px rgba(59, 130, 246, 0.5);
+            }
+
+            .nav-controls {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .nav-select {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--c-border);
+                color: var(--c-text-secondary);
+                padding: 6px 16px;
+                border-radius: 6px;
+                font-size: 13px;
+                outline: none;
+                cursor: pointer;
+                transition:
+                    border-color 0.2s,
+                    color 0.2s;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .nav-select:hover,
+            .nav-select:focus {
+                border-color: var(--c-accent);
+                color: var(--c-text-primary);
+            }
+
+            .nav-select option {
+                background: #111;
+                color: var(--c-text-primary);
+            }
+
+            .nav-search {
+                display: flex;
+                align-items: center;
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid var(--c-border);
+                border-radius: 6px;
+                padding: 0 12px;
+                height: 32px;
+                transition:
+                    border-color 0.2s,
+                    box-shadow 0.2s;
+                box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .nav-search:focus-within {
+                border-color: var(--c-accent);
+                box-shadow:
+                    0 0 0 1px var(--c-accent),
+                    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .search-icon {
+                font-size: 12px;
+                color: var(--c-text-muted);
+                margin-right: 8px;
+            }
+
+            .search-input {
+                background: transparent;
+                border: none;
+                color: var(--c-text-primary);
+                font-size: 13px;
+                outline: none;
+                width: 160px;
+            }
+
+            .search-input::placeholder {
+                color: var(--c-text-muted);
+            }
+
+            /* Main Content fits strictly below nav */
+            .main-content {
+                flex: 1;
+                max-width: 1400px;
+                width: 100%;
+                margin: 0 auto;
+                padding: 24px 24px;
+                display: flex;
+                flex-direction: column;
+                overflow: visible;
+            }
+
+            /* Common Page Header */
+            .page-header {
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 20px;
+            }
+            .page-title {
+                font-size: 24px;
+                font-weight: 700;
+                letter-spacing: -0.5px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .page-symbol {
+                font-family: 'JetBrains Mono', monospace;
+                color: var(--c-text-muted);
+                font-weight: 400;
+                font-size: 16px;
+            }
+
+            /* Common Section Base */
+            .section-header {
+                flex-shrink: 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 20px;
+                border-bottom: 1px solid var(--c-border);
+            }
+            .section-title {
+                font-size: 14px;
+                font-weight: 600;
+                color: var(--c-text-secondary);
+                letter-spacing: 0.5px;
+            }
+
+            /* Layout Grids */
+            .data-grid-2x2 {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                gap: 16px;
+                flex: 1;
+                min-height: 0;
+            }
+
+            .data-grid-4 {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+
+            /* Metric card internal grid */
+            .metric-card {
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 8px;
+            }
+            .metric-card .label {
+                font-size: 12px;
+                color: var(--c-text-secondary);
+                font-weight: 500;
+            }
+            .metric-card .val {
+                font-size: 24px;
+                font-weight: 700;
+                color: #fff;
+                display: flex;
+                align-items: baseline;
+                gap: 4px;
+            }
+            .metric-card .unit {
+                font-size: 12px;
+                color: var(--c-text-muted);
+            }
+
+            /* Dashboard Grid Base */
+            .dashboard-layout {
+                flex: 1;
+                min-height: 0;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 20px;
+            }
+            .full-width {
+                grid-column: 1 / -1;
+            }
+        </style>
     </head>
+    <script>
+        // Initialize global interactions & Mouse Glow Tracker
+        document.addEventListener('mousemove', e => {
+            const wrappers = document.querySelectorAll('.glow-wrapper');
+            wrappers.forEach(wrapper => {
+                const rect = wrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                (wrapper as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+                (wrapper as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+        console.log('TWStock Terminal initialized');
+    </script>
     <body>
-        <!-- Mobile Menu Button -->
-        <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="開啟選單">
-            <span class="hamburger"></span>
-        </button>
-
-        <!-- Mobile Overlay -->
-        <div id="mobile-overlay" class="mobile-overlay"></div>
-
-        <div class="app-layout">
-            <!-- New Professional Sidebar Navigation -->
-            <ProSidebarNav />
-
-            <!-- Main Workspace -->
-            <div class="main-workspace">
-                <ProTopHeader />
-
-                <!-- Page Content Area -->
-                <main class="main-content">
-                    <slot />
-                </main>
+        <nav class="top-nav glass-panel">
+            <div class="nav-container">
+                <a href="/" class="nav-brand">
+                    TWStock <span
+                        style="font-size: 10px; color: var(--c-accent); font-weight: 800; letter-spacing: 1px;"
+                        >PRO</span
+                    >
+                </a>
+                <div class="nav-links">
+                    {
+                        navItems.map(item => (
+                            <a
+                                href={item.path}
+                                class={`nav-item ${isCurrentPath(item.path) ? 'active' : ''}`}
+                            >
+                                {item.label}
+                            </a>
+                        ))
+                    }
+                </div>
+                <div style="flex: 1;"></div>
+                <div class="nav-controls">
+                    <select class="nav-select">
+                        <option value="TWSE">上市</option>
+                        <option value="OTC">上櫃</option>
+                        <option value="ETF">ETF</option>
+                    </select>
+                    <div class="nav-search">
+                        <span class="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            class="search-input mono"
+                            placeholder="輸入代號 (例: 2330)..."
+                        />
+                    </div>
+                </div>
             </div>
-        </div>
+        </nav>
+
+        <main class="main-content">
+            <slot />
+        </main>
     </body>
 </html>
-
-<style is:global>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
-
-    :root {
-        /* Cyber-Premium Vibrant Palette */
-        --h-main: 230;
-        --s-main: 30%;
-        --l-main: 8%;
-
-        --c-bg-app: #030305;
-        --c-bg-glass: hsla(var(--h-main), var(--s-main), 12%, 0.75);
-        --c-bg-glass-heavy: hsla(var(--h-main), var(--s-main), 15%, 0.9);
-        --c-bg-glass-hover: hsla(var(--h-main), var(--s-main), 20%, 0.6);
-
-        --c-border: hsla(0, 0%, 100%, 0.1);
-        --c-border-active: hsla(var(--h-main), 100%, 70%, 0.5);
-
-        --c-text-primary: #ffffff;
-        --c-text-secondary: #cbd5e1;
-        --c-text-muted: #64748b;
-
-        --c-accent: #3b82f6;
-        --c-accent-secondary: #a855f7;
-        --c-accent-rgb: 59, 130, 246;
-        --c-success: #10b981;
-        --c-success-rgb: 16, 185, 129;
-        --c-danger: #f43f5e;
-        --c-danger-rgb: 244, 63, 94;
-
-        --glass-blur: blur(20px);
-        --glow-shadow: 0 0 30px rgba(var(--c-accent-rgb), 0.25);
-        --panel-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
-
-        --w-sidebar: 70px;
-        --nav-h: 64px;
-        --radius: 14px;
-        --radius-sm: 8px;
-
-        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-        --transition-smooth: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        --transition-premium: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-
-        /* Theme-aware Background Effects */
-        --c-bg-glow-1: hsla(230, 80%, 15%, 0.12);
-        --c-bg-glow-2: hsla(280, 80%, 15%, 0.1);
-        --c-bg-vignette: rgba(3, 3, 5, 0.85);
-    }
-
-    [data-theme='light'] {
-        --c-bg-app: #f8fafc;
-        --c-bg-glass: rgba(255, 255, 255, 0.75);
-        --c-bg-glass-heavy: rgba(255, 255, 255, 0.95);
-        --c-bg-glass-hover: rgba(255, 255, 255, 0.85);
-
-        --c-border: rgba(148, 163, 184, 0.15);
-        --c-text-primary: #0f172a;
-        --c-text-secondary: #475569;
-        --c-text-muted: #94a3b8;
-
-        --c-accent: #2563eb;
-        --c-accent-rgb: 37, 99, 235;
-
-        --panel-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
-
-        --c-bg-glow-1: hsla(210, 100%, 80%, 0.15);
-        --c-bg-glow-2: hsla(250, 100%, 80%, 0.1);
-        --c-bg-vignette: rgba(248, 250, 252, 0.1);
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Inter', system-ui, sans-serif;
-        background-color: var(--c-bg-app);
-        /* Refined Minimalist Mesh Background */
-        background-image:
-            radial-gradient(at 0% 0%, var(--c-bg-glow-1) 0px, transparent 50%),
-            radial-gradient(at 100% 0%, var(--c-bg-glow-2) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, var(--c-bg-glow-1) 0px, transparent 50%),
-            radial-gradient(at 0% 100%, var(--c-bg-glow-2) 0px, transparent 50%);
-        background-attachment: fixed;
-        color: var(--c-text-primary);
-        font-size: 13px;
-        line-height: 1.5;
-        min-height: 100vh;
-        min-height: 100dvh;
-        overflow-y: auto;
-        -webkit-font-smoothing: antialiased;
-        position: relative;
-    }
-
-    body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        /* Vignette that preserves corners */
-        background: radial-gradient(circle at center, transparent 30%, var(--c-bg-vignette) 100%);
-        pointer-events: none;
-        z-index: -1;
-    }
-
-    a {
-        text-decoration: none;
-        color: inherit;
-        transition: 0.2s;
-    }
-    button {
-        border: none;
-        background: none;
-        cursor: pointer;
-        font-family: inherit;
-    }
-
-    /* Layout Frame */
-    .app-layout {
-        display: flex;
-        min-height: 100vh;
-        min-height: 100dvh;
-        width: 100%;
-        animation: fadeIn 0.8s var(--ease-out);
-    }
-
-    /* Main Workspace Container */
-    .main-workspace {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        background: transparent;
-        position: relative;
-        min-width: 0;
-        margin-left: 70px; /* Sidebar default collapsed width */
-        transition: margin-left 0.3s var(--ease-out);
-    }
-
-    /* Main Content Area - scrollable page content */
-    .main-content {
-        flex: 1;
-        background: transparent;
-        position: relative;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        padding: 24px;
-    }
-
-    .main-content::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .main-content::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .main-content::-webkit-scrollbar-thumb {
-        background: var(--c-border);
-        border-radius: 3px;
-    }
-
-    .main-content::-webkit-scrollbar-thumb:hover {
-        background: var(--c-text-muted);
-    }
-
-    /* Utility */
-    .mono {
-        font-family: 'JetBrains Mono', monospace;
-        font-variant-numeric: tabular-nums;
-    }
-    .text-pos {
-        color: var(--c-success);
-    }
-    .text-neg {
-        color: var(--c-danger);
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .main-workspace {
-            margin-left: 0 !important;
-        }
-
-        :global(.pro-sidebar-nav) {
-            position: fixed;
-            left: -100%;
-            top: 0;
-            height: 100vh;
-            height: 100dvh;
-            width: 85vw;
-            max-width: 400px;
-            z-index: 1000;
-            transition: left 0.3s var(--ease-out);
-        }
-
-        :global(.pro-sidebar-nav.mobile-open) {
-            left: 0;
-        }
-
-        .mobile-menu-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 999;
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius);
-            background: var(--c-bg-glass);
-            border: 1px solid var(--c-border);
-            color: var(--c-text-primary);
-        }
-
-        .mobile-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 999;
-            transition: opacity 0.3s;
-        }
-
-        .mobile-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-    }
-</style>
-
-<script>
-    // PWA Service Worker Registration & Update Logic
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker
-                .register('/sw.js')
-                .then(reg => {
-                    console.log('SW registered');
-                    reg.onupdatefound = () => {
-                        const newWorker = reg.installing;
-                        if (newWorker) {
-                            newWorker.onstatechange = () => {
-                                if (
-                                    newWorker.state === 'installed' &&
-                                    navigator.serviceWorker.controller
-                                ) {
-                                    window.location.reload();
-                                }
-                            };
-                        }
-                    };
-                })
-                .catch(err => console.error('SW registration failed:', err));
-        });
-
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (!refreshing) {
-                window.location.reload();
-                refreshing = true;
-            }
-        });
-    }
-
-    // Mobile Menu Logic
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const overlay = document.getElementById('mobile-overlay');
-    const sidebar = document.querySelector('.pro-sidebar-nav');
-
-    mobileBtn?.addEventListener('click', () => {
-        sidebar?.classList.add('mobile-open');
-        overlay?.classList.add('active');
-    });
-
-    overlay?.addEventListener('click', () => {
-        sidebar?.classList.remove('mobile-open');
-        overlay?.classList.remove('active');
-    });
-</script>

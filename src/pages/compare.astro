@@ -1,523 +1,604 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { stockList } from "../data/stocks";
+import Layout from '../layouts/Layout.astro';
+import { getTopVolume } from '../utils/marketService';
+import PageHero from '../components/molecules/PageHero.astro';
+import SystemStatus from '../components/atoms/SystemStatus.astro';
+
+// Load real stocks for selection
+const allStocks = getTopVolume(1000);
+
+// Format for client-side search
+const stockLookup = allStocks.reduce((acc: any, s: any) => {
+    acc[s.symbol] = {
+        symbol: s.symbol,
+        name: s.name,
+        price: s.price,
+        change: s.change_pct,
+        pe: s.pe,
+        pb: s.pb,
+        yield: s.yield,
+        roe: s.roe,
+        volume: s.volume,
+    };
+    return acc;
+}, {});
 ---
 
-<Layout title="股票比較">
-    <h1>⚖️ 股票比較</h1>
-    <p class="page-desc">選擇多檔股票進行並排比較。</p>
+<Layout title="Comparison | TW Stock App">
+    <div class="page-container">
+        <!-- Hero Header -->
+        <PageHero
+            icon="⚖️"
+            title="ASSET_COMPARISON"
+            subtitle="Side-by-side technical and fundamental metrics"
+            glowClass="neutral-glow"
+        >
+            <SystemStatus slot="action" text="MAX_4_ASSETS" />
+        </PageHero>
 
-    <!-- 選股區 -->
-    <div class="selector-section card">
-        <h2>📌 選擇股票（最多 4 檔）</h2>
-        <div class="stock-selector">
-            <input
-                type="text"
-                id="stock-search"
-                placeholder="🔍 搜尋並選擇股票..."
-                class="search-input"
-            />
-            <div id="search-dropdown" class="search-dropdown hidden">
-                {
-                    stockList.map((stock) => (
-                        <button
-                            class="dropdown-item"
-                            data-symbol={stock.symbol}
-                            data-name={stock.name}
-                        >
-                            <span class="item-symbol">{stock.symbol}</span>
-                            <span class="item-name">{stock.name}</span>
-                        </button>
-                    ))
-                }
+        <!-- Selector Section -->
+        <section class="selector-panel glass-card cyber-reveal" style="animation-delay: 0.2s;">
+            <div class="cyber-search-box">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    id="stock-search"
+                    class="cyber-input mono"
+                    placeholder="ENTER SYMBOL OR NAME TO ADD TO POOL..."
+                    autocomplete="off"
+                />
             </div>
-        </div>
-        <div id="selected-stocks" class="selected-stocks"></div>
-    </div>
 
-    <!-- 比較表格 -->
-    <div id="comparison-section" class="comparison-section hidden">
-        <h2>📊 比較結果</h2>
-        <div class="comparison-table card">
-            <table id="comparison-table">
-                <thead>
-                    <tr>
-                        <th class="metric-col">指標</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr data-metric="price">
-                        <td class="metric-name">股價</td>
-                    </tr>
-                    <tr data-metric="change">
-                        <td class="metric-name">漲跌幅</td>
-                    </tr>
-                    <tr data-metric="pe">
-                        <td class="metric-name">本益比 (P/E)</td>
-                    </tr>
-                    <tr data-metric="pb">
-                        <td class="metric-name">股價淨值比 (P/B)</td>
-                    </tr>
-                    <tr data-metric="yield">
-                        <td class="metric-name">殖利率 (%)</td>
-                    </tr>
-                    <tr data-metric="roe">
-                        <td class="metric-name">ROE (%)</td>
-                    </tr>
-                    <tr data-metric="eps">
-                        <td class="metric-name">EPS</td>
-                    </tr>
-                    <tr data-metric="volume">
-                        <td class="metric-name">成交量 (張)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <!-- Floating Cyber Dropdown -->
+            <div
+                id="search-dropdown"
+                class="cyber-dropdown glass-card glow-wrapper"
+                style="display:none;"
+            >
+                <div class="glow-bg accent-glow"></div>
+                <div class="dropdown-content">
+                    {
+                        allStocks.map(stock => (
+                            <button
+                                class="dd-item mono"
+                                data-symbol={stock.symbol}
+                                data-name={stock.name}
+                            >
+                                <span class="dd-sym text-accent">{stock.symbol}</span>
+                                <span class="dd-name text-muted">{stock.name}</span>
+                            </button>
+                        ))
+                    }
+                </div>
+            </div>
+
+            <!-- Active Pool -->
+            <div id="selected-stocks" class="active-pool"></div>
+        </section>
+
+        <!-- Comparison Table Area -->
+        <main
+            id="comparison-section"
+            class="comparison-workspace glass-card glow-wrapper cyber-reveal"
+            style="display:none; animation-delay: 0.3s;"
+        >
+            <div class="glow-bg neutral-glow"></div>
+
+            <header class="workspace-header">
+                <h2 class="mono">COMPARISON_MATRIX //</h2>
+            </header>
+
+            <div class="table-scroll">
+                <table id="comparison-table" class="premium-table">
+                    <thead>
+                        <tr>
+                            <th class="metric-col sticky-col mono">METRIC</th>
+                            <!-- JS injected headers -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-metric="price"
+                            ><td class="metric-name sticky-col mono text-muted">MARKET_PRICE</td
+                            ></tr
+                        >
+                        <tr data-metric="change"
+                            ><td class="metric-name sticky-col mono text-muted">CHANGE_%</td></tr
+                        >
+                        <tr data-metric="pe"
+                            ><td class="metric-name sticky-col mono text-muted">P/E_RATIO</td></tr
+                        >
+                        <tr data-metric="pb"
+                            ><td class="metric-name sticky-col mono text-muted">P/B_RATIO</td></tr
+                        >
+                        <tr data-metric="yield"
+                            ><td class="metric-name sticky-col mono text-muted">DIV_YIELD_%</td></tr
+                        >
+                        <tr data-metric="roe"
+                            ><td class="metric-name sticky-col mono text-muted">ROE_%</td></tr
+                        >
+                        <tr data-metric="volume"
+                            ><td class="metric-name sticky-col mono text-muted">VOLUME</td></tr
+                        >
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="matrix-legend">
+                <span class="legend-item"><span class="box best-box"></span> OVERPERFORMING</span>
+                <span class="legend-item"><span class="box worst-box"></span> UNDERPERFORMING</span>
+            </div>
+        </main>
     </div>
 </Layout>
 
 <style>
-    .page-desc {
-        color: var(--text-secondary);
-        margin-bottom: 24px;
+    .page-container {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding-bottom: 40px;
     }
 
-    .selector-section {
-        margin-bottom: 32px;
-    }
-
-    .stock-selector {
+    /* Glass Effect Base */
+    .glass-card {
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
+        border-radius: 16px;
         position: relative;
-        margin-bottom: 16px;
     }
 
-    .search-input {
-        width: 100%;
-        max-width: 400px;
-        padding: 14px 20px;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        color: var(--text-primary);
-        font-size: 1rem;
+    .glow-wrapper {
+        position: relative;
     }
-
-    .search-dropdown {
+    .glow-bg {
         position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        max-width: 400px;
-        max-height: 300px;
-        overflow-y: auto;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        margin-top: 4px;
-        z-index: 100;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .glow-wrapper:hover .glow-bg {
+        opacity: 1;
+    }
+    .neutral-glow {
+        --glow-color: rgba(200, 200, 210, 0.05);
+    }
+    .accent-glow {
+        --glow-color: rgba(59, 130, 246, 0.1);
     }
 
-    .dropdown-item {
+    /* Hero */
+    .page-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 32px;
+        z-index: 10;
+        overflow: hidden;
+    }
+    .hero-left {
         display: flex;
         align-items: center;
-        gap: 12px;
-        width: 100%;
-        padding: 12px 16px;
-        background: none;
+        gap: 20px;
+        z-index: 1;
+    }
+    .icon-box {
+        width: 56px;
+        height: 56px;
+        background: rgba(var(--c-accent-rgb), 0.1);
+        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .hero-left h1 {
+        font-size: 16px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .hero-left p {
+        font-size: 11px;
+        margin: 4px 0 0;
+    }
+    .sys-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        z-index: 1;
+        color: var(--c-text-muted);
+    }
+    .pulse-dot {
+        width: 6px;
+        height: 6px;
+        background: currentColor;
+        border-radius: 50%;
+        opacity: 0.5;
+    }
+
+    /* Selector */
+    .selector-panel {
+        padding: 24px;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .cyber-search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 4px;
+        transition: 0.3s;
+    }
+    .cyber-search-box:focus-within {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.2);
+    }
+    .search-icon {
+        padding: 0 16px;
+        opacity: 0.5;
+    }
+    .cyber-input {
+        flex: 1;
+        background: transparent;
         border: none;
-        color: var(--text-primary);
-        cursor: pointer;
+        color: #fff;
+        font-size: 14px;
+        padding: 12px 0;
+        outline: none;
+    }
+
+    .cyber-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 24px;
+        right: 24px;
+        z-index: 100;
+        overflow: hidden;
+    }
+    .dropdown-content {
+        position: relative;
+        z-index: 1;
+        max-height: 300px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .dropdown-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    .dropdown-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+    }
+
+    .dd-item {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 16px 20px;
         text-align: left;
+        cursor: pointer;
+        display: flex;
+        gap: 16px;
+        align-items: baseline;
+        transition: 0.2s;
     }
-
-    .dropdown-item:hover {
-        background: var(--bg-card);
+    .dd-item:hover {
+        background: rgba(255, 255, 255, 0.05);
     }
-
-    .dropdown-item.hidden {
-        display: none;
-    }
-
-    .item-symbol {
-        color: var(--accent);
-        font-weight: 600;
+    .dd-sym {
+        font-weight: 800;
+        font-size: 14px;
         min-width: 60px;
     }
 
-    .selected-stocks {
+    /* Active Pool Tags */
+    .active-pool {
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
     }
-
-    .selected-tag {
-        display: flex;
+    .pool-tag {
+        display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 10px 16px;
-        background: rgba(0, 212, 170, 0.1);
-        border: 1px solid var(--accent);
+        gap: 12px;
+        background: rgba(var(--c-accent-rgb), 0.1);
+        border: 1px solid var(--c-accent);
+        padding: 8px 16px;
         border-radius: 20px;
-        color: var(--accent);
+        color: #fff;
+        font-size: 12px;
+        box-shadow: 0 0 10px rgba(var(--c-accent-rgb), 0.1);
     }
-
-    .remove-btn {
+    .pool-tag .rm-btn {
         background: none;
         border: none;
-        color: var(--accent);
-        cursor: pointer;
-        font-size: 1.2rem;
-        padding: 0;
+        color: var(--c-accent);
+        font-size: 16px;
         line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        transition: 0.2s;
+    }
+    .pool-tag .rm-btn:hover {
+        color: #fff;
+        text-shadow: 0 0 8px #fff;
     }
 
-    .comparison-section.hidden {
-        display: none;
+    /* Main Table Workspace */
+    .comparison-workspace {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .workspace-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 1;
+    }
+    .workspace-header h2 {
+        font-size: 12px;
+        margin: 0;
+        color: var(--c-text-muted);
+        letter-spacing: 2px;
     }
 
-    .comparison-table {
+    .table-scroll {
+        flex: 1;
         overflow-x: auto;
+        position: relative;
+        z-index: 1;
     }
-
-    table {
+    .premium-table {
         width: 100%;
         border-collapse: collapse;
-    }
-
-    th,
-    td {
-        padding: 14px 20px;
         text-align: center;
-        border-bottom: 1px solid var(--border);
     }
-
-    th {
-        background: rgba(0, 0, 0, 0.2);
-        font-weight: 600;
+    .premium-table th {
+        background: rgba(10, 15, 25, 0.95);
+        backdrop-filter: blur(10px);
+        font-size: 12px;
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-
-    .metric-col,
-    .metric-name {
-        text-align: left;
-        font-weight: 600;
-        color: var(--text-secondary);
-        min-width: 150px;
-    }
-
-    .stock-header {
-        min-width: 120px;
-    }
-
-    .stock-symbol {
+    .col-head-sym {
         display: block;
-        color: var(--accent);
-        font-weight: 700;
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--c-accent);
+        margin-bottom: 4px;
+    }
+    .col-head-name {
+        display: block;
+        font-size: 11px;
+        color: var(--c-text-muted);
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
     }
 
-    .stock-name {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
+    .premium-table td {
+        padding: 16px 20px;
+        font-size: 14px;
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+        transition: 0.3s;
     }
 
-    .best {
-        background: rgba(0, 212, 170, 0.1);
-        color: var(--positive);
-        font-weight: 700;
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        text-align: left !important;
+        background: var(--c-bg-glass);
+        z-index: 11;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .premium-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
     }
 
-    .worst {
-        background: rgba(255, 71, 87, 0.1);
-        color: var(--negative);
+    /* Conditionals */
+    :global(.best-val) {
+        color: var(--c-success) !important;
+        font-weight: 800;
+        text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+    :global(.worst-val) {
+        color: var(--c-danger) !important;
+        font-weight: 800;
     }
 
-    .hidden {
-        display: none !important;
+    .matrix-legend {
+        padding: 16px 24px;
+        display: flex;
+        gap: 20px;
+        font-size: 10px;
+        color: var(--c-text-muted);
+        border-top: 1px dashed rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 1;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .box {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+    }
+    .best-box {
+        background: var(--c-success);
+        box-shadow: 0 0 8px var(--c-success);
+    }
+    .worst-box {
+        background: var(--c-danger);
     }
 </style>
 
-<script>
-    // 股票資料
-    const stockData: Record<string, any> = {};
-    document.querySelectorAll(".dropdown-item").forEach((item) => {
-        const symbol = item.getAttribute("data-symbol")!;
-        stockData[symbol] = {
-            symbol,
-            name: item.getAttribute("data-name"),
-        };
-    });
-
-    // 補充完整資料（從 stockList）
-    const fullStockData: Record<string, any> = {
-        "2330": {
-            symbol: "2330",
-            name: "台積電",
-            price: 580,
-            change: 0.87,
-            pe: 18.5,
-            pb: 5.2,
-            yield: 2.1,
-            roe: 28.5,
-            eps: 31.36,
-            volume: 25000,
-        },
-        "2317": {
-            symbol: "2317",
-            name: "鴻海",
-            price: 105,
-            change: -1.41,
-            pe: 10.2,
-            pb: 1.3,
-            yield: 5.7,
-            roe: 12.8,
-            eps: 10.29,
-            volume: 45000,
-        },
-        "2454": {
-            symbol: "2454",
-            name: "聯發科",
-            price: 980,
-            change: 1.55,
-            pe: 14.8,
-            pb: 3.8,
-            yield: 3.2,
-            roe: 25.6,
-            eps: 66.22,
-            volume: 8000,
-        },
-        "2881": {
-            symbol: "2881",
-            name: "富邦金",
-            price: 72,
-            change: 0.7,
-            pe: 9.5,
-            pb: 1.4,
-            yield: 5.5,
-            roe: 14.7,
-            eps: 7.58,
-            volume: 32000,
-        },
-        "2882": {
-            symbol: "2882",
-            name: "國泰金",
-            price: 48,
-            change: -0.62,
-            pe: 11.2,
-            pb: 1.1,
-            yield: 4.8,
-            roe: 9.8,
-            eps: 4.29,
-            volume: 28000,
-        },
-        "2412": {
-            symbol: "2412",
-            name: "中華電",
-            price: 122,
-            change: 0.41,
-            pe: 23.8,
-            pb: 2.1,
-            yield: 4.1,
-            roe: 8.8,
-            eps: 5.13,
-            volume: 5000,
-        },
-        "2308": {
-            symbol: "2308",
-            name: "台達電",
-            price: 320,
-            change: 2.56,
-            pe: 22.5,
-            pb: 4.5,
-            yield: 2.8,
-            roe: 20.1,
-            eps: 14.22,
-            volume: 12000,
-        },
-        "3008": {
-            symbol: "3008",
-            name: "大立光",
-            price: 2100,
-            change: -1.41,
-            pe: 15.2,
-            pb: 3.2,
-            yield: 3.5,
-            roe: 21.1,
-            eps: 138.16,
-            volume: 800,
-        },
-    };
-
-    let selectedStocks: string[] = [];
+<script define:vars={{ fullStockData: stockLookup }}>
+    // @ts-nocheck
+    // Glow Tracker
+    let selectedStocks = [];
     const maxStocks = 4;
 
-    const searchInput = document.getElementById(
-        "stock-search",
-    ) as HTMLInputElement;
-    const dropdown = document.getElementById("search-dropdown")!;
-    const selectedContainer = document.getElementById("selected-stocks")!;
-    const comparisonSection = document.getElementById("comparison-section")!;
+    // --- DOM Elements ---
+    const input = document.getElementById('stock-search');
+    const dropdown = document.getElementById('search-dropdown');
+    const container = document.getElementById('selected-stocks');
+    const matrix = document.getElementById('comparison-section');
 
-    // 搜尋功能
-    searchInput.addEventListener("focus", () => {
-        dropdown.classList.remove("hidden");
+    if (!input || !dropdown || !container || !matrix) return;
+
+    // Search Logic
+    input.addEventListener('focus', () => (dropdown.style.display = 'block'));
+    input.addEventListener('input', e => {
+        const query = e.target.value.toLowerCase();
+        dropdown.querySelectorAll('.dd-item').forEach(item => {
+            const sym = item.getAttribute('data-symbol')?.toLowerCase() || '';
+            const nm = item.getAttribute('data-name')?.toLowerCase() || '';
+            if (sym.includes(query) || nm.includes(query)) item.style.display = 'flex';
+            else item.style.display = 'none';
+        });
     });
 
-    searchInput.addEventListener("input", (e) => {
-        const query = (e.target as HTMLInputElement).value.toLowerCase();
-        dropdown.querySelectorAll(".dropdown-item").forEach((item) => {
-            const symbol =
-                item.getAttribute("data-symbol")?.toLowerCase() || "";
-            const name = item.getAttribute("data-name")?.toLowerCase() || "";
-            if (symbol.includes(query) || name.includes(query)) {
-                item.classList.remove("hidden");
-            } else {
-                item.classList.add("hidden");
+    document.addEventListener('click', e => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    // Selection
+    dropdown.querySelectorAll('.dd-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const sym = item.getAttribute('data-symbol');
+            if (sym && !selectedStocks.includes(sym) && selectedStocks.length < maxStocks) {
+                selectedStocks.push(sym);
+                updateView();
+                dropdown.style.display = 'none';
+                input.value = '';
             }
         });
     });
 
-    // 點擊外部關閉
-    document.addEventListener("click", (e) => {
-        if (
-            !searchInput.contains(e.target as Node) &&
-            !dropdown.contains(e.target as Node)
-        ) {
-            dropdown.classList.add("hidden");
-        }
-    });
-
-    // 選擇股票
-    dropdown.querySelectorAll(".dropdown-item").forEach((item) => {
-        item.addEventListener("click", () => {
-            const symbol = item.getAttribute("data-symbol")!;
-            if (
-                selectedStocks.includes(symbol) ||
-                selectedStocks.length >= maxStocks
-            )
-                return;
-
-            selectedStocks.push(symbol);
-            updateSelection();
-            dropdown.classList.add("hidden");
-            searchInput.value = "";
-        });
-    });
-
-    function updateSelection() {
-        // 更新選中標籤
-        selectedContainer.innerHTML = selectedStocks
-            .map((symbol) => {
-                const stock = fullStockData[symbol] || { symbol, name: symbol };
+    function updateView() {
+        container.innerHTML = selectedStocks
+            .map(sym => {
+                const stock = fullStockData[sym] || { symbol: sym, name: 'Unknown' };
                 return `
-                <div class="selected-tag">
+                <div class="pool-tag mono">
                     <span>${stock.symbol} ${stock.name}</span>
-                    <button class="remove-btn" data-symbol="${symbol}">×</button>
+                    <button class="rm-btn" data-symbol="${sym}">×</button>
                 </div>
             `;
             })
-            .join("");
+            .join('');
 
-        // 綁定移除事件
-        selectedContainer.querySelectorAll(".remove-btn").forEach((btn) => {
-            btn.addEventListener("click", () => {
-                const symbol = btn.getAttribute("data-symbol")!;
-                selectedStocks = selectedStocks.filter((s) => s !== symbol);
-                updateSelection();
+        container.querySelectorAll('.rm-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const sym = btn.getAttribute('data-symbol');
+                if (sym) {
+                    selectedStocks = selectedStocks.filter(s => s !== sym);
+                    updateView();
+                }
             });
         });
 
-        // 更新比較表格
-        updateComparison();
+        updateMatrix();
     }
 
-    function updateComparison() {
+    function updateMatrix() {
         if (selectedStocks.length < 2) {
-            comparisonSection.classList.add("hidden");
+            matrix.style.display = 'none';
             return;
         }
+        matrix.style.display = 'flex';
 
-        comparisonSection.classList.remove("hidden");
+        const table = document.getElementById('comparison-table');
+        if (!table) return;
 
-        const table = document.getElementById("comparison-table")!;
-        const headerRow = table.querySelector("thead tr")!;
-        const bodyRows = table.querySelectorAll("tbody tr");
+        const theadTr = table.querySelector('thead tr');
+        const tbodyTrs = table.querySelectorAll('tbody tr');
 
-        // 清除舊的股票列
-        while (headerRow.children.length > 1) {
-            headerRow.removeChild(headerRow.lastChild!);
-        }
-        bodyRows.forEach((row) => {
-            while (row.children.length > 1) {
-                row.removeChild(row.lastChild!);
-            }
+        if (!theadTr || !tbodyTrs.length) return;
+
+        // Clear dynamic columns
+        while (theadTr.children.length > 1) theadTr.removeChild(theadTr.lastChild);
+        tbodyTrs.forEach(tr => {
+            while (tr.children.length > 1) tr.removeChild(tr.lastChild);
         });
 
-        // 添加股票列
-        selectedStocks.forEach((symbol) => {
-            const stock = fullStockData[symbol];
+        // Add Data
+        selectedStocks.forEach(sym => {
+            const stock = fullStockData[sym];
             if (!stock) return;
 
-            // 表頭
-            const th = document.createElement("th");
-            th.className = "stock-header";
-            th.innerHTML = `<span class="stock-symbol">${stock.symbol}</span><span class="stock-name">${stock.name}</span>`;
-            headerRow.appendChild(th);
+            const th = document.createElement('th');
+            th.innerHTML = `<span class="col-head-sym mono">${stock.symbol}</span><span class="col-head-name">${stock.name}</span>`;
+            theadTr.appendChild(th);
 
-            // 資料行
-            const metrics: Record<string, any> = {
-                price: stock.price,
-                change: `${stock.change >= 0 ? "+" : ""}${stock.change}%`,
-                pe: stock.pe,
-                pb: stock.pb,
-                yield: stock.yield,
-                roe: stock.roe,
-                eps: stock.eps,
+            const mData = {
+                price: stock.price.toFixed(2),
+                change: `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%`,
+                pe: stock.pe.toFixed(1),
+                pb: stock.pb.toFixed(1),
+                yield: stock.yield.toFixed(1),
+                roe: stock.roe.toFixed(1),
                 volume: stock.volume.toLocaleString(),
             };
 
-            bodyRows.forEach((row) => {
-                const metric = row.getAttribute("data-metric")!;
-                const td = document.createElement("td");
-                td.textContent = metrics[metric];
-                row.appendChild(td);
+            tbodyTrs.forEach(tr => {
+                const mKey = tr.getAttribute('data-metric');
+                if (mKey) {
+                    const td = document.createElement('td');
+                    td.className = 'mono';
+                    td.textContent = mData[mKey];
+                    tr.appendChild(td);
+                }
             });
         });
 
-        // 標記最佳/最差值
-        highlightBestWorst();
-    }
+        // Compute styling
+        const highIsPos = ['yield', 'roe', 'change'];
+        const lowIsPos = ['pe', 'pb'];
 
-    function highlightBestWorst() {
-        const highIsBetter = ["yield", "roe", "eps"];
-        const lowIsBetter = ["pe", "pb"];
+        tbodyTrs.forEach(tr => {
+            const mKey = tr.getAttribute('data-metric');
+            const tds = Array.from(tr.querySelectorAll('td:not(.metric-name)'));
+            if (tds.length < 2) return;
 
-        document
-            .querySelectorAll("#comparison-table tbody tr")
-            .forEach((row) => {
-                const metric = row.getAttribute("data-metric")!;
-                const cells = Array.from(
-                    row.querySelectorAll("td:not(.metric-name)"),
-                );
+            const vals = tds.map(td => parseFloat(td.textContent.replace(/[,%+]/g, '')) || 0);
+            const max = Math.max(...vals);
+            const min = Math.min(...vals.filter(v => v > 0));
 
-                if (cells.length < 2) return;
-
-                const values = cells.map((cell) =>
-                    parseFloat(cell.textContent?.replace(/[,%+]/g, "") || "0"),
-                );
-                const max = Math.max(...values);
-                const min = Math.min(...values.filter((v) => v > 0));
-
-                cells.forEach((cell, i) => {
-                    cell.classList.remove("best", "worst");
-                    if (highIsBetter.includes(metric)) {
-                        if (values[i] === max) cell.classList.add("best");
-                        if (values[i] === min && min > 0)
-                            cell.classList.add("worst");
-                    } else if (lowIsBetter.includes(metric)) {
-                        if (values[i] === min && min > 0)
-                            cell.classList.add("best");
-                        if (values[i] === max) cell.classList.add("worst");
-                    }
-                });
+            tds.forEach((td, i) => {
+                td.classList.remove('best-val', 'worst-val');
+                if (highIsPos.includes(mKey)) {
+                    if (vals[i] === max) td.classList.add('best-val');
+                    if (vals[i] === min && min > 0) td.classList.add('worst-val');
+                } else if (lowIsPos.includes(mKey)) {
+                    if (vals[i] === min && min > 0) td.classList.add('best-val');
+                    if (vals[i] === max) td.classList.add('worst-val');
+                }
             });
+        });
     }
 </script>

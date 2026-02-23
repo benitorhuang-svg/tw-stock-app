@@ -7,7 +7,7 @@
 const TWSE_BASE = 'https://www.twse.com.tw';
 
 // 設定
-const REQUEST_TIMEOUT = 10000;  // 10 秒超時
+const REQUEST_TIMEOUT = 5000;  // 5 秒超時
 const MAX_RETRIES = 3;
 const BASE_DELAY = 1000;  // 首次重試等待 1 秒
 

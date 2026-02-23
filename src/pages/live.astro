@@ -1,403 +1,517 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/molecules/PageHero.astro';
 ---
 
-<Layout title="TWSE 即時資料">
-    <h1>📡 TWSE 即時資料</h1>
-    <p class="page-desc">從證交所 API 取得最新股票資料</p>
-
-    <!-- 結果顯示區 -->
-
-    <!-- 結果顯示區 -->
-    <div id="result" class="result-container hidden">
-        <div class="stock-header">
-            <h2 id="stock-name">--</h2>
-            <div class="price-group">
-                <span id="stock-price" class="price">--</span>
-                <span id="stock-change" class="change">--</span>
+<Layout title="Live Quote | TW Stock App">
+    <div class="live-container">
+        <!-- Hero Header -->
+        <!-- Hero Header -->
+        <PageHero
+            icon="📡"
+            title="LIVE_FEED_TERMINAL"
+            subtitle="TWSE direct quote integration module"
+            glowClass="accent-glow"
+        >
+            <div class="sys-status" slot="action">
+                <span id="conn-dot" class="pulse-dot"></span>
+                <span id="conn-lbl" class="mono text-success">AWAITING_QUERY</span>
             </div>
-            <div id="update-time" class="update-time">--</div>
+        </PageHero>
+
+        <!-- Search Bar -->
+        <div class="search-panel glass-card cyber-reveal" style="animation-delay: 0.2s;">
+            <div class="cyber-search-box">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    id="live-symbol-search"
+                    class="cyber-input mono"
+                    placeholder="ENTER SYMBOL FOR LIVE QUOTE (ex: 2330)..."
+                    autocomplete="off"
+                />
+                <button id="live-search-btn" class="cyber-btn mono">EXECUTE_QUERY</button>
+            </div>
         </div>
 
-        <div id="info-grid" class="info-grid">
-            <!-- Dynamic Content -->
-        </div>
-    </div>
+        <!-- Result Board -->
+        <div
+            id="result-board"
+            class="result-board glass-card glow-wrapper cyber-reveal"
+            style="display:none; animation-delay: 0.3s;"
+        >
+            <div class="glow-bg neutral-glow" id="result-glow"></div>
 
-    <!-- 錯誤訊息 -->
-    <div id="error" class="error hidden"></div>
+            <div class="rb-header">
+                <div>
+                    <h2 class="mono" id="stock-name">--</h2>
+                    <span class="text-muted mono timestamp" id="update-time">--</span>
+                </div>
+                <div class="price-cluster">
+                    <div class="price-main mono" id="stock-price">--</div>
+                    <div class="price-change mono" id="stock-change">--</div>
+                </div>
+            </div>
 
-    <!-- 資料統計 -->
-    <div id="stats" class="stats hidden">
-        <div class="stat-item">
-            <span class="stat-label">資料日期</span>
-            <span id="stat-date" class="stat-value">-</span>
+            <div class="rb-grid">
+                <div class="rb-metric">
+                    <span class="label mono text-muted">OPEN</span>
+                    <span class="value mono" id="m-open">--</span>
+                </div>
+                <div class="rb-metric">
+                    <span class="label mono text-muted">HIGH</span>
+                    <span class="value mono" id="m-high">--</span>
+                </div>
+                <div class="rb-metric">
+                    <span class="label mono text-muted">LOW</span>
+                    <span class="value mono" id="m-low">--</span>
+                </div>
+                <div class="rb-metric">
+                    <span class="label mono text-muted">PREV_CLOSE</span>
+                    <span class="value mono" id="m-prev">--</span>
+                </div>
+                <div class="rb-metric">
+                    <span class="label mono text-muted">VOLUME</span>
+                    <span class="value mono" id="m-vol">--</span>
+                </div>
+            </div>
         </div>
-        <div class="stat-item">
-            <span class="stat-label">股票數量</span>
-            <span id="stat-count" class="stat-value">-</span>
-        </div>
-    </div>
 
-    <!-- 資料表格 -->
-    <div id="table-container" class="table-container hidden">
-        <div class="table-controls">
-            <input
-                type="text"
-                id="table-search"
-                placeholder="🔍 搜尋代號或名稱..."
-                class="search-input"
-            />
-            <select id="sort-select" class="sort-select">
-                <option value="symbol">依代號排序</option>
-                <option value="yield-desc">殖利率 高→低</option>
-                <option value="pe-asc">本益比 低→高</option>
-                <option value="pb-asc">淨值比 低→高</option>
-            </select>
+        <!-- Error Board -->
+        <div id="error-board" class="error-board glass-card cyber-reveal" style="display:none;">
+            <span class="icon">⚠</span>
+            <span class="msg mono" id="error-msg">CONNECTION_FAILED</span>
         </div>
-        <div class="table-scroll">
-            <table id="data-table">
-                <thead>
-                    <tr>
-                        <th>代號</th>
-                        <th>名稱</th>
-                        <th>殖利率 %</th>
-                        <th>本益比</th>
-                        <th>淨值比</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
+
+        <!-- Empty State -->
+        <div
+            id="empty-state"
+            class="empty-state glass-card cyber-reveal"
+            style="animation-delay: 0.3s;"
+        >
+            <span class="state-icon">📡</span>
+            <h3 class="mono">SYSTEM_IDLE</h3>
+            <p class="text-muted">Enter a symbol above to establish connection.</p>
         </div>
     </div>
 </Layout>
 
 <style>
-    .page-desc {
-        color: var(--text-secondary);
-        margin-bottom: 32px;
-    }
-
-    .controls {
+    .live-container {
         display: flex;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 32px;
-    }
-
-    .controls label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--text-secondary);
-    }
-
-    .controls input[type='date'] {
-        padding: 10px 14px;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        color: var(--text-primary);
-        font-size: 1rem;
-    }
-
-    .btn-primary {
-        padding: 10px 24px;
-        background: var(--accent, #00d4aa);
-        color: #000;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.15s;
-    }
-
-    .btn-primary:hover {
-        opacity: 0.9;
-    }
-
-    .btn-primary:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .loading {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 24px;
-        background: var(--bg-card);
-        border-radius: 12px;
-        margin-bottom: 24px;
-    }
-
-    .spinner {
-        width: 24px;
-        height: 24px;
-        border: 3px solid var(--border);
-        border-top-color: var(--accent);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .error {
-        padding: 16px 24px;
-        background: rgba(255, 71, 87, 0.1);
-        border: 1px solid rgba(255, 71, 87, 0.3);
-        border-radius: 12px;
-        color: #ff4757;
-        margin-bottom: 24px;
-    }
-
-    .hidden {
-        display: none !important;
-    }
-
-    .stats {
-        display: flex;
+        flex-direction: column;
         gap: 24px;
-        margin-bottom: 24px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-bottom: 40px;
     }
 
-    .stat-item {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 16px 24px;
-    }
-
-    .stat-label {
-        display: block;
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-        margin-bottom: 4px;
-    }
-
-    .stat-value {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--accent);
-    }
-
-    .table-container {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
+    /* Glass Effect Base */
+    .glass-card {
+        background: var(--c-bg-glass);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+        border: 1px solid var(--c-border-glass, rgba(60, 80, 120, 0.2));
         border-radius: 16px;
+        position: relative;
         overflow: hidden;
     }
 
-    .table-controls {
+    .glow-wrapper {
+        position: relative;
+    }
+    .glow-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+            500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            var(--glow-color, rgba(255, 255, 255, 0.05)),
+            transparent 40%
+        );
+    }
+    .glow-wrapper:hover .glow-bg {
+        opacity: 1;
+    }
+    .neutral-glow {
+        --glow-color: rgba(200, 200, 210, 0.05);
+    }
+    .accent-glow {
+        --glow-color: rgba(59, 130, 246, 0.1);
+    }
+    .pos-glow {
+        --glow-color: rgba(16, 185, 129, 0.1);
+    }
+    .neg-glow {
+        --glow-color: rgba(244, 63, 94, 0.1);
+    }
+
+    /* Hero */
+    .page-hero {
         display: flex;
-        gap: 16px;
-        padding: 16px;
-        border-bottom: 1px solid var(--border);
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px 32px;
+        z-index: 10;
+    }
+    .hero-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        z-index: 1;
+    }
+    .icon-box {
+        width: 56px;
+        height: 56px;
+        background: rgba(var(--c-accent-rgb), 0.1);
+        border: 1px solid rgba(var(--c-accent-rgb), 0.3);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+    .hero-left h1 {
+        font-size: 16px;
+        margin: 0;
+        letter-spacing: 2px;
+    }
+    .hero-left p {
+        font-size: 11px;
+        margin: 4px 0 0;
     }
 
-    .search-input,
-    .sort-select {
-        padding: 10px 14px;
-        background: rgba(0, 0, 0, 0.2);
-        border: 1px solid var(--border);
+    .sys-status {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        z-index: 1;
+        padding: 8px 16px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 20px;
+    }
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: currentColor;
+        border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
+    }
+    .pulse-dot.anim {
+        animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+        0% {
+            opacity: 0.3;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+
+    /* Search */
+    .search-panel {
+        padding: 24px;
+        z-index: 5;
+    }
+    .cyber-search-box {
+        display: flex;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 8px;
-        color: var(--text-primary);
-        font-size: 0.9rem;
+        padding: 4px;
+        transition: 0.3s;
     }
-
-    .search-input {
+    .cyber-search-box:focus-within {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.2);
+    }
+    .search-icon {
+        padding: 0 16px;
+        opacity: 0.5;
+    }
+    .cyber-input {
         flex: 1;
-        max-width: 300px;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 16px;
+        padding: 16px 0;
+        outline: none;
+    }
+    .cyber-btn {
+        background: linear-gradient(135deg, var(--c-accent), #2563eb);
+        color: #fff;
+        border: none;
+        padding: 14px 24px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-left: 8px;
+    }
+    .cyber-btn:hover {
+        box-shadow: 0 0 15px rgba(var(--c-accent-rgb), 0.5);
     }
 
-    .table-scroll {
-        max-height: 600px;
-        overflow-y: auto;
+    /* Result Board */
+    .result-board {
+        padding: 32px;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+    .result-board > * {
+        position: relative;
+        z-index: 1;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
+    .rb-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding-bottom: 24px;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    .rb-header h2 {
+        font-size: 32px;
+        margin: 0 0 8px 0;
+        letter-spacing: 1px;
+    }
+    .timestamp {
+        font-size: 11px;
     }
 
-    th,
-    td {
-        padding: 12px 16px;
-        text-align: left;
-        border-bottom: 1px solid var(--border);
+    .price-cluster {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
     }
-
-    th {
-        background: rgba(0, 0, 0, 0.2);
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        position: sticky;
-        top: 0;
+    .price-main {
+        font-size: 64px;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 8px;
     }
-
-    tr:hover {
-        background: rgba(0, 212, 170, 0.05);
-    }
-
-    .symbol {
+    .price-change {
+        font-size: 18px;
         font-weight: 700;
-        color: var(--accent);
+        padding: 4px 12px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
     }
 
-    .yield-high {
-        color: var(--positive);
+    .rb-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+    }
+    .rb-metric {
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .rb-metric .label {
+        font-size: 11px;
+    }
+    .rb-metric .value {
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    /* Empty / Error */
+    .empty-state {
+        padding: 80px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+        border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    .state-icon {
+        font-size: 48px;
+        opacity: 0.5;
+    }
+    .empty-state h3 {
+        margin: 0;
+        font-size: 14px;
+        letter-spacing: 2px;
+    }
+
+    .error-board {
+        padding: 20px;
+        background: rgba(244, 63, 94, 0.1);
+        border: 1px solid var(--c-danger);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--c-danger);
+    }
+    .error-board .icon {
+        font-size: 24px;
+    }
+    .error-board .msg {
+        font-size: 14px;
         font-weight: 600;
     }
 
-    .pe-low {
-        color: var(--positive);
-        font-weight: 600;
+    @media (max-width: 900px) {
+        .rb-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 600px) {
+        .page-hero {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .rb-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 24px;
+        }
+        .price-cluster {
+            align-items: flex-start;
+        }
     }
 </style>
 
 <script>
-    // Get Elements
-    // const symbolInput = document.getElementById('symbol-input') as HTMLInputElement; // Removed
-    // const fetchBtn = document.getElementById('fetch-btn'); // Removed
-    const resultEl = document.getElementById('result');
-    const loadingEl = document.getElementById('loading');
-    const errorEl = document.getElementById('error');
+    // Glow Tracker
+    document.addEventListener('mousemove', e => {
+        const wrappers = document.querySelectorAll('.glow-wrapper');
+        wrappers.forEach(wrapper => {
+            const rect = wrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            (wrapper as HTMLElement).style.setProperty('--mouse-x', `${x}px`);
+            (wrapper as HTMLElement).style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
 
-    // Initialize
-    if (loadingEl) loadingEl.classList.add('hidden');
-    if (errorEl) errorEl.classList.add('hidden');
+    const searchInput = document.getElementById('live-symbol-search') as HTMLInputElement;
+    const searchBtn = document.getElementById('live-search-btn');
 
-    // Auto-fetch from URL param
-    const urlParams = new URLSearchParams(window.location.search);
-    const symbolParam = urlParams.get('symbol');
+    const rb = document.getElementById('result-board');
+    const eb = document.getElementById('error-board');
+    const es = document.getElementById('empty-state');
 
-    if (symbolParam) {
-        fetchData(symbolParam.trim());
-    } else {
-        // Show empty state or instructions
-        if (resultEl) {
-            resultEl.innerHTML =
-                '<div style="text-align:center; padding:60px 20px; color:var(--text-secondary);"><div style="font-size:48px; margin-bottom:16px;">🔍</div><div style="font-size:18px;">請使用上方導航列輸入代號<br>查詢即時股價</div></div>';
-            resultEl.classList.remove('hidden');
-        }
-    }
+    const dot = document.getElementById('conn-dot');
+    const lbl = document.getElementById('conn-lbl');
+    const glow = document.getElementById('result-glow');
 
-    /*
-    // Event Listeners - Removed
-    fetchBtn?.addEventListener('click', () => handleSearch());
-    symbolInput?.addEventListener('keypress', e => {
+    // Init Logic
+    searchBtn?.addEventListener('click', handleSearch);
+    searchInput?.addEventListener('keypress', e => {
         if (e.key === 'Enter') handleSearch();
     });
 
-    function handleSearch() {
-        const symbol = symbolInput?.value.trim();
-        if (symbol) {
-            fetchData(symbol);
-        }
+    const urlParams = new URLSearchParams(window.location.search);
+    const qs = urlParams.get('symbol');
+    if (qs) {
+        searchInput.value = qs;
+        handleSearch();
     }
-    */
+
+    function handleSearch() {
+        const sym = searchInput.value.trim();
+        if (!sym) return;
+        fetchData(sym);
+    }
 
     async function fetchData(symbol: string) {
-        showLoading(true);
-        showError(null); // Clear error
-        if (resultEl) resultEl.classList.add('hidden');
+        // UI states connection
+        if (es) es.style.display = 'none';
+        if (rb) rb.style.display = 'none';
+        if (eb) eb.style.display = 'none';
+
+        if (dot) {
+            dot.className = 'pulse-dot anim text-accent';
+            dot.style.color = '#3b82f6';
+        }
+        if (lbl) {
+            lbl.textContent = 'ESTABLISHING_LIVELINK...';
+            lbl.className = 'mono text-accent';
+        }
 
         try {
-            // Add timestamp to prevent caching
-            const response = await fetch(`/api/live-quote.json?symbol=${symbol}&t=${Date.now()}`);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || '無法取得資料');
-            }
-
+            const res = await fetch(`/api/live-quote.json?symbol=${symbol}&t=${Date.now()}`);
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'QUERY_REJECTED_BY_SERVER');
             renderData(data);
-        } catch (err: any) {
-            showError(`${err.message} (Symbol: ${symbol})`);
-        } finally {
-            showLoading(false);
+
+            if (dot) {
+                dot.className = 'pulse-dot text-success';
+                dot.style.color = '#22c55e';
+            }
+            if (lbl) {
+                lbl.textContent = 'LINK_ESTABLISHED';
+                lbl.className = 'mono text-success';
+            }
+        } catch (e: any) {
+            if (eb) {
+                eb.style.display = 'flex';
+                const msg = document.getElementById('error-msg');
+                if (msg) msg.textContent = e.message;
+            }
+            if (dot) {
+                dot.className = 'pulse-dot text-danger';
+                dot.style.color = '#f43f5e';
+            }
+            if (lbl) {
+                lbl.textContent = 'LINK_FAILED';
+                lbl.className = 'mono text-danger';
+            }
         }
     }
 
-    function renderData(data: any) {
-        if (!resultEl) return;
+    function renderData(d: any) {
+        const n = document.getElementById('stock-name');
+        const p = document.getElementById('stock-price');
+        const c = document.getElementById('stock-change');
+        const ut = document.getElementById('update-time');
 
-        const nameEl = document.getElementById('stock-name');
-        const priceEl = document.getElementById('stock-price');
-        const changeEl = document.getElementById('stock-change');
-        const updateTimeEl = document.getElementById('update-time');
-        const infoGridEl = document.getElementById('info-grid');
+        if (n) n.textContent = `${d.symbol} QUOTE`;
+        if (p) p.textContent = d.price.toFixed(2);
 
-        if (nameEl) nameEl.textContent = `${data.symbol} 即時行情`;
-        if (priceEl) priceEl.textContent = data.price.toFixed(2);
-
-        if (changeEl) {
-            const changeSign = data.change > 0 ? '+' : '';
-            const changeClass = data.change > 0 ? 'up' : data.change < 0 ? 'down' : '';
-            changeEl.textContent = `${changeSign}${data.change.toFixed(2)} (${changeSign}${data.changePercent.toFixed(2)}%)`;
-            changeEl.className = `stock-change ${changeClass}`;
+        const isPos = d.change >= 0;
+        const sign = isPos ? '+' : '';
+        if (c) {
+            c.textContent = `${sign}${d.change.toFixed(2)} (${sign}${d.changePercent.toFixed(2)}%)`;
+            c.className = `price-change mono ${isPos ? 'text-pos' : 'text-neg'}`;
+            // Adjust card glow
+            if (glow) glow.className = `glow-bg ${isPos ? 'pos-glow' : 'neg-glow'}`;
         }
 
-        if (updateTimeEl) {
-            updateTimeEl.textContent = `資料時間: ${new Date(data.time).toLocaleString('zh-TW')}`;
-        }
+        if (ut) ut.textContent = `LAST_SYNC: ${new Date(d.time).toLocaleString('en-US')}`;
 
-        if (infoGridEl) {
-            infoGridEl.innerHTML = `
-                <div class="info-item">
-                    <span class="label">開盤</span>
-                    <span class="value">${formatNumber(data.open)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">最高</span>
-                    <span class="value">${formatNumber(data.high)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">最低</span>
-                    <span class="value">${formatNumber(data.low)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">昨收</span>
-                    <span class="value">${formatNumber(data.previousClose)}</span>
-                </div>
-                <div class="info-item">
-                    <span class="label">成交量</span>
-                    <span class="value">${formatVolume(data.volume)} 張</span>
-                </div>
-            `;
-        }
+        const mo = document.getElementById('m-open');
+        if (mo) mo.textContent = d.open ? d.open.toFixed(2) : '-';
+        const mh = document.getElementById('m-high');
+        if (mh) mh.textContent = d.high ? d.high.toFixed(2) : '-';
+        const ml = document.getElementById('m-low');
+        if (ml) ml.textContent = d.low ? d.low.toFixed(2) : '-';
+        const mp = document.getElementById('m-prev');
+        if (mp) mp.textContent = d.previousClose ? d.previousClose.toFixed(2) : '-';
+        const mv = document.getElementById('m-vol');
+        if (mv) mv.textContent = d.volume ? (d.volume / 1000).toFixed(0) + 'K' : '0';
 
-        resultEl.classList.remove('hidden');
-    }
-
-    function showLoading(show: boolean) {
-        // Since fetchBtn is removed, we could add a global loading indicator here if needed.
-        // For now, the previous content is hidden and we just wait.
-        if (loadingEl) {
-            if (show) loadingEl.classList.remove('hidden');
-            else loadingEl.classList.add('hidden');
-        }
-    }
-
-    function showError(message: string | null) {
-        if (!errorEl) return;
-        if (message) {
-            errorEl.textContent = `❌ ${message}`;
-            errorEl.classList.remove('hidden');
-        } else {
-            errorEl.classList.add('hidden');
-        }
-    }
-
-    function formatNumber(num: number) {
-        return num ? num.toFixed(2) : '-';
-    }
-
-    function formatVolume(vol: number) {
-        return vol ? (vol / 1000).toFixed(0) : '0';
+        if (rb) rb.style.display = 'flex';
     }
 </script>
