@@ -99,6 +99,14 @@ const navItems = [
                         <span class="font-mono text-[11px]">搜尋股票...</span>
                         <kbd class="text-[9px] font-mono bg-surface px-1.5 py-0.5 rounded border border-border ml-1">Ctrl+K</kbd>
                     </button>
+                    <!-- Theme toggle -->
+                    <button
+                        id="theme-toggle"
+                        class="flex items-center justify-center w-8 h-8 rounded-lg bg-glass border border-border hover:border-accent/30 text-text-muted hover:text-text-secondary transition-all cursor-pointer"
+                        aria-label="切換主題"
+                    >
+                        <span id="theme-icon">🌙</span>
+                    </button>
                     <div class="hidden md:flex items-center gap-2 text-xs text-text-muted">
                         <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
                         <span class="font-mono text-[11px] tracking-wider">LIVE</span>
@@ -111,6 +119,24 @@ const navItems = [
         </header>
 
         <!-- ═══ Main Workspace ═══ -->
+        <script>
+            // theme toggle logic
+            function updateThemeIcon() {
+                const icon = document.getElementById('theme-icon');
+                if (!icon) return;
+                icon.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️';
+            }
+            document.addEventListener('DOMContentLoaded', () => {
+                const saved = localStorage.getItem('theme');
+                if (saved === 'light') document.documentElement.classList.remove('dark');
+                updateThemeIcon();
+            });
+            document.getElementById('theme-toggle')?.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+        </script>
         <main
             class:list={[
                 'flex-1 overflow-y-auto overflow-x-hidden',
