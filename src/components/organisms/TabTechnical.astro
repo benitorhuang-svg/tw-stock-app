@@ -23,8 +23,8 @@ interface Props {
 
 const { symbol, price, change, priceData } = Astro.props;
 
-const timeframes = ['15M', '60M', '1D', '1W', '1M'];
-const overlays = ['均線 (MAs)', '波浪 (Wave)', '撐壓線 (S/R)'];
+const timeframes = ['15分', '60分', '日', '週', '月'];
+const overlays = ['均線 (MA)', '波浪指標', '支撐壓力'];
 const subIndicators = ['MACD', 'KDJ', 'RSI'];
 
 // Use real price data or fallback to simulation
@@ -50,7 +50,15 @@ const candles = hasRealData
               const h = Math.max(o, c) + Math.random() * 2;
               const l = Math.min(o, c) - Math.random() * 2;
               const vol = Math.floor(Math.random() * 30000) + 5000;
-              return { o: +o.toFixed(2), c: +c.toFixed(2), h: +h.toFixed(2), l: +l.toFixed(2), vol, bull: c >= o, date: '' };
+              return {
+                  o: +o.toFixed(2),
+                  c: +c.toFixed(2),
+                  h: +h.toFixed(2),
+                  l: +l.toFixed(2),
+                  vol,
+                  bull: c >= o,
+                  date: '',
+              };
           });
       })();
 
@@ -260,10 +268,17 @@ const showNoData = price <= 0;
             <path d={ma5Path} fill="none" stroke="hsl(48,100%,60%)" stroke-width="1.2" opacity="0.7"
             ></path>
             <!-- MA20 line -->
-            {ma20Path && (
-                <path d={ma20Path} fill="none" stroke="hsl(280,80%,65%)" stroke-width="1.2" opacity="0.5"
-                ></path>
-            )}
+            {
+                ma20Path && (
+                    <path
+                        d={ma20Path}
+                        fill="none"
+                        stroke="hsl(280,80%,65%)"
+                        stroke-width="1.2"
+                        opacity="0.5"
+                    />
+                )
+            }
         </svg>
     </div>
 
@@ -323,7 +338,7 @@ const showNoData = price <= 0;
     {
         showNoData && (
             <div class="absolute inset-0 flex flex-col items-center justify-center bg-[#050914]/90 z-50">
-                <p class="text-sm font-mono text-text-muted">Initializing Charting Engine...</p>
+                <p class="text-sm font-mono text-text-muted">圖表引擎啟動中...</p>
             </div>
         )
     }

@@ -13,10 +13,19 @@ export const GET: APIRoute = ({ request }) => {
 
     const stream = new ReadableStream({
         start(controller) {
+            let isClosed = false;
+
             // 定義傳送函數
             const sendTick = (data: any) => {
-                const message = `data: ${JSON.stringify(data)}\n\n`;
-                controller.enqueue(new TextEncoder().encode(message));
+                if (isClosed) return;
+                try {
+                    const message = `data: ${JSON.stringify(data)}\n\n`;
+                    controller.enqueue(new TextEncoder().encode(message));
+                } catch (err: any) {
+                    // 通常是連線已關閉但監聽器尚未移除
+                    isClosed = true;
+                    tickDaemon.off('tick', sendTick);
+                }
             };
 
             // 訂閱事件
@@ -24,9 +33,13 @@ export const GET: APIRoute = ({ request }) => {
 
             // 當連線切斷時清理
             request.signal.addEventListener('abort', () => {
+                if (isClosed) return;
+                isClosed = true;
                 tickDaemon.off('tick', sendTick);
-                controller.close();
-                console.log('[SSE] Client disconnected.');
+                try {
+                    controller.close();
+                } catch (err) { }
+                console.log('[SSE] Client disconnected (abort).');
             });
         },
     });

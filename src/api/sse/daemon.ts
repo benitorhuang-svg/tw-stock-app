@@ -34,9 +34,13 @@ export class TickDaemon extends EventEmitter {
                 this.lastData = rawData;
 
                 // T004: 廣播 Tick 事件給所有訂閱者 (SSE Clients)
-                this.emit('tick', rawData);
+                try {
+                    this.emit('tick', rawData);
+                } catch (emitErr: any) {
+                    console.warn('[TickDaemon] Listener execution error (handled):', emitErr.message);
+                }
             } catch (err) {
-                console.error('[TickDaemon] Fetch error:', err);
+                console.error('[TickDaemon] Data fetch error:', err);
                 // 失敗時等待一段時間再試
                 await new Promise(res => setTimeout(res, 10000));
             }

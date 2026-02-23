@@ -58,11 +58,14 @@ const categoryLabel: Record<string, string> = {
 };
 ---
 
-<section id="screener-panel" class="grid grid-cols-1 xl:grid-cols-12 gap-4 min-h-[calc(100dvh-210px)]">
+<section
+    id="screener-panel"
+    class="grid grid-cols-1 xl:grid-cols-12 gap-4 min-h-[calc(100dvh-210px)]"
+>
     <aside class="xl:col-span-4 glass-card p-4 flex flex-col gap-3 overflow-hidden">
         <div class="flex items-center justify-between border-b border-border pb-3">
             <div>
-                <div class="terminal-label">Strategy Presets</div>
+                <div class="terminal-label">策略預設方案</div>
                 <h3 class="text-sm font-bold text-text-primary mt-1">策略條件編譯器</h3>
             </div>
             <Badge variant="accent">M3</Badge>
@@ -70,15 +73,21 @@ const categoryLabel: Record<string, string> = {
 
         <div class="grid grid-cols-3 gap-2">
             <div class="bg-surface rounded border border-border p-2">
-                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">策略數</div>
+                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">
+                    策略數
+                </div>
                 <div class="data-value text-accent mt-1">{strategies.length}</div>
             </div>
             <div class="bg-surface rounded border border-border p-2">
-                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">模式</div>
+                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">
+                    模式
+                </div>
                 <div class="text-xs font-mono text-text-primary mt-1">SQL</div>
             </div>
             <div class="bg-surface rounded border border-border p-2">
-                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">資料源</div>
+                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">
+                    資料源
+                </div>
                 <div class="text-xs font-mono text-bullish mt-1">LOCAL</div>
             </div>
         </div>
@@ -97,15 +106,15 @@ const categoryLabel: Record<string, string> = {
                                     <h4 class="text-sm font-bold text-text-primary group-hover:text-accent transition-colors truncate">
                                         {strategy.name}
                                     </h4>
-                                    {
-                                        strategy.category && (
-                                            <Badge variant="muted" class="shrink-0">
-                                                {categoryLabel[strategy.category]}
-                                            </Badge>
-                                        )
-                                    }
+                                    {strategy.category && (
+                                        <Badge variant="muted" class="shrink-0">
+                                            {categoryLabel[strategy.category]}
+                                        </Badge>
+                                    )}
                                 </div>
-                                <p class="text-xs text-text-secondary mt-1 line-clamp-2">{strategy.description}</p>
+                                <p class="text-xs text-text-secondary mt-1 line-clamp-2">
+                                    {strategy.description}
+                                </p>
                             </div>
                         </div>
                     </button>
@@ -117,7 +126,7 @@ const categoryLabel: Record<string, string> = {
     <main class="xl:col-span-8 glass-card p-0 overflow-hidden flex flex-col">
         <header class="terminal-toolbar">
             <div class="terminal-toolbar-left">
-                <span class="terminal-toolbar-title">Screening Results</span>
+                <span class="terminal-toolbar-title">系統篩選結果</span>
                 <span id="active-strategy-label" class="terminal-toolbar-meta">尚未選擇策略</span>
             </div>
             <div class="terminal-toolbar-right">
@@ -129,7 +138,7 @@ const categoryLabel: Record<string, string> = {
                     📥 匯出 CSV
                 </button>
                 <span id="screener-count" class="data-value text-sm text-accent">0</span>
-                <span class="terminal-toolbar-meta">Matches</span>
+                <span class="terminal-toolbar-meta">檔符合條件</span>
             </div>
         </header>
 
@@ -138,7 +147,8 @@ const categoryLabel: Record<string, string> = {
                 <div class="text-4xl mb-4">🔍</div>
                 <h3 class="text-lg font-bold text-text-primary mb-2">選擇一個策略開始篩選</h3>
                 <p class="text-sm text-text-secondary">
-                    點擊左側策略後，系統會以 SQLite 條件查詢回傳符合標的，結果維持高密度終端表格格式。
+                    點擊左側策略後，系統會以 SQLite
+                    條件查詢回傳符合標的，結果維持高密度終端表格格式。
                 </p>
             </div>
         </div>
@@ -147,15 +157,42 @@ const categoryLabel: Record<string, string> = {
             <table class="w-full text-left border-collapse min-w-[860px]" id="screener-table">
                 <thead class="sticky top-0 bg-base-deep z-10 border-b border-border/60">
                     <tr>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Symbol</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Name</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Price</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Change%</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">PE</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">PB</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Yield</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Volume</th>
-                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Tag</th>
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
+                            >股票代號</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
+                            >名稱</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                            >成交價</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                            >漲跌%</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                            >本益比</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                            >股淨比</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                            >殖利率</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                            >成交量</th
+                        >
+                        <th
+                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
+                            >備註標籤</th
+                        >
                     </tr>
                 </thead>
                 <tbody id="screener-results-grid" class="divide-y divide-border/30"></tbody>
@@ -170,6 +207,7 @@ const categoryLabel: Record<string, string> = {
 
     let activeStrategyName = '';
     let lastResults: any[] = [];
+    let activeFilters: any = null; // keep latest filter payload for auto-refresh
     const resultsContainer = document.getElementById('screener-results');
     const resultsGrid = document.getElementById('screener-results-grid');
     const resultsCount = document.getElementById('screener-count');
@@ -243,7 +281,9 @@ const categoryLabel: Record<string, string> = {
             card.classList.add('border-accent/50', 'bg-accent/5');
 
             activeStrategyName =
-                card.querySelector('h4')?.textContent?.trim() || card.querySelector('h3')?.textContent?.trim() || strategyId;
+                card.querySelector('h4')?.textContent?.trim() ||
+                card.querySelector('h3')?.textContent?.trim() ||
+                strategyId;
             if (activeStrategyLabel) activeStrategyLabel.textContent = activeStrategyName;
 
             const filters: any = {
@@ -252,6 +292,7 @@ const categoryLabel: Record<string, string> = {
                 strategyId,
                 ...(PRESET_PAYLOAD[strategyId] || {}),
             };
+            activeFilters = { ...filters };
 
             try {
                 // Show loading state
@@ -259,13 +300,12 @@ const categoryLabel: Record<string, string> = {
                 emptyState?.classList.add('hidden');
                 resultsContainer?.classList.remove('hidden');
                 if (resultsGrid)
-                    resultsGrid.innerHTML =
-                        Array.from({ length: 8 })
-                            .map(
-                                () =>
-                                    '<tr class="table-loading-row border-b border-border/30"><td colspan="9"><div class="skeleton"></div></td></tr>'
-                            )
-                            .join('');
+                    resultsGrid.innerHTML = Array.from({ length: 8 })
+                        .map(
+                            () =>
+                                '<tr class="table-loading-row border-b border-border/30"><td colspan="9"><div class="skeleton"></div></td></tr>'
+                        )
+                        .join('');
 
                 const res = await fetch('/api/screener', {
                     method: 'POST',
@@ -286,12 +326,15 @@ const categoryLabel: Record<string, string> = {
                             resultsGrid.innerHTML =
                                 '<tr><td colspan="9" class="py-12 text-center text-text-muted text-sm italic">沒有符合條件的股票</td></tr>';
                     } else {
-                        toast.show({ message: `找到 ${data.results.length} 檔符合「${activeStrategyName}」`, type: 'success', duration: 2500 });
+                        toast.show({
+                            message: `找到 ${data.results.length} 檔符合「${activeStrategyName}」`,
+                            type: 'success',
+                            duration: 2500,
+                        });
                     }
                 } else {
                     if (resultsGrid)
-                        resultsGrid.innerHTML =
-                            `<tr><td colspan="9" class="py-12 text-center text-bearish text-sm">${data.error || '查詢失敗'}</td></tr>`;
+                        resultsGrid.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-bearish text-sm">${data.error || '查詢失敗'}</td></tr>`;
                     if (resultsCount) resultsCount.textContent = '0';
                     csvExportBtn?.classList.add('hidden');
                     toast.show({ message: data.error || '篩選查詢失敗', type: 'error' });
@@ -311,7 +354,17 @@ const categoryLabel: Record<string, string> = {
     // CSV Export
     csvExportBtn?.addEventListener('click', () => {
         if (lastResults.length === 0) return;
-        const headers = ['股票代號', '股票名稱', '價格', '漲跌幅%', '本益比', '股價淨值比', '殖利率', '成交量', '策略'];
+        const headers = [
+            '股票代號',
+            '股票名稱',
+            '價格',
+            '漲跌幅%',
+            '本益比',
+            '股價淨值比',
+            '殖利率',
+            '成交量',
+            '策略',
+        ];
         const rows = lastResults.map((s: any) => [
             s.symbol,
             s.name || '',
@@ -323,7 +376,10 @@ const categoryLabel: Record<string, string> = {
             s.volume ?? '',
             (s.matchedStrategies || []).join('; '),
         ]);
-        const csvContent = [headers.join(','), ...rows.map((r: any[]) => r.map((c: any) => `"${c}"`).join(','))].join('\n');
+        const csvContent = [
+            headers.join(','),
+            ...rows.map((r: any[]) => r.map((c: any) => `"${c}"`).join(',')),
+        ].join('\n');
         const BOM = '\uFEFF';
         const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
@@ -335,7 +391,11 @@ const categoryLabel: Record<string, string> = {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        toast.show({ message: `已匯出 ${lastResults.length} 筆結果`, type: 'success', duration: 2000 });
+        toast.show({
+            message: `已匯出 ${lastResults.length} 筆結果`,
+            type: 'success',
+            duration: 2000,
+        });
     });
 
     // real-time price updates for screener results
@@ -353,25 +413,64 @@ const categoryLabel: Record<string, string> = {
                         setTimeout(() => row.classList.remove('flash'), 800);
                     }
                 });
-            } catch {}
+                // auto-refresh current screener results (throttled)
+                if (activeFilters) {
+                    if (!(window as any).__screenerRefreshTimeout) {
+                        (window as any).__screenerRefreshTimeout = setTimeout(async () => {
+                            try {
+                                const res = await fetch('/api/screener', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(activeFilters),
+                                });
+                                const data = await res.json();
+                                if (data.success) {
+                                    lastResults = data.results;
+                                    renderResults(data.results);
+                                }
+                            } catch {}
+                            (window as any).__screenerRefreshTimeout = null;
+                        }, 5000);
+                    }
+                }
+            } catch (err) {
+                console.error('[SSE tick] parse error', err);
+            }
         });
     }
 
-    // column sorting
-    function sortResultsBy(idx: number) {
-        if (lastResults.length === 0) return;
-        const paths = ['symbol','name','price','changePercent','fundamentals.pe','fundamentals.pb','fundamentals.dividendYield','volume'];
-        const path = paths[idx];
-        if (!path) return;
-        const getVal = (obj: any) => path.split('.').reduce((o,p) => (o && typeof o === 'object' ? o[p] : undefined), obj);
-        lastResults.sort((a,b) => {
-            const va = getVal(a);
-            const vb = getVal(b);
+    // Column-header sorting
+    function sortResultsBy(colIndex: number) {
+        const keys = [
+            'symbol',
+            'name',
+            'price',
+            'changePercent',
+            'pe',
+            'pb',
+            'dividendYield',
+            'volume',
+            'matchedStrategies',
+        ];
+        const key = keys[colIndex] || 'symbol';
+        lastResults.sort((a: any, b: any) => {
+            let va: any, vb: any;
+            if (['pe', 'pb', 'dividendYield'].includes(key)) {
+                va = a.fundamentals?.[key];
+                vb = b.fundamentals?.[key];
+            } else if (key === 'matchedStrategies') {
+                va = (a.matchedStrategies || []).join(', ');
+                vb = (b.matchedStrategies || []).join(', ');
+            } else {
+                va = a[key];
+                vb = b[key];
+            }
             if (typeof va === 'number' && typeof vb === 'number') return va - vb;
             return String(va || '').localeCompare(String(vb || ''));
         });
         renderResults(lastResults);
     }
+
     document.querySelectorAll('#screener-table th').forEach((th, i) => {
         th.addEventListener('click', () => sortResultsBy(i));
     });

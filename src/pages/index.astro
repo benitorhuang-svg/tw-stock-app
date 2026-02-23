@@ -65,7 +65,7 @@ try {
 }
 ---
 
-<MainTerminal title="Dashboard">
+<MainTerminal title="市場總覽">
     {totalStocks === 0 ? (
         <div class="empty-state py-20 animate-fade-up">
             <div class="empty-state-icon animate-glow-pulse">📡</div>
@@ -78,165 +78,136 @@ try {
     ) : (
     <Fragment>
 
-    <!-- ═══ Dashboard Header ═══ -->
-    <div class="flex items-end justify-between mb-6 animate-fade-up">
-        <div>
-            <h1 class="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary">市場總覽</h1>
-            <p class="text-sm text-text-muted mt-1 font-mono">
-                {dataDate || '—'} · {totalStocks.toLocaleString()} 檔股票
-            </p>
-        </div>
-        <div class="flex items-center gap-3">
-            <div class="hidden sm:flex items-center gap-2 stat-pill">
-                <span class="stat-label">Total Vol</span>
-                <span class="stat-value text-accent">{fmtVol(totalVolume)}</span>
+    <!-- ── 3-Column Dashboard Layout ── -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 animate-fade-up py-1">
+        
+        <!-- ═══ Left Column: Stats & Breadth & Volume (Col Span 4) ═══ -->
+        <div class="lg:col-span-4 space-y-4">
+            <!-- 1. Market Status Module (Redesigned for Aesthetics) -->
+            <div class="glass-card overflow-hidden border-border/40 group relative">
+                <!-- Decorative top glow -->
+                <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent"></div>
+                
+                <div class="px-4 py-3 space-y-3">
+                    <!-- Header: Session Information -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] text-text-muted uppercase font-bold tracking-[0.2em] mb-0.5">Market Session</span>
+                            <span class="text-base font-mono font-bold text-text-primary tracking-tighter" id="market-date">{dataDate || '2026-01-23'}</span>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <!-- Volume Block -->
+                        <div class="flex flex-col p-2.5 rounded bg-surface border border-border/10 group-hover:border-accent/40 transition-all duration-300">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="text-[9px] text-text-muted font-bold uppercase">成交量</span>
+                                <span class="text-[10px] text-text-muted/40 font-mono">VOL</span>
+                            </div>
+                            <span class="text-lg font-mono font-bold text-stock-volume leading-none tracking-tighter" id="market-volume">
+                                {fmtVol(totalVolume)}
+                            </span>
+                        </div>
+                        
+                        <!-- Change Block -->
+                        <div class="flex flex-col p-2.5 rounded bg-surface border border-border/10 group-hover:border-accent/40 transition-all duration-300">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="text-[9px] text-text-muted font-bold uppercase">平均漲跌</span>
+                                <span class="text-[10px] text-text-muted/40 font-mono">VEL</span>
+                            </div>
+                            <span class:list={["text-lg font-mono font-bold leading-none tracking-tighter", avgChange >= 0 ? 'text-bullish' : 'text-bearish']} id="market-change">
+                                {avgChange >= 0 ? '+' : ''}{avgChange.toFixed(2)}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-bullish ring-pulse"></span>
-                <span class="text-[10px] font-mono text-text-muted tracking-widest uppercase">
-                    data ready
-                </span>
-            </div>
-        </div>
-    </div>
 
-    <!-- ═══ Market Stats Row ═══ -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 stagger-children">
-        <StatCard
-            id="stat-up"
-            label="上漲"
-            value={upCount}
-            change={totalStocks > 0 ? (upCount / totalStocks) * 100 : 0}
-            class="border-l-2 border-l-bullish/60"
-        />
-        <StatCard
-            id="stat-down"
-            label="下跌"
-            value={downCount}
-            change={totalStocks > 0 ? -(downCount / totalStocks) * 100 : 0}
-            class="border-l-2 border-l-bearish/60"
-        />
-        <StatCard
-            id="stat-flat"
-            label="平盤"
-            value={flatCount}
-            class="border-l-2 border-l-text-muted/30"
-        />
-        <div class="glass-card glow-interactive p-4">
-            <span class="terminal-label">市場廣度</span>
-            <MarketBreadth
-                up={upCount}
-                down={downCount}
-                flat={flatCount}
-                total={totalStocks}
-                class="mt-3"
-            />
+            <!-- 2. Volume Leaders -->
+            <section class="glass-card p-0 overflow-hidden border-border/40">
+                <div class="terminal-toolbar py-1.5 px-4 h-auto">
+                    <span class="terminal-toolbar-title text-[11px]">成交熱門龍頭</span>
+                </div>
+                <div class="p-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        {topVolume.slice(0, 4).map((s) => (
+                            <StockCard
+                                symbol={s.symbol}
+                                name={s.name}
+                                price={s.price}
+                                changePercent={s.changePercent}
+                                volume={s.volume}
+                                pe={s.pe}
+                                compact={true}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </section>
         </div>
-    </div>
 
-    <!-- ═══ Top Gainers / Losers ═══ -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        <MoversPanel
-            title="漲幅排行"
-            stocks={gainers}
-            variant="bullish"
-            class="animate-fade-up"
-        />
-        <MoversPanel
-            title="跌幅排行"
-            stocks={losers}
-            variant="bearish"
-            class="animate-fade-up"
-        />
-    </div>
+        <!-- ═══ Right Side: Breadth & Movers (Col Span 8) ═══ -->
+        <div class="lg:col-span-8 space-y-4">
+            <!-- 2. Market Breadth Distribution (Reordered layout) -->
+            <div class="glass-card p-4 bg-surface/30 border-border/40">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+                    <!-- Left: Title + Ratio -->
+                    <div class="flex items-center gap-3 shrink-0">
+                        <h2 class="text-sm font-bold text-text-primary tracking-tight">市場脈絡分布</h2>
+                        <div class="text-[10px] font-mono bg-accent/10 text-accent px-2 py-0.5 rounded border border-accent/20">
+                            漲跌比 <span id="breadth-ratio">{downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX'}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Center: Legend -->
+                    <div class="flex items-center justify-center gap-6 lg:gap-10 text-[11px] font-bold flex-1">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-bullish"></span>
+                            <span class="text-bullish" id="breadth-up">{upCount}</span>
+                            <span class="text-[9px] text-text-muted font-normal uppercase">上漲</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-text-muted/40"></span>
+                            <span class="text-text-secondary" id="breadth-flat">{flatCount}</span>
+                            <span class="text-[9px] text-text-muted font-normal uppercase">平盤</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-bearish"></span>
+                            <span class="text-bearish" id="breadth-down">{downCount}</span>
+                            <span class="text-[9px] text-text-muted font-normal uppercase">下跌</span>
+                        </div>
+                    </div>
 
-    <!-- ═══ Volume Leaders ═══ -->
-    <section class="mb-6 animate-fade-up">
-        <div class="section-divider">
-            <span class="divider-label">成交量排行</span>
-        </div>
-        <div class="flex items-center justify-between mb-4">
-            <p class="text-xs text-text-muted">依當日成交量由高至低排序</p>
-            <a href="/stocks" class="btn-ghost text-xs" data-astro-prefetch>查看全部 →</a>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 stagger-children">
-            {topVolume.map((s) => (
-                <StockCard
-                    symbol={s.symbol}
-                    name={s.name}
-                    price={s.price}
-                    changePercent={s.changePercent}
-                    volume={s.volume}
-                    pe={s.pe}
+                    <!-- Right spacer for centering effect on desktop -->
+                    <div class="hidden lg:block w-32 shrink-0"></div>
+                </div>
+                <MarketBreadth 
+                    up={upCount}
+                    down={downCount}
+                    flat={flatCount}
+                    total={totalStocks}
                 />
-            ))}
-        </div>
-    </section>
-
-    <!-- ═══ High Yield Table ═══ -->
-    <section class="mb-6 animate-fade-up">
-        <div class="section-divider">
-            <span class="divider-label">高殖利率精選</span>
-        </div>
-        <div class="flex items-center justify-between mb-4">
-            <p class="text-xs text-text-muted">殖利率由高至低，排除虧損股</p>
-            <a href="/screener" class="btn-ghost text-xs" data-astro-prefetch>篩選更多 →</a>
-        </div>
-
-        <div class="glass-card overflow-hidden">
-            <!-- Table Header -->
-            <div class="hidden md:grid grid-cols-12 gap-2 px-5 py-2.5 border-b border-border text-[10px] font-bold text-text-muted uppercase tracking-wider bg-surface/20">
-                <div class="col-span-3">股票</div>
-                <div class="col-span-2 text-right">股價</div>
-                <div class="col-span-2 text-right">漲跌%</div>
-                <div class="col-span-2 text-right">殖利率</div>
-                <div class="col-span-1 text-right">PE</div>
-                <div class="col-span-2 text-right">PB</div>
             </div>
 
-            <!-- Table Body -->
-            <div class="divide-y divide-border/30">
-                {highYield.map((s) => {
-                    const bull = s.changePercent > 0;
-                    const bear = s.changePercent < 0;
-                    return (
-                        <a
-                            href={`/stocks/${s.symbol}`}
-                            class="grid grid-cols-12 gap-2 px-5 py-3 hover:bg-glass-hover transition-colors group no-underline items-center"
-                            data-astro-prefetch
-                        >
-                            <div class="col-span-6 md:col-span-3 flex items-center gap-2 min-w-0">
-                                <span class="text-sm font-semibold text-text-primary group-hover:text-accent transition-colors truncate">
-                                    {s.name}
-                                </span>
-                                <span class="text-[11px] text-text-muted font-mono shrink-0">{s.symbol}</span>
-                            </div>
-                            <div class="col-span-3 md:col-span-2 text-right data-value text-sm">
-                                {s.price > 0 ? s.price.toFixed(2) : '—'}
-                            </div>
-                            <div class:list={[
-                                'col-span-3 md:col-span-2 text-right text-xs font-mono font-bold',
-                                bull && 'text-bullish',
-                                bear && 'text-bearish',
-                                !bull && !bear && 'text-text-muted',
-                            ]}>
-                                {s.changePercent > 0 ? '+' : ''}{s.changePercent.toFixed(2)}%
-                            </div>
-                            <div class="hidden md:block col-span-2 text-right text-sm font-mono font-bold text-warning">
-                                {s.yield.toFixed(2)}%
-                            </div>
-                            <div class="hidden md:block col-span-1 text-right text-xs font-mono text-text-secondary">
-                                {s.pe > 0 ? s.pe.toFixed(1) : '—'}
-                            </div>
-                            <div class="hidden md:block col-span-2 text-right text-xs font-mono text-text-secondary">
-                                {s.pb > 0 ? s.pb.toFixed(2) : '—'}
-                            </div>
-                        </a>
-                    );
-                })}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Losers -->
+                <MoversPanel
+                    title="跌幅排行"
+                    stocks={losers.slice(0, 6)}
+                    variant="bearish"
+                    class="border-bearish/10 h-full"
+                />
+                <!-- Gainers -->
+                <MoversPanel
+                    title="漲幅排行"
+                    stocks={gainers.slice(0, 6)}
+                    variant="bullish"
+                    class="border-bullish/10 h-full"
+                />
             </div>
         </div>
-    </section>
+    </div>
 
     </Fragment>
     )}
@@ -246,22 +217,101 @@ try {
     // SSE updates for dashboard counts
     if (typeof EventSource !== 'undefined') {
         const es = new EventSource('/api/sse/stream');
+        const headerLed = document.getElementById('connection-status-led');
+        
+        function formatVolume(v: number) {
+            if (v >= 100000000) return (v / 100000000).toFixed(1) + '億';
+            if (v >= 10000) return (v / 10000).toFixed(1) + '萬';
+            return v.toLocaleString('zh-TW');
+        }
+
+        // Connection established
+        es.onopen = () => {
+            if (headerLed) {
+                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bullish animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]';
+            }
+        };
+
+        // Connection error
+        es.onerror = () => {
+            if (headerLed) {
+                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bearish animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.4)]';
+            }
+        };
+
         es.addEventListener('tick', e => {
             try {
                 const ticks = JSON.parse(e.data);
-                let up = 0, down = 0, flat = 0;
-                ticks.forEach((t: any) => {
-                    if (t.changePercent > 0) up++;
-                    else if (t.changePercent < 0) down++;
-                    else flat++;
+                if (!ticks || !Array.isArray(ticks)) return;
+
+                let up = 0, down = 0, flat = 0, totalVol = 0, totalPct = 0, count = 0;
+                let latestDate = '';
+
+                ticks.forEach((t) => {
+                    const price = parseFloat(t.Close || t.price || 0);
+                    const chgPct = parseFloat(t.ChangePct || t.changePercent || 0);
+                    const vol = parseFloat(t.Volume || t.volume || 0);
+                    
+                    if (price > 0) {
+                        if (chgPct > 0) up++;
+                        else if (chgPct < 0) down++;
+                        else flat++;
+                        
+                        totalVol += vol;
+                        totalPct += chgPct;
+                        count++;
+                        if (t.Date) latestDate = t.Date;
+                    }
                 });
-                const upEl = document.querySelector('#stat-up .data-value');
-                const downEl = document.querySelector('#stat-down .data-value');
-                const flatEl = document.querySelector('#stat-flat .data-value');
+
+                // Update Breadth
+                const upEl = document.querySelector('#breadth-up');
+                const downEl = document.querySelector('#breadth-down');
+                const flatEl = document.querySelector('#breadth-flat');
+                const ratioEl = document.querySelector('#breadth-ratio');
+
                 if (upEl) upEl.textContent = String(up);
                 if (downEl) downEl.textContent = String(down);
                 if (flatEl) flatEl.textContent = String(flat);
-            } catch {}
+                if (ratioEl) ratioEl.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
+
+                // Update Bar & Percentages
+                const total = up + down + flat;
+                if (total > 0) {
+                    const pUp = (up / total) * 100;
+                    const pDown = (down / total) * 100;
+                    const pFlat = (flat / total) * 100;
+
+                    const barUp = document.getElementById('breadth-bar-up');
+                    const barDown = document.getElementById('breadth-bar-down');
+                    const barFlat = document.getElementById('breadth-bar-flat');
+                    const txtUp = document.getElementById('breadth-pct-up');
+                    const txtDown = document.getElementById('breadth-pct-down');
+                    const txtFlat = document.getElementById('breadth-pct-flat');
+
+                    if (barUp) barUp.style.width = pUp + '%';
+                    if (barDown) barDown.style.width = pDown + '%';
+                    if (barFlat) barFlat.style.width = pFlat + '%';
+                    if (txtUp) txtUp.textContent = pUp.toFixed(1) + '%';
+                    if (txtDown) txtDown.textContent = pDown.toFixed(1) + '%';
+                    if (txtFlat) txtFlat.textContent = pFlat.toFixed(1) + '%';
+                }
+
+                // Update Market Stats
+                const dateEl = document.querySelector('#market-date');
+                const volEl = document.querySelector('#market-volume');
+                const chgEl = document.querySelector('#market-change');
+
+                if (dateEl && latestDate) dateEl.textContent = latestDate;
+                if (volEl) volEl.textContent = formatVolume(totalVol);
+                if (chgEl) {
+                    const avg = count > 0 ? totalPct / count : 0;
+                    chgEl.textContent = (avg >= 0 ? '+' : '') + avg.toFixed(2) + '%';
+                    chgEl.className = `text-lg font-mono font-bold ${avg >= 0 ? 'text-bullish' : 'text-bearish'}`;
+                }
+            } catch (err) {
+                console.error('[SSE Client Error]', err);
+            }
         });
     }
 </script>

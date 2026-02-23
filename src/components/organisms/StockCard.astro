@@ -11,6 +11,7 @@ interface Props {
     volume?: number;
     pe?: number;
     yield_?: number;
+    compact?: boolean;
     class?: string;
 }
 
@@ -22,6 +23,7 @@ const {
     volume = 0,
     pe = 0,
     yield_: yieldVal = 0,
+    compact = false,
     class: className = '',
 } = Astro.props;
 
@@ -40,44 +42,70 @@ const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 <a
     href={`/stocks/${symbol}`}
     class:list={[
-        'stock-card glass-card glow-interactive block p-4 no-underline hover:scale-[1.02] transition-all group relative overflow-hidden',
+        'stock-card glass-card glow-interactive block no-underline hover:scale-[1.02] transition-all group relative overflow-hidden',
+        compact ? 'p-3' : 'p-4',
         className,
     ]}
     data-astro-prefetch
 >
     <!-- Top accent line -->
-    <div class:list={[
-        'absolute top-0 left-0 right-0 h-[2px]',
-        bull && 'bg-gradient-to-r from-transparent via-bullish/50 to-transparent',
-        bear && 'bg-gradient-to-r from-transparent via-bearish/50 to-transparent',
-        !bull && !bear && 'bg-gradient-to-r from-transparent via-accent/20 to-transparent',
-    ]}></div>
+    <div
+        class:list={[
+            'absolute top-0 left-0 right-0 h-[2px]',
+            bull && 'bg-gradient-to-r from-transparent via-bullish/50 to-transparent',
+            bear && 'bg-gradient-to-r from-transparent via-bearish/50 to-transparent',
+            !bull && !bear && 'bg-gradient-to-r from-transparent via-accent/20 to-transparent',
+        ]}
+    >
+    </div>
 
     <!-- Header: Name + Change Badge -->
     <div class="flex items-start justify-between mb-2">
         <div class="min-w-0">
-            <div class="text-sm font-bold text-text-primary group-hover:text-accent transition-colors truncate">
+            <div
+                class:list={[
+                    'font-bold transition-colors truncate text-stock-name',
+                    compact ? 'text-xs' : 'text-sm',
+                ]}
+            >
                 {name}
             </div>
-            <div class="text-[11px] font-mono text-text-muted">{symbol}</div>
+            <div
+                class:list={[
+                    'font-mono text-stock-symbol',
+                    compact ? 'text-[10px]' : 'text-[11px]',
+                ]}
+            >
+                {symbol}
+            </div>
         </div>
-        <span class:list={[
-            'text-[11px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ml-2',
-            bull && 'bg-bullish/10 text-bullish',
-            bear && 'bg-bearish/10 text-bearish',
-            !bull && !bear && 'bg-surface text-text-muted',
-        ]}>
+        <span
+            class:list={[
+                'font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ml-2',
+                compact ? 'text-[9px]' : 'text-[11px]',
+                bull && 'bg-bullish/10 text-bullish',
+                bear && 'bg-bearish/10 text-bearish',
+                !bull && !bear && 'bg-surface text-text-muted',
+            ]}
+        >
             {fmtPct(changePercent)}
         </span>
     </div>
 
     <!-- Price -->
-    <div class="data-value text-xl mb-1">{fmtPrice(price)}</div>
+    <div
+        class:list={[
+            'data-value font-bold text-stock-price',
+            compact ? 'text-base' : 'text-xl mb-1',
+        ]}
+    >
+        {fmtPrice(price)}
+    </div>
 
     <!-- Footer Meta -->
-    <div class="flex items-center justify-between text-[11px] text-text-muted font-mono">
-        <span>量 {fmtVol(volume)}</span>
-        {pe > 0 && <span>PE {pe.toFixed(1)}</span>}
-        {yieldVal > 0 && <span class="text-warning">{yieldVal.toFixed(1)}%</span>}
+    <div class:list={['flex items-center justify-between text-[11px] font-mono']}>
+        <span class="text-stock-volume">量 {fmtVol(volume)}</span>
+        {pe > 0 && <span class="text-text-muted/60">PE {pe.toFixed(1)}</span>}
+        {yieldVal > 0 && <span class="text-warning font-black">{yieldVal.toFixed(1)}%</span>}
     </div>
 </a>

@@ -23,7 +23,7 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
 const dbStats = dbService.getDbStats();
 ---
 
-<MainTerminal title="Data Explorer 數據觀測" fullWidth>
+<MainTerminal title="數據觀測 (SQLite)" fullWidth>
     <div class="fixed inset-x-0 bottom-0 top-[64px] flex overflow-hidden">
         <!-- Mobile Sidebar Toggle -->
         <button
@@ -31,28 +31,38 @@ const dbStats = dbService.getDbStats();
             class="md:hidden fixed top-[72px] left-2 z-30 bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
             aria-label="切換側邊欄"
         >
-            ☰ Tables
+            ☰ 資料表
         </button>
 
         <!-- Mobile Sidebar Backdrop -->
-        <div id="sidebar-backdrop" class="md:hidden fixed inset-0 bg-black/50 z-[19] hidden" aria-hidden="true"></div>
+        <div
+            id="sidebar-backdrop"
+            class="md:hidden fixed inset-0 bg-black/50 z-[19] hidden"
+            aria-hidden="true"
+        >
+        </div>
 
         <!-- Sidebar: Table Navigator -->
-        <aside id="db-sidebar" class="w-64 bg-base-deep border-r border-border flex flex-col z-20 flex-shrink-0 max-md:fixed max-md:inset-y-0 max-md:top-[64px] max-md:left-0 max-md:-translate-x-full max-md:transition-transform max-md:duration-200 max-md:shadow-2xl">
+        <aside
+            id="db-sidebar"
+            class="w-64 bg-base-deep border-r border-border flex flex-col z-20 flex-shrink-0 max-md:fixed max-md:inset-y-0 max-md:top-[64px] max-md:left-0 max-md:-translate-x-full max-md:transition-transform max-md:duration-200 max-md:shadow-2xl"
+        >
             <!-- DB Health Summary -->
             <div class="px-4 py-3 border-b border-border space-y-2">
                 <div class="flex items-center justify-between">
-                    <span class="terminal-label">DATABASE</span>
+                    <span class="terminal-label">資料庫狀態</span>
                     <span class="w-2 h-2 rounded-full bg-bullish animate-glow-pulse"></span>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div class="bg-surface rounded p-2">
-                        <div class="text-[11px] text-text-muted uppercase font-bold">Tables</div>
+                        <div class="text-[11px] text-text-muted uppercase font-bold">資料表數</div>
                         <div class="data-value text-sm text-accent">{tables.length}</div>
                     </div>
                     <div class="bg-surface rounded p-2">
-                        <div class="text-[11px] text-text-muted uppercase font-bold">Rows</div>
-                        <div class="data-value text-sm text-text-primary">{totalRows.toLocaleString()}</div>
+                        <div class="text-[11px] text-text-muted uppercase font-bold">總筆數</div>
+                        <div class="data-value text-sm text-text-primary">
+                            {totalRows.toLocaleString()}
+                        </div>
                     </div>
                 </div>
                 <div class="text-[11px] font-mono text-text-muted">{dbStats.sizeMB} MB</div>
@@ -60,18 +70,27 @@ const dbStats = dbService.getDbStats();
 
             <!-- Table List -->
             <div class="px-4 py-2 border-b border-border">
-                <span class="text-[11px] font-bold text-text-muted uppercase tracking-widest">Tables</span>
+                <span class="text-[11px] font-bold text-text-muted uppercase tracking-widest"
+                    >資料表列表</span
+                >
             </div>
             <nav class="flex-1 overflow-y-auto py-1 custom-scrollbar">
                 <ul class="space-y-0.5" id="table-list">
-                    {tableStats.map(t => (
-                        <li>
-                            <button class="w-full text-left px-4 py-2.5 text-xs font-mono text-text-secondary hover:bg-surface-hover hover:text-text-primary transition-all flex items-center justify-between group" data-table={t.name}>
-                                <span class="truncate">{t.name}</span>
-                                <span class="text-[11px] text-text-muted font-mono opacity-0 group-hover:opacity-100 transition-opacity">{t.rows.toLocaleString()}</span>
-                            </button>
-                        </li>
-                    ))}
+                    {
+                        tableStats.map(t => (
+                            <li>
+                                <button
+                                    class="w-full text-left px-4 py-2.5 text-xs font-mono text-text-secondary hover:bg-surface-hover hover:text-text-primary transition-all flex items-center justify-between group"
+                                    data-table={t.name}
+                                >
+                                    <span class="truncate">{t.name}</span>
+                                    <span class="text-[11px] text-text-muted font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {t.rows.toLocaleString()}
+                                    </span>
+                                </button>
+                            </li>
+                        ))
+                    }
                 </ul>
             </nav>
         </aside>
@@ -84,22 +103,36 @@ const dbStats = dbService.getDbStats();
             <!-- Toolbar -->
             <header class="terminal-toolbar sticky top-0 z-10">
                 <div class="terminal-toolbar-left">
-                    <h2 class="terminal-toolbar-title" id="current-table-name">Select a table</h2>
-                    <span id="row-count-badge" class="hidden text-[11px] bg-accent/20 text-accent font-bold px-2 py-0.5 rounded-full">0 ROWS</span>
+                    <h2 class="terminal-toolbar-title" id="current-table-name">請選擇資料表</h2>
+                    <span
+                        id="row-count-badge"
+                        class="hidden text-[11px] bg-accent/20 text-accent font-bold px-2 py-0.5 rounded-full"
+                        >0 筆資料</span
+                    >
                 </div>
                 <div class="terminal-toolbar-right">
                     <div class="toolbar-control">
-                        <span class="terminal-toolbar-meta">PAGE</span>
+                        <span class="terminal-toolbar-meta">當前頁碼</span>
                         <div class="flex items-center gap-2">
-                            <button id="prev-page" class="text-text-muted hover:text-text-primary disabled:opacity-30">◀</button>
-                            <span id="page-num" class="text-[11px] font-mono text-text-primary">1</span>
-                            <button id="next-page" class="text-text-muted hover:text-text-primary disabled:opacity-30">▶</button>
+                            <button
+                                id="prev-page"
+                                class="text-text-muted hover:text-text-primary disabled:opacity-30"
+                                >◀</button
+                            >
+                            <span id="page-num" class="text-[11px] font-mono text-text-primary"
+                                >1</span
+                            >
+                            <button
+                                id="next-page"
+                                class="text-text-muted hover:text-text-primary disabled:opacity-30"
+                                >▶</button
+                            >
                         </div>
                     </div>
                     <select id="page-limit" class="toolbar-control outline-none cursor-pointer">
-                        <option value="50">50 rows</option>
-                        <option value="100" selected>100 rows</option>
-                        <option value="500">500 rows</option>
+                        <option value="50">每頁 50 筆</option>
+                        <option value="100" selected>每頁 100 筆</option>
+                        <option value="500">每頁 500 筆</option>
                     </select>
                 </div>
             </header>
@@ -107,18 +140,32 @@ const dbStats = dbService.getDbStats();
             <!-- Table Container -->
             <div class="flex-1 overflow-auto custom-scrollbar relative" id="grid-container">
                 <!-- Welcome State -->
-                <div id="welcome-message" class="absolute inset-0 flex flex-col items-center justify-center text-center p-12">
-                    <div class="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center text-3xl mb-4 border border-border animate-glow-pulse">🗃️</div>
-                    <h3 class="text-lg font-bold text-text-primary">SQLite Data Explorer</h3>
-                    <p class="text-sm text-text-muted mt-2 max-w-sm">Select a table from the sidebar to inspect raw records, verified health and data types.</p>
+                <div
+                    id="welcome-message"
+                    class="absolute inset-0 flex flex-col items-center justify-center text-center p-12"
+                >
+                    <div
+                        class="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center text-3xl mb-4 border border-border animate-glow-pulse"
+                    >
+                        🗃️
+                    </div>
+                    <h3 class="text-lg font-bold text-text-primary">SQLite 資料總管</h3>
+                    <p class="text-sm text-text-muted mt-2 max-w-sm">
+                        請從側邊欄選擇一個資料表以查看原始記錄、驗證狀態和資料類型。
+                    </p>
                 </div>
 
                 <!-- Error State -->
-                <div id="db-error" class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-12 bg-red-950/20">
+                <div
+                    id="db-error"
+                    class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-12 bg-red-950/20"
+                >
                     <span class="text-4xl mb-4">⚠️</span>
-                    <h3 class="text-red-500 font-bold uppercase tracking-widest text-sm">Database Error</h3>
+                    <h3 class="text-red-500 font-bold uppercase tracking-widest text-sm">
+                        資料庫錯誤
+                    </h3>
                     <p id="error-message" class="text-xs text-red-400/80 mt-2 font-mono"></p>
-                    <button onclick="location.reload()" class="btn-cyber mt-6">RETRY</button>
+                    <button onclick="location.reload()" class="btn-cyber mt-6">重試</button>
                 </div>
 
                 <!-- Actual Data Table -->
@@ -131,9 +178,16 @@ const dbStats = dbService.getDbStats();
             <!-- Footer info -->
             <footer class="h-8 border-t border-border px-6 flex items-center bg-base-deep">
                 <p class="text-[11px] text-text-muted font-mono flex items-center gap-4">
-                    <span>QUERY EXEC: <span id="query-time" class="text-text-secondary">0ms</span></span>
-                    <span>ADAPTER: SQLite (Better-Sqlite3)</span>
+                    <span
+                        >查詢耗時: <span id="query-time" class="text-text-secondary">0ms</span
+                        ></span
+                    >
+                    <span>資料引擊: SQLite (Better-Sqlite3)</span>
                     <span>{dbStats.sizeMB} MB</span>
+                    <span
+                        >即時更新數: <span id="tick-count" class="text-text-secondary">0</span
+                        ></span
+                    >
                 </p>
             </footer>
         </main>
@@ -141,19 +195,42 @@ const dbStats = dbService.getDbStats();
 </MainTerminal>
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: hsl(0 0% 100% / 0.08); border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: hsl(0 0% 100% / 0.15); }
-    #data-table { table-layout: auto; min-width: 100%; }
-    :global(.db-cell) { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: hsl(0 0% 100% / 0.08);
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: hsl(0 0% 100% / 0.15);
+    }
+    #data-table {
+        table-layout: auto;
+        min-width: 100%;
+    }
+    :global(.db-cell) {
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 </style>
 
 <script>
     function escapeHtml(str: unknown): string {
         if (str === null || str === undefined) return '';
         const s = String(str);
-        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        return s
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     let activeTable = '';
@@ -175,13 +252,23 @@ const dbStats = dbService.getDbStats();
     const queryTimeLabel = document.getElementById('query-time');
     const pageNumLabel = document.getElementById('page-num');
 
-    interface ColumnDef { name: string; type: string; }
-    interface TableDataResponse { total: number; columns: ColumnDef[]; rows: any[]; }
+    interface ColumnDef {
+        name: string;
+        type: string;
+    }
+    interface TableDataResponse {
+        total: number;
+        columns: ColumnDef[];
+        rows: any[];
+    }
 
     function renderLoadingRows() {
         if (!tableBody) return;
         tableBody.innerHTML = Array.from({ length: 8 })
-            .map(() => `<tr class="table-loading-row border-b border-border/30"><td colspan="99"><div class="skeleton"></div></td></tr>`)
+            .map(
+                () =>
+                    `<tr class="table-loading-row border-b border-border/30"><td colspan="99"><div class="skeleton"></div></td></tr>`
+            )
             .join('');
     }
 
@@ -190,10 +277,17 @@ const dbStats = dbService.getDbStats();
         if (isLoading) {
             loadingBar.style.opacity = '1';
             loadingBar.style.width = '30%';
-            setTimeout(() => { if (loadingBar && loadingBar.style.width === '30%') loadingBar.style.width = '70%'; }, 500);
+            setTimeout(() => {
+                if (loadingBar && loadingBar.style.width === '30%') loadingBar.style.width = '70%';
+            }, 500);
         } else {
             loadingBar.style.width = '100%';
-            setTimeout(() => { if (loadingBar) { loadingBar.style.opacity = '0'; loadingBar.style.width = '0'; } }, 300);
+            setTimeout(() => {
+                if (loadingBar) {
+                    loadingBar.style.opacity = '0';
+                    loadingBar.style.width = '0';
+                }
+            }, 300);
         }
     }
 
@@ -235,7 +329,10 @@ const dbStats = dbService.getDbStats();
 
         try {
             const offset = (page - 1) * limit;
-            const res = await fetch(`/api/db/${encodeURIComponent(name)}?limit=${limit}&offset=${offset}`, { signal: activeController.signal });
+            const res = await fetch(
+                `/api/db/${encodeURIComponent(name)}?limit=${limit}&offset=${offset}`,
+                { signal: activeController.signal }
+            );
             if (seq !== requestSeq) return;
             if (!res.ok) throw new Error(await res.text());
 
@@ -243,7 +340,7 @@ const dbStats = dbService.getDbStats();
 
             if (tableNameLabel) tableNameLabel.textContent = name;
             if (rowCountBadge) {
-                rowCountBadge.textContent = `${data.total.toLocaleString()} ROWS`;
+                rowCountBadge.textContent = `${data.total.toLocaleString()} 筆資料`;
                 rowCountBadge.classList.remove('hidden');
             }
             if (pageNumLabel) pageNumLabel.textContent = page.toString();
@@ -252,37 +349,48 @@ const dbStats = dbService.getDbStats();
             // Render Header (escaped)
             if (tableHead) {
                 tableHead.innerHTML = `<tr>
-                    ${data.columns.map((col: ColumnDef) => `
+                    ${data.columns
+                        .map(
+                            (col: ColumnDef) => `
                         <th class="cursor-pointer px-3 py-2 text-[11px] font-bold text-text-muted border-r border-border/50" data-asc="false">
                             <div class="flex flex-col">
                                 <span class="text-text-primary">${escapeHtml(col.name)}</span>
                                 <span class="text-[10px] font-normal text-text-muted uppercase">${escapeHtml(col.type)}</span>
                             </div>
                         </th>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </tr>`;
             }
 
             // Render Body (escaped)
             if (tableBody) {
-                tableBody.innerHTML = data.rows.map((row: any) => `
+                tableBody.innerHTML = data.rows
+                    .map(
+                        (row: any) => `
                     <tr class="hover:bg-glass-hover transition-colors border-b border-border/30">
-                        ${data.columns.map((col: ColumnDef) => {
-                            const val = row[col.name];
-                            const isNull = val === null || val === undefined;
-                            return `
+                        ${data.columns
+                            .map((col: ColumnDef) => {
+                                const val = row[col.name];
+                                const isNull = val === null || val === undefined;
+                                return `
                                 <td class="px-3 py-1.5 text-xs font-mono border-r border-border/20 ${isNull ? 'bg-red-950/20 text-red-500 italic' : 'text-text-secondary'}">
                                     <div class="db-cell">${isNull ? 'NULL' : escapeHtml(val)}</div>
                                 </td>
                             `;
-                        }).join('')}
+                            })
+                            .join('')}
                     </tr>
-                `).join('');
+                `
+                    )
+                    .join('');
                 // enable sorting after rendering
                 enableTableSorting();
             }
 
-            if (queryTimeLabel) queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
+            if (queryTimeLabel)
+                queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
         } catch (err) {
             if ((err as Error).name === 'AbortError') return;
             console.error(err);
@@ -359,11 +467,26 @@ const dbStats = dbService.getDbStats();
             const isHidden = dbSidebar.classList.contains('max-md:-translate-x-full');
             isHidden ? openSidebar() : closeSidebar();
         });
-        dbSidebar.addEventListener('click', (e) => {
-            if ((e.target as HTMLElement).closest('button[data-table]') && window.innerWidth < 768) {
+        dbSidebar.addEventListener('click', e => {
+            if (
+                (e.target as HTMLElement).closest('button[data-table]') &&
+                window.innerWidth < 768
+            ) {
                 closeSidebar();
             }
         });
         sidebarBackdrop?.addEventListener('click', closeSidebar);
+    }
+
+    // real-time tick counter update is handled above in footer
+    if (typeof EventSource !== 'undefined') {
+        const es = new EventSource('/api/sse/stream');
+        const tickCountEl = document.getElementById('tick-count');
+        es.addEventListener('tick', e => {
+            try {
+                const ticks = JSON.parse(e.data);
+                if (tickCountEl) tickCountEl.textContent = String(ticks.length);
+            } catch {}
+        });
     }
 </script>

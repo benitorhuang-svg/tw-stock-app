@@ -31,11 +31,18 @@ const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 
 <section class:list={['glass-card overflow-hidden', className]}>
     <!-- Header -->
-    <div class:list={[
-        'flex items-center justify-between px-5 py-3 border-b border-border',
-        isBull ? 'bg-bullish/[0.03]' : 'bg-bearish/[0.03]',
-    ]}>
-        <h2 class:list={['text-sm font-bold tracking-wide flex items-center gap-2', `text-${accentColor}`]}>
+    <div
+        class:list={[
+            'flex items-center justify-between px-4 py-2 border-b border-border',
+            isBull ? 'bg-bullish/[0.03]' : 'bg-bearish/[0.03]',
+        ]}
+    >
+        <h2
+            class:list={[
+                'text-sm font-bold tracking-wide flex items-center gap-2',
+                `text-${accentColor}`,
+            ]}
+        >
             <span class:list={['w-1.5 h-1.5 rounded-full', `bg-${accentColor}`]}></span>
             {title}
         </h2>
@@ -44,34 +51,48 @@ const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 
     <!-- Stock Rows -->
     <div class="divide-y divide-border/30">
-        {stocks.map((s, i) => (
-            <a
-                href={`/stocks/${s.symbol}`}
-                class="flex items-center justify-between px-5 py-2.5 hover:bg-glass-hover transition-colors group no-underline"
-                data-astro-prefetch
-            >
-                <div class="flex items-center gap-3">
-                    <span class="text-[11px] font-mono text-text-muted w-5 text-right">{i + 1}</span>
-                    <div>
-                        <div class="flex items-center gap-1.5">
-                            <span class:list={['text-sm font-semibold text-text-primary transition-colors', `group-hover:text-${accentColor}`]}>
-                                {s.name}
+        {
+            stocks.map((s, i) => (
+                <a
+                    href={`/stocks/${s.symbol}`}
+                    class="flex items-center justify-between px-4 py-1.5 hover:bg-glass-hover transition-colors group no-underline"
+                    data-astro-prefetch
+                >
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-mono text-text-muted w-4 text-left">
+                            {i + 1}
+                        </span>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span
+                                    class:list={[
+                                        'text-sm font-semibold transition-colors text-stock-name',
+                                    ]}
+                                >
+                                    {s.name}
+                                </span>
+                                <span class="text-[11px] font-mono text-stock-symbol">
+                                    {s.symbol}
+                                </span>
+                            </div>
+                            <span class="text-[10px] font-mono text-stock-volume">
+                                量 {fmtVol(s.volume)}
                             </span>
-                            <span class="text-[11px] text-text-muted font-mono">{s.symbol}</span>
                         </div>
-                        <span class="text-[10px] text-text-muted font-mono">量 {fmtVol(s.volume)}</span>
                     </div>
-                </div>
-                <div class="text-right">
-                    <div class="data-value text-sm">{fmtPrice(s.price)}</div>
-                    <span class:list={['text-xs font-mono font-bold', `text-${accentColor}`]}>
-                        {fmtPct(s.changePercent)}
-                    </span>
-                </div>
-            </a>
-        ))}
-        {stocks.length === 0 && (
-            <div class="px-5 py-8 text-center text-sm text-text-muted">暫無資料</div>
-        )}
+                    <div class="text-right">
+                        <div class="data-value text-sm text-stock-price">{fmtPrice(s.price)}</div>
+                        <span class:list={['text-xs font-mono font-bold', `text-${accentColor}`]}>
+                            {fmtPct(s.changePercent)}
+                        </span>
+                    </div>
+                </a>
+            ))
+        }
+        {
+            stocks.length === 0 && (
+                <div class="px-5 py-8 text-center text-sm text-text-muted">暫無資料</div>
+            )
+        }
     </div>
 </section>

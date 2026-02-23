@@ -55,7 +55,7 @@ const insights = [
                     <div class="flex items-center gap-2">
                         <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
                         <span class="text-[10px] font-mono text-text-muted tracking-wider"
-                            >REALTIME</span
+                            >即時連線</span
                         >
                     </div>
                 </div>
@@ -243,11 +243,16 @@ const insights = [
             }
 
             // Update LIVE indicator timestamp
-            const liveLabel = document.querySelector('[data-tab-content="overview"] .terminal-label');
+            const liveLabel = document.querySelector(
+                '[data-tab-content="overview"] .terminal-label'
+            );
             if (liveLabel && liveLabel.textContent?.includes('日內走勢')) {
-                const timeStr = new Date(data.time).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+                const timeStr = new Date(data.time).toLocaleTimeString('zh-TW', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
                 const statusEl = liveLabel.parentElement?.querySelector('.text-text-muted');
-                if (statusEl) statusEl.textContent = `LIVE ${timeStr}`;
+                if (statusEl) statusEl.textContent = `即時 ${timeStr}`;
             }
         } catch {
             // silently fail - SSR data is still shown
@@ -259,5 +264,7 @@ const insights = [
         fetchLiveQuote();
     }
     const refreshInterval = setInterval(fetchLiveQuote, 60000);
-    document.addEventListener('astro:before-swap', () => clearInterval(refreshInterval), { once: true });
+    document.addEventListener('astro:before-swap', () => clearInterval(refreshInterval), {
+        once: true,
+    });
 </script>

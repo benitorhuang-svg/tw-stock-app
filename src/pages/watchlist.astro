@@ -2,13 +2,45 @@
 import MainTerminal from '../layouts/MainTerminal.astro';
 ---
 
-<MainTerminal title="自選股">
+<MainTerminal title="我的自選">
     <section class="px-4 lg:px-6 py-4">
         <div class="max-w-[1600px] mx-auto w-full">
             <div id="watchlist-empty" class="text-center text-text-muted py-12 hidden">
                 尚無自選股，前往股票詳情頁按下 ⭐ 加入
             </div>
-            <div id="watchlist-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            <div
+                id="watchlist-list"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
+            >
+            </div>
+
+            <section class="glass-card p-0 overflow-hidden border-border/40 mt-10">
+                <div class="terminal-toolbar">
+                    <div class="terminal-toolbar-left">
+                        <span class="terminal-toolbar-title">高殖利率情報牆</span>
+                        <span class="terminal-toolbar-meta">優質獲利 / 低本益比精選</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead
+                            class="bg-surface/50 border-b border-border text-[11px] uppercase text-text-muted font-bold"
+                        >
+                            <tr>
+                                <th class="py-3 px-5">證券名稱</th>
+                                <th class="py-3 px-5 text-right">成交價</th>
+                                <th class="py-3 px-5 text-right">漲跌幅</th>
+                                <th class="py-3 px-5 text-right">殖利率</th>
+                                <th class="py-3 px-5 text-right">本益比</th>
+                                <th class="py-3 px-5 text-right">股淨比</th>
+                            </tr>
+                        </thead>
+                        <tbody id="high-yield-body" class="divide-y divide-border/20">
+                            <!-- Injected by script -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
     </section>
 </MainTerminal>
@@ -24,31 +56,68 @@ import MainTerminal from '../layouts/MainTerminal.astro';
         const syms = getWatchlist();
         if (!syms || syms.length === 0) {
             if (emptyEl) emptyEl.classList.remove('hidden');
-            return;
+        } else {
+            if (emptyEl) emptyEl.classList.add('hidden');
+            const stocks = await Promise.all(syms.map(s => getStockBySymbol(s)));
+            stocks.forEach(stock => {
+                if (!stock) return;
+                const a = document.createElement('a');
+                a.href = `/stocks/${stock.symbol}`;
+                a.className =
+                    'glass-card p-4 hover:shadow-lg transition-colors flex flex-col gap-2';
+                a.dataset.symbol = stock.symbol;
+                a.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm font-bold truncate text-stock-name">${stock.name || '—'}</div>
+                        <div class="font-mono text-xs text-stock-symbol">${stock.symbol}</div>
+                    </div>
+                    <div class="data-value text-2xl font-bold text-stock-price">${stock.price ? stock.price.toFixed(2) : '—'}</div>
+                    <div class="text-sm font-mono ${stock.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
+                        ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
+                    </div>
+                `;
+                listEl?.appendChild(a);
+            });
         }
-        if (emptyEl) emptyEl.classList.add('hidden');
 
-        const stocks = await Promise.all(
-            syms.map(s => getStockBySymbol(s))
-        );
-        stocks.forEach(stock => {
-            if (!stock) return;
-            const a = document.createElement('a');
-            a.href = `/stocks/${stock.symbol}`;
-            a.className = 'glass-card p-4 hover:shadow-lg transition-colors flex flex-col gap-2';
-            a.dataset.symbol = stock.symbol;
-            a.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <div class="text-sm font-bold truncate">${stock.name || '—'}</div>
-                    <div class="font-mono text-xs text-text-muted">${stock.symbol}</div>
-                </div>
-                <div class="data-value text-2xl font-bold">${stock.price ? stock.price.toFixed(2) : '—'}</div>
-                <div class="text-sm font-mono ${stock.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
-                    ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
-                </div>
+        // Render High Yield Table
+        renderHighYield();
+    }
+
+    async function renderHighYield() {
+        const svc = await import('../utils/stockDataService');
+        const all = await svc.getStocksWithPrices();
+        const highYield = all
+            .filter(s => s.yield > 0 && s.pe > 0 && s.price > 0)
+            .sort((a, b) => b.yield - a.yield)
+            .slice(0, 10);
+
+        const body = document.getElementById('high-yield-body');
+        if (!body) return;
+
+        body.innerHTML = highYield
+            .map(s => {
+                const bull = s.changePercent > 0;
+                const bear = s.changePercent < 0;
+                return `
+                <tr class="hover:bg-accent/[0.03] transition-colors cursor-pointer" onclick="window.location.href='/stocks/${s.symbol}'">
+                    <td class="py-3 px-5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-text-primary group-hover:text-accent">${s.name}</span>
+                            <span class="text-[10px] text-text-muted font-mono">${s.symbol}</span>
+                        </div>
+                    </td>
+                    <td class="text-right font-mono text-sm pr-5">${s.price.toFixed(2)}</td>
+                    <td class="text-right font-mono font-bold text-xs pr-5 ${bull ? 'text-bullish' : bear ? 'text-bearish' : 'text-text-muted'}">
+                        ${bull ? '+' : ''}${s.changePercent.toFixed(2)}%
+                    </td>
+                    <td class="text-right font-mono font-bold text-sm text-warning pr-5">${s.yield.toFixed(2)}%</td>
+                    <td class="text-right font-mono text-xs text-text-secondary pr-5">${s.pe.toFixed(1)}</td>
+                    <td class="text-right font-mono text-xs text-text-secondary pr-5">${s.pb.toFixed(2)}</td>
+                </tr>
             `;
-            listEl?.appendChild(a);
-        });
+            })
+            .join('');
     }
 
     if (document.readyState === 'loading') {

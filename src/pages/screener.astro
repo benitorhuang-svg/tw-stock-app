@@ -7,9 +7,13 @@ import MainTerminal from '../layouts/MainTerminal.astro';
 import StockScreener from '../components/organisms/StockScreener.astro';
 ---
 
-<MainTerminal title="Screener 選股" fullWidth={true}>
-    <section class="px-4 lg:px-6 pt-4 lg:pt-5 pb-3 border-b border-border bg-base-deep/50 backdrop-blur-sm">
-        <div class="max-w-[1600px] mx-auto w-full flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+<MainTerminal title="智慧選股" fullWidth={true}>
+    <section
+        class="px-4 lg:px-6 pt-4 lg:pt-5 pb-3 border-b border-border bg-base-deep/50 backdrop-blur-sm"
+    >
+        <div
+            class="max-w-[1600px] mx-auto w-full flex flex-col sm:flex-row sm:items-end justify-between gap-3"
+        >
             <div>
                 <h1 class="text-xl lg:text-2xl font-bold text-text-primary tracking-tight">
                     選股引擎
@@ -20,7 +24,7 @@ import StockScreener from '../components/organisms/StockScreener.astro';
             </div>
             <div class="flex items-center gap-2">
                 <span class="tag-chip">SQLite</span>
-                <span class="tag-chip">LOCAL DB</span>
+                <span class="tag-chip">本地資料庫</span>
                 <span class="w-1.5 h-1.5 rounded-full bg-bullish ring-pulse"></span>
             </div>
         </div>

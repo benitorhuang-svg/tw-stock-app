@@ -1,0 +1,34 @@
+﻿[2m19:17:23[22m [34m[@astrojs/node][39m Enabling sessions with filesystem storage
+[2m19:17:24[22m [34m[content][39m Syncing content
+[2m19:17:24[22m [34m[content][39m Synced content
+[2m19:17:24[22m [34m[types][39m Generated [2m372ms[22m
+[2m19:17:24[22m [34m[build][39m output: [34m"server"[39m
+[2m19:17:24[22m [34m[build][39m mode: [34m"server"[39m
+[2m19:17:24[22m [34m[build][39m directory: [34mC:\Users\benit\Desktop\stock\TW-stock\dist\[39m
+[2m19:17:24[22m [34m[build][39m adapter: [32m@astrojs/node[39m
+[2m19:17:24[22m [34m[build][39m Collecting build info...
+[2m19:17:24[22m [34m[build][39m [32m??Completed in 401ms.[39m
+[2m19:17:24[22m [34m[build][39m Building server entrypoints...
+node.exe : [31m[1m19:17:24[22m [ERROR] [vite][39m 
+[31m??[39m Build failed in 814ms
+位於 線路:1 字元:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Users\benit\AppData\Roaming\ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([31m[1m19:17:. 
+   ..failed in 814ms:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[@tailwindcss/vite:generate:build] Missing opening {
+file: 
+C:/Users/benit/Desktop/stock/TW-stock/src/styles/global.css
+  [1mStack trace:[22m
+[2m    at Se (file:///C:/Users/benit/Desktop/stock/TW-stock/n
+ode_modules/tailwindcss/dist/chunk-O3SHLFNR.mjs:1:3079)
+    at uu (file:///C:/Users/benit/Desktop/stock/TW-stock/node_
+modules/@tailwindcss/node/dist/index.mjs:10:3464)
+    at Object.handler (file:///C:/Users/benit/Desktop/stock/TW
+-stock/node_modules/@tailwindcss/vite/dist/index.mjs:1:3776)
+    at file:///C:/Users/benit/Desktop/stock/TW-stock/node_modu
+les/rollup/dist/es/shared/node-entry.js:22527:40[22m
