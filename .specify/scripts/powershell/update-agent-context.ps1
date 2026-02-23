@@ -317,7 +317,7 @@ function Update-ExistingAgentFile {
         }
         if ($line -eq '## Recent Changes') {
             $output.Add($line)
-            if ($newChangeEntry) { $output.Add($newChangeEntry); $changeAdded = $true }
+            if ($newChangeEntry) { $output.Add($newChangeEntry) }
             $inChanges = $true
             continue
         }
