@@ -107,6 +107,7 @@ const isStockNotFound = stockData.price === 0 && stockData.name === symbol;
                 </div>
             </div>
             <div class="flex items-center gap-2 shrink-0">
+                <button id="watch-toggle" class="btn-cyber text-xs">⭐ 加入自選</button>
                 <a href="/stocks" class="btn-ghost text-xs" data-astro-prefetch>← 列表</a>
             </div>
         </div>
@@ -156,8 +157,8 @@ const isStockNotFound = stockData.price === 0 && stockData.name === symbol;
                     <path d="M0,140 C20,138 40,130 60,120 S100,105 120,100 S160,92 180,95 S220,85 240,75 S280,65 300,60 S340,62 360,58 L400,50 L400,200 L0,200 Z" fill="url(#chartGrad)"></path>
                 </svg>
                 <!-- Floating price tag (top-right) -->
-                <div class:list={[
-<div id="chart-price" class="absolute right-3 top-6 px-3 py-1.5 rounded-md font-mono text-base font-bold",
+                <div id="chart-price" class:list={[
+                    'absolute right-3 top-6 px-3 py-1.5 rounded-md font-mono text-base font-bold',
                     isBullish ? 'bg-bullish/15 text-bullish' : isBearish ? 'bg-bearish/15 text-bearish' : 'bg-surface text-text-muted'
                 ]}>
                     {stockData.price > 0 ? stockData.price.toFixed(2) : '—'}
@@ -282,15 +283,47 @@ const isStockNotFound = stockData.price === 0 && stockData.name === symbol;
         />
     </div>
 
-    <!-- real‑time price updates via SSE -->
-    <script>
-        const currentSymbol = ${JSON.stringify(symbol)};
+    <!-- real‑time price updates via SSE and watchlist -->
+    <script type="module">
+        import { isInWatchlist, addToWatchlist, removeFromWatchlist } from '../../lib/user-account';
+        import { toast } from '../../lib/toast';
+
+        const currentSymbol = {JSON.stringify(symbol)};
+        const watchBtn = document.getElementById('watch-toggle');
+        let inList = false;
+
+        function updateWatchBtn() {
+            if (!watchBtn) return;
+            watchBtn.textContent = inList ? '★ 已自選' : '⭐ 加入自選';
+        }
+
+        function syncWatchStatus() {
+            inList = isInWatchlist(currentSymbol);
+            updateWatchBtn();
+        }
+
+        watchBtn?.addEventListener('click', () => {
+            if (inList) {
+                removeFromWatchlist(currentSymbol);
+                toast.show({ message: '已從自選移除', type: 'info' });
+            } else {
+                addToWatchlist(currentSymbol);
+                toast.show({ message: '已加入自選', type: 'success' });
+            }
+            syncWatchStatus();
+        });
+
+        // initialize status on load
+        if (typeof window !== 'undefined') {
+            syncWatchStatus();
+        }
+
         if (typeof EventSource !== 'undefined') {
             const es = new EventSource('/api/sse/stream');
             es.addEventListener('tick', e => {
                 try {
                     const ticks = JSON.parse(e.data);
-                    ticks.forEach(t => {
+                    ticks.forEach((t: any) => {
                         if (t.symbol === currentSymbol) {
                             const price = t.price.toFixed(2);
                             [

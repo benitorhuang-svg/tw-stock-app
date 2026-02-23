@@ -1,0 +1,59 @@
+---
+import MainTerminal from '../layouts/MainTerminal.astro';
+---
+
+<MainTerminal title="自選股">
+    <section class="px-4 lg:px-6 py-4">
+        <div class="max-w-[1600px] mx-auto w-full">
+            <div id="watchlist-empty" class="text-center text-text-muted py-12 hidden">
+                尚無自選股，前往股票詳情頁按下 ⭐ 加入
+            </div>
+            <div id="watchlist-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+        </div>
+    </section>
+</MainTerminal>
+
+<script type="module">
+    import { getWatchlist } from '../lib/user-account';
+    import { getStockBySymbol } from '../utils/stockDataService';
+
+    const emptyEl = document.getElementById('watchlist-empty');
+    const listEl = document.getElementById('watchlist-list');
+
+    async function renderWatchlist() {
+        const syms = getWatchlist();
+        if (!syms || syms.length === 0) {
+            if (emptyEl) emptyEl.classList.remove('hidden');
+            return;
+        }
+        if (emptyEl) emptyEl.classList.add('hidden');
+
+        const stocks = await Promise.all(
+            syms.map(s => getStockBySymbol(s))
+        );
+        stocks.forEach(stock => {
+            if (!stock) return;
+            const a = document.createElement('a');
+            a.href = `/stocks/${stock.symbol}`;
+            a.className = 'glass-card p-4 hover:shadow-lg transition-colors flex flex-col gap-2';
+            a.dataset.symbol = stock.symbol;
+            a.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div class="text-sm font-bold truncate">${stock.name || '—'}</div>
+                    <div class="font-mono text-xs text-text-muted">${stock.symbol}</div>
+                </div>
+                <div class="data-value text-2xl font-bold">${stock.price ? stock.price.toFixed(2) : '—'}</div>
+                <div class="text-sm font-mono ${stock.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
+                    ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
+                </div>
+            `;
+            listEl?.appendChild(a);
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderWatchlist);
+    } else {
+        renderWatchlist();
+    }
+</script>

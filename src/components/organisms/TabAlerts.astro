@@ -41,41 +41,31 @@ const sentimentAdvice =
 // Gauge SVG angle (0 = far left = bearish, 180 = far right = bullish)
 const needleAngle = (clampedScore / 100) * 180 - 90; // -90 to 90 degrees
 
-// AI Report markdown content (simulated)
-const reportSections = [
-    {
-        title: '📊 基本面亮點',
-        content: `${name} (${symbol}) 近期營收表現${isBullish ? '穩健成長' : '略有波動'}。最新季度毛利率維持高檔，營業利益率${isBullish ? '持續擴張' : '小幅收縮'}。EPS 年增率${isBullish ? '優於市場預期' : '符合預期'}，整體基本面${isBullish ? '具備支撐' : '需密切觀察'}。`,
-    },
-    {
-        title: '🏦 籌碼動能追蹤',
-        content: `外資近五日${isBullish ? '呈現淨買超態勢' : '持續調節持股'}，投信${isBullish ? '同步加碼' : '維持觀望'}。籌碼面${isBullish ? '集中度提升，有利於短線推升' : '略有鬆動，留意是否出現連續賣超'}。融資券變化尚屬正常範圍。`,
-    },
-    {
-        title: '📈 技術型態掃描',
-        content: `當前股價位於${isBullish ? '所有均線之上' : 'MA20 附近'}。KD 指標${isBullish ? '呈現黃金交叉' : '接近低檔'}，MACD 柱狀體${isBullish ? '翻紅且持續擴大' : '縮減中'}。短線${isBullish ? '上方壓力位在' : '下方支撐位在'} ${(price * (isBullish ? 1.05 : 0.95)).toFixed(0)} 元附近。`,
-    },
-    {
-        title: '⚠️ 風險提示',
-        content: `需留意大盤系統性風險，以及國際半導體景氣循環變化。若${isBullish ? '量能無法持續放大' : '跌破關鍵支撐'}，建議${isBullish ? '逢高減碼部分持股' : '嚴格執行停損紀律'}。`,
-    },
-];
+// AI Report markdown content (initial placeholder, will be replaced by server data)
+let reportSections = [];
 
-// Suggested alerts from AI
-const suggestedAlerts = [
-    {
-        icon: '📍',
-        insight: `AI 發現目前股價${isBullish ? '接近前高壓力區' : '靠近月線支撐'}。`,
-        rule: `當 ${symbol} 收盤價 ${isBullish ? '向上突破' : '向下跌破'} ${(price * (isBullish ? 1.03 : 0.97)).toFixed(0)} 元`,
-        action: '發送推播通知',
-    },
-    {
-        icon: '🏦',
-        insight: `外資連續${isBullish ? '買超' : '賣超'}，留意趨勢延續。`,
-        rule: `當 ${symbol} 外資連續 ${isBullish ? '買' : '賣'}超天數達 5 日`,
-        action: '發送 Email 警示',
-    },
-];
+// Suggested alerts from AI (placeholder)
+let suggestedAlerts: any[] = [];
+
+let reportLoading = true;
+
+// fetch server-side AI report when running in client
+if (typeof window !== 'undefined') {
+    fetch(`/api/ai-report/${encodeURIComponent(symbol)}`)
+        .then(r => r.json())
+        .then(data => {
+            reportSections = data.reportSections || [];
+            suggestedAlerts = data.suggestedAlerts || [];
+        })
+        .catch(() => {
+            // keep empty on error
+        })
+        .finally(() => {
+            reportLoading = false;
+            // trigger re-render by forcing Astro to update? not required as mapping occurs in client?
+            // Actually Astro components do not re-render automatically; we may need client hydration.
+        });
+}
 
 // Highlight terms for GenUI
 const highlightTerms = [
@@ -166,7 +156,19 @@ const highlightTerms = [
         </div>
 
         <!-- AI Report Body -->
-        <div class="glass-card p-6 bg-gradient-to-br from-indigo-900/[0.06] to-fuchsia-900/[0.03]">
+        <style>
+.loader {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+<div class="glass-card p-6 bg-gradient-to-br from-indigo-900/[0.06] to-fuchsia-900/[0.03]">
             <div class="flex items-center gap-2 mb-5">
                 <span class="text-xl">🤖</span>
                 <h3 class="text-base font-bold text-text-primary">AI 深度分析報告</h3>
@@ -176,22 +178,28 @@ const highlightTerms = [
                     Generated
                 </span>
             </div>
-            <div class="prose prose-invert prose-sm max-w-none space-y-5">
-                {
-                    reportSections.map((section, i) => (
-                        <div
-                            style={`animation: fade-up 0.5s cubic-bezier(0.16,1,0.3,1) ${i * 200}ms both`}
-                        >
-                            <h4 class="text-sm font-bold text-text-primary mb-2">
-                                {section.title}
-                            </h4>
-                            <p class="text-sm text-text-secondary leading-relaxed">
-                                {section.content}
-                            </p>
-                        </div>
-                    ))
-                }
-            </div>
+            {reportLoading ? (
+                <div class="text-center py-6">
+                    <span class="loader"></span> 生成報告中...
+                </div>
+            ) : (
+                <div class="prose prose-invert prose-sm max-w-none space-y-5">
+                    {
+                        reportSections.map((section, i) => (
+                            <div
+                                style={`animation: fade-up 0.5s cubic-bezier(0.16,1,0.3,1) ${i * 200}ms both`}
+                            >
+                                <h4 class="text-sm font-bold text-text-primary mb-2">
+                                    {section.title}
+                                </h4>
+                                <p class="text-sm text-text-secondary leading-relaxed">
+                                    {section.content}
+                                </p>
+                            </div>
+                        ))
+                    }
+                </div>
+            )}
             <div class="flex items-center gap-2 mt-6 pt-4 border-t border-border/50">
                 <span class="w-2 h-2 bg-accent rounded-full animate-glow-pulse"></span>
                 <span class="text-xs text-text-muted font-mono"

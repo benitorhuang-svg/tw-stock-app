@@ -147,15 +147,15 @@ const categoryLabel: Record<string, string> = {
             <table class="w-full text-left border-collapse min-w-[860px]" id="screener-table">
                 <thead class="sticky top-0 bg-base-deep z-10 border-b border-border/60">
                     <tr>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Symbol</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Name</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Price</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Change%</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">PE</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">PB</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Yield</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Volume</th>
-                        <th class="px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Tag</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Symbol</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Name</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Price</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Change%</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">PE</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">PB</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Yield</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right">Volume</th>
+                        <th class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted">Tag</th>
                     </tr>
                 </thead>
                 <tbody id="screener-results-grid" class="divide-y divide-border/30"></tbody>
@@ -199,7 +199,7 @@ const categoryLabel: Record<string, string> = {
         resultsGrid.innerHTML = stocks
             .map(
                 stock => `
-            <tr class="hover:bg-accent/5 transition-colors cursor-pointer" data-link="/stocks/${stock.symbol}" data-symbol="${stock.symbol}">
+            <tr tabindex="0" class="hover:bg-accent/5 transition-colors cursor-pointer" data-link="/stocks/${stock.symbol}" data-symbol="${stock.symbol}">
                 <td class="px-3 py-2 text-xs font-mono text-text-secondary">${stock.symbol}</td>
                 <td class="px-3 py-2 text-sm font-semibold text-text-primary">${stock.name || '—'}</td>
                 <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.price)}</td>
@@ -220,6 +220,14 @@ const categoryLabel: Record<string, string> = {
         const row = target.closest<HTMLTableRowElement>('tr[data-link]');
         const href = row?.dataset.link;
         if (href) window.location.href = href;
+    });
+    // support keyboard navigation (Enter to follow link)
+    resultsGrid?.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+            const row = (event.target as HTMLElement).closest<HTMLTableRowElement>('tr[data-link]');
+            const href = row?.dataset.link;
+            if (href) window.location.href = href;
+        }
     });
 
     // Strategy card click handling
@@ -348,4 +356,23 @@ const categoryLabel: Record<string, string> = {
             } catch {}
         });
     }
+
+    // column sorting
+    function sortResultsBy(idx: number) {
+        if (lastResults.length === 0) return;
+        const paths = ['symbol','name','price','changePercent','fundamentals.pe','fundamentals.pb','fundamentals.dividendYield','volume'];
+        const path = paths[idx];
+        if (!path) return;
+        const getVal = (obj: any) => path.split('.').reduce((o,p) => (o && typeof o === 'object' ? o[p] : undefined), obj);
+        lastResults.sort((a,b) => {
+            const va = getVal(a);
+            const vb = getVal(b);
+            if (typeof va === 'number' && typeof vb === 'number') return va - vb;
+            return String(va || '').localeCompare(String(vb || ''));
+        });
+        renderResults(lastResults);
+    }
+    document.querySelectorAll('#screener-table th').forEach((th, i) => {
+        th.addEventListener('click', () => sortResultsBy(i));
+    });
 </script>

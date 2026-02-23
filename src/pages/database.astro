@@ -198,6 +198,29 @@ const dbStats = dbService.getDbStats();
     }
 
     async function loadTable(name: string, page = 1) {
+        // helper to sort columns when header clicked
+        function enableTableSorting() {
+            if (!tableHead || !tableBody) return;
+            const headers = Array.from(tableHead.querySelectorAll('th')) as HTMLElement[];
+            headers.forEach((th, idx) => {
+                th.addEventListener('click', () => {
+                    const asc = th.dataset.asc === 'true';
+                    const rows = Array.from(tableBody.querySelectorAll('tr'));
+                    rows.sort((a, b) => {
+                        const aText = a.children[idx]?.textContent || '';
+                        const bText = b.children[idx]?.textContent || '';
+                        const aNum = parseFloat(aText.replace(/[^0-9.-]/g, ''));
+                        const bNum = parseFloat(bText.replace(/[^0-9.-]/g, ''));
+                        if (!isNaN(aNum) && !isNaN(bNum)) {
+                            return asc ? aNum - bNum : bNum - aNum;
+                        }
+                        return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                    });
+                    rows.forEach(r => tableBody.appendChild(r));
+                    th.dataset.asc = asc ? 'false' : 'true';
+                });
+            });
+        }
         if (!name) return;
         const seq = ++requestSeq;
         if (activeController) activeController.abort();
@@ -230,7 +253,7 @@ const dbStats = dbService.getDbStats();
             if (tableHead) {
                 tableHead.innerHTML = `<tr>
                     ${data.columns.map((col: ColumnDef) => `
-                        <th class="px-3 py-2 text-[11px] font-bold text-text-muted border-r border-border/50">
+                        <th class="cursor-pointer px-3 py-2 text-[11px] font-bold text-text-muted border-r border-border/50" data-asc="false">
                             <div class="flex flex-col">
                                 <span class="text-text-primary">${escapeHtml(col.name)}</span>
                                 <span class="text-[10px] font-normal text-text-muted uppercase">${escapeHtml(col.type)}</span>
@@ -255,6 +278,8 @@ const dbStats = dbService.getDbStats();
                         }).join('')}
                     </tr>
                 `).join('');
+                // enable sorting after rendering
+                enableTableSorting();
             }
 
             if (queryTimeLabel) queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
