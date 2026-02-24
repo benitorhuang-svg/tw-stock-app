@@ -112,7 +112,7 @@ try {
         </div>
 
         <!-- ═══ Right Side: Breadth & Movers (Col Span 8) ═══ -->
-        <div class="lg:col-span-8 space-y-4">
+        <div class="lg:col-span-8 space-y-4 relative">
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Losers -->
@@ -134,12 +134,51 @@ try {
                 />
                 </div>
             </div>
+
+            <!-- ── Trend Analysis Floating Panel (Overlay) ── -->
+            <div id="trend-modal" class="absolute inset-x-0 top-0 z-[100] hidden p-2">
+                <div id="trend-modal-backdrop" class="absolute inset-0 bg-black/40 backdrop-blur-md rounded-3xl"></div>
+                
+                <div class="relative w-full h-[400px] bg-[#0a0c10]/95 border border-accent/30 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-fade-up flex flex-col">
+                    <div class="absolute inset-x-0 top-0 h-32 opacity-[0.05] pointer-events-none bg-gradient-to-b from-accent to-transparent"></div>
+                    <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(rgba(59,130,246,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.1)_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                    
+                    <!-- Modal Header -->
+                    <header class="relative px-8 pt-6 pb-2 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-mono font-black text-white tracking-[0.2em] uppercase">Market Sentiment</h3>
+                            <div class="flex items-center gap-3">
+                                <p class="text-[9px] font-mono text-white/30 tracking-wider">Drag to Move • Scroll to Zoom</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                                <button id="reset-trend-zoom" class="px-3 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-[10px] font-mono font-bold text-white/40 hover:text-white hover:bg-white/10 transition-all cursor-pointer uppercase tracking-wider">
+                                    Reset Zoom
+                                </button>
+                                <button id="close-trend-modal" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                        </header>
+                    
+                    <!-- Chart Container -->
+                    <div class="flex-1 px-8 pb-8 min-h-0">
+                        <div class="h-full relative">
+                            <canvas id="breadth-ratio-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     </Fragment>
     )}
 </MainTerminal>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
 <script>
     // ═══ Shared Client-Side Format Helpers ═══
@@ -165,14 +204,14 @@ try {
         // Connection established
         es.onopen = () => {
             if (headerLed) {
-                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bullish animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]';
+                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.6)]';
             }
         };
 
         // Connection error
         es.onerror = () => {
             if (headerLed) {
-                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bearish animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.4)]';
+                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bearish shadow-[0_0_8px_rgba(239,68,68,0.4)]';
             }
         };
 
@@ -337,8 +376,8 @@ try {
             // 1. Visual Feedback: Label pulse
             if (datePickerLabel) {
                 datePickerLabel.textContent = newDate;
-                datePickerLabel.classList.add('text-accent', 'animate-pulse');
-                setTimeout(() => datePickerLabel.classList.remove('text-accent', 'animate-pulse'), 1500);
+                datePickerLabel.classList.add('text-accent');
+                setTimeout(() => datePickerLabel.classList.remove('text-accent'), 1500);
             }
 
             console.log('[Temporal Shift] Fetching market data for:', newDate);
@@ -472,5 +511,178 @@ try {
             }
         });
     }
+
+    // ═══ Breadth Trend Chart Modal Logic ═══
+    const trendModal = document.getElementById('trend-modal');
+    const openChartBtn = document.getElementById('open-breadth-chart');
+    const closeChartBtn = document.getElementById('close-trend-modal');
+    const chartBackdrop = document.getElementById('trend-modal-backdrop');
+    let breadthChart: any = null;
+
+    const resetZoomBtn = document.getElementById('reset-trend-zoom');
+
+    async function initTrendChart() {
+        const canvas = document.getElementById('breadth-ratio-chart') as HTMLCanvasElement;
+        if (!canvas) return;
+
+        try {
+            const res = await fetch(`/api/market/breadth-timeseries?t=${Date.now()}`);
+            const data = await res.json();
+            
+            const labels = data.map((d: any) => d.date);
+            const ratios = data.map((d: any) => d.down > 0 ? (d.up / d.down) : 2);
+
+            if (breadthChart) breadthChart.destroy();
+
+            // @ts-ignore
+            breadthChart = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Ratio',
+                            data: ratios,
+                            borderColor: '#3b82f6',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderWidth: 3,
+                            yAxisID: 'yRatio',
+                            tension: 0.4,
+                            fill: {
+                                target: { value: 1 },
+                                above: 'transparent',
+                                below: 'rgba(34, 197, 94, 0.15)'
+                            }
+                        },
+                        {
+                            label: 'Baseline',
+                            data: labels.map(() => 1),
+                            borderColor: 'rgba(255,255,255,0.2)',
+                            borderWidth: 1,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false,
+                            yAxisID: 'yRatio',
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0a0c10',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            titleFont: { size: 10, weight: 'bold' },
+                            bodyFont: { size: 12, family: 'monospace' },
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: (context: any) => {
+                                    if (context.dataset.label === 'Baseline') return null;
+                                    const d = data[context.dataIndex];
+                                    const ratio = context.parsed.y.toFixed(2);
+                                    return [
+                                        ` RATIO : ${ratio}`,
+                                        ` ──────────────`,
+                                        ` 上漲  : ${d.up}`,
+                                        ` 持平  : ${d.flat}`,
+                                        ` 下跌  : ${d.down}`
+                                    ];
+                                }
+                            }
+                        },
+                        // @ts-ignore
+                        zoom: {
+                            pan: { enabled: true, mode: 'x' },
+                            zoom: {
+                                wheel: { enabled: true },
+                                pinch: { enabled: true },
+                                mode: 'x',
+                            },
+                            limits: { x: {min: 'original', max: 'original'} }
+                        }
+                    },
+                    onClick: (e: any, elements: any) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const clickedDate = labels[index];
+                            const datePicker = document.getElementById('market-date-picker') as HTMLInputElement;
+                            if (datePicker) {
+                                datePicker.value = clickedDate;
+                                datePicker.dispatchEvent(new Event('change', { bubbles: true }));
+                                // Optional: Close modal after selection
+                                closeModal();
+                            }
+                        }
+                    },
+                    onHover: (e: any, elements: any) => {
+                        e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+                    },
+                    scales: {
+                        x: {
+                            min: labels.length > 60 ? labels[labels.length - 60] : undefined,
+                            max: labels.length > 0 ? labels[labels.length - 1] : undefined,
+                            grid: { display: false },
+                            ticks: { 
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: 8,
+                                color: 'rgba(255,255,255,0.2)', 
+                                font: { family: 'monospace', size: 8 } 
+                            }
+                        },
+                        yRatio: {
+                            position: 'left',
+                            grid: { color: 'rgba(255,255,255,0.03)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10, weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error('[Chart] Initialization failed:', err);
+        }
+    }
+
+    openChartBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = trendModal?.classList.contains('hidden');
+        if (isHidden) {
+            trendModal?.classList.remove('hidden');
+            trendModal?.classList.add('block');
+            openChartBtn.classList.add('bg-accent/20', 'border-accent/60');
+            openChartBtn.querySelector('svg')?.classList.add('text-accent');
+            openChartBtn.querySelector('svg')?.classList.remove('text-accent/40');
+            initTrendChart();
+        } else {
+            closeModal();
+        }
+    });
+
+    resetZoomBtn?.addEventListener('click', () => {
+        if (breadthChart) {
+            breadthChart.resetZoom();
+        }
+    });
+
+    const closeModal = () => {
+        trendModal?.classList.add('hidden');
+        trendModal?.classList.remove('block');
+        openChartBtn?.classList.remove('bg-accent/20', 'border-accent/60');
+        openChartBtn?.querySelector('svg')?.classList.remove('text-accent');
+        openChartBtn?.querySelector('svg')?.classList.add('text-accent/40');
+    };
+
+    closeChartBtn?.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
+    chartBackdrop?.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 </script>
 
