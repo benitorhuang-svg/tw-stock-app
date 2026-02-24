@@ -9,6 +9,7 @@ import MarketBreadth from '../components/organisms/MarketBreadth.astro';
 import MoversPanel from '../components/organisms/MoversPanel.astro';
 import StockCard from '../components/organisms/StockCard.astro';
 import StatCard from '../components/molecules/StatCard.astro';
+import CyberCalendar from '../components/atoms/CyberCalendar.astro';
 import type { StockFullData } from '../utils/stockDataService';
 
 const fmtVol = (v: number) => {
@@ -66,7 +67,7 @@ try {
 }
 ---
 
-<MainTerminal title="市場總覽">
+<MainTerminal title="市場漲幅">
     {totalStocks === 0 ? (
         <div class="empty-state py-20 animate-fade-up">
             <div class="empty-state-icon animate-glow-pulse">📡</div>
@@ -85,23 +86,21 @@ try {
         <!-- ═══ Left Column: Stats & Breadth & Volume (Col Span 4) ═══ -->
         <div class="lg:col-span-4 space-y-4">
             <!-- 1. Market Status Module (Redesigned for Aesthetics) -->
-            <div class="glass-card overflow-hidden border-border/40 group relative">
+            <div class="glass-card relative z-30 overflow-visible border-border/40 group">
                 <!-- Decorative top glow -->
                 <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent"></div>
                 
                 <div class="px-4 py-3 space-y-3">
                     <!-- Header: Session Information -->
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            <span class="text-[9px] text-text-muted uppercase font-bold tracking-[0.2em] mb-0.5">Market Session</span>
-                            <span class="text-base font-mono font-bold text-text-primary tracking-tighter" id="market-date">{dataDate || '2026-01-23'}</span>
-                        </div>
+                    <div class="flex items-center justify-center py-1">
+                        <!-- Premium Atomic Date Picker - Consolidated Session Control -->
+                        <CyberCalendar id="market-date-picker" value={dataDate || '2026-02-24'} class="w-full" />
                     </div>
 
                     <!-- Metrics Grid -->
-                    <div class="grid grid-cols-2 gap-2 pt-1">
+                    <div class="grid grid-cols-2 gap-2 pt-1 pb-2">
                         <!-- Volume Block -->
-                        <div class="flex flex-col p-2.5 rounded bg-surface border border-border/10 group-hover:border-accent/40 transition-all duration-300">
+                        <div class="flex flex-col p-2.5 rounded-lg bg-surface/50 border border-border/10 group-hover:border-accent/40 transition-all duration-300">
                             <div class="flex items-center gap-1.5 mb-0.5">
                                 <span class="text-[9px] text-text-muted font-bold uppercase">成交量</span>
                                 <span class="text-[10px] text-text-muted/40 font-mono">VOL</span>
@@ -112,7 +111,7 @@ try {
                         </div>
                         
                         <!-- Change Block -->
-                        <div class="flex flex-col p-2.5 rounded bg-surface border border-border/10 group-hover:border-accent/40 transition-all duration-300">
+                        <div class="flex flex-col p-2.5 rounded-lg bg-surface/50 border border-border/10 group-hover:border-accent/40 transition-all duration-300">
                             <div class="flex items-center gap-1.5 mb-0.5">
                                 <span class="text-[9px] text-text-muted font-bold uppercase">平均漲跌</span>
                                 <span class="text-[10px] text-text-muted/40 font-mono">VEL</span>
@@ -120,6 +119,39 @@ try {
                             <span class:list={["text-lg font-mono font-bold leading-none tracking-tighter", avgChange >= 0 ? 'text-bullish' : 'text-bearish']} id="market-change">
                                 {avgChange >= 0 ? '+' : ''}{avgChange.toFixed(2)}%
                             </span>
+                        </div>
+                    </div>
+
+                    <!-- Consolidated Market Breadth Module -->
+                    <div class="px-2 pt-3 pb-1 border-t border-border/10 space-y-3">
+                        <div class="flex items-center justify-between">
+                             <span class="text-[10px] font-black text-text-muted/60 uppercase tracking-widest">Market Breadth</span>
+                             <div class="text-[10px] font-mono bg-accent/10 text-accent px-1.5 py-0.5 rounded border border-accent/20">
+                                RATIO <span id="breadth-ratio">{downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX'}</span>
+                             </div>
+                        </div>
+
+                        <MarketBreadth 
+                            up={upCount}
+                            down={downCount}
+                            flat={flatCount}
+                            total={totalStocks}
+                        />
+
+                        <!-- Detail Counts -->
+                        <div class="flex items-center justify-between px-1">
+                            <div class="flex flex-col items-start">
+                                <span class="text-[11px] font-bold text-bearish" id="breadth-down">{downCount}</span>
+                                <span class="text-[8px] text-text-muted/40 uppercase font-black">Down</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="text-[11px] font-bold text-text-muted/80" id="breadth-flat">{flatCount}</span>
+                                <span class="text-[8px] text-text-muted/40 uppercase font-black">Flat</span>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span class="text-[11px] font-bold text-bullish" id="breadth-up">{upCount}</span>
+                                <span class="text-[8px] text-text-muted/40 uppercase font-black">Up</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -150,59 +182,19 @@ try {
 
         <!-- ═══ Right Side: Breadth & Movers (Col Span 8) ═══ -->
         <div class="lg:col-span-8 space-y-4">
-            <!-- 2. Market Breadth Distribution (Reordered layout) -->
-            <div class="glass-card p-4 bg-surface/30 border-border/40">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
-                    <!-- Left: Title + Ratio -->
-                    <div class="flex items-center gap-3 shrink-0">
-                        <h2 class="text-sm font-bold text-text-primary tracking-tight">市場脈絡分布</h2>
-                        <div class="text-[10px] font-mono bg-accent/10 text-accent px-2 py-0.5 rounded border border-accent/20">
-                            漲跌比 <span id="breadth-ratio">{downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX'}</span>
-                        </div>
-                    </div>
-                    
-                    <!-- Center: Legend -->
-                    <div class="flex items-center justify-center gap-6 lg:gap-10 text-[11px] font-bold flex-1">
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-bearish"></span>
-                            <span class="text-bearish" id="breadth-down">{downCount}</span>
-                            <span class="text-[9px] text-text-muted font-normal uppercase">下跌</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-text-muted/40"></span>
-                            <span class="text-text-secondary" id="breadth-flat">{flatCount}</span>
-                            <span class="text-[9px] text-text-muted font-normal uppercase">平盤</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-bullish"></span>
-                            <span class="text-bullish" id="breadth-up">{upCount}</span>
-                            <span class="text-[9px] text-text-muted font-normal uppercase">上漲</span>
-                        </div>
-                    </div>
-
-                    <!-- Right spacer for centering effect on desktop -->
-                    <div class="hidden lg:block w-32 shrink-0"></div>
-                </div>
-                <MarketBreadth 
-                    up={upCount}
-                    down={downCount}
-                    flat={flatCount}
-                    total={totalStocks}
-                />
-            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Losers -->
                 <MoversPanel
                     title="跌幅排行"
-                    stocks={losers.slice(0, 6)}
+                    stocks={losers.slice(0, 10)}
                     variant="bearish"
                     class="border-bearish/10 h-full"
                 />
                 <!-- Gainers -->
                 <MoversPanel
                     title="漲幅排行"
-                    stocks={gainers.slice(0, 6)}
+                    stocks={gainers.slice(0, 10)}
                     variant="bullish"
                     class="border-bullish/10 h-full"
                 />
@@ -314,6 +306,27 @@ try {
             } catch (err) {
                 console.error('[SSE Client Error]', err);
             }
+        });
+    }
+
+    // Date Picker Handler
+    const datePicker = document.getElementById('market-date-picker') as HTMLInputElement;
+    const datePickerLabel = document.getElementById('market-date-picker-label');
+    if (datePicker) {
+        datePicker.addEventListener('change', (e) => {
+            const newDate = (e.target as HTMLInputElement).value;
+            
+            // Update the display label inside the atom
+            if (datePickerLabel) {
+                datePickerLabel.textContent = newDate;
+                
+                // Feedback: Visual pulse on the calendar label
+                datePickerLabel.classList.add('text-accent', 'animate-pulse');
+                setTimeout(() => datePickerLabel.classList.remove('text-accent', 'animate-pulse'), 1500);
+            }
+
+            // In a production app, this would trigger a window.location.search update or a fetch
+            // console.log('Historical data request for:', newDate);
         });
     }
 </script>
