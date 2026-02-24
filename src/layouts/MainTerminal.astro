@@ -8,7 +8,10 @@ import { ClientRouter } from 'astro:transitions';
 import BaseHead from './BaseHead.astro';
 import DesktopNavTabs from '../components/molecules/DesktopNavTabs.astro';
 import MobileNavTabs from '../components/molecules/MobileNavTabs.astro';
+import { dbService } from '../lib/db/sqlite-service';
 import '../styles/global.css';
+
+const dbStats = dbService.getDbStats();
 
 interface Props {
     title: string;
@@ -56,15 +59,44 @@ const { title, description, fullWidth = false } = Astro.props;
                         </div>
                     </a>
 
-                    <!-- Refresh Button Inserted Here -->
-                    <button
-                        id="refresh-data-btn"
-                        class="hidden md:flex items-center gap-1 btn-cyber py-1.5 px-3 text-sm h-[32px] shrink-0 font-bold tracking-wider hover:shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)] transition-shadow mr-3"
-                    >
-                        <span>⚡</span>
-                        <span class="hidden lg:inline">資料更新</span>
-                        <span class="lg:hidden">更新</span>
-                    </button>
+                    <!-- Consolidated Refresh & Standalone Data Obs -->
+                    <div class="hidden md:flex items-center gap-3 mr-3 lg:mr-5">
+                        <!-- Data Update Group -->
+                        <div class="flex flex-col items-start group">
+                            <button
+                                id="refresh-data-btn"
+                                class="flex items-center gap-1 btn-cyber py-1 px-3 text-[11px] h-[26px] shrink-0 font-bold tracking-wider hover:shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)] transition-shadow"
+                            >
+                                <span>資料更新</span>
+                            </button>
+                            <div
+                                class="flex items-center gap-2 mt-1 ml-0.5 opacity-40 group-hover:opacity-100 transition-opacity"
+                            >
+                                <span
+                                    class="text-[9px] font-mono font-bold text-accent tracking-tighter uppercase leading-none"
+                                    >{dbStats.sizeMB} MB</span
+                                >
+                                <span
+                                    class="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]"
+                                    >DISK_USAGE</span
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Data Observation (Extracted Standalone) -->
+                        <a
+                            href="/database"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group',
+                                Astro.url.pathname === '/database'
+                                    ? 'bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span>數據觀測</span>
+                        </a>
+                    </div>
 
                     <!-- Desktop Navigation Tabs -->
                     <DesktopNavTabs />
@@ -81,13 +113,15 @@ const { title, description, fullWidth = false } = Astro.props;
                         ⚡更新
                     </button>
                     <!-- Theme toggle -->
-                    <button
-                        id="theme-toggle"
-                        class="flex items-center justify-center w-8 h-8 rounded-lg bg-glass border border-border hover:border-accent/30 text-text-muted hover:text-text-secondary transition-all cursor-pointer"
-                        aria-label="切換主題"
-                    >
-                        <span id="theme-icon">🌙</span>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button
+                            id="theme-toggle"
+                            class="flex items-center justify-center w-8 h-8 rounded-lg bg-glass border border-border hover:border-accent/30 text-text-muted hover:text-text-secondary transition-all cursor-pointer"
+                            aria-label="切換主題"
+                        >
+                            <span id="theme-icon">🌙</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -98,28 +132,109 @@ const { title, description, fullWidth = false } = Astro.props;
         <!-- Refresh Terminal Overlay (Global) -->
         <div
             id="refresh-overlay"
-            class="hidden fixed inset-0 bg-base-deep/90 backdrop-blur-md z-[100] flex-col flex items-center justify-center p-6"
+            class="hidden fixed inset-0 bg-base-deep/95 backdrop-blur-xl z-[100] flex-col flex items-center justify-center p-6"
         >
             <div
-                class="w-full max-w-2xl bg-surface border border-border/50 rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col"
+                class="w-full max-w-3xl bg-surface border border-border/50 rounded-2xl shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col relative"
             >
+                <div class="absolute inset-0 bg-glow-radial opacity-10 pointer-events-none"></div>
+
+                <!-- Terminal Header -->
                 <div
-                    class="bg-base-deep px-4 py-2 border-b border-border/50 flex items-center justify-between"
+                    class="bg-base-deep px-5 py-3 border-b border-border/50 flex items-center justify-between relative z-10"
                 >
-                    <span class="text-xs font-mono text-text-muted flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-accent animate-glow-pulse"></span>
-                        SYSTEM UPDATE TERMINAL
-                    </span>
+                    <div class="flex items-center gap-3">
+                        <div class="flex gap-1.5">
+                            <div
+                                class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40"
+                            >
+                            </div>
+                            <div
+                                class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40"
+                            >
+                            </div>
+                            <div class="w-3 h-3 rounded-full bg-accent/20 border border-accent/40">
+                            </div>
+                        </div>
+                        <span
+                            class="text-[10px] font-mono font-black text-text-muted tracking-[0.2em] flex items-center gap-2"
+                        >
+                            CORE_DATA_SYNCHRONIZER_V2
+                        </span>
+                        <div
+                            id="refresh-eta-container"
+                            class="flex items-center gap-1.5 ml-4 opacity-0 transition-opacity duration-500 translate-x-3 no-display group"
+                        >
+                            <span
+                                class="text-[9px] font-mono font-bold text-accent/80 tracking-widest uppercase"
+                                >Estimated Completion:</span
+                            >
+                            <span
+                                id="refresh-eta"
+                                class="text-[10px] font-mono font-black text-accent bg-accent/10 border border-accent/20 px-2 py-0.5 rounded shadow-[0_0_10px_rgba(var(--accent-rgb),0.2)]"
+                                >--:--</span
+                            >
+                        </div>
+                    </div>
                     <button
                         id="close-refresh"
-                        class="hidden hover:bg-red-500/20 text-text-muted hover:text-red-400 px-3 py-1 rounded transition-colors text-xs font-bold border border-transparent hover:border-red-500/30"
+                        class="hidden hover:bg-red-500/20 text-text-muted hover:text-red-400 px-3 py-1 rounded-lg transition-colors text-[10px] font-black border border-border/50 hover:border-red-500/30"
                         >✕ 關閉視窗</button
                     >
                 </div>
-                <div
-                    id="refresh-terminal"
-                    class="p-4 bg-[#0a0a0a] h-80 overflow-y-auto text-[11px] text-text-secondary font-mono leading-relaxed custom-scrollbar whitespace-pre-wrap"
-                >
+
+                <!-- Graphical Stage Progress -->
+                <div class="p-6 bg-base mt-2 relative z-10">
+                    <div class="flex justify-between relative">
+                        <!-- Connecting Line -->
+                        <div
+                            class="absolute top-1/2 left-0 w-full h-[2px] bg-white/5 -translate-y-1/2 z-0"
+                        >
+                        </div>
+                        <div
+                            id="stage-progress-line"
+                            class="absolute top-1/2 left-0 w-0 h-[2px] bg-accent shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)] -translate-y-1/2 z-0 transition-all duration-700"
+                        >
+                        </div>
+
+                        <!-- Stages -->
+                        {
+                            [
+                                { step: 1, label: '清單更新', icon: '📋' },
+                                { step: 2, label: '數據同步', icon: '🔄' },
+                                { step: 3, label: '快照建置', icon: '📸' },
+                                { step: 4, label: '索引優化', icon: '⚡' },
+                                { step: 5, label: '同步完成', icon: '✅' },
+                            ].map(s => (
+                                <div
+                                    class="flex flex-col items-center gap-3 relative z-10 stage-item"
+                                    data-step={s.step}
+                                    id={`stage-step-${s.step}`}
+                                >
+                                    <div class="w-10 h-10 rounded-xl bg-surface border border-border/50 flex items-center justify-center text-lg transition-all duration-500 stage-icon grayscale opacity-40 shadow-inner">
+                                        {s.icon}
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-[9px] font-mono text-white/20 font-bold uppercase tracking-tighter">
+                                            Step {s.step}
+                                        </span>
+                                        <span class="text-[11px] font-black text-white/30 transition-colors stage-label">
+                                            {s.label}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </div>
+
+                <!-- Terminal Content -->
+                <div class="p-4 bg-black/60 relative z-10">
+                    <div
+                        id="refresh-terminal"
+                        class="h-64 overflow-y-auto text-[11px] text-accent/80 font-mono leading-relaxed custom-scrollbar whitespace-pre-wrap p-4 border border-white/5 rounded-lg bg-black/40 shadow-inner"
+                    >
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,6 +341,105 @@ const { title, description, fullWidth = false } = Astro.props;
                     closeRefresh.classList.add('hidden');
                     refreshTerminal.textContent = '>> 正在建立連線...\n';
 
+                    const timeToSec = (str: string) => {
+                        const parts = str.split(':');
+                        if (parts.length === 2) return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+                        return 0;
+                    };
+                    // ═══ Atomic Countdown Timer ═══
+                    // The timer ticks independently every second.
+                    // Log parsing only "calibrates" the target — it never resets the ticker.
+                    const etaEl = document.getElementById('refresh-eta')!;
+                    const etaContainer = document.getElementById('refresh-eta-container')!;
+                    let etaSeconds = 600;
+                    let etaTimerId: any = null;
+
+                    const renderETA = () => {
+                        const m = Math.floor(etaSeconds / 60);
+                        const s = etaSeconds % 60;
+                        etaEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                    };
+
+                    // Start the single global ticker — runs once, never recreated
+                    etaTimerId = setInterval(() => {
+                        if (etaSeconds > 0) {
+                            etaSeconds--;
+                            renderETA();
+                        }
+                    }, 1000);
+
+                    // Calibrate: gently adjust the countdown based on log signals.
+                    // Only applies if the difference is significant (>15s) to avoid jitter.
+                    const calibrateETA = (newSeconds: number) => {
+                        if (Math.abs(etaSeconds - newSeconds) > 15) {
+                            etaSeconds = newSeconds;
+                            renderETA();
+                        }
+                    };
+
+                    // Force: hard-set for stage transitions (e.g. entering Step 3 / Step 4)
+                    const forceETA = (newSeconds: number) => {
+                        etaSeconds = newSeconds;
+                        renderETA();
+                    };
+
+                    // Show the ETA container and render initial value
+                    etaContainer.classList.remove('opacity-0', 'translate-x-3');
+                    renderETA();
+
+                    // Reset Stages
+                    const updateStage = (step: number) => {
+                        const line = document.getElementById('stage-progress-line');
+                        if (line) line.style.width = `${(step - 1) * 25}%`;
+
+                        document.querySelectorAll('.stage-item').forEach(el => {
+                            const s = parseInt((el as HTMLElement).dataset.step || '0');
+                            const icon = el.querySelector('.stage-icon');
+                            const label = el.querySelector('.stage-label');
+
+                            if (s < step) {
+                                icon?.classList.remove(
+                                    'grayscale',
+                                    'opacity-40',
+                                    'border-border/50',
+                                    'bg-surface'
+                                );
+                                icon?.classList.add(
+                                    'border-accent/40',
+                                    'bg-accent/10',
+                                    'text-accent'
+                                );
+                                label?.classList.remove('text-white/30');
+                                label?.classList.add('text-accent');
+                            } else if (s === step) {
+                                icon?.classList.remove(
+                                    'grayscale',
+                                    'opacity-40',
+                                    'border-border/50',
+                                    'bg-surface'
+                                );
+                                icon?.classList.add('border-accent', 'bg-accent/20');
+                                label?.classList.remove('text-white/30');
+                                label?.classList.add('text-white', 'font-black');
+                            } else {
+                                icon?.classList.add(
+                                    'grayscale',
+                                    'opacity-40',
+                                    'border-border/50',
+                                    'bg-surface'
+                                );
+                                icon?.classList.remove(
+                                    'border-accent',
+                                    'bg-accent/20',
+                                    'text-accent'
+                                );
+                                label?.classList.add('text-white/30');
+                                label?.classList.remove('text-white', 'font-black', 'text-accent');
+                            }
+                        });
+                    };
+                    updateStage(1);
+
                     try {
                         const res = await fetch('/api/db/refresh', { method: 'POST' });
                         if (!res.body)
@@ -234,6 +448,7 @@ const { title, description, fullWidth = false } = Astro.props;
                         const reader = res.body.getReader();
                         const decoder = new TextDecoder('utf-8');
                         let currentText = '';
+                        const triggeredStages = new Set<number>();
 
                         while (true) {
                             const { done, value } = await reader.read();
@@ -255,11 +470,37 @@ const { title, description, fullWidth = false } = Astro.props;
                             }
                             refreshTerminal.textContent = currentText;
                             refreshTerminal.scrollTop = refreshTerminal.scrollHeight;
+
+                            // Detection of ETA — calibrate only, never reset the ticker
+                            if (currentText.includes('預計剩餘:')) {
+                                const lines = currentText.split('\n');
+                                const lastLine = lines[lines.length - 1];
+                                const match = lastLine.match(/預計剩餘: ([^\|\n]+)/);
+                                if (match) {
+                                    const yahooSec = timeToSec(match[1].trim());
+                                    calibrateETA(yahooSec + 90);
+                                }
+                            }
+
+                            // Stage detection — each stage fires ONCE only
+                            const checkStage = (marker: string, step: number, eta?: number) => {
+                                if (!triggeredStages.has(step) && currentText.includes(marker)) {
+                                    triggeredStages.add(step);
+                                    updateStage(step);
+                                    if (eta !== undefined) forceETA(eta);
+                                }
+                            };
+                            checkStage('[1/4]', 1);
+                            checkStage('[2/4]', 2);
+                            checkStage('[3/4]', 3, 60);
+                            checkStage('[4/4]', 4, 30);
+                            checkStage('[完成]', 5, 0);
                         }
                     } catch (err) {
                         console.error(err);
                         refreshTerminal.textContent += `\n[中斷] 發生未預期的錯誤: ${(err as Error).message}\n`;
                     } finally {
+                        if (etaTimerId) clearInterval(etaTimerId);
                         if (refreshBtn) refreshBtn.disabled = false;
                         if (mobileRefreshBtn) mobileRefreshBtn.disabled = false;
                         closeRefresh.classList.remove('hidden');

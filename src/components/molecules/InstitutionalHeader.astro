@@ -1,0 +1,67 @@
+---
+/**
+ * InstitutionalHeader.astro - Monitoring status and entity legend
+ */
+---
+
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-up">
+    <div>
+        <h1
+            class="text-2xl font-black text-white tracking-[0.2em] uppercase flex items-center gap-3"
+        >
+            <span class="p-2 bg-accent/20 rounded-lg text-accent">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                    ></path>
+                </svg>
+            </span>
+            Institutional Monitoring
+        </h1>
+        <p class="text-xs font-mono text-white/40 mt-2 tracking-widest uppercase">
+            System Uplink: Active • Detection Mode: <span class="text-accent"
+                >FORENSIC_ACCUMULATION</span
+            >
+        </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <div
+            class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md flex items-center gap-6"
+        >
+            <div class="flex items-center gap-2">
+                <span
+                    class="w-2 h-2 rounded-full bg-bullish animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                ></span>
+                <span class="text-[10px] font-mono font-bold text-white/60 tracking-widest"
+                    >FOREIGN</span
+                >
+            </div>
+            <div class="flex items-center gap-2">
+                <span
+                    class="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.6)]"
+                ></span>
+                <span class="text-[10px] font-mono font-bold text-white/60 tracking-widest"
+                    >TRUST</span
+                >
+            </div>
+            <div class="flex items-center gap-2">
+                <span
+                    class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.6)]"
+                ></span>
+                <span class="text-[10px] font-mono font-bold text-white/60 tracking-widest"
+                    >DEALER</span
+                >
+            </div>
+        </div>
+    </div>
+</div>

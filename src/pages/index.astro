@@ -1,21 +1,21 @@
 ---
 /**
- * index.astro — Dashboard / 總覽
- * Professional market data dashboard with market breadth, top movers,
- * volume leaders, and high yield stocks.
+ * index.astro — Dashboard / 總覽 (Atomic Design Edition)
+ * Professional market data dashboard with Strategic HUD, Liquidity Sidebar,
+ * and Movers Matrix.
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
-import MarketStatusPanel from '../components/molecules/MarketStatusPanel.astro';
-import MoversPanel from '../components/organisms/MoversPanel.astro';
-import StockCard from '../components/molecules/StockCard.astro';
-import { fmtVol } from '../utils/format';
+import StrategicHUD from '../components/organisms/StrategicHUD.astro';
+import LiquidityLeaders from '../components/molecules/LiquidityLeaders.astro';
+import MoversMatrix from '../components/organisms/MoversMatrix.astro';
+import ForensicTicker from '../components/molecules/ForensicTicker.astro';
+import SentimentTrendModal from '../components/organisms/SentimentTrendModal.astro';
+import { fmtVol, fmtPrice } from '../utils/format';
 import type { StockFullData } from '../utils/stockDataService';
-
 
 let gainers: StockFullData[] = [];
 let losers: StockFullData[] = [];
 let topVolume: StockFullData[] = [];
-let highYield: StockFullData[] = [];
 let totalStocks = 0;
 let upCount = 0;
 let downCount = 0;
@@ -35,9 +35,10 @@ try {
     downCount = withPrice.filter(s => s.changePercent < 0).length;
     flatCount = withPrice.filter(s => s.changePercent === 0).length;
     totalVolume = withPrice.reduce((sum, s) => sum + s.volume, 0);
-    avgChange = withPrice.length > 0
-        ? withPrice.reduce((sum, s) => sum + s.changePercent, 0) / withPrice.length
-        : 0;
+    avgChange =
+        withPrice.length > 0
+            ? withPrice.reduce((sum, s) => sum + s.changePercent, 0) / withPrice.length
+            : 0;
 
     gainers = withPrice
         .filter(s => s.changePercent > 0)
@@ -47,642 +48,233 @@ try {
         .filter(s => s.changePercent < 0)
         .sort((a, b) => a.changePercent - b.changePercent)
         .slice(0, 10);
-    topVolume = withPrice
-        .sort((a, b) => b.volume - a.volume)
-        .slice(0, 10);
-    highYield = withPrice
-        .filter(s => s.yield > 0 && s.pe > 0)
-        .sort((a, b) => b.yield - a.yield)
-        .slice(0, 8);
+    topVolume = withPrice.sort((a, b) => b.volume - a.volume).slice(0, 10);
 } catch (e) {
     console.error('Dashboard data load error:', e);
 }
 ---
 
 <MainTerminal title="市場漲幅">
-    {totalStocks === 0 ? (
-        <div class="empty-state py-20 animate-fade-up">
-            <div class="empty-state-icon animate-glow-pulse">📡</div>
-            <h2 class="text-xl font-bold text-text-primary mb-2">暫無市場資料</h2>
-            <p class="text-sm text-text-muted max-w-sm mb-6">
-                尚未載入股票資料，請確認 <code class="font-mono text-accent">public/data/</code> 目錄下的 JSON 資料已建構完成。
-            </p>
-            <button onclick="location.reload()" class="btn-cyber text-xs">重新載入</button>
-        </div>
-    ) : (
-    <Fragment>
+    <div class="space-y-6 relative pb-20">
+        <!-- Strategic Intelligence HUD (Organism) -->
+        <StrategicHUD
+            upCount={upCount}
+            downCount={downCount}
+            flatCount={flatCount}
+            totalStocks={totalStocks}
+            totalVolume={totalVolume}
+            avgChange={avgChange}
+            dataDate={dataDate}
+        />
 
-    <!-- ── 3-Column Dashboard Layout ── -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 animate-fade-up py-1">
-        
-        <!-- ═══ Left Column: Stats & Breadth & Volume (Col Span 4) ═══ -->
-        <div class="lg:col-span-4 space-y-4">
-            <!-- 1. Market Status Module (Molecule) -->
-            <MarketStatusPanel
-                dataDate={dataDate}
-                totalVolume={totalVolume}
-                avgChange={avgChange}
-                upCount={upCount}
-                downCount={downCount}
-                flatCount={flatCount}
-                totalStocks={totalStocks}
-            />
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- Sidebar: Liquidity Intelligence (Molecule) -->
+            <aside class="lg:col-span-3 space-y-4">
+                <LiquidityLeaders topVolume={topVolume} />
+            </aside>
 
-            <!-- 2. Volume Leaders -->
-            <section class="glass-card p-0 overflow-hidden border-border/40">
-                <div class="terminal-toolbar py-1.5 px-4 h-auto">
-                    <span class="terminal-toolbar-title text-[11px]">成交熱門龍頭</span>
-                </div>
-                <div class="p-3">
-                    <div class="grid grid-cols-2 gap-3" data-panel="volume-leaders">
-                        {topVolume.slice(0, 4).map((s) => (
-                            <StockCard
-                                symbol={s.symbol}
-                                name={s.name}
-                                price={s.price}
-                                changePercent={s.changePercent}
-                                volume={s.volume}
-                                pe={s.pe}
-                                compact={true}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </section>
-        </div>
+            <!-- Main Panel: Movers Grid (Organism) -->
+            <div class="lg:col-span-9 space-y-6">
+                <MoversMatrix gainers={gainers} losers={losers} />
 
-        <!-- ═══ Right Side: Breadth & Movers (Col Span 8) ═══ -->
-        <div class="lg:col-span-8 space-y-4 relative">
+                <!-- Signal Stream & Trend Actions -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-4">
+                    <ForensicTicker />
+                    <button
+                        id="open-breadth-chart"
+                        class="px-8 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-white/40 hover:text-white hover:border-white/20 transition-all uppercase tracking-widest active:scale-95 flex items-center gap-3"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="text-accent/40"
+                            ><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path
+                                d="M22 12A10 10 0 0 0 12 2v10z"></path></svg
+                        >
+                        Analyse Sentiment Trends
+                    </button>
+                </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Losers -->
-                <div data-panel="losers">
-                <MoversPanel
-                    title="跌幅排行"
-                    stocks={losers.slice(0, 10)}
-                    variant="bearish"
-                    class="border-bearish/10 h-full"
-                />
-                </div>
-                <!-- Gainers -->
-                <div data-panel="gainers">
-                <MoversPanel
-                    title="漲幅排行"
-                    stocks={gainers.slice(0, 10)}
-                    variant="bullish"
-                    class="border-bullish/10 h-full"
-                />
-                </div>
-            </div>
-
-            <!-- ── Trend Analysis Floating Panel (Overlay) ── -->
-            <div id="trend-modal" class="absolute inset-x-0 top-0 z-[100] hidden p-2">
-                <div id="trend-modal-backdrop" class="absolute inset-0 bg-black/40 backdrop-blur-md rounded-3xl"></div>
-                
-                <div class="relative w-full h-[400px] bg-[#0a0c10]/95 border border-accent/30 rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-fade-up flex flex-col">
-                    <div class="absolute inset-x-0 top-0 h-32 opacity-[0.05] pointer-events-none bg-gradient-to-b from-accent to-transparent"></div>
-                    <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(rgba(59,130,246,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.1)_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-                    
-                    <!-- Modal Header -->
-                    <header class="relative px-8 pt-6 pb-2 flex items-center justify-between">
-                        <div>
-                            <h3 class="text-xl font-mono font-black text-white tracking-[0.2em] uppercase">Market Sentiment</h3>
-                            <div class="flex items-center gap-3">
-                                <p class="text-[9px] font-mono text-white/30 tracking-wider">Drag to Move • Scroll to Zoom</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                                <button id="reset-trend-zoom" class="px-3 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-[10px] font-mono font-bold text-white/40 hover:text-white hover:bg-white/10 transition-all cursor-pointer uppercase tracking-wider">
-                                    Reset Zoom
-                                </button>
-                                <button id="close-trend-modal" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all cursor-pointer">
-                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                </button>
-                            </div>
-                        </header>
-                    
-                    <!-- Chart Container -->
-                    <div class="flex-1 px-8 pb-8 min-h-0">
-                        <div class="h-full relative">
-                            <canvas id="breadth-ratio-chart"></canvas>
-                        </div>
-                    </div>
-                </div>
+                <!-- Analysis Modal (Organism) -->
+                <SentimentTrendModal />
             </div>
         </div>
     </div>
-
-    </Fragment>
-    )}
 </MainTerminal>
 
-<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script is:inline src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
-<script is:inline src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
-
 <script>
-    // ═══ Shared Client-Side Format Helpers ═══
+    // ═══ Client-Side Data Format Helpers ═══
     function fmtVolClient(v: number): string {
         const cv = Math.ceil(v);
         if (cv >= 100000000) return (cv / 100000000).toFixed(1) + '億';
         if (cv >= 10000) return (cv / 10000).toFixed(1) + '萬';
-        if (cv > 0) return cv.toLocaleString('zh-TW');
-        return '—';
-    }
-    function fmtPctClient(v: number): string {
-        return (v > 0 ? '+' : '') + v.toFixed(2) + '%';
+        return cv > 0 ? cv.toLocaleString('zh-TW') : '—';
     }
     function fmtPriceClient(v: number): string {
         return v > 0 ? v.toFixed(2) : '—';
     }
 
-    // SSE updates for dashboard counts
-    if (typeof EventSource !== 'undefined') {
-        const es = new EventSource('/api/sse/stream');
-        const headerLed = document.getElementById('connection-status-led');
+    // ═══ Dashboard Synchronizer Engine ═══
+    function setupDashboardSync() {
+        if (typeof EventSource !== 'undefined') {
+            const es = new EventSource('/api/sse/stream');
+            es.addEventListener('tick', e => {
+                try {
+                    const ticks = JSON.parse(e.data);
+                    if (!ticks || !Array.isArray(ticks)) return;
 
-        // Connection established
-        es.onopen = () => {
-            if (headerLed) {
-                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.6)]';
-            }
-        };
+                    let up = 0,
+                        down = 0,
+                        flat = 0,
+                        totalVol = 0,
+                        totalPct = 0,
+                        count = 0;
+                    let latestDate = '';
 
-        // Connection error
-        es.onerror = () => {
-            if (headerLed) {
-                headerLed.className = 'w-1.5 h-1.5 rounded-full bg-bearish shadow-[0_0_8px_rgba(239,68,68,0.4)]';
-            }
-        };
-
-        es.addEventListener('tick', e => {
-            try {
-                const ticks = JSON.parse(e.data);
-                if (!ticks || !Array.isArray(ticks)) return;
-
-                let up = 0, down = 0, flat = 0, totalVol = 0, totalPct = 0, count = 0;
-                let latestDate = '';
-
-                ticks.forEach((t) => {
-                    const price = parseFloat(t.Close || t.price || 0);
-                    const chgPct = parseFloat(t.ChangePct || t.changePercent || 0);
-                    const vol = parseFloat(t.Volume || t.volume || 0);
-                    
-                    if (price > 0) {
-                        if (chgPct > 0) up++;
-                        else if (chgPct < 0) down++;
-                        else flat++;
-                        
-                        totalVol += vol;
-                        totalPct += chgPct;
-                        count++;
-                        if (t.Date) latestDate = t.Date;
-                    }
-                });
-
-                // Update Breadth Counts (Organism Detail Widgets)
-                const upEl = document.querySelector('#breadth-up');
-                const downEl = document.querySelector('#breadth-down');
-                const flatEl = document.querySelector('#breadth-flat');
-                
-                // Update Breadth Ranges (Molecule Anchors)
-                const rangeUpEl = document.querySelector('#breadth-range-up');
-                const rangeDownEl = document.querySelector('#breadth-range-down');
-
-                if (upEl) upEl.textContent = String(up);
-                if (downEl) downEl.textContent = String(down);
-                if (flatEl) flatEl.textContent = String(flat);
-                if (rangeUpEl) rangeUpEl.textContent = String(up);
-                if (rangeDownEl) rangeDownEl.textContent = String(down);
-                
-                // Update Ratio and Color (Explicitly Force Tailwind Classes)
-                const ratioEl = document.getElementById('breadth-ratio');
-                const ratioContainer = document.getElementById('breadth-ratio-container');
-                if (ratioEl) {
-                    const ratio = down > 0 ? (up / down) : 999;
-                    ratioEl.textContent = down > 0 ? ratio.toFixed(2) : 'MAX';
-                    
-                    if (ratioContainer) {
-                        const baseClasses = "text-[10px] font-mono px-2 py-0.5 rounded border-2 transition-all duration-500 font-black";
-                        if (ratio >= 1) {
-                            ratioContainer.className = `${baseClasses} bg-bullish/20 text-[#ff4d4d] border-bullish/40 shadow-[0_0_10px_rgba(239,68,68,0.2)]`;
-                        } else {
-                            ratioContainer.className = `${baseClasses} bg-bearish/20 text-[#00ff88] border-bearish/40 shadow-[0_0_10px_rgba(34,197,94,0.2)]`;
+                    ticks.forEach(t => {
+                        const price = parseFloat(t.Close || t.price || 0);
+                        const chgPct = parseFloat(t.ChangePct || t.changePercent || 0);
+                        const vol = parseFloat(t.Volume || t.volume || 0);
+                        if (price > 0) {
+                            if (chgPct > 0) up++;
+                            else if (chgPct < 0) down++;
+                            else flat++;
+                            totalVol += vol;
+                            totalPct += chgPct;
+                            count++;
+                            if (t.Date) latestDate = t.Date;
                         }
-                    }
-                }
-                
-                // Update Bar & Percentages
-                const total = up + down + flat;
-                if (total > 0) {
-                    const pUp = (up / total) * 100;
-                    const pDown = (down / total) * 100;
-                    const pFlat = (flat / total) * 100;
-
-                    const barUp = document.getElementById('breadth-bar-up');
-                    const barDown = document.getElementById('breadth-bar-down');
-                    const barFlat = document.getElementById('breadth-bar-flat');
-                    const txtUp = document.getElementById('breadth-pct-up');
-                    const txtDown = document.getElementById('breadth-pct-down');
-                    const txtFlat = document.getElementById('breadth-pct-flat');
-
-                    if (barUp) barUp.style.width = pUp + '%';
-                    if (barDown) barDown.style.width = pDown + '%';
-                    if (barFlat) barFlat.style.width = pFlat + '%';
-                    if (txtUp) txtUp.textContent = pUp.toFixed(1) + '%';
-                    if (txtDown) txtDown.textContent = pDown.toFixed(1) + '%';
-                    if (txtFlat) txtFlat.textContent = pFlat.toFixed(1) + '%';
-                }
-
-                // Update Market Stats
-                const dateEl = document.querySelector('#market-date');
-                const volEl = document.querySelector('#market-volume');
-                const chgEl = document.querySelector('#market-change');
-
-                if (dateEl && latestDate) dateEl.textContent = latestDate;
-                if (volEl) volEl.textContent = fmtVolClient(totalVol);
-                if (chgEl) {
-                    const avg = count > 0 ? totalPct / count : 0;
-                    chgEl.textContent = (avg >= 0 ? '+' : '') + avg.toFixed(2) + '%';
-                    chgEl.className = `text-lg font-mono font-bold ${avg >= 0 ? 'text-bullish' : 'text-bearish'}`;
-                }
-            } catch (err) {
-                console.error('[SSE Client Error]', err);
-            }
-        });
-    }
-
-    // ══════════════════════════════════════════════════════
-    // TEMPORAL REGISTRY: Date Picker → Full Data Sync
-    // Atomic Design: This orchestrates ALL organism/molecule updates
-    // ══════════════════════════════════════════════════════
-    const datePicker = document.getElementById('market-date-picker') as HTMLInputElement;
-    const datePickerLabel = document.getElementById('market-date-picker-label');
-
-    // Render a single stock row for MoversPanel (dynamically)
-    function renderStockRow(s: any, index: number, variant: 'bullish' | 'bearish'): string {
-        const color = variant === 'bullish' ? 'text-bullish' : 'text-bearish';
-        return `
-            <a href="/stocks/${s.symbol}" 
-               class="flex items-center justify-between px-4 py-1.5 hover:bg-glass-hover transition-colors group no-underline"
-               data-astro-prefetch>
-                <div class="flex items-center gap-2">
-                    <span class="text-[10px] font-mono text-text-muted w-4 text-left">${index + 1}</span>
-                    <div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-sm font-semibold text-stock-name">${s.name}</span>
-                            <span class="text-[11px] font-mono text-stock-symbol">${s.symbol}</span>
-                        </div>
-                        <span class="text-[10px] font-mono text-stock-volume">量 ${fmtVolClient(s.volume)}</span>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="data-value text-sm text-stock-price">${fmtPriceClient(s.price)}</div>
-                    <span class="text-xs font-mono font-bold ${color}">${fmtPctClient(s.changePercent)}</span>
-                </div>
-            </a>`;
-    }
-
-    // Render a single StockCard for Volume Leaders (dynamically)
-    function renderStockCard(s: any): string {
-        const bull = s.changePercent > 0;
-        const bear = s.changePercent < 0;
-        const badgeColor = bull ? 'bg-bullish/10 text-bullish' : bear ? 'bg-bearish/10 text-bearish' : 'bg-surface text-text-muted';
-        const lineColor = bull ? 'via-bullish/50' : bear ? 'via-bearish/50' : 'via-accent/20';
-        return `
-            <a href="/stocks/${s.symbol}" 
-               class="stock-card glass-card glow-interactive block no-underline hover:scale-[1.02] transition-all group relative overflow-hidden p-3"
-               data-astro-prefetch>
-                <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent ${lineColor} to-transparent"></div>
-                <div class="flex items-start justify-between mb-2">
-                    <div class="min-w-0">
-                        <div class="font-bold text-xs text-stock-name truncate">${s.name}</div>
-                        <div class="font-mono text-[10px] text-stock-symbol">${s.symbol}</div>
-                    </div>
-                    <span class="font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ml-2 text-[9px] ${badgeColor}">${fmtPctClient(s.changePercent)}</span>
-                </div>
-                <div class="data-value font-bold text-base text-stock-price">${fmtPriceClient(s.price)}</div>
-                <div class="flex items-center justify-between text-[11px] font-mono">
-                    <span class="text-stock-volume">量 ${fmtVolClient(s.volume)}</span>
-                </div>
-            </a>`;
-    }
-
-    if (datePicker) {
-        datePicker.addEventListener('change', async (e) => {
-            const newDate = (e.target as HTMLInputElement).value;
-            if (!newDate) return;
-            
-            // 1. Visual Feedback: Label pulse
-            if (datePickerLabel) {
-                datePickerLabel.textContent = newDate;
-                datePickerLabel.classList.add('text-accent');
-                setTimeout(() => datePickerLabel.classList.remove('text-accent'), 1500);
-            }
-
-            console.log('[Temporal Shift] Fetching market data for:', newDate);
-
-            try {
-                // 2. Fetch historical data from API
-                const res = await fetch(`/api/market/history?date=${newDate}`);
-                const data = await res.json();
-                
-                if (!res.ok || data.error) {
-                    console.warn('[Temporal Shift] No data:', data.error);
-                    // ═══ Reset ALL widgets to "No Data" state ═══
-                    const volEl = document.getElementById('market-volume');
-                    const chgEl = document.getElementById('market-change');
-                    if (volEl) volEl.textContent = '—';
-                    if (chgEl) { chgEl.textContent = '休市'; chgEl.className = 'text-lg font-mono font-bold text-text-muted leading-none tracking-tighter'; }
-
-                    // Reset breadth
-                    ['breadth-up', 'breadth-down', 'breadth-flat', 'breadth-range-up', 'breadth-range-down'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.textContent = '0';
                     });
-                    ['breadth-bar-up', 'breadth-bar-down', 'breadth-bar-flat'].forEach(id => {
-                        const el = document.getElementById(id) as HTMLElement;
-                        if (el) el.style.width = '0%';
-                    });
-                    const ratioEl = document.getElementById('breadth-ratio');
-                    const ratioContainer = document.getElementById('breadth-ratio-container');
-                    if (ratioEl) ratioEl.textContent = 'N/A';
-                    if (ratioContainer) ratioContainer.className = 'text-[10px] font-mono px-2 py-0.5 rounded border-2 font-black bg-slate-700/30 text-slate-400 border-slate-600/20';
 
-                    // Clear stock panels
-                    const losersC = document.querySelector('[data-panel="losers"] .divide-y');
-                    const gainersC = document.querySelector('[data-panel="gainers"] .divide-y');
-                    const volumeG = document.querySelector('[data-panel="volume-leaders"]');
-                    const noDataHtml = '<div class="px-5 py-8 text-center text-sm text-text-muted">暫無資料</div>';
-                    if (losersC) losersC.innerHTML = noDataHtml;
-                    if (gainersC) gainersC.innerHTML = noDataHtml;
-                    if (volumeG) volumeG.innerHTML = '<div class="col-span-2 px-5 py-8 text-center text-sm text-text-muted">暫無資料</div>';
-                    return;
-                }
-
-                const { summary, gainers, losers, volumeLeaders } = data;
-
-                // ══ 3. UPDATE ALL ORGANISMS & MOLECULES ══
-
-                // 3a. Volume
-                const volEl = document.getElementById('market-volume');
-                if (volEl) volEl.textContent = fmtVolClient(summary.totalVolume);
-
-                // 3b. Average Change
-                const chgEl = document.getElementById('market-change');
-                if (chgEl) {
-                    const avg = summary.avgChange;
-                    chgEl.textContent = fmtPctClient(avg);
-                    chgEl.className = `text-lg font-mono font-bold leading-none tracking-tighter ${avg >= 0 ? 'text-bullish' : 'text-bearish'}`;
-                }
-
-                // 3c. Breadth Counts (Organism Detail Widgets)
-                const upEl = document.getElementById('breadth-up');
-                const downEl = document.getElementById('breadth-down');
-                const flatEl = document.getElementById('breadth-flat');
-                if (upEl) upEl.textContent = String(summary.up);
-                if (downEl) downEl.textContent = String(summary.down);
-                if (flatEl) flatEl.textContent = String(summary.flat);
-
-                // 3d. Breadth Range Anchors (Molecule)
-                const rangeUpEl = document.getElementById('breadth-range-up');
-                const rangeDownEl = document.getElementById('breadth-range-down');
-                if (rangeUpEl) rangeUpEl.textContent = String(summary.up);
-                if (rangeDownEl) rangeDownEl.textContent = String(summary.down);
-
-                // 3e. Breadth Bars
-                const total = summary.up + summary.down + summary.flat;
-                if (total > 0) {
-                    const pUp = (summary.up / total) * 100;
-                    const pDown = (summary.down / total) * 100;
-                    const pFlat = (summary.flat / total) * 100;
-                    const barUp = document.getElementById('breadth-bar-up');
-                    const barDown = document.getElementById('breadth-bar-down');
-                    const barFlat = document.getElementById('breadth-bar-flat');
-                    if (barUp) barUp.style.width = pUp + '%';
-                    if (barDown) barDown.style.width = pDown + '%';
-                    if (barFlat) barFlat.style.width = pFlat + '%';
-                }
-
-                // 3f. Ratio with Color Coding
-                const ratioEl = document.getElementById('breadth-ratio');
-                const ratioContainer = document.getElementById('breadth-ratio-container');
-                if (ratioEl) {
-                    ratioEl.textContent = summary.ratio >= 999 ? 'MAX' : summary.ratio.toFixed(2);
-                }
-                if (ratioContainer) {
-                    const baseClasses = "text-[10px] font-mono px-2 py-0.5 rounded border-2 transition-all duration-500 font-black";
-                    if (summary.ratio >= 1) {
-                        ratioContainer.className = `${baseClasses} bg-bullish/20 text-[#ff4d4d] border-bullish/40 shadow-[0_0_10px_rgba(239,68,68,0.2)]`;
-                    } else {
-                        ratioContainer.className = `${baseClasses} bg-bearish/20 text-[#00ff88] border-bearish/40 shadow-[0_0_10px_rgba(34,197,94,0.2)]`;
-                    }
-                }
-
-                // ══ 4. REBUILD STOCK LISTS (Gainers & Losers) ══
-                
-                // 4a. Losers Panel
-                const losersContainer = document.querySelector('[data-panel="losers"] .divide-y');
-                if (losersContainer && losers) {
-                    losersContainer.innerHTML = losers.map((s: any, i: number) => renderStockRow(s, i, 'bearish')).join('');
-                    // Update count badge
-                    const losersBadge = document.querySelector('[data-panel="losers"] .font-mono.text-text-muted');
-                    if (losersBadge) losersBadge.textContent = `${losers.length} 檔`;
-                }
-
-                // 4b. Gainers Panel
-                const gainersContainer = document.querySelector('[data-panel="gainers"] .divide-y');
-                if (gainersContainer && gainers) {
-                    gainersContainer.innerHTML = gainers.map((s: any, i: number) => renderStockRow(s, i, 'bullish')).join('');
-                    const gainersBadge = document.querySelector('[data-panel="gainers"] .font-mono.text-text-muted');
-                    if (gainersBadge) gainersBadge.textContent = `${gainers.length} 檔`;
-                }
-
-                // 4c. Volume Leaders Grid
-                const volumeGrid = document.querySelector('[data-panel="volume-leaders"]');
-                if (volumeGrid && volumeLeaders) {
-                    volumeGrid.innerHTML = volumeLeaders.map((s: any) => renderStockCard(s)).join('');
-                }
-
-                console.log('[Temporal Shift] ALL widgets synchronized for:', newDate);
-
-            } catch (err) {
-                console.error('[Temporal Shift] Fetch error:', err);
-            }
-        });
-    }
-
-    // ═══ Breadth Trend Chart Modal Logic ═══
-    const trendModal = document.getElementById('trend-modal');
-    const openChartBtn = document.getElementById('open-breadth-chart');
-    const closeChartBtn = document.getElementById('close-trend-modal');
-    const chartBackdrop = document.getElementById('trend-modal-backdrop');
-    let breadthChart: any = null;
-
-    const resetZoomBtn = document.getElementById('reset-trend-zoom');
-
-    async function initTrendChart() {
-        const canvas = document.getElementById('breadth-ratio-chart') as HTMLCanvasElement;
-        if (!canvas) return;
-
-        try {
-            const res = await fetch(`/api/market/breadth-timeseries?t=${Date.now()}`);
-            const data = await res.json();
-            
-            const labels = data.map((d: any) => d.date);
-            const ratios = data.map((d: any) => d.down > 0 ? (d.up / d.down) : 2);
-
-            if (breadthChart) breadthChart.destroy();
-
-            // @ts-ignore
-            breadthChart = new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Ratio',
-                            data: ratios,
-                            borderColor: '#3b82f6',
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderWidth: 3,
-                            yAxisID: 'yRatio',
-                            tension: 0.4,
-                            fill: {
-                                target: { value: 1 },
-                                above: 'transparent',
-                                below: 'rgba(34, 197, 94, 0.15)'
-                            }
-                        },
-                        {
-                            label: 'Baseline',
-                            data: labels.map(() => 1),
-                            borderColor: 'rgba(255,255,255,0.2)',
-                            borderWidth: 1,
-                            borderDash: [5, 5],
-                            pointRadius: 0,
-                            fill: false,
-                            yAxisID: 'yRatio',
-                            order: 1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0a0c10',
-                            borderColor: 'rgba(255, 255, 255, 0.1)',
-                            borderWidth: 1,
-                            titleFont: { size: 10, weight: 'bold' },
-                            bodyFont: { size: 12, family: 'monospace' },
-                            padding: 12,
-                            displayColors: true,
-                            callbacks: {
-                                label: (context: any) => {
-                                    if (context.dataset.label === 'Baseline') return null;
-                                    const d = data[context.dataIndex];
-                                    const ratio = context.parsed.y.toFixed(2);
-                                    return [
-                                        ` RATIO : ${ratio}`,
-                                        ` ──────────────`,
-                                        ` 上漲  : ${d.up}`,
-                                        ` 持平  : ${d.flat}`,
-                                        ` 下跌  : ${d.down}`
-                                    ];
-                                }
-                            }
-                        },
-                        // @ts-ignore
-                        zoom: {
-                            pan: { enabled: true, mode: 'x' },
-                            zoom: {
-                                wheel: { enabled: true },
-                                pinch: { enabled: true },
-                                mode: 'x',
-                            },
-                            limits: { x: {min: 'original', max: 'original'} }
-                        }
-                    },
-                    onClick: (e: any, elements: any) => {
-                        if (elements.length > 0) {
-                            const index = elements[0].index;
-                            const clickedDate = labels[index];
-                            const datePicker = document.getElementById('market-date-picker') as HTMLInputElement;
-                            if (datePicker) {
-                                datePicker.value = clickedDate;
-                                datePicker.dispatchEvent(new Event('change', { bubbles: true }));
-                                // Optional: Close modal after selection
-                                closeModal();
-                            }
-                        }
-                    },
-                    onHover: (e: any, elements: any) => {
-                        e.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
-                    },
-                    scales: {
-                        x: {
-                            min: labels.length > 60 ? labels[labels.length - 60] : undefined,
-                            max: labels.length > 0 ? labels[labels.length - 1] : undefined,
-                            grid: { display: false },
-                            ticks: { 
-                                maxRotation: 0,
-                                autoSkip: true,
-                                maxTicksLimit: 8,
-                                color: 'rgba(255,255,255,0.2)', 
-                                font: { family: 'monospace', size: 8 } 
-                            }
-                        },
-                        yRatio: {
-                            position: 'left',
-                            grid: { color: 'rgba(255,255,255,0.03)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10, weight: 'bold' } }
-                        }
-                    }
+                    updateHUD(
+                        up,
+                        down,
+                        flat,
+                        totalVol,
+                        count > 0 ? totalPct / count : 0,
+                        latestDate
+                    );
+                } catch (err) {
+                    console.error('[SSE Error]', err);
                 }
             });
-        } catch (err) {
-            console.error('[Chart] Initialization failed:', err);
         }
+
+        const datePicker = document.getElementById('market-date-picker-hud') as HTMLInputElement;
+        datePicker?.addEventListener('change', async e => {
+            const newDate = (e.target as HTMLInputElement).value;
+            if (!newDate) return;
+            try {
+                const res = await fetch(`/api/market/history?date=${newDate}`);
+                const data = await res.json();
+                if (res.ok && !data.error) syncDashboardData(data, newDate);
+            } catch (err) {
+                console.error('[Sync Error]', err);
+            }
+        });
     }
 
-    openChartBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isHidden = trendModal?.classList.contains('hidden');
-        if (isHidden) {
-            trendModal?.classList.remove('hidden');
-            trendModal?.classList.add('block');
-            openChartBtn.classList.add('bg-accent/20', 'border-accent/60');
-            openChartBtn.querySelector('svg')?.classList.add('text-accent');
-            openChartBtn.querySelector('svg')?.classList.remove('text-accent/40');
-            initTrendChart();
-        } else {
-            closeModal();
+    function updateHUD(
+        up: number,
+        down: number,
+        flat: number,
+        vol: number,
+        chg: number,
+        date: string
+    ) {
+        const total = up + down + flat;
+        const ratioEl = document.getElementById('breadth-ratio-hud');
+        const upEl = document.getElementById('hud-up');
+        const downEl = document.getElementById('hud-down');
+        const volEl = document.getElementById('hud-volume');
+        const chgEl = document.getElementById('hud-avg-change');
+        const dateEl = document.getElementById('hud-date');
+
+        if (ratioEl) ratioEl.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
+        if (upEl) upEl.textContent = String(up);
+        if (downEl) downEl.textContent = String(down);
+        if (volEl) volEl.textContent = fmtVolClient(vol);
+        if (chgEl) {
+            chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+            chgEl.className = `text-xl font-mono font-bold ${chg >= 0 ? 'text-bullish' : 'text-bearish'}`;
         }
-    });
+        if (dateEl && date) dateEl.textContent = date;
 
-    resetZoomBtn?.addEventListener('click', () => {
-        if (breadthChart) {
-            breadthChart.resetZoom();
-        }
-    });
+        const barUp = document.getElementById('hud-bar-up');
+        const barDown = document.getElementById('hud-bar-down');
+        const barFlat = document.getElementById('hud-bar-flat');
+        if (barUp) barUp.style.width = (total > 0 ? (up / total) * 100 : 0) + '%';
+        if (barDown) barDown.style.width = (total > 0 ? (down / total) * 100 : 0) + '%';
+        if (barFlat) barFlat.style.width = (total > 0 ? (flat / total) * 100 : 0) + '%';
+    }
 
-    const closeModal = () => {
-        trendModal?.classList.add('hidden');
-        trendModal?.classList.remove('block');
-        openChartBtn?.classList.remove('bg-accent/20', 'border-accent/60');
-        openChartBtn?.querySelector('svg')?.classList.remove('text-accent');
-        openChartBtn?.querySelector('svg')?.classList.add('text-accent/40');
-    };
+    function syncDashboardData(data: any, date: string) {
+        const { summary, gainers, losers, volumeLeaders } = data;
+        updateHUD(
+            summary.up,
+            summary.down,
+            summary.flat,
+            summary.totalVolume,
+            summary.avgChange,
+            date
+        );
 
-    closeChartBtn?.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
-    chartBackdrop?.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+        const gainersGrid = document.getElementById('hud-gainers-grid');
+        const losersGrid = document.getElementById('hud-losers-grid');
+        const volGrid = document.getElementById('hud-volume-grid');
+
+        if (gainersGrid)
+            gainersGrid.innerHTML = gainers
+                .map((s: any, i: number) => renderRow(s, i, 'bullish'))
+                .join('');
+        if (losersGrid)
+            losersGrid.innerHTML = losers
+                .map((s: any, i: number) => renderRow(s, i, 'bearish'))
+                .join('');
+        if (volGrid)
+            volGrid.innerHTML = volumeLeaders
+                .map((s: any, i: number) => renderRow(s, i, 'accent'))
+                .join('');
+    }
+
+    function renderRow(s: any, i: number, variant: string): string {
+        const isBull = variant === 'bullish';
+        const color = isBull
+            ? 'text-bullish'
+            : variant === 'bearish'
+              ? 'text-bearish'
+              : 'text-accent';
+        const hColor = isBull
+            ? 'hover:border-bullish'
+            : variant === 'bearish'
+              ? 'hover:border-bearish'
+              : 'hover:border-accent';
+        const gColor = isBull
+            ? 'group-hover:text-bullish'
+            : variant === 'bearish'
+              ? 'group-hover:text-bearish'
+              : 'group-hover:text-accent';
+        return `
+            <a href="/stocks/${s.symbol}" class="flex items-center gap-4 px-6 py-4 hover:bg-accent/[0.04] transition-all group no-underline border-l-2 border-transparent ${hColor}">
+                <span class="text-[8px] font-mono text-white/20 w-3">${i + 1}</span>
+                <div class="min-w-0 flex-1">
+                    <div class="text-[11px] font-bold text-white/90 ${gColor} transition-colors truncate">${s.name}</div>
+                    <div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">${variant === 'accent' ? s.symbol : 'ENTITY:' + s.symbol}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-[10px] font-mono font-bold text-white/70">${fmtPriceClient(s.price)}</div>
+                    <div class="text-[10px] font-mono font-bold ${color}">${isBull ? '+' : ''}${s.changePercent.toFixed(2)}%</div>
+                </div>
+            </a>`;
+    }
+
+    document.addEventListener('astro:page-load', setupDashboardSync);
+    setupDashboardSync();
 </script>
-

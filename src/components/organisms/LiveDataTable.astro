@@ -1,0 +1,118 @@
+---
+/**
+ * LiveDataTable.astro - High-performance live data grid
+ */
+---
+
+<div
+    class="glass-card overflow-hidden flex-1 flex flex-col min-h-0 !border-white/5 !bg-surface/5 shadow-2xl"
+>
+    <div class="overflow-y-auto overflow-x-auto custom-scrollbar flex-1 rounded-lg">
+        <table class="w-full text-left border-collapse whitespace-nowrap">
+            <thead
+                class="sticky top-0 bg-surface/90 backdrop-blur-xl z-20 text-[10px] font-black text-white/40 uppercase border-b border-white/5"
+            >
+                <tr>
+                    <th
+                        class="px-3 py-3 border-b border-white/5 cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="Code"
+                    >
+                        <span class="flex items-center gap-1.5">
+                            ENTITY <span
+                                class="sort-icon opacity-50 group-hover:opacity-100 transition-opacity"
+                                >↕</span
+                            >
+                        </span>
+                    </th>
+                    <th
+                        class="px-2 py-3 border-b border-white/5 text-right cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="ClosingPrice"
+                    >
+                        <span class="flex items-center justify-end gap-1.5">
+                            QUOTATION <span
+                                class="sort-icon opacity-50 group-hover:opacity-100 transition-opacity"
+                                >↕</span
+                            >
+                        </span>
+                    </th>
+                    <th
+                        class="px-2 py-3 border-b border-white/5 text-right cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="ChangePct"
+                    >
+                        <span class="flex items-center justify-end gap-1.5">
+                            VARIANCE <span
+                                class="sort-icon opacity-50 group-hover:opacity-100 transition-opacity"
+                                >↕</span
+                            >
+                        </span>
+                    </th>
+                    <th
+                        class="px-2 py-3 border-b border-white/5 text-right cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="Change"
+                    >
+                        <span class="flex items-center justify-end gap-1.5">
+                            DIFF <span
+                                class="sort-icon opacity-50 group-hover:opacity-100 transition-opacity"
+                                >↕</span
+                            >
+                        </span>
+                    </th>
+                    <th
+                        class="px-2 py-3 border-b border-white/5 text-right cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="OpeningPrice"
+                    >
+                        OPEN
+                    </th>
+                    <th
+                        class="px-2 py-3 border-b border-white/5 text-right cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="HighestPrice"
+                    >
+                        MAX
+                    </th>
+                    <th
+                        class="px-2 py-3 border-b border-white/5 text-right cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="LowestPrice"
+                    >
+                        MIN
+                    </th>
+                    <th
+                        class="px-2 py-3 border-b border-white/5 text-right cursor-pointer hover:text-accent sortable select-none group"
+                        data-sort="TradeVolume"
+                    >
+                        <span class="flex items-center justify-end gap-1.5">
+                            VOLUME <span
+                                class="sort-icon opacity-50 group-hover:opacity-100 transition-opacity"
+                                >↕</span
+                            >
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="live-table-body" class="divide-y divide-white/[0.02] text-xs font-mono">
+                <tr class="text-center group">
+                    <td
+                        colspan="8"
+                        class="py-24 text-white/20 font-mono text-[10px] tracking-[0.2em] uppercase"
+                    >
+                        Awaiting_Uplink... <br />
+                        <span class="opacity-20 text-[8px] mt-2 block"
+                            >Activate Momentum Monitoring via Control Panel</span
+                        >
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style is:global>
+    .cell-info {
+        position: sticky;
+        left: 0;
+        background: inherit;
+        z-index: 10;
+    }
+    .chart-accordion-row {
+        background: rgba(59, 130, 246, 0.02);
+    }
+</style>

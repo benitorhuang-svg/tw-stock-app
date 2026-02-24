@@ -33,6 +33,9 @@ export interface LatestPriceData {
     grossMargin?: number;
     operatingMargin?: number;
     netMargin?: number;
+    foreignStreak?: number;
+    trustStreak?: number;
+    dealerStreak?: number;
 }
 
 export interface StockFullData extends StockBasicInfo {
@@ -53,6 +56,9 @@ export interface StockFullData extends StockBasicInfo {
     grossMargin: number;
     operatingMargin: number;
     netMargin: number;
+    foreignStreak: number;
+    trustStreak: number;
+    dealerStreak: number;
     sector: string;
 }
 
@@ -286,6 +292,9 @@ export async function loadAllStocksWithPrices(): Promise<StockFullData[]> {
             grossMargin: priceData?.grossMargin || 0,
             operatingMargin: priceData?.operatingMargin || 0,
             netMargin: priceData?.netMargin || 0,
+            foreignStreak: priceData?.foreignStreak || 0,
+            trustStreak: priceData?.trustStreak || 0,
+            dealerStreak: priceData?.dealerStreak || 0,
             sector: sectorId,
         });
     }

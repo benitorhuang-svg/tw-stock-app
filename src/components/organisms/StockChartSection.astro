@@ -1,0 +1,190 @@
+---
+/**
+ * StockChartSection.astro - Interactive intraday chart and quick stats
+ */
+import { fmtVol } from '../../utils/format';
+
+interface Props {
+    stock: any;
+}
+
+const { stock } = Astro.props;
+---
+
+<div
+    class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 animate-fade-up"
+    style="animation-delay: 150ms"
+>
+    <!-- Main: Intraday Chart -->
+    <div
+        class="lg:col-span-8 glass-card p-8 h-[450px] flex flex-col relative overflow-hidden group"
+    >
+        <div
+            class="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity pointer-events-none"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="120"
+                height="120"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><path d="M3 3v18h18"></path><path d="m19 9-5 5-4-4-3 3"></path></svg
+            >
+        </div>
+
+        <div class="flex items-center justify-between mb-6 relative z-10">
+            <div>
+                <h2 class="text-[10px] font-mono font-black text-accent uppercase tracking-[0.3em]">
+                    Temporal Price Variance
+                </h2>
+                <div class="flex items-center gap-2 mt-1">
+                    <div class="w-1.5 h-1.5 rounded-full bg-bullish animate-pulse"></div>
+                    <span class="text-[9px] font-mono text-white/30 uppercase tracking-widest"
+                        >Live_Feed: ACTIVE</span
+                    >
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+                {
+                    ['1D', '5D', '1M', '3M', '1Y'].map((t, i) => (
+                        <button
+                            class:list={[
+                                'px-4 py-1.5 rounded-lg text-[9px] font-black font-mono transition-all',
+                                i === 0
+                                    ? 'bg-accent text-white shadow-[0_4px_12px_rgba(59,130,246,0.3)]'
+                                    : 'text-white/30 hover:text-white hover:bg-white/5',
+                            ]}
+                        >
+                            {t}
+                        </button>
+                    ))
+                }
+            </div>
+        </div>
+
+        <!-- Chart area -->
+        <div
+            class="flex-1 relative rounded-3xl overflow-hidden border border-white/5 bg-black/20"
+            id="chart-area"
+        >
+            <div class="absolute inset-0 bg-gradient-to-b from-accent/5 to-transparent"></div>
+            <!-- Grid lines -->
+            <div
+                class="absolute inset-0 flex flex-col justify-between py-10 pointer-events-none opacity-30"
+            >
+                {[...Array(6)].map(() => <div class="border-b border-white/[0.05] w-full" />)}
+            </div>
+            <!-- Simulated trend line -->
+            <div class="absolute inset-x-0 bottom-0 top-1/4 px-10">
+                <svg
+                    class="w-full h-full overflow-visible"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 100 100"
+                >
+                    <path
+                        d="M0 80 Q 20 20, 40 50 T 80 10 L 100 30"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class:list={[
+                            'transition-all duration-1000',
+                            stock.change >= 0 ? 'text-bullish' : 'text-bearish',
+                        ]}></path>
+                    <path
+                        d="M0 80 Q 20 20, 40 50 T 80 10 L 100 30 L 100 100 L 0 100 Z"
+                        fill="url(#chart-gradient)"
+                        class="opacity-10"></path>
+                    <defs>
+                        <linearGradient id="chart-gradient" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stop-color="currentColor" stop-opacity="1"></stop>
+                            <stop offset="100%" stop-color="currentColor" stop-opacity="0"></stop>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Side: Quick Stats Matrix -->
+    <div class="lg:col-span-4 space-y-6">
+        <div class="glass-card p-6 border-l-4 border-l-accent overflow-hidden relative">
+            <h3
+                class="text-[9px] font-mono font-black text-white/30 uppercase tracking-[0.3em] mb-4"
+            >
+                Core Metrics
+            </h3>
+            <div class="grid grid-cols-2 gap-y-6 gap-x-4">
+                <div>
+                    <div class="text-[8px] font-mono text-white/20 uppercase tracking-widest mb-1">
+                        Open
+                    </div>
+                    <div class="text-sm font-mono font-bold text-white/80">
+                        {stock.open.toFixed(2)}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-[8px] font-mono text-white/20 uppercase tracking-widest mb-1">
+                        Vol_Aggregate
+                    </div>
+                    <div class="text-sm font-mono font-bold text-white/80">
+                        {fmtVol(stock.volume)}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-[8px] font-mono text-white/20 uppercase tracking-widest mb-1">
+                        High_Probe
+                    </div>
+                    <div class="text-sm font-mono font-bold text-bullish/80">
+                        {stock.high.toFixed(2)}
+                    </div>
+                </div>
+                <div>
+                    <div class="text-[8px] font-mono text-white/20 uppercase tracking-widest mb-1">
+                        Low_Probe
+                    </div>
+                    <div class="text-sm font-mono font-bold text-bearish/80">
+                        {stock.low.toFixed(2)}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card p-6 border-l-4 border-l-accent/40 bg-accent/[0.02]">
+            <h3
+                class="text-[9px] font-mono font-black text-white/30 uppercase tracking-[0.3em] mb-4"
+            >
+                Institutional Rating
+            </h3>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-mono text-white/60">P/E Domain</span>
+                    <span class="text-[10px] font-mono font-bold text-white"
+                        >{stock.pe > 0 ? stock.pe.toFixed(1) : 'N/A'}</span
+                    >
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-mono text-white/60">Yield_Expect</span>
+                    <span class="text-[10px] font-mono font-bold text-accent"
+                        >{stock.yield?.toFixed(2)}%</span
+                    >
+                </div>
+                <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+                    <span class="text-[10px] font-mono text-white/40 uppercase font-black"
+                        >Sentiment_Score</span
+                    >
+                    <div class="flex items-center gap-2">
+                        <div class="w-16 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div class="h-full bg-accent w-[72%]"></div>
+                        </div>
+                        <span class="text-[10px] font-mono font-bold text-accent">7.2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

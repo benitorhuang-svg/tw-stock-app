@@ -33,20 +33,21 @@ const STOCKS_JSON = path.join(DATA_DIR, 'stocks.json');
 const LATEST_PRICES_JSON = path.join(DATA_DIR, 'latest_prices.json');
 const REVENUE_JSON = path.join(DATA_DIR, 'revenue.json');
 const CHIPS_DIR = path.join(DATA_DIR, 'chips');
+const VALUATION_DIR = path.join(DATA_DIR, 'valuation');
 const FINANCIALS_JSON = path.join(DATA_DIR, 'financials.json');
 const MONTHLY_STATS_JSON = path.join(DATA_DIR, 'monthly_stats.json');
 const OUTPUT_DB = process.env.DB_PATH || path.join(DATA_DIR, 'stocks.db');
 
-console.log(`🔧 Building SQLite Database at: ${OUTPUT_DB}\n`);
+console.log(`🔧 正在建置 SQLite 資料庫於: ${OUTPUT_DB}\n`);
 
 // 刪除舊的資料庫
 if (fs.existsSync(OUTPUT_DB)) {
     try {
         fs.unlinkSync(OUTPUT_DB);
-        console.log('📦 Removed old database');
+        console.log('📦 已移除舊版資料庫檔案');
     } catch (e) {
         if (e.code === 'EBUSY') {
-            console.warn('⚠️  Database file is busy. Attempting to overwrite without deleting...');
+            console.warn('⚠️  資料庫檔案正被使用中，將嘗試直接覆寫...');
         } else {
             throw e;
         }
@@ -63,7 +64,7 @@ db.pragma('cache_size = 10000');
 db.pragma('temp_store = MEMORY');
 db.pragma('foreign_keys = OFF');
 
-console.log('📁 Creating tables...\n');
+console.log('📁 正在建立資料表結構...\n');
 
 // 建立資料表
 db.exec(`
@@ -72,6 +73,9 @@ db.exec(`
     DROP TABLE IF EXISTS chips;
     DROP TABLE IF EXISTS price_history;
     DROP TABLE IF EXISTS stocks;
+    DROP TABLE IF EXISTS valuation_history;
+    DROP TABLE IF EXISTS monthly_revenue;
+    DROP TABLE IF EXISTS dividends;
 
     -- 股票基本資料
     CREATE TABLE stocks (
@@ -104,16 +108,51 @@ db.exec(`
         FOREIGN KEY (symbol) REFERENCES stocks(symbol)
     );
 
-    -- 基本面數據 (EPS, 三率, 營收 YoY)
+    -- 歷史基本面數據 (EPS, 三率, 營收 YoY)
     CREATE TABLE fundamentals (
-        symbol TEXT PRIMARY KEY,
-        year INTEGER,
-        quarter INTEGER,
+        symbol TEXT NOT NULL,
+        year INTEGER NOT NULL,
+        quarter INTEGER NOT NULL,
         eps REAL,
         gross_margin REAL,
         operating_margin REAL,
         net_margin REAL,
         revenue_yoy REAL,
+        PRIMARY KEY (symbol, year, quarter),
+        FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+    );
+
+    -- 估值歷史 (用於河流圖: PE/PB/Yield 走勢)
+    CREATE TABLE valuation_history (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        pe REAL,
+        pb REAL,
+        dividend_yield REAL,
+        PRIMARY KEY (symbol, date),
+        FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+    );
+
+    -- 每月營收數據
+    CREATE TABLE monthly_revenue (
+        symbol TEXT NOT NULL,
+        month TEXT NOT NULL, -- 格式: 11205 (民國YYMM) 或 202305
+        revenue REAL,
+        last_year_revenue REAL,
+        revenue_yoy REAL,
+        cumulative_revenue REAL,
+        cumulative_yoy REAL,
+        PRIMARY KEY (symbol, month),
+        FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+    );
+
+    -- 股利紀錄
+    CREATE TABLE dividends (
+        symbol TEXT NOT NULL,
+        year INTEGER NOT NULL,
+        ex_dividend_date TEXT,
+        dividend REAL,
+        PRIMARY KEY (symbol, year, ex_dividend_date),
         FOREIGN KEY (symbol) REFERENCES stocks(symbol)
     );
 
@@ -153,13 +192,15 @@ db.exec(`
     CREATE INDEX idx_latest_revenue_yoy ON latest_prices(revenue_yoy DESC);
     CREATE INDEX idx_chips_date_symbol ON chips(date DESC, symbol);
     CREATE INDEX idx_chips_symbol_date_desc ON chips(symbol, date DESC);
-    CREATE INDEX idx_history_date_breadth ON price_history(date, close, change_pct);
+    CREATE INDEX idx_fundamentals_symbol ON fundamentals(symbol);
+    CREATE INDEX idx_valuation_symbol ON valuation_history(symbol);
+    CREATE INDEX idx_revenue_symbol ON monthly_revenue(symbol);
 `);
 
 // 載入股票清單
-console.log('📊 Loading stock list...');
+console.log('📊 正在載入股票清單...');
 const stockList = JSON.parse(fs.readFileSync(STOCKS_JSON, 'utf-8'));
-console.log(`   Found ${stockList.length} stocks\n`);
+console.log(`   共找到 ${stockList.length} 檔股票\n`);
 
 // 產業分類邏輯 (從 stockDataService.ts 遷移)
 function getSectorBySymbol(symbol) {
@@ -216,11 +257,11 @@ const insertStockBatch = db.transaction(stocks => {
     }
 });
 insertStockBatch(stockList);
-console.log('✅ Inserted stock list\n');
+console.log('✅ 股票基本資料匯入完成\n');
 
 // 載入最新價格 (如果存在)
 if (fs.existsSync(LATEST_PRICES_JSON)) {
-    console.log('💰 Loading latest prices...');
+    console.log('💰 正在匯入最新行情數據...');
     const latestPrices = JSON.parse(fs.readFileSync(LATEST_PRICES_JSON, 'utf-8'));
 
     const insertLatest = db.prepare(`
@@ -255,16 +296,25 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
     });
 
     insertLatestBatch(latestPrices);
-    console.log(`✅ Inserted ${Object.keys(latestPrices).length} latest prices\n`);
+    console.log(`✅ 已匯入 ${Object.keys(latestPrices).length} 檔股票之最新行情\n`);
 }
 
-// 載入每月統計 (補齊 PE, Yield)
+// 載入每月統計 (補齊 PE, Yield 並存入估值歷史)
 if (fs.existsSync(MONTHLY_STATS_JSON)) {
-    console.log('📊 Updating Latest Prices with Monthly Stats (PE/Yield)...');
+    console.log('📊 正在更新最新行情統計與估值歷史...');
     const stats = JSON.parse(fs.readFileSync(MONTHLY_STATS_JSON, 'utf-8'));
+
+    // 取得當前日期 (估值歷史用)
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
     const updateStats = db.prepare(
         'UPDATE latest_prices SET pe = ?, pb = ?, yield = ? WHERE symbol = ?'
     );
+    const insertValuation = db.prepare(
+        'INSERT OR REPLACE INTO valuation_history (symbol, date, pe, pb, dividend_yield) VALUES (?, ?, ?, ?, ?)'
+    );
+
     const updateBatch = db.transaction(list => {
         for (const item of list) {
             updateStats.run(
@@ -273,19 +323,56 @@ if (fs.existsSync(MONTHLY_STATS_JSON)) {
                 item.dividendYield || 0,
                 item.symbol
             );
+            insertValuation.run(
+                item.symbol,
+                dateStr,
+                item.peRatio || 0,
+                item.pbRatio || 0,
+                item.dividendYield || 0
+            );
         }
     });
     updateBatch(stats);
-    console.log('✅ Updated Monthly Stats\n');
+    console.log('✅ 每月統計與估值歷史更新完成\n');
 }
 
-// 載入財報數據
+// 載入估值歷史資料夾 (Valuation History Folder)
+if (fs.existsSync(VALUATION_DIR)) {
+    console.log('📊 正在匯入歷史估值區間數據...');
+    const files = fs.readdirSync(VALUATION_DIR).filter(f => f.endsWith('.json') && f !== 'progress.json');
+    const insertValuation = db.prepare(
+        'INSERT OR REPLACE INTO valuation_history (symbol, date, pe, pb, dividend_yield) VALUES (?, ?, ?, ?, ?)'
+    );
+
+    const valBatch = db.transaction((data, date) => {
+        for (const item of data) {
+            insertValuation.run(
+                item.symbol,
+                date,
+                item.pe || 0,
+                item.pb || 0,
+                item.yield || 0
+            );
+        }
+    });
+
+    for (const file of files) {
+        // filename: 20230525.json -> date: 2023-05-25
+        const rawDate = file.replace('.json', '');
+        const date = `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}`;
+        const data = JSON.parse(fs.readFileSync(path.join(VALUATION_DIR, file), 'utf-8'));
+        valBatch(data, date);
+    }
+    console.log(`✅ 已載入 ${files.length} 個日期的歷史估值數據\n`);
+}
+
+// 載入財報數據 (支持歷史基本面)
 if (fs.existsSync(FINANCIALS_JSON)) {
-    console.log('📈 Loading Financials...');
+    console.log('📈 正在匯入各期財務報表...');
     const financials = JSON.parse(fs.readFileSync(FINANCIALS_JSON, 'utf-8'));
     const insertFin = db.prepare(`
-        INSERT OR REPLACE INTO fundamentals (symbol, year, quarter, eps, gross_margin, operating_margin, net_margin)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO fundamentals (symbol, year, quarter, eps, gross_margin, operating_margin, net_margin, revenue_yoy)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     // 獲取營收 YoY 對照
@@ -297,6 +384,7 @@ if (fs.existsSync(FINANCIALS_JSON)) {
 
     const insertBatch = db.transaction(list => {
         for (const item of list) {
+            const revYoY = revenueMap[item.symbol] || 0;
             insertFin.run(
                 item.symbol,
                 item.year || 0,
@@ -304,24 +392,59 @@ if (fs.existsSync(FINANCIALS_JSON)) {
                 item.eps || 0,
                 item.grossMargin || 0,
                 item.operatingMargin || 0,
-                item.netMargin || 0
+                item.netMargin || 0,
+                revYoY
             );
-            // 更新營收 YoY
-            if (revenueMap[item.symbol]) {
-                db.prepare('UPDATE fundamentals SET revenue_yoy = ? WHERE symbol = ?').run(
-                    revenueMap[item.symbol],
-                    item.symbol
-                );
-            }
+
+            // 同時更新最新價格中的基本面快照
+            db.prepare(`
+                UPDATE latest_prices 
+                SET eps = ?, gross_margin = ?, operating_margin = ?, net_margin = ?, revenue_yoy = ?
+                WHERE symbol = ?
+            `).run(
+                item.eps || 0,
+                item.grossMargin || 0,
+                item.operatingMargin || 0,
+                item.netMargin || 0,
+                revYoY,
+                item.symbol
+            );
         }
     });
     insertBatch(financials);
-    console.log(`✅ Inserted ${financials.length} financial records\n`);
+    console.log(`✅ 已匯入 ${financials.length} 筆財務報表紀錄\n`);
+}
+
+// 載入每月營收數據
+if (fs.existsSync(REVENUE_JSON)) {
+    console.log('💰 正在匯入每月營收歷史數據...');
+    const revenueData = JSON.parse(fs.readFileSync(REVENUE_JSON, 'utf-8'));
+    const insertRevenue = db.prepare(`
+        INSERT OR REPLACE INTO monthly_revenue 
+        (symbol, month, revenue, last_year_revenue, revenue_yoy, cumulative_revenue, cumulative_yoy)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const revenueBatch = db.transaction(list => {
+        for (const item of list) {
+            insertRevenue.run(
+                item.symbol,
+                item.month.toString(),
+                item.revenue || 0,
+                item.lastYearRevenue || 0,
+                item.revenueYoY || 0,
+                item.cumulativeRevenue || 0,
+                item.cumulativeYoY || 0
+            );
+        }
+    });
+    revenueBatch(revenueData);
+    console.log(`✅ 已匯入 ${revenueData.length} 筆營收紀錄\n`);
 }
 
 // 載入籌碼數據
 if (fs.existsSync(CHIPS_DIR)) {
-    console.log('🤝 Loading Chips Data...');
+    console.log('🤝 正在匯入法人籌碼數據...');
     const files = fs.readdirSync(CHIPS_DIR).filter(f => f.endsWith('.json'));
     const insertChips = db.prepare(`
         INSERT OR REPLACE INTO chips (symbol, date, foreign_inv, invest_trust, dealer)
@@ -339,13 +462,13 @@ if (fs.existsSync(CHIPS_DIR)) {
         const data = JSON.parse(fs.readFileSync(path.join(CHIPS_DIR, file), 'utf-8'));
         chipsBatch(data, date);
     }
-    console.log(`✅ Loaded chips data from ${files.length} dates\n`);
+    console.log(`✅ 已載入 ${files.length} 個日期的籌碼數據\n`);
 }
 
 // 處理 CSV 歷史價格
-console.log('📈 Processing CSV price history...');
+console.log('📈 正在掃描 CSV 歷史價格檔案...');
 const csvFiles = fs.readdirSync(PRICES_DIR).filter(f => f.endsWith('.csv'));
-console.log(`   Found ${csvFiles.length} CSV files\n`);
+console.log(`   共找到 ${csvFiles.length} 個 CSV 檔案\n`);
 
 const insertHistory = db.prepare(`
     INSERT OR REPLACE INTO price_history 
@@ -409,7 +532,7 @@ for (let i = 0; i < csvFiles.length; i += BATCH_SIZE) {
             }
             processedFiles++;
         } catch (err) {
-            console.error(`   ⚠️ Error processing ${file}:`, err.message);
+            console.error(`   ⚠️ 處理 ${file} 時發生錯誤:`, err.message);
         }
     }
 
@@ -420,11 +543,11 @@ for (let i = 0; i < csvFiles.length; i += BATCH_SIZE) {
     // 進度顯示
     const progress = Math.round(((i + batch.length) / csvFiles.length) * 100);
     process.stdout.write(
-        `\r   Progress: ${progress}% (${processedFiles}/${csvFiles.length} files, ${totalRecords.toLocaleString()} records)`
+        `\r   同步進度: ${progress}% (${processedFiles}/${csvFiles.length} 個檔案, ${totalRecords.toLocaleString()} 筆紀錄)`
     );
 }
 
-console.log('\n\n📈 Calculating technical indicators (MA5, MA20)...');
+console.log('\n\n📈 正在計算技術面指標 (MA5, MA20)...');
 const symbols = db.prepare('SELECT symbol FROM latest_prices').all();
 const updateTech = db.prepare('UPDATE latest_prices SET ma5 = ?, ma20 = ? WHERE symbol = ?');
 const calcBatch = db.transaction(list => {
@@ -443,12 +566,12 @@ const calcBatch = db.transaction(list => {
     }
 });
 calcBatch(symbols);
-console.log('✅ Technical indicators calculated');
+console.log('✅ 技術面指標計算完成');
 
 console.log('\n');
 
 // 最佳化資料庫
-console.log('🔧 Optimizing database...');
+console.log('🔧 正在進行資料庫索引結構最佳化...');
 db.pragma('optimize');
 db.exec('VACUUM');
 db.exec('ANALYZE');
@@ -461,13 +584,13 @@ const stats = fs.statSync(OUTPUT_DB);
 const sizeMB = (stats.size / 1024 / 1024).toFixed(2);
 
 console.log('\n' + '='.repeat(50));
-console.log('✅ SQLite Database Built Successfully!');
+console.log('✅ SQLite 資料庫建置全面完成！');
 console.log('='.repeat(50));
-console.log(`📁 Output: ${OUTPUT_DB}`);
-console.log(`📊 Size: ${sizeMB} MB`);
-console.log(`📈 Total Records: ${totalRecords.toLocaleString()}`);
-console.log(`📋 Stocks: ${stockList.length}`);
+console.log(`📁 輸出檔案: ${OUTPUT_DB}`);
+console.log(`📊 檔案大小: ${sizeMB} MB`);
+console.log(`📈 總資料筆數: ${totalRecords.toLocaleString()}`);
+console.log(`📋 股票總數: ${stockList.length}`);
 console.log('='.repeat(50));
-console.log('\n💡 The database is ready to use!');
+console.log('\n💡 資料庫已就緒！');
 console.log('   - Server: Use better-sqlite3 for sync queries');
 console.log('   - Client: Use sql.js (WASM) for offline support');

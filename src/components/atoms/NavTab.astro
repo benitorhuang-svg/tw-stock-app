@@ -13,7 +13,6 @@ const { path, label, icon, isActive, variant } = Astro.props;
 {
     variant === 'desktop' ? (
         <a href={path} class:list={['top-nav-tab', isActive && 'active']} data-astro-prefetch>
-            <span class="tab-icon">{icon}</span>
             <span class="tab-label">{label}</span>
         </a>
     ) : (

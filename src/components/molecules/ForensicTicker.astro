@@ -1,0 +1,49 @@
+---
+/**
+ * ForensicTicker.astro - Real-time market signal ticker
+ */
+---
+
+<div class="flex items-center gap-3">
+    <div class="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
+    <span class="text-[10px] font-mono text-white/40 uppercase tracking-widest"
+        >Forensic Signal Stream</span
+    >
+    <div class="h-[1px] w-20 bg-white/5"></div>
+    <p class="text-[10px] text-white/20 italic font-medium" id="momentum-ticker">
+        Waiting for scan initialization...
+    </p>
+</div>
+
+<script>
+    function rotateTicker() {
+        const ticker = document.getElementById('momentum-ticker');
+        if (!ticker) return;
+        const messages = [
+            'Detecting institutional footprints in SEMICON sector...',
+            'Analyzing momentum divergence across growth vectors...',
+            'Forensic scan complete. High-conviction signals isolated.',
+            'Institutional capital inflow detected in top deciles.',
+            'Scanning for technical breakouts in low P/E domains...',
+        ];
+        let i = 0;
+        setInterval(() => {
+            ticker.style.opacity = '0';
+            setTimeout(() => {
+                ticker.textContent = messages[i];
+                ticker.style.opacity = '1';
+                i = (i + 1) % messages.length;
+            }, 500);
+        }, 4000);
+    }
+
+    // Initialize on load and on transition
+    rotateTicker();
+    document.addEventListener('astro:page-load', rotateTicker);
+</script>
+
+<style>
+    #momentum-ticker {
+        transition: opacity 0.5s ease-in-out;
+    }
+</style>

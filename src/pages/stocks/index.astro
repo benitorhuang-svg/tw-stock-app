@@ -1,260 +1,229 @@
 ---
 /**
- * stocks/index.astro — Analysis Hub (Landing Page for Deep Dive)
- * Focuses on selecting or searching for a specific stock to analyze.
+ * stocks/index.astro — Intelligence_Center Landing Page
+ * Central nexus for deep-vector stock analysis and search.
  */
 import MainTerminal from '../../layouts/MainTerminal.astro';
-
-// SSR: Quick list for "Recently Viewed" or "Suggested"
-const suggestedStocks = [
-    { symbol: '2330', name: '台積電', sector: '半導體' },
-    { symbol: '2317', name: '鴻海', sector: '電子' },
-    { symbol: '2454', name: '聯發科', sector: '半導體' },
-    { symbol: '3481', name: '群創', sector: '光電' },
-    { symbol: '2303', name: '聯電', sector: '半導體' },
-];
+import StockHubHero from '../../components/molecules/StockHubHero.astro';
+import StockSearchEngine from '../../components/organisms/StockSearchEngine.astro';
+import RecentAnalyses from '../../components/molecules/RecentAnalyses.astro';
+import DividendIntelligenceWall from '../../components/molecules/DividendIntelligenceWall.astro';
+import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
 ---
 
-<MainTerminal title="分析中心">
-    <div class="max-w-[1000px] mx-auto pt-10 lg:pt-20 px-4">
+<MainTerminal title="Intelligence_Center (CORE_NEXUS)">
+    <div
+        class="h-full flex flex-col p-4 lg:p-10 lg:pt-16 max-w-[1400px] mx-auto w-full overflow-hidden"
+    >
         <!-- Centerpiece Header -->
-        <div class="text-center mb-12 animate-fade-up">
-            <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-text-primary mb-4">
-                個股數據分析中心
-            </h1>
-            <p class="text-text-muted text-sm lg:text-base max-w-xl mx-auto">
-                輸入代號或名稱，開啟深度視覺化分析。包含技術指標、法人籌碼、基本面診斷及 AI 警示。
-            </p>
-        </div>
+        <StockHubHero />
 
-        <!-- Hero Search Bar -->
+        <!-- Search Nexus (Organism) -->
+        <StockSearchEngine />
+
+        <!-- Quick Access Matrix -->
         <div
-            class="relative max-w-2xl mx-auto mb-16 animate-fade-up"
-            style="animation-delay: 100ms"
-        >
-            <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
-                <svg
-                    class="w-5 h-5 text-text-muted"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2.5"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-            </div>
-            <input
-                type="text"
-                id="analysis-hub-search"
-                placeholder="搜尋代號或名稱，例如 2330 或 台積電..."
-                class="w-full bg-glass-deep border-2 border-border/80 focus:border-accent/60 rounded-2xl pl-14 pr-6 py-5 text-lg font-mono placeholder:text-text-muted/50 outline-none transition-all shadow-2xl shadow-accent/5"
-            />
-
-            <!-- Quick Search Results (Popovers) -->
-            <div
-                id="search-results"
-                class="hidden absolute top-full left-0 right-0 mt-3 glass-card overflow-hidden z-50 border-accent/20 shadow-2xl"
-            >
-                <div class="p-2 divide-y divide-border/20" id="results-container">
-                    <!-- Dynamic Items -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Access Sections -->
-        <div
-            class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-up"
+            class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 animate-fade-up"
             style="animation-delay: 200ms"
         >
-            <!-- Recently Viewed -->
-            <div class="glass-card p-6 border-border/40">
-                <div class="flex items-center justify-between mb-5">
-                    <h3
-                        class="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2"
-                    >
-                        <span class="text-accent">⌚</span> 最近瀏覽
-                    </h3>
-                    <button class="text-[10px] text-text-muted hover:text-accent transition-colors"
-                        >清除記錄</button
-                    >
-                </div>
-                <div class="space-y-3" id="recent-analyses">
-                    <div
-                        class="text-center py-6 text-xs text-text-muted border border-dashed border-border/30 rounded-lg italic"
-                    >
-                        尚無瀏覽記錄
-                    </div>
-                </div>
-            </div>
+            <RecentAnalyses />
+            <DividendIntelligenceWall />
+        </div>
 
-            <!-- High Dividend Yield Wall (Intelligence Component) -->
-            <div class="glass-card p-6 border-border/40 flex flex-col">
-                <div class="flex items-center justify-between mb-5">
-                    <h3
-                        class="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2"
-                    >
-                        <span class="text-accent">💎</span> 高殖利率情報牆
-                    </h3>
-                    <span
-                        class="text-[9px] px-1.5 py-0.5 rounded bg-bullish/10 text-bullish border border-bullish/20 font-bold"
-                        >Top 8 殖利率</span
-                    >
-                </div>
-                <div class="space-y-2 flex-1" id="dividend-wall">
-                    <div class="flex items-center justify-center h-full py-10 opacity-30">
-                        <div
-                            class="animate-spin h-5 w-5 border-2 border-accent border-t-transparent rounded-full"
-                        >
+        <!-- Capability Tiers -->
+        <div
+            class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up"
+            style="animation-delay: 300ms"
+        >
+            {
+                [
+                    {
+                        icon: '📈',
+                        label: 'Multi-Vector Charting',
+                        text: 'Cycle dynamics and RSI velocity',
+                    },
+                    {
+                        icon: '💎',
+                        label: 'Capital Forensic',
+                        text: 'Institutional flow and accumulation',
+                    },
+                    {
+                        icon: '🏦',
+                        label: 'Structural Audit',
+                        text: 'Fundamental health and margin scan',
+                    },
+                    { icon: '🤖', label: 'Momentum Alert', text: 'AI-driven variance detection' },
+                ].map(f => (
+                    <div class="p-6 glass-card border-white/5 hover:border-accent/30 transition-all text-center group bg-white/[0.01]">
+                        <div class="text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            {f.icon}
                         </div>
+                        <h4 class="text-[10px] font-black text-white/90 mb-2 uppercase tracking-widest">
+                            {f.label}
+                        </h4>
+                        <p class="text-[9px] text-white/30 font-mono leading-relaxed uppercase tracking-tighter">
+                            {f.text}
+                        </p>
                     </div>
-                </div>
-            </div>
+                ))
+            }
+        </div>
+
+        <!-- Signal Stream Footer -->
+        <div class="mt-auto pt-10 border-t border-white/5 flex items-center justify-between">
+            <ForensicTicker />
+            <span class="text-[8px] font-mono text-white/10 uppercase tracking-[0.4em]"
+                >Uplink_Node: ANALYSIS_CENTER_TAIWAN</span
+            >
         </div>
     </div>
 
-    <!-- Features Overview -->
-    <div class="max-w-[1200px] mx-auto mt-24 mb-20 px-4 stagger-fade-up">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div
-                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
-            >
-                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">📈</div>
-                <h4 class="text-sm font-bold text-text-primary mb-2">多維度走勢</h4>
-                <p class="text-xs text-text-muted leading-relaxed">
-                    即時報價、K線及多週期技術分析圖表
-                </p>
-            </div>
-            <div
-                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
-            >
-                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">💎</div>
-                <h4 class="text-sm font-bold text-text-primary mb-2">法人籌碼</h4>
-                <p class="text-xs text-text-muted leading-relaxed">
-                    外資、投信買賣超及大戶持股結構
-                </p>
-            </div>
-            <div
-                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
-            >
-                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">🏦</div>
-                <h4 class="text-sm font-bold text-text-primary mb-2">基本面分析</h4>
-                <p class="text-xs text-text-muted leading-relaxed">
-                    營收成長、獲利能力及完整財務數據
-                </p>
-            </div>
-            <div
-                class="p-6 glass-card border border-accent/10 hover:border-accent/30 transition-all text-center group"
-            >
-                <div class="text-2xl mb-3 group-hover:scale-110 transition-transform">🤖</div>
-                <h4 class="text-sm font-bold text-text-primary mb-2">AI 智能警報</h4>
-                <p class="text-xs text-text-muted leading-relaxed">
-                    自動化趨勢判別與異常波動即時提醒
-                </p>
-            </div>
-        </div>
-    </div>
-</MainTerminal>
+    <script>
+        import { addToRecentViewed, getRecentViewed } from '../../lib/user-account';
 
-<script lang="ts">
-    import { getStocksWithPrices } from '../../utils/stockDataService';
+        // ═══ Forensic Intelligence Engine ═══
+        async function initIntelligenceCenter() {
+            const input = document.getElementById('analysis-hub-search') as HTMLInputElement;
+            const results = document.getElementById('search-results');
+            const container = document.getElementById('results-container');
+            const recentContainer = document.getElementById('recent-analyses');
+            const divWall = document.getElementById('dividend-wall');
 
-    async function initAnalysisSearch() {
-        const input = document.getElementById('analysis-hub-search') as HTMLInputElement;
-        const results = document.getElementById('search-results');
-        const container = document.getElementById('results-container');
+            if (!input || !results || !container) return;
 
-        if (!input || !results || !container) return;
-
-        let allStocks = [];
-        try {
-            allStocks = await getStocksWithPrices();
-        } catch (e) {
-            console.error('Failed to load stock list for search', e);
-        }
-
-        input.addEventListener('input', () => {
-            const q = input.value.trim().toLowerCase();
-            if (q.length < 1) {
-                results.classList.add('hidden');
-                return;
+            // Load Data via API
+            let allStocks: any[] = [];
+            try {
+                const response = await fetch('/api/stocks/snapshot');
+                allStocks = await response.json();
+            } catch (e) {
+                console.error('[CORE_NEXUS] Data establishment failed:', e);
             }
 
-            const matches = allStocks
-                .filter(s => s.symbol.includes(q) || s.name.toLowerCase().includes(q))
-                .slice(0, 8);
+            // 1. Unified Search Pipeline
+            input.addEventListener('input', () => {
+                const q = input.value.trim().toLowerCase();
+                if (q.length < 1) {
+                    results.classList.add('hidden');
+                    return;
+                }
 
-            if (matches.length > 0) {
-                container.innerHTML = matches
+                const matches = allStocks
+                    .filter(s => s.symbol.includes(q) || s.name.toLowerCase().includes(q))
+                    .slice(0, 10);
+
+                if (matches.length > 0) {
+                    container.innerHTML = matches
+                        .map(
+                            s => `
+                        <a href="/stocks/${s.symbol}" class="search-result-item" onclick="window.Nexus_Store_Recent('${s.symbol}')">
+                            <div class="flex items-center gap-4">
+                                <span class="font-mono text-sm font-black text-accent">${s.symbol}</span>
+                                <div class="flex flex-col">
+                                    <span class="text-[11px] font-black text-white/90 group-hover:text-accent transition-colors">${s.name}</span>
+                                    <span class="text-[8px] font-mono text-white/20 uppercase tracking-widest">${s.sector || 'GENERAL'}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-6">
+                                <div class="text-right">
+                                    <div class="text-sm font-black font-mono text-white/70">${s.price.toFixed(2)}</div>
+                                    <div class="text-[9px] font-black font-mono ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
+                                        ${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%
+                                    </div>
+                                </div>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white/20 group-hover:text-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
+                            </div>
+                        </a>
+                    `
+                        )
+                        .join('');
+                    results.classList.remove('hidden');
+                } else {
+                    container.innerHTML =
+                        '<div class="py-12 text-center text-[9px] font-mono text-white/20 uppercase tracking-[0.2em]">Signal_Not_Detected_In_Nexus</div>';
+                    results.classList.remove('hidden');
+                }
+            });
+
+            // 2. Recent Registry Engine
+            const updateRecentRegistry = () => {
+                if (!recentContainer) return;
+                const recent = getRecentViewed();
+                if (recent.length === 0) {
+                    recentContainer.innerHTML =
+                        '<div class="flex flex-col items-center justify-center py-12 text-center opacity-20"><div class="text-3xl mb-4">⏲️</div><span class="text-[9px] font-mono uppercase tracking-[0.2em]">Registry_Empty</span></div>';
+                    return;
+                }
+
+                const recentStocks = recent
+                    .map(sym => allStocks.find(s => s.symbol === sym))
+                    .filter(s => s);
+                recentContainer.innerHTML = recentStocks
                     .map(
                         s => `
-                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-3 hover:bg-accent/5 transition-colors no-underline group">
-                        <div class="flex items-center gap-3">
-                            <span class="font-mono text-sm font-bold text-accent">${s.symbol}</span>
-                            <span class="text-sm text-text-primary font-medium group-hover:text-accent transition-colors">${s.name}</span>
-                        </div>
+                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-white/[0.04] transition-all border border-white/5 hover:border-accent/20 group no-underline">
                         <div class="flex items-center gap-4">
-                            <span class="text-xs font-mono text-text-secondary">${s.price.toFixed(2)}</span>
-                            <span class="text-[10px] text-text-muted uppercase tracking-tighter">${s.sector || ''}</span>
+                            <span class="text-[10px] font-mono font-black border border-white/10 px-2 py-1 rounded bg-black/40 text-accent">${s.symbol}</span>
+                            <span class="text-[11px] font-black text-white/70 group-hover:text-white transition-colors uppercase">${s.name}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-mono font-black text-white/40">${s.price.toFixed(2)}</span>
+                            <div class="w-1 h-1 rounded-full ${s.changePercent >= 0 ? 'bg-bullish' : 'bg-bearish'}"></div>
                         </div>
                     </a>
                 `
                     )
                     .join('');
-                results.classList.remove('hidden');
-            } else {
-                container.innerHTML =
-                    '<div class="p-6 text-center text-xs text-text-muted">查無搜尋標的</div>';
-                results.classList.remove('hidden');
-            }
-        });
+            };
 
-        // Close search on click outside
-        document.addEventListener('click', e => {
-            if (!input.contains(e.target as Node) && !results.contains(e.target as Node)) {
-                results.classList.add('hidden');
-            }
-        });
+            // 3. Yield Intelligence Wall
+            const initYieldWall = () => {
+                if (!divWall || allStocks.length === 0) return;
+                const topYields = [...allStocks]
+                    .filter(s => s.yield > 0)
+                    .sort((a, b) => b.yield - a.yield)
+                    .slice(0, 8);
 
-        // Initialize Dividend Wall
-        function updateDividendWall() {
-            const wallContainer = document.getElementById('dividend-wall');
-            if (!wallContainer || allStocks.length === 0) return;
-
-            const highYield = [...allStocks]
-                .filter(s => s.yield > 0)
-                .sort((a, b) => b.yield - a.yield)
-                .slice(0, 8);
-
-            wallContainer.innerHTML = highYield
-                .map(
-                    s => `
-                <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-2.5 rounded-lg hover:bg-bullish/5 transition-all border border-transparent hover:border-bullish/20 group no-underline">
-                    <div class="flex items-center gap-3">
-                        <span class="text-[10px] font-mono font-bold bg-surface px-1.5 py-0.5 rounded text-accent tracking-tighter">${s.symbol}</span>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-medium text-text-primary group-hover:text-bullish transition-colors">${s.name}</span>
-                            <span class="text-[9px] text-text-muted hidden sm:block">${s.sector || ''}</span>
+                divWall.innerHTML = topYields
+                    .map(
+                        s => `
+                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-warning/[0.03] transition-all border border-white/5 hover:border-warning/20 group no-underline">
+                        <div class="flex items-center gap-4">
+                            <span class="text-[9px] font-mono font-black text-warning/40 tracking-widest">${s.symbol}</span>
+                            <span class="text-[11px] font-black text-white/70 group-hover:text-warning transition-colors uppercase">${s.name}</span>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-mono font-bold text-bullish">${s.yield.toFixed(2)}%</span>
-                        <div class="w-8 h-1 bg-surface rounded-full overflow-hidden">
-                            <div class="bg-bullish h-full rounded-full" style="width: ${Math.min(s.yield * 10, 100)}%"></div>
+                        <div class="flex items-center gap-6">
+                            <span class="text-[11px] font-mono font-black text-warning">${s.yield.toFixed(2)}%</span>
+                            <div class="w-12 h-[3px] bg-black/40 rounded-full overflow-hidden">
+                                <div class="bg-warning h-full" style="width: ${Math.min(s.yield * 10, 100)}%"></div>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            `
-                )
-                .join('');
+                    </a>
+                `
+                    )
+                    .join('');
+            };
+
+            (window as any).Nexus_Store_Recent = (sym: string) => {
+                addToRecentViewed(sym);
+                updateRecentRegistry();
+            };
+
+            document.getElementById('clear-recent')?.addEventListener('click', () => {
+                localStorage.removeItem('tw-stock-recent'); // Assuming this is how it's stored in lib
+                updateRecentRegistry();
+            });
+
+            // Global Click Outside handler
+            document.addEventListener('click', e => {
+                if (!input.contains(e.target as Node) && !results.contains(e.target as Node))
+                    results.classList.add('hidden');
+            });
+
+            updateRecentRegistry();
+            initYieldWall();
         }
 
-        updateRecent();
-        updateDividendWall();
-    }
-
-    document.addEventListener('DOMContentLoaded', initAnalysisSearch);
-    document.addEventListener('astro:page-load', initAnalysisSearch);
-</script>
+        document.addEventListener('astro:page-load', initIntelligenceCenter);
+    </script>
+</MainTerminal>

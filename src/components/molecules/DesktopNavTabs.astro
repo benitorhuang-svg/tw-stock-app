@@ -10,7 +10,7 @@ const isActive = (path: string) =>
 <nav class="hidden md:flex items-center" aria-label="主要導覽" id="desktop-nav">
     <div class="top-nav-tabs">
         {
-            NAV_ITEMS.map(item => (
+            NAV_ITEMS.filter(item => item.label !== '數據觀測').map(item => (
                 <NavTab
                     variant="desktop"
                     path={item.path}

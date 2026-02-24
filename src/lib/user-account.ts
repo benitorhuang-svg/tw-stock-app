@@ -241,3 +241,24 @@ export async function restoreFromFile(file: File): Promise<boolean> {
         return false;
     }
 }
+
+/**
+ * 策略儲存與獲取
+ */
+export function saveStrategy(strategy: any): void {
+    const data = getUserData();
+    if (!data.customStrategies) data.customStrategies = [];
+
+    // Check if updating existing
+    const idx = data.customStrategies.findIndex(s => s.id === strategy.id);
+    if (idx !== -1) {
+        data.customStrategies[idx] = strategy;
+    } else {
+        data.customStrategies.push(strategy);
+    }
+    saveUserData(data);
+}
+
+export function getStrategies(): any[] {
+    return getUserData().customStrategies || [];
+}

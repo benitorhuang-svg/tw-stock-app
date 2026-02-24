@@ -1,0 +1,63 @@
+---
+/**
+ * StrategySidebar.astro - Preset and custom strategy management
+ */
+interface Strategy {
+    id: string;
+    name: string;
+    icon: string;
+    category: string;
+}
+
+interface Props {
+    strategies: Strategy[];
+}
+
+const { strategies } = Astro.props;
+---
+
+<aside class="lg:col-span-3 space-y-4">
+    <div class="glass-card p-5 border-t-2 border-t-accent/40">
+        <h2
+            class="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center justify-between"
+        >
+            <span>Tactical Presets</span>
+            <span class="text-[8px] px-1.5 py-0.5 rounded bg-white/5 font-mono">v4.0</span>
+        </h2>
+        <div id="strategy-gallery" class="space-y-2">
+            {
+                strategies.map(s => (
+                    <button
+                        class="strategy-preset-btn w-full p-3 rounded-xl bg-white/[0.02] border border-white/5 hover:border-accent/40 hover:bg-accent/[0.05] transition-all flex items-center gap-3 group text-left"
+                        data-strategy-id={s.id}
+                    >
+                        <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-lg group-hover:scale-110 transition-transform">
+                            {s.icon}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-[11px] font-bold text-white/70 group-hover:text-accent truncate">
+                                {s.name}
+                            </div>
+                            <div class="text-[8px] font-mono text-white/20 uppercase tracking-tighter">
+                                Code: {s.id.slice(0, 8)}
+                            </div>
+                        </div>
+                        <div class="w-1 h-1 rounded-full bg-white/10 group-hover:bg-accent group-[.active-strategy]:bg-accent" />
+                    </button>
+                ))
+            }
+        </div>
+    </div>
+
+    <div class="glass-card p-4 bg-gradient-to-b from-accent/[0.05] to-transparent">
+        <div class="flex items-center gap-2 mb-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-accent animate-glow-pulse"></div>
+            <span class="text-[10px] font-bold text-accent uppercase tracking-wider"
+                >Quant AI Focus</span
+            >
+        </div>
+        <p class="text-[10px] text-white/40 leading-relaxed italic">
+            "目前市場寬度正在改善，建議關注【量價齊揚】與【投信認養】策略，捕捉帶量突破的強勢個目。"
+        </p>
+    </div>
+</aside>

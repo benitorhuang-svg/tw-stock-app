@@ -46,7 +46,7 @@ function loadFailedList() {
         if (fs.existsSync(FAILED_LOG)) {
             return JSON.parse(fs.readFileSync(FAILED_LOG, 'utf-8'));
         }
-    } catch {}
+    } catch { }
     return [];
 }
 
@@ -65,7 +65,7 @@ function loadProgress() {
         if (fs.existsSync(PROGRESS_LOG)) {
             return JSON.parse(fs.readFileSync(PROGRESS_LOG, 'utf-8'));
         }
-    } catch {}
+    } catch { }
     return { lastSymbol: null, lastIndex: 0 };
 }
 
@@ -128,16 +128,21 @@ function showProgress(current, total, symbol, name, status) {
         status === 'success'
             ? '✅'
             : status === 'skip'
-              ? '⏭️'
-              : status === 'fail'
-                ? '❌'
-                : status === 'retry'
-                  ? '🔄'
-                  : '📥';
+                ? '⏭️'
+                : status === 'fail'
+                    ? '❌'
+                    : status === 'retry'
+                        ? '🔄'
+                        : '📥';
     const displayName = name.substring(0, 8).padEnd(8);
-    const line = `\r${bar} ${percent}% [${current}/${total}] ETA: ${eta} | ${statusIcon} ${symbol} ${displayName}`;
+    const line = `\r${bar} ${percent}% [${current}/${total}] 預計剩餘: ${eta} | ${statusIcon} ${symbol} ${displayName}`;
 
+    // Always use \r for progress updates to satisfy "single line" requirement.
+    // Only use \n at 100% or failure to keep logs clean.
     process.stdout.write(line);
+    if (current === total || status === 'fail') {
+        process.stdout.write('\n');
+    }
 }
 
 /**
@@ -301,7 +306,7 @@ async function main() {
         if (lastIdx >= 0) {
             // 從最後一個開始（會重新下載它以確保完整）
             startIndex = lastIdx;
-            console.log(`📍 續傳模式：從第 ${startIndex + 1} 檔 (${progress.lastSymbol}) 開始`);
+            console.log(`📍 [續傳] 偵測到上次處理至: 第 ${startIndex + 1} 檔 (${progress.lastSymbol})`);
         }
     }
 
@@ -324,6 +329,7 @@ async function main() {
         // 檢查是否已完整下載（非強制模式）
         if (!forceAll && i !== startIndex && isFileComplete(symbol, name)) {
             skipped++;
+            // 移除原本每 100 筆更新一次的邏輯，確保進度條百分比不會跳躍
             showProgress(displayIndex, displayTotal, symbol, name, 'skip');
         } else {
             const statusType = i === startIndex && !forceAll ? 'retry' : 'loading';
@@ -360,7 +366,7 @@ async function main() {
     if (failed === 0) {
         try {
             fs.unlinkSync(PROGRESS_LOG);
-        } catch {}
+        } catch { }
     }
 
     console.log('');

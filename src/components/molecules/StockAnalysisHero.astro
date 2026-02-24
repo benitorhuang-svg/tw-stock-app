@@ -1,0 +1,116 @@
+---
+/**
+ * StockAnalysisHero.astro - Premium individual stock hero header
+ */
+import Badge from '../atoms/Badge.astro';
+
+interface Props {
+    symbol: string;
+    name: string;
+    price: number;
+    change: number;
+    changePercent: number;
+    sector: string;
+}
+
+const { symbol, name, price, change, changePercent, sector } = Astro.props;
+const isBullish = change > 0;
+const isBearish = change < 0;
+const colorClass = isBullish ? 'text-bullish' : isBearish ? 'text-bearish' : 'text-white/40';
+const prefix = isBullish ? '+' : '';
+---
+
+<header class="mb-8 animate-fade-up">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="flex flex-col gap-2">
+            <!-- Breadcrumbs / Meta -->
+            <div class="flex items-center gap-3 opacity-40">
+                <span class="text-[9px] font-mono tracking-[0.3em] uppercase">Markets</span>
+                <div class="w-1 h-1 rounded-full bg-white/40"></div>
+                <span class="text-[9px] font-mono tracking-[0.3em] uppercase">Entities</span>
+                <div class="w-1 h-1 rounded-full bg-white/40"></div>
+                <span class="text-[9px] font-mono tracking-[0.3em] uppercase text-accent font-black"
+                    >Analysis</span
+                >
+            </div>
+
+            <div class="flex items-center gap-4 flex-wrap">
+                <div class="relative">
+                    <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tighter">
+                        {name}
+                    </h1>
+                    <div
+                        class="absolute -right-2 top-0 translate-x-full px-2 py-0.5 rounded border border-white/10 bg-white/5 text-[10px] font-mono text-white/40"
+                    >
+                        {symbol}
+                    </div>
+                </div>
+                <Badge
+                    variant={isBullish ? 'bullish' : isBearish ? 'bearish' : 'muted'}
+                    class="text-xs py-1 px-3"
+                >
+                    {isBullish ? '▲ MOMENTUM_GAIN' : isBearish ? '▼ VECTOR_LOSS' : '— STABLE'}
+                </Badge>
+                {
+                    sector && (
+                        <span class="px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-[10px] font-mono font-bold text-accent uppercase tracking-widest">
+                            {sector}
+                        </span>
+                    )
+                }
+            </div>
+        </div>
+
+        <div class="flex items-end gap-10">
+            <!-- Live Quote -->
+            <div class="flex flex-col items-end">
+                <span class="text-[9px] font-mono text-white/20 uppercase tracking-[0.4em] mb-1"
+                    >Live_Quote</span
+                >
+                <div class="flex items-baseline gap-3">
+                    <span
+                        class="text-4xl font-mono font-black text-white leading-none tracking-tighter"
+                    >
+                        {price.toFixed(2)}
+                    </span>
+                    <span class:list={['text-lg font-mono font-bold', colorClass]}>
+                        {prefix}{change.toFixed(2)} ({prefix}{changePercent.toFixed(2)}%)
+                    </span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2 mb-1">
+                <button
+                    id="watch-toggle-hero"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:border-white/20 transition-all group overflow-hidden relative"
+                >
+                    <div
+                        class="absolute inset-0 bg-accent/5 translate-y-full group-hover:translate-y-0 transition-transform"
+                    >
+                    </div>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-6 h-6 relative z-10"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                        ></path>
+                    </svg>
+                </button>
+                <a
+                    href="/screener"
+                    class="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black font-mono text-white/40 hover:text-white hover:border-white/20 transition-all uppercase tracking-widest no-underline"
+                >
+                    Back to Terminal
+                </a>
+            </div>
+        </div>
+    </div>
+</header>

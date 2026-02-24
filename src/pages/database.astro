@@ -1,9 +1,11 @@
 ---
 /**
- * database.astro — Data Explorer Page (003-tab-database)
- * Engineering-grade SQLite inspection with data health dashboard.
+ * database.astro — Data Explorer Terminal
+ * Quantum-grade SQLite inspection with modular architecture.
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
+import DatabaseSidebar from '../components/organisms/DatabaseSidebar.astro';
+import DatabaseExplorer from '../components/organisms/DatabaseExplorer.astro';
 
 // SSR: Load initial table stats
 import { dbService } from '../lib/db/sqlite-service';
@@ -20,397 +22,52 @@ const tableStats = tables.map(t => {
 });
 
 const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
-const dbStats = dbService.getDbStats();
 ---
 
 <MainTerminal title="數據觀測 (SQLite)" fullWidth>
     <div class="fixed inset-x-0 bottom-0 top-[64px] flex overflow-hidden">
-        <!-- Mobile Sidebar Toggle -->
+        <!-- Explorer Orchestration -->
+        <DatabaseSidebar tables={tables} tableStats={tableStats} totalRows={totalRows} />
+
+        <DatabaseExplorer />
+
+        <!-- Mobile Sidebar UI Actions -->
         <button
             id="sidebar-toggle"
             class="md:hidden fixed top-[72px] left-2 z-30 bg-surface border border-border rounded-lg px-2.5 py-1.5 text-xs font-mono text-text-secondary hover:text-text-primary hover:bg-surface-hover transition-colors"
-            aria-label="切換側邊欄"
         >
             ☰ 資料表
         </button>
-
-        <!-- Mobile Sidebar Backdrop -->
         <div
             id="sidebar-backdrop"
             class="md:hidden fixed inset-0 bg-black/50 z-[19] hidden"
             aria-hidden="true"
         >
         </div>
-
-        <!-- Sidebar: Table Navigator -->
-        <aside
-            id="db-sidebar"
-            class="w-64 bg-surface/20 backdrop-blur-3xl border-r border-white/10 flex flex-col z-20 flex-shrink-0 max-md:fixed max-md:inset-y-0 max-md:top-[64px] max-md:left-0 max-md:-translate-x-full max-md:transition-transform max-md:duration-200 shadow-[4px_0_24px_rgba(0,0,0,0.5)]"
-        >
-            <!-- DB Health Summary -->
-            <div class="px-5 py-5 border-b border-white/10 relative overflow-hidden group">
-                <!-- Decorative background glow -->
-                <div
-                    class="absolute top-0 right-0 w-40 h-40 bg-accent/10 rounded-full blur-[40px] -mr-16 -mt-16 pointer-events-none group-hover:bg-accent/20 transition-all duration-1000"
-                >
-                </div>
-
-                <!-- Scanning line effect -->
-                <div
-                    class="absolute inset-0 bg-gradient-to-b from-transparent via-accent/5 to-transparent h-4 w-full animate-scan pointer-events-none opacity-50"
-                >
-                </div>
-
-                <div class="flex items-center justify-between mb-5 relative z-10">
-                    <span
-                        class="text-[9px] font-black text-white/50 uppercase tracking-[0.2em] flex items-center gap-2"
-                    >
-                        <span
-                            class="w-1.5 h-1.5 rounded-full bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse"
-                        ></span>
-                        CLUSTER STATUS
-                    </span>
-                    <div class="flex flex-col items-end">
-                        <span class="text-[10px] font-mono font-bold text-accent"
-                            >{dbStats.sizeMB} MB</span
-                        >
-                        <span class="text-[8px] tracking-widest text-white/30 uppercase mt-0.5"
-                            >DB CAP</span
-                        >
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 relative z-10">
-                    <div
-                        class="bg-black/40 border border-white/5 rounded-xl p-3 shadow-inner hover:border-accent/30 hover:bg-black/60 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-500 overflow-hidden relative"
-                    >
-                        <div
-                            class="absolute -right-2 -bottom-2 text-4xl opacity-[0.03] font-black pointer-events-none"
-                        >
-                            TB
-                        </div>
-                        <div
-                            class="text-[8px] text-white/40 uppercase tracking-widest font-black mb-1.5"
-                        >
-                            TABLES
-                        </div>
-                        <div
-                            class="font-mono text-xl text-white font-black leading-none drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
-                        >
-                            {tables.length}
-                        </div>
-                    </div>
-
-                    <div
-                        class="bg-black/40 border border-white/5 rounded-xl p-3 shadow-inner hover:border-accent/30 hover:bg-black/60 hover:shadow-[0_0_15px_rgba(59,130,246,0.1)] transition-all duration-500 overflow-hidden relative"
-                    >
-                        <div
-                            class="absolute -right-2 -bottom-2 text-4xl opacity-[0.03] font-black pointer-events-none"
-                        >
-                            RW
-                        </div>
-                        <div
-                            class="text-[8px] text-white/40 uppercase tracking-widest font-black mb-1.5"
-                        >
-                            TOTAL ROWS
-                        </div>
-                        <div
-                            class="font-mono text-base text-accent font-black leading-none shrink-0 drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]"
-                        >
-                            {
-                                totalRows > 1000000
-                                    ? (totalRows / 1000000).toFixed(1) + 'M'
-                                    : totalRows.toLocaleString()
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table List -->
-            <div class="px-5 py-3 border-b border-white/5 bg-black/20">
-                <span class="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]"
-                    >DATA REGISTRIES</span
-                >
-            </div>
-            <nav class="flex-1 overflow-y-auto py-2 custom-scrollbar">
-                <ul class="space-y-1 px-2" id="table-list">
-                    {
-                        tableStats.map(t => (
-                            <li>
-                                <button
-                                    class="w-full text-left px-3 py-2.5 rounded-xl text-[11px] font-mono text-white/60 hover:bg-white/[0.04] hover:text-white transition-all flex items-center justify-between group border border-transparent"
-                                    data-table={t.name}
-                                >
-                                    <div class="flex items-center gap-2 truncate">
-                                        <div class="w-5 h-5 rounded overflow-hidden flex items-center justify-center bg-white/5 border border-white/10 group-hover:border-accent/50 group-hover:bg-accent/10 transition-colors">
-                                            <svg
-                                                class="w-3 h-3 text-white/40 group-hover:text-accent"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="square"
-                                                    stroke-linejoin="miter"
-                                                    stroke-width="2"
-                                                    d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm0 0h16M4 12h16"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <span class="truncate tracking-wide">{t.name}</span>
-                                    </div>
-                                    <span class="text-[9px] text-white/30 group-hover:text-accent/80 font-mono tracking-wider transition-colors">
-                                        {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
-                                    </span>
-                                </button>
-                            </li>
-                        ))
-                    }
-                </ul>
-            </nav>
-        </aside>
-
-        <!-- Main Content: Data Grid -->
-        <main class="flex-1 flex flex-col bg-[#0a0c10] relative">
-            <div
-                class="absolute inset-0 opacity-[0.02] pointer-events-none bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:32px_32px]"
-            >
-            </div>
-
-            <!-- Loading Indicator -->
-            <div
-                id="db-loading-bar"
-                class="absolute top-0 left-0 h-[2px] bg-accent z-50 transition-all duration-300 shadow-[0_0_10px_#3b82f6]"
-                style="width:0; opacity:0;"
-            >
-            </div>
-
-            <!-- Toolbar -->
-            <header
-                class="h-16 px-6 border-b border-white/5 bg-black/40 backdrop-blur-xl flex items-center justify-between sticky top-0 z-10 shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
-            >
-                <div class="flex items-center gap-4 relative">
-                    <div
-                        class="absolute -left-6 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent/50 rounded-r-md"
-                    >
-                    </div>
-                    <h2
-                        class="text-xl font-mono font-black text-white tracking-[0.1em]"
-                        id="current-table-name"
-                    >
-                        SELECT_REGISTRY
-                    </h2>
-                    <span
-                        id="row-count-badge"
-                        class="hidden text-[10px] tracking-widest bg-accent/10 border border-accent/30 text-accent font-black px-2.5 py-1 rounded-[4px] shadow-[0_0_15px_rgba(59,130,246,0.15)]"
-                        >0 ROWS</span
-                    >
-                </div>
-                <div class="terminal-toolbar-right">
-                    <div class="toolbar-control">
-                        <span class="terminal-toolbar-meta">當前頁碼</span>
-                        <div class="flex items-center gap-2">
-                            <button
-                                id="prev-page"
-                                class="text-text-muted hover:text-text-primary disabled:opacity-30"
-                                >◀</button
-                            >
-                            <span id="page-num" class="text-[11px] font-mono text-text-primary"
-                                >1</span
-                            >
-                            <button
-                                id="next-page"
-                                class="text-text-muted hover:text-text-primary disabled:opacity-30"
-                                >▶</button
-                            >
-                        </div>
-                    </div>
-                    <select id="page-limit" class="toolbar-control outline-none cursor-pointer">
-                        <option value="50">每頁 50 筆</option>
-                        <option value="100" selected>每頁 100 筆</option>
-                        <option value="500">每頁 500 筆</option>
-                    </select>
-                </div>
-            </header>
-
-            <!-- Table Container -->
-            <div class="flex-1 overflow-auto custom-scrollbar relative" id="grid-container">
-                <!-- Welcome State -->
-                <div
-                    id="welcome-message"
-                    class="absolute inset-0 flex flex-col items-center justify-center p-6 z-10 bg-gradient-to-b from-[#0a0c10] to-[#040508]"
-                >
-                    <div
-                        class="bg-white/[0.02] border border-white/10 rounded-3xl p-12 max-w-2xl mx-auto flex flex-col items-center animate-fade-up relative overflow-hidden backdrop-blur-xl shadow-[0_0_50px_rgba(0,0,0,0.8)]"
-                    >
-                        <div
-                            class="absolute inset-0 bg-gradient-to-br from-accent/5 via-transparent to-transparent opacity-50 pointer-events-none"
-                        >
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.05)_1px,transparent_1px)] bg-[size:16px_16px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_70%)] pointer-events-none"
-                        >
-                        </div>
-
-                        <div
-                            class="w-28 h-28 mb-8 rounded-[2rem] bg-black border border-accent/20 flex items-center justify-center shadow-[0_0_40px_rgba(59,130,246,0.15)] relative group cursor-default"
-                        >
-                            <div
-                                class="absolute inset-0 rounded-[2rem] border border-accent/50 scale-110 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-700"
-                            >
-                            </div>
-                            <svg
-                                class="w-12 h-12 text-accent"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="square"
-                                    stroke-linejoin="miter"
-                                    stroke-width="1.5"
-                                    d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm0 0h16M4 12h16"
-                                ></path>
-                            </svg>
-                            <!-- Fake LEDs -->
-                            <div class="absolute bottom-4 right-4 flex gap-1.5">
-                                <div class="w-1.5 h-1.5 rounded-full bg-accent/40 animate-pulse">
-                                </div>
-                                <div
-                                    class="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_#3b82f6]"
-                                >
-                                </div>
-                            </div>
-                        </div>
-                        <h3
-                            class="text-3xl font-mono font-black text-white tracking-[0.2em] mb-4 text-center drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                        >
-                            QUANTUM CORE
-                        </h3>
-                        <p
-                            class="text-[13px] text-white/50 text-center leading-relaxed font-mono max-w-md"
-                        >
-                            AWAITING REGISTRY SELECTION<br /><br />
-                            <span class="text-white/30 text-[11px]"
-                                >Select a target table from the sidebar to establish a secure data
-                                uplink.</span
-                            >
-                        </p>
-
-                        <div
-                            class="w-full h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent my-8"
-                        >
-                        </div>
-                        <div class="flex justify-center items-center gap-8 w-full">
-                            <div class="flex flex-col items-center gap-2">
-                                <div
-                                    class="w-2 h-2 rounded-full bg-bullish shadow-[0_0_10px_rgba(34,197,94,0.5)]"
-                                >
-                                </div>
-                                <span
-                                    class="text-[9px] font-mono font-black text-white/40 uppercase tracking-widest"
-                                    >Engine OK</span
-                                >
-                            </div>
-                            <div class="flex flex-col items-center gap-2">
-                                <div
-                                    class="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                                >
-                                </div>
-                                <span
-                                    class="text-[9px] font-mono font-black text-white/40 uppercase tracking-widest"
-                                    >Uplink Ready</span
-                                >
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Error State -->
-                <div
-                    id="db-error"
-                    class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-12 bg-red-950/20"
-                >
-                    <span class="text-4xl mb-4">⚠️</span>
-                    <h3 class="text-red-500 font-bold uppercase tracking-widest text-sm">
-                        資料庫錯誤
-                    </h3>
-                    <p id="error-message" class="text-xs text-red-400/80 mt-2 font-mono"></p>
-                    <button onclick="location.reload()" class="btn-cyber mt-6">重試</button>
-                </div>
-
-                <!-- Actual Data Table -->
-                <table class="w-full text-left border-collapse hidden" id="data-table">
-                    <thead
-                        class="sticky top-0 bg-[#0a0c10]/95 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-10 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-accent/30"
-                        id="table-head"></thead>
-                    <tbody class="divide-y divide-white/[0.03]" id="table-body"></tbody>
-                </table>
-            </div>
-
-            <!-- Footer info -->
-            <footer
-                class="h-9 border-t border-white/10 px-6 flex items-center justify-between bg-black/80 relative z-20"
-            >
-                <div class="flex items-center gap-6">
-                    <p
-                        class="text-[10px] tracking-[0.1em] text-white/30 font-mono flex items-center gap-2 uppercase"
-                    >
-                        <svg
-                            class="w-3 h-3 text-accent"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            ><path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg
-                        >
-                        Latency: <span
-                            id="query-time"
-                            class="text-accent font-black drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]"
-                            >0ms</span
-                        >
-                    </p>
-                </div>
-                <div
-                    class="flex items-center gap-6 text-[9px] tracking-[0.2em] font-mono font-black text-white/20 uppercase"
-                >
-                    <span>ENGINE: BETTER-SQLITE3</span>
-                    <span class="flex items-center gap-1.5"
-                        ><div class="w-1 h-1 bg-white/40 rounded-full animate-ping"></div> TICK: <span
-                            id="tick-count"
-                            class="text-white/60">0</span
-                        ></span
-                    >
-                </div>
-            </footer>
-        </main>
     </div>
 </MainTerminal>
 
-<style>
+<style is:global>
     .custom-scrollbar::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: 6px;
+        height: 6px;
     }
     .custom-scrollbar::-webkit-scrollbar-track {
         background: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: hsl(0 0% 100% / 0.08);
+        background: rgba(255, 255, 255, 0.05);
         border-radius: 4px;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: hsl(0 0% 100% / 0.15);
+        background: rgba(255, 255, 255, 0.1);
     }
+
     #data-table {
         table-layout: auto;
         min-width: 100%;
     }
-    :global(.db-cell) {
+    .db-cell {
         max-width: 300px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -419,6 +76,7 @@ const dbStats = dbService.getDbStats();
 </style>
 
 <script>
+    // ═══ Forensic Data Explorer Engine ═══
     function escapeHtml(str: unknown): string {
         if (str === null || str === undefined) return '';
         const s = String(str);
@@ -436,47 +94,25 @@ const dbStats = dbService.getDbStats();
     let activeController: AbortController | null = null;
     let requestSeq = 0;
 
-    const tableList = document.getElementById('table-list');
-    const welcomeMsg = document.getElementById('welcome-message');
-    const dataTable = document.getElementById('data-table');
-    const tableHead = document.getElementById('table-head');
-    const tableBody = document.getElementById('table-body');
-    const tableNameLabel = document.getElementById('current-table-name');
-    const rowCountBadge = document.getElementById('row-count-badge');
-    const loadingBar = document.getElementById('db-loading-bar');
-    const dbError = document.getElementById('db-error');
-    const errorMsg = document.getElementById('error-message');
-    const queryTimeLabel = document.getElementById('query-time');
-    const pageNumLabel = document.getElementById('page-num');
-
-    interface ColumnDef {
-        name: string;
-        type: string;
-    }
-    interface TableDataResponse {
-        total: number;
-        columns: ColumnDef[];
-        rows: any[];
-    }
-
-    function renderLoadingRows() {
-        if (!tableBody) return;
-        tableBody.innerHTML = Array.from({ length: 8 })
-            .map(
-                () =>
-                    `<tr class="table-loading-row border-b border-border/30"><td colspan="99"><div class="skeleton"></div></td></tr>`
-            )
-            .join('');
-    }
+    const getEl = (id: string) => document.getElementById(id);
+    const tableList = getEl('table-list');
+    const welcomeMsg = getEl('welcome-message');
+    const dataTable = getEl('data-table');
+    const tableHead = getEl('table-head');
+    const tableBody = getEl('table-body');
+    const tableNameLabel = getEl('current-table-name');
+    const rowCountBadge = getEl('row-count-badge');
+    const loadingBar = getEl('db-loading-bar');
+    const dbError = getEl('db-error');
+    const errorMsg = getEl('error-message');
+    const queryTimeLabel = getEl('query-time');
+    const pageNumLabel = getEl('page-num');
 
     function setLoading(isLoading: boolean) {
         if (!loadingBar) return;
         if (isLoading) {
             loadingBar.style.opacity = '1';
             loadingBar.style.width = '30%';
-            setTimeout(() => {
-                if (loadingBar && loadingBar.style.width === '30%') loadingBar.style.width = '70%';
-            }, 500);
         } else {
             loadingBar.style.width = '100%';
             setTimeout(() => {
@@ -489,29 +125,6 @@ const dbStats = dbService.getDbStats();
     }
 
     async function loadTable(name: string, page = 1) {
-        // helper to sort columns when header clicked
-        function enableTableSorting() {
-            if (!tableHead || !tableBody) return;
-            const headers = Array.from(tableHead.querySelectorAll('th')) as HTMLElement[];
-            headers.forEach((th, idx) => {
-                th.addEventListener('click', () => {
-                    const asc = th.dataset.asc === 'true';
-                    const rows = Array.from(tableBody.querySelectorAll('tr'));
-                    rows.sort((a, b) => {
-                        const aText = a.children[idx]?.textContent || '';
-                        const bText = b.children[idx]?.textContent || '';
-                        const aNum = parseFloat(aText.replace(/[^0-9.-]/g, ''));
-                        const bNum = parseFloat(bText.replace(/[^0-9.-]/g, ''));
-                        if (!isNaN(aNum) && !isNaN(bNum)) {
-                            return asc ? aNum - bNum : bNum - aNum;
-                        }
-                        return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-                    });
-                    rows.forEach(r => tableBody.appendChild(r));
-                    th.dataset.asc = asc ? 'false' : 'true';
-                });
-            });
-        }
         if (!name) return;
         const seq = ++requestSeq;
         if (activeController) activeController.abort();
@@ -519,7 +132,6 @@ const dbStats = dbService.getDbStats();
 
         const startTime = performance.now();
         setLoading(true);
-        renderLoadingRows();
         if (dbError) dbError.classList.add('hidden');
         if (welcomeMsg) welcomeMsg.classList.add('hidden');
         if (dataTable) dataTable.classList.remove('hidden');
@@ -533,177 +145,140 @@ const dbStats = dbService.getDbStats();
             if (seq !== requestSeq) return;
             if (!res.ok) throw new Error(await res.text());
 
-            const data: TableDataResponse = await res.json();
+            const data = await res.json();
 
             if (tableNameLabel) tableNameLabel.textContent = name;
             if (rowCountBadge) {
-                rowCountBadge.textContent = `${data.total.toLocaleString()} 筆資料`;
+                rowCountBadge.textContent = `${data.total.toLocaleString()} ENTITIES`;
                 rowCountBadge.classList.remove('hidden');
             }
             if (pageNumLabel) pageNumLabel.textContent = page.toString();
             currentPage = page;
 
-            // Render Header (escaped)
+            // Render Header
             if (tableHead) {
-                tableHead.innerHTML = `<tr>
-                    ${data.columns
-                        .map(
-                            (col: ColumnDef) => `
-                        <th class="cursor-pointer px-4 py-3 text-[10px] tracking-[0.15em] font-black text-white/50 border-r border-white/5 hover:bg-white/[0.02] hover:text-white transition-colors group" data-asc="false">
-                            <div class="flex flex-col gap-1">
-                                <span class="uppercase">${escapeHtml(col.name)}</span>
-                                <span class="text-[8px] font-normal text-white/20 group-hover:text-accent/60 uppercase">${escapeHtml(col.type)}</span>
-                            </div>
-                        </th>
-                    `
-                        )
-                        .join('')}
-                </tr>`;
+                tableHead.innerHTML = `<tr>${data.columns
+                    .map(
+                        (col: any) => `
+                    <th class="cursor-pointer px-6 py-4 text-[9px] tracking-[0.2em] font-black text-white/30 border-r border-white/5 hover:bg-accent/5 hover:text-accent transition-all uppercase" data-asc="false">
+                        <div class="flex flex-col gap-1">
+                            <span>${escapeHtml(col.name)}</span>
+                            <span class="text-[7px] text-white/10 font-mono tracking-widest">${escapeHtml(col.type)}</span>
+                        </div>
+                    </th>`
+                    )
+                    .join('')}</tr>`;
             }
 
-            // Render Body (escaped)
+            // Render Body
             if (tableBody) {
-                tableBody.innerHTML = data.rows
+                const searchInput = getEl('global-search') as HTMLInputElement;
+                const filterText = searchInput?.value.toLowerCase() || '';
+                const filteredRows = filterText
+                    ? data.rows.filter((r: any) =>
+                          Object.values(r).some(v => String(v).toLowerCase().includes(filterText))
+                      )
+                    : data.rows;
+
+                tableBody.innerHTML = filteredRows
                     .map(
                         (row: any) => `
-                    <tr class="hover:bg-accent/5 transition-colors duration-300">
+                    <tr class="hover:bg-white/[0.02] transition-colors group/row">
                         ${data.columns
-                            .map((col: ColumnDef) => {
+                            .map((col: any) => {
                                 const val = row[col.name];
                                 const isNull = val === null || val === undefined;
-                                return `
-                                <td class="px-4 py-2 text-[13px] font-mono border-r border-white/5 ${isNull ? 'bg-red-950/20 text-red-500/80 italic' : 'text-white/70'}">
-                                    <div class="db-cell">${isNull ? 'NULL' : escapeHtml(val)}</div>
-                                </td>
-                            `;
+                                let style = 'text-white/60';
+                                let display = isNull ? 'NULL' : escapeHtml(val);
+                                if (!isNull && typeof val === 'number') {
+                                    if (col.name.toLowerCase().includes('pct')) {
+                                        style =
+                                            val >= 0
+                                                ? 'text-bullish font-bold'
+                                                : 'text-bearish font-bold';
+                                        display = (val > 0 ? '+' : '') + val.toFixed(2) + '%';
+                                    } else if (
+                                        col.name.toLowerCase().includes('price') ||
+                                        col.name.toLowerCase().includes('close')
+                                    ) {
+                                        style = 'text-accent font-bold';
+                                    } else {
+                                        style = 'text-white/80 font-mono';
+                                    }
+                                }
+                                return `<td class="px-6 py-4 text-[11px] border-r border-white/5 ${isNull ? 'bg-red-950/20 text-red-500/80 italic' : style}"><div class="db-cell truncate">${display}</div></td>`;
                             })
                             .join('')}
-                    </tr>
-                `
+                    </tr>`
                     )
                     .join('');
-                // enable sorting after rendering
-                enableTableSorting();
+
+                if (filteredRows.length === 0 && filterText) {
+                    tableBody.innerHTML = `<tr><td colspan="99" class="py-20 text-center font-mono text-white/10 text-[9px] tracking-widest uppercase">Zero_Entities_Isolated</td></tr>`;
+                }
             }
 
             if (queryTimeLabel)
                 queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
-        } catch (err) {
-            if ((err as Error).name === 'AbortError') return;
+        } catch (err: any) {
+            if (err.name === 'AbortError') return;
             console.error(err);
             if (dbError) dbError.classList.remove('hidden');
             if (dataTable) dataTable.classList.add('hidden');
-            if (errorMsg) errorMsg.textContent = (err as Error).message;
+            if (errorMsg) errorMsg.textContent = err.message;
         } finally {
             setLoading(false);
         }
     }
 
-    // Table list click handler
-    if (tableList) {
-        tableList.addEventListener('click', e => {
+    function initExplorer() {
+        // Table selection
+        tableList?.addEventListener('click', e => {
             const btn = (e.target as HTMLElement).closest('button');
             if (!btn) return;
-
-            tableList.querySelectorAll('button').forEach(b => {
-                b.classList.remove(
-                    'bg-white/[0.1]',
-                    'text-accent',
-                    'border-l-accent',
-                    'shadow-[0_0_15px_rgba(59,130,246,0.15)]'
+            tableList
+                .querySelectorAll('button')
+                .forEach(b =>
+                    b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent')
                 );
-                b.classList.add('border-transparent', 'text-white/60');
-                const svg = b.querySelector('svg');
-                if (svg) svg.classList.remove('text-accent');
-                if (svg) svg.classList.add('text-white/40');
-            });
-            btn.classList.add(
-                'bg-white/[0.1]',
-                'text-accent',
-                'border-l-accent',
-                'shadow-[0_0_15px_rgba(59,130,246,0.15)]'
-            );
-            btn.classList.remove('border-transparent', 'text-white/60');
-            const clickedSvg = btn.querySelector('svg');
-            if (clickedSvg) {
-                clickedSvg.classList.remove('text-white/40');
-                clickedSvg.classList.add('text-accent');
-            }
-
+            btn.classList.add('bg-white/[0.1]', 'text-accent', 'border-l-accent');
             activeTable = btn.dataset.table || '';
             currentPage = 1;
             loadTable(activeTable);
         });
 
-        // keyboard navigation (up/down arrows) between tables
-        tableList.addEventListener('keydown', e => {
-            const active = document.activeElement as HTMLElement;
-            if (!active || active.tagName !== 'BUTTON') return;
-            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-                e.preventDefault();
-                const buttons = Array.from(tableList.querySelectorAll('button')) as HTMLElement[];
-                const idx = buttons.indexOf(active);
-                if (idx !== -1) {
-                    const next = buttons[e.key === 'ArrowDown' ? idx + 1 : idx - 1];
-                    if (next) next.focus();
-                }
-            }
+        // Search
+        getEl('global-search')?.addEventListener(
+            'input',
+            () => activeTable && loadTable(activeTable, currentPage)
+        );
+
+        // Pagination
+        getEl('prev-page')?.addEventListener(
+            'click',
+            () => currentPage > 1 && loadTable(activeTable, currentPage - 1)
+        );
+        getEl('next-page')?.addEventListener('click', () =>
+            loadTable(activeTable, currentPage + 1)
+        );
+        getEl('page-limit')?.addEventListener('change', e => {
+            limit = parseInt((e.target as HTMLSelectElement).value);
+            if (activeTable) loadTable(activeTable, 1);
         });
+
+        // SSE for ticks
+        if (typeof EventSource !== 'undefined') {
+            const es = new EventSource('/api/sse/stream');
+            const tickCountEl = getEl('tick-count');
+            es.addEventListener('tick', e => {
+                try {
+                    const ticks = JSON.parse(e.data);
+                    if (tickCountEl) tickCountEl.textContent = String(ticks.length);
+                } catch {}
+            });
+        }
     }
 
-    // Pagination
-    document.getElementById('prev-page')?.addEventListener('click', () => {
-        if (currentPage > 1) loadTable(activeTable, currentPage - 1);
-    });
-    document.getElementById('next-page')?.addEventListener('click', () => {
-        loadTable(activeTable, currentPage + 1);
-    });
-    document.getElementById('page-limit')?.addEventListener('change', e => {
-        limit = parseInt((e.target as HTMLSelectElement).value);
-        if (activeTable) loadTable(activeTable, 1);
-    });
-
-    // Mobile sidebar toggle
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const dbSidebar = document.getElementById('db-sidebar');
-    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
-
-    function openSidebar() {
-        dbSidebar?.classList.remove('max-md:-translate-x-full');
-        dbSidebar?.classList.add('max-md:translate-x-0');
-        sidebarBackdrop?.classList.remove('hidden');
-    }
-    function closeSidebar() {
-        dbSidebar?.classList.add('max-md:-translate-x-full');
-        dbSidebar?.classList.remove('max-md:translate-x-0');
-        sidebarBackdrop?.classList.add('hidden');
-    }
-
-    if (sidebarToggle && dbSidebar) {
-        sidebarToggle.addEventListener('click', () => {
-            const isHidden = dbSidebar.classList.contains('max-md:-translate-x-full');
-            isHidden ? openSidebar() : closeSidebar();
-        });
-        dbSidebar.addEventListener('click', e => {
-            if (
-                (e.target as HTMLElement).closest('button[data-table]') &&
-                window.innerWidth < 768
-            ) {
-                closeSidebar();
-            }
-        });
-        sidebarBackdrop?.addEventListener('click', closeSidebar);
-    }
-
-    // real-time tick counter update is handled above in footer
-    if (typeof EventSource !== 'undefined') {
-        const es = new EventSource('/api/sse/stream');
-        const tickCountEl = document.getElementById('tick-count');
-        es.addEventListener('tick', e => {
-            try {
-                const ticks = JSON.parse(e.data);
-                if (tickCountEl) tickCountEl.textContent = String(ticks.length);
-            } catch {}
-        });
-    }
+    document.addEventListener('astro:page-load', initExplorer);
+    initExplorer();
 </script>

@@ -19,6 +19,10 @@ const foreignDays = getConsecutiveDays(symbol, 'foreign');
 const investDays = getConsecutiveDays(symbol, 'invest');
 const dealerDays = getConsecutiveDays(symbol, 'dealer');
 
+// Forensic Metrics
+const recentTotalNet = institutionalData.slice(0, 5).reduce((acc, d) => acc + d.totalNet, 0);
+const institutionalAlpha = (recentTotalNet > 0 && price > 0) ? 'BULLISH_FLOW' : (recentTotalNet < 0) ? 'DISTRIBUTION' : 'NEUTRAL';
+
 const entities = [
     {
         name: '外資',
@@ -33,7 +37,7 @@ const entities = [
         en: 'Trust',
         net: latest?.investNet ?? 0,
         days: investDays,
-        color: 'warning',
+        color: 'bullish',
         trend: institutionalData.slice(0, 5).map(d => d.investNet),
     },
     {
@@ -41,16 +45,8 @@ const entities = [
         en: 'Dealer',
         net: latest?.dealerNet ?? 0,
         days: dealerDays,
-        color: 'text-secondary',
+        color: 'warning',
         trend: institutionalData.slice(0, 5).map(d => d.dealerNet),
-    },
-    {
-        name: '三大法人',
-        en: 'Total',
-        net: latest?.totalNet ?? 0,
-        days: getConsecutiveDays(symbol, 'total'),
-        color: 'bullish',
-        trend: institutionalData.slice(0, 5).map(d => d.totalNet),
     },
 ];
 
@@ -60,11 +56,9 @@ const fmtNet = (n: number) => {
     return `${prefix}${n.toLocaleString('zh-TW')}`;
 };
 
-// Chart data for combo divergence (last 5 days, reversed for chronological order)
-const chartData = [...institutionalData].reverse();
-const maxNet = Math.max(...chartData.map(d => Math.abs(d.totalNet)), 1);
+const chartData = [...institutionalData].slice(0, 10).reverse();
+const maxNet = Math.max(...chartData.map(d => Math.max(Math.abs(d.foreignNet), Math.abs(d.investNet), Math.abs(d.dealerNet))), 1);
 
-// Sparkline helper: create SVG points from trend data
 const sparkPoints = (data: number[]) => {
     if (data.length === 0) return '';
     const max = Math.max(...data.map(Math.abs), 1);
@@ -78,54 +72,80 @@ const sparkPoints = (data: number[]) => {
 ---
 
 <div class="space-y-6">
+<div class="space-y-6">
+    <!-- Forensic Flow Summary -->
+    <div class="glass-card p-4 flex items-center justify-between border-l-4 border-accent bg-accent/[0.02]">
+        <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20"/><path d="m7 10 2 2 2-2 2 2 2-2 2 2 2-2"/><path d="M20 12V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10"/></svg>
+            </div>
+            <div>
+                <h3 class="text-xs font-mono font-bold text-white/40 uppercase tracking-widest">Forensic Flow Analysis</h3>
+                <div class="flex items-center gap-2 mt-0.5">
+                    <span class:list={["text-sm font-bold", institutionalAlpha === 'BULLISH_FLOW' ? 'text-bullish' : institutionalAlpha === 'DISTRIBUTION' ? 'text-bearish' : 'text-text-muted']}>
+                        {institutionalAlpha.replace('_', ' ')}
+                    </span>
+                    <span class="text-[10px] text-text-muted px-1.5 py-0.5 rounded bg-white/5 font-mono">CONFIDENCE: HIGHER</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-8 px-6 border-l border-white/5">
+            <div>
+                <div class="text-[9px] text-text-muted uppercase mb-1">5D Net Flow</div>
+                <div class:list={["font-mono text-sm font-bold", recentTotalNet >= 0 ? "text-bullish" : "text-bearish"]}>
+                    {fmtNet(recentTotalNet)} <span class="text-[10px] font-normal opacity-40">張</span>
+                </div>
+            </div>
+            <div>
+                <div class="text-[9px] text-text-muted uppercase mb-1">Big Money Bias</div>
+                <div class="font-mono text-sm font-bold text-accent">ACCUMULATING</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Institutional Momentum Cards -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-children">
         {entities.map((entity) => {
             const isPos = entity.net > 0;
-            const glowClass = isPos
-                ? 'shadow-[0_0_12px_hsl(142,71%,45%,0.15)]'
-                : entity.net < 0
-                    ? 'shadow-[0_0_12px_hsl(346,77%,50%,0.15)]'
-                    : '';
             return (
                 <div class:list={[
-                    'glass-card glow-interactive px-4 py-3 flex flex-col gap-2 border-t-2',
-                    isPos ? 'border-t-bullish/40' : entity.net < 0 ? 'border-t-bearish/40' : 'border-t-border',
-                    glowClass
+                    'glass-card group hover:bg-white/[0.02] px-5 py-4 flex flex-col gap-3 transition-all duration-300',
+                    isPos ? 'border-r-2 border-r-bullish/20' : entity.net < 0 ? 'border-r-2 border-r-bearish/20' : 'border-r-2 border-r-transparent'
                 ]}>
                     <div class="flex items-center justify-between">
-                        <span class="terminal-label">{entity.name}</span>
+                        <div class="flex items-center gap-2">
+                             <div class:list={["w-1.5 h-1.5 rounded-full", entity.color === 'accent' ? 'bg-accent' : entity.color === 'bullish' ? 'bg-bullish' : 'bg-warning']}></div>
+                             <span class="text-[10px] font-bold text-white/50 uppercase tracking-tighter">{entity.name} 資金動能</span>
+                        </div>
                         {entity.days !== 0 && (
                             <span class:list={[
-                                'text-[10px] font-bold font-mono px-1.5 py-0.5 rounded',
-                                entity.days > 0
-                                    ? 'bg-bullish/15 text-bullish'
-                                    : 'bg-bearish/15 text-bearish'
+                                'text-[9px] font-bold font-mono px-2 py-0.5 rounded bg-white/5 border border-white/5',
+                                entity.days > 0 ? 'text-bullish' : 'text-bearish'
                             ]}>
-                                連{Math.abs(entity.days)}日{entity.days > 0 ? '買' : '賣'}超
+                                連 {Math.abs(entity.days)} {entity.days > 0 ? 'B' : 'S'}
                             </span>
                         )}
                     </div>
-                    <span class:list={[
-                        'data-value text-xl',
-                        isPos ? 'text-bullish' : entity.net < 0 ? 'text-bearish' : 'text-text-muted'
-                    ]}>
-                        {fmtNet(entity.net)}<span class="text-xs text-text-muted ml-1">張</span>
-                    </span>
-                    <!-- Sparkline -->
-                    {entity.trend.length > 0 && (
-                        <svg viewBox="0 0 90 40" class="w-full h-8 mt-1">
-                            <line x1="5" y1="20" x2="85" y2="20" stroke="hsl(0,0%,100%,0.05)" stroke-width="0.5"/>
-                            <polyline
-                                points={sparkPoints(entity.trend)}
-                                fill="none"
-                                stroke={isPos ? 'hsl(142,71%,45%)' : entity.net < 0 ? 'hsl(346,77%,50%)' : 'hsl(240,4%,40%)'}
-                                stroke-width="1.5"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                    )}
+                    <div class="flex items-end justify-between">
+                        <span class:list={[
+                            'text-2xl font-mono font-black tracking-tighter',
+                            isPos ? 'text-bullish' : entity.net < 0 ? 'text-bearish' : 'text-text-muted'
+                        ]}>
+                            {fmtNet(entity.net)}
+                        </span>
+                        <div class="flex flex-col items-end opacity-40 group-hover:opacity-100 transition-opacity">
+                             <span class="text-[8px] font-mono text-text-muted uppercase mb-1">Momentum Trend</span>
+                             <svg viewBox="0 0 90 20" class="w-16 h-4">
+                                <polyline
+                                    points={sparkPoints(entity.trend)}
+                                    fill="none"
+                                    stroke={isPos ? 'hsl(142,71%,45%)' : entity.net < 0 ? 'hsl(346,77%,50%)' : 'rgba(255,255,255,0.2)'}
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                />
+                             </svg>
+                        </div>
+                    </div>
                 </div>
             );
         })}

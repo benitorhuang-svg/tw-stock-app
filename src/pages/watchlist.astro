@@ -1,128 +1,169 @@
 ---
+/**
+ * watchlist.astro — Watchlist Analysis Terminal
+ * Modular tracking of high-conviction entities and yield intelligence.
+ */
 import MainTerminal from '../layouts/MainTerminal.astro';
+import WatchlistHero from '../components/molecules/WatchlistHero.astro';
+import HighYieldWall from '../components/organisms/HighYieldWall.astro';
+import ForensicTicker from '../components/molecules/ForensicTicker.astro';
 ---
 
-<MainTerminal title="我的自選">
-    <section class="px-4 lg:px-6 py-4">
-        <div class="max-w-[1600px] mx-auto w-full">
-            <div id="watchlist-empty" class="text-center text-text-muted py-12 hidden">
-                尚無自選股，前往股票詳情頁按下 ⭐ 加入
-            </div>
-            <div
-                id="watchlist-list"
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
-            >
-            </div>
+<MainTerminal title="自選監控中心 | Analysis Registry">
+    <div class="h-full flex flex-col p-4 lg:p-10 gap-10 overflow-hidden">
+        <!-- Hero Header -->
+        <WatchlistHero />
 
-            <section class="glass-card p-0 overflow-hidden border-border/40 mt-10">
-                <div class="terminal-toolbar">
-                    <div class="terminal-toolbar-left">
-                        <span class="terminal-toolbar-title">高殖利率情報牆</span>
-                        <span class="terminal-toolbar-meta">優質獲利 / 低本益比精選</span>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead
-                            class="bg-surface/50 border-b border-border text-[11px] uppercase text-text-muted font-bold"
-                        >
-                            <tr>
-                                <th class="py-3 px-5">證券名稱</th>
-                                <th class="py-3 px-5 text-right">成交價</th>
-                                <th class="py-3 px-5 text-right">漲跌幅</th>
-                                <th class="py-3 px-5 text-right">殖利率</th>
-                                <th class="py-3 px-5 text-right">本益比</th>
-                                <th class="py-3 px-5 text-right">股淨比</th>
-                            </tr>
-                        </thead>
-                        <tbody id="high-yield-body" class="divide-y divide-border/20">
-                            <!-- Injected by script -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+        <!-- Watchlist Matrix -->
+        <div
+            id="watchlist-empty"
+            class="glass-card p-12 text-center animate-fade-up border border-white/5 hidden"
+        >
+            <div class="text-6xl mb-6 opacity-10">🔭</div>
+            <h3 class="text-lg font-black text-white/40 uppercase tracking-widest">
+                No Active Links Detected
+            </h3>
+            <p class="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mt-2">
+                Initialize tracking by selecting entities in the Analysis Terminal
+            </p>
         </div>
-    </section>
-</MainTerminal>
 
-<script type="module">
-    import { getWatchlist } from '../lib/user-account';
-    import { getStockBySymbol } from '../utils/stockDataService';
+        <div
+            id="watchlist-list"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-up"
+            style="animation-delay: 100ms"
+        >
+            <!-- Injected by Registry Engine -->
+        </div>
 
-    const emptyEl = document.getElementById('watchlist-empty');
-    const listEl = document.getElementById('watchlist-list');
+        <!-- High Yield Intelligence -->
+        <HighYieldWall />
 
-    async function renderWatchlist() {
-        const syms = getWatchlist();
-        if (!syms || syms.length === 0) {
-            if (emptyEl) emptyEl.classList.remove('hidden');
-        } else {
-            if (emptyEl) emptyEl.classList.add('hidden');
-            const stocks = await Promise.all(syms.map(s => getStockBySymbol(s)));
-            stocks.forEach(stock => {
-                if (!stock) return;
-                const a = document.createElement('a');
-                a.href = `/stocks/${stock.symbol}`;
-                a.className =
-                    'glass-card p-4 hover:shadow-lg transition-colors flex flex-col gap-2';
-                a.dataset.symbol = stock.symbol;
-                a.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm font-bold truncate text-stock-name">${stock.name || '—'}</div>
-                        <div class="font-mono text-xs text-stock-symbol">${stock.symbol}</div>
-                    </div>
-                    <div class="data-value text-2xl font-bold text-stock-price">${stock.price ? stock.price.toFixed(2) : '—'}</div>
-                    <div class="text-sm font-mono ${stock.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
-                        ${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%
-                    </div>
-                `;
-                listEl?.appendChild(a);
-            });
+        <!-- Signal Stream Footer -->
+        <div class="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
+            <ForensicTicker />
+            <div class="flex items-center gap-6">
+                <span class="text-[9px] font-mono text-white/20 uppercase tracking-[0.3em]"
+                    >Registry_Status: SYNCHRONIZED</span
+                >
+                <div
+                    class="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+                >
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        import { getWatchlist } from '../lib/user-account';
+
+        // Shared data state
+        let allStocks: any[] = [];
+
+        async function loadStocksData() {
+            if (allStocks.length > 0) return allStocks;
+            try {
+                const response = await fetch('/api/stocks/snapshot');
+                allStocks = await response.json();
+                return allStocks;
+            } catch (err) {
+                console.error('[Registry Engine] Data load failure:', err);
+                return [];
+            }
         }
 
-        // Render High Yield Table
-        renderHighYield();
-    }
+        // ═══ Forensic Registry Engine ═══
+        async function initRegistry() {
+            const syms = getWatchlist();
+            const emptyEl = document.getElementById('watchlist-empty');
+            const listEl = document.getElementById('watchlist-list');
+            const countBadge = document.getElementById('watchlist-count-badge');
 
-    async function renderHighYield() {
-        const svc = await import('../utils/stockDataService');
-        const all = await svc.getStocksWithPrices();
-        const highYield = all
-            .filter(s => s.yield > 0 && s.pe > 0 && s.price > 0)
-            .sort((a, b) => b.yield - a.yield)
-            .slice(0, 10);
+            if (countBadge) countBadge.textContent = String(syms.length).padStart(2, '0');
 
-        const body = document.getElementById('high-yield-body');
-        if (!body) return;
+            if (!syms || syms.length === 0) {
+                emptyEl?.classList.remove('hidden');
+                return;
+            }
 
-        body.innerHTML = highYield
-            .map(s => {
-                const bull = s.changePercent > 0;
-                const bear = s.changePercent < 0;
-                return `
-                <tr class="hover:bg-accent/[0.03] transition-colors cursor-pointer" onclick="window.location.href='/stocks/${s.symbol}'">
-                    <td class="py-3 px-5">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-bold text-text-primary group-hover:text-accent">${s.name}</span>
-                            <span class="text-[10px] text-text-muted font-mono">${s.symbol}</span>
+            try {
+                const stocksData = await loadStocksData();
+                const stocks = syms
+                    .map(sym => stocksData.find((s: any) => s.symbol === sym))
+                    .filter(s => s);
+
+                if (listEl) {
+                    listEl.innerHTML = stocks.map(s => renderRegistryCard(s)).join('');
+                }
+            } catch (err) {
+                console.error('[Registry Engine] Uplink failure:', err);
+            }
+        }
+
+        function renderRegistryCard(s: any) {
+            const isBull = s.changePercent >= 0;
+            return `
+                <a href="/stocks/${s.symbol}" class="glass-card relative p-6 hover:bg-white/[0.04] transition-all group no-underline overflow-hidden border border-white/5 hover:border-white/10">
+                    <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent ${isBull ? 'via-bullish/40' : 'via-bearish/40'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="min-w-0">
+                            <div class="text-sm font-black text-white group-hover:text-accent transition-colors truncate">${s.name}</div>
+                            <div class="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-0.5">${s.symbol}</div>
                         </div>
-                    </td>
-                    <td class="text-right font-mono text-sm pr-5">${s.price.toFixed(2)}</td>
-                    <td class="text-right font-mono font-bold text-xs pr-5 ${bull ? 'text-bullish' : bear ? 'text-bearish' : 'text-text-muted'}">
-                        ${bull ? '+' : ''}${s.changePercent.toFixed(2)}%
-                    </td>
-                    <td class="text-right font-mono font-bold text-sm text-warning pr-5">${s.yield.toFixed(2)}%</td>
-                    <td class="text-right font-mono text-xs text-text-secondary pr-5">${s.pe.toFixed(1)}</td>
-                    <td class="text-right font-mono text-xs text-text-secondary pr-5">${s.pb.toFixed(2)}</td>
-                </tr>
-            `;
-            })
-            .join('');
-    }
+                        <div class="px-2 py-0.5 rounded text-[9px] font-black font-mono ${isBull ? 'bg-bullish/10 text-bullish' : 'bg-bearish/10 text-bearish'}">
+                            ${isBull ? '+' : ''}${s.changePercent.toFixed(2)}%
+                        </div>
+                    </div>
+                    <div class="text-2xl font-mono font-black text-white/90 tracking-tighter mb-4">${s.price.toFixed(2)}</div>
+                    <div class="flex items-center justify-between pt-4 border-t border-white/5 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <span class="text-[8px] font-mono uppercase tracking-widest">Core_Probe</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                    </div>
+                </a>`;
+        }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', renderWatchlist);
-    } else {
-        renderWatchlist();
-    }
-</script>
+        async function initIntelligence() {
+            try {
+                const stocksData = await loadStocksData();
+                const highYield = stocksData
+                    .filter((s: any) => s.yield > 0 && s.pe > 0 && s.price > 0)
+                    .sort((a, b) => b.yield - a.yield)
+                    .slice(0, 10);
+
+                const body = document.getElementById('high-yield-body');
+                if (body) {
+                    body.innerHTML = highYield
+                        .map(
+                            s => `
+                        <tr class="hover:bg-warning/[0.02] transition-colors cursor-pointer group" onclick="window.location.href='/stocks/${s.symbol}'">
+                            <td class="py-5 px-8">
+                                <div class="flex flex-col">
+                                    <span class="text-[11px] font-black text-white/90 group-hover:text-warning transition-colors">${s.name}</span>
+                                    <span class="text-[9px] font-mono text-white/20 uppercase tracking-widest mt-0.5">${s.symbol}</span>
+                                </div>
+                            </td>
+                            <td class="text-right py-5 px-8 font-mono text-xs font-bold text-white/70">${s.price.toFixed(2)}</td>
+                            <td class="text-right py-5 px-8 font-mono text-xs font-black ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
+                                ${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%
+                            </td>
+                            <td class="text-right py-5 px-8 font-mono text-sm font-black text-warning">${s.yield.toFixed(2)}%</td>
+                            <td class="text-right py-5 px-8 font-mono text-xs text-white/40">${s.pe.toFixed(1)}</td>
+                            <td class="text-right py-5 px-8 font-mono text-xs text-white/40">${s.pb.toFixed(2)}</td>
+                        </tr>
+                    `
+                        )
+                        .join('');
+                }
+            } catch (err) {
+                console.error('[Intelligence Engine] Data fail:', err);
+            }
+        }
+
+        document.addEventListener('astro:page-load', () => {
+            initRegistry();
+            initIntelligence();
+        });
+        initRegistry();
+        initIntelligence();
+    </script>
+</MainTerminal>

@@ -1,0 +1,140 @@
+---
+/**
+ * MoversMatrix.astro - High-Fidelity Bulls & Bears Grid
+ */
+import { fmtPrice } from '../../utils/format';
+
+interface Props {
+    gainers: any[];
+    losers: any[];
+}
+
+const { gainers, losers } = Astro.props;
+---
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- BULLISH MOVERS -->
+    <div class="glass-card overflow-hidden animate-fade-up border-t-2 border-t-bullish/40">
+        <div
+            class="px-6 py-4 border-b border-white/5 bg-bullish/[0.03] flex items-center justify-between"
+        >
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-lg bg-bullish/20 flex items-center justify-center text-bullish"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline
+                            points="17 6 23 6 23 12"></polyline></svg
+                    >
+                </div>
+                <h3 class="text-xs font-mono font-black text-white/80 uppercase tracking-widest">
+                    Bullish Momentum
+                </h3>
+            </div>
+            <span class="text-[8px] font-mono text-white/20 uppercase tracking-tight"
+                >Top 10 Decile</span
+            >
+        </div>
+        <div class="divide-y divide-white/5" id="hud-gainers-grid">
+            {
+                gainers.slice(0, 10).map((s, i) => (
+                    <a
+                        href={`/stocks/${s.symbol}`}
+                        class="flex items-center gap-4 px-6 py-4 hover:bg-bullish/[0.04] transition-all group no-underline border-l-2 border-transparent hover:border-bullish"
+                    >
+                        <span class="text-[8px] font-mono text-white/20 w-3">{i + 1}</span>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-[11px] font-bold text-white/90 group-hover:text-bullish transition-colors truncate">
+                                {s.name}
+                            </div>
+                            <div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">
+                                ENTITY:{s.symbol}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] font-mono font-bold text-white/70">
+                                {fmtPrice(s.price)}
+                            </div>
+                            <div class="text-[10px] font-mono font-bold text-bullish">
+                                +{s.changePercent.toFixed(2)}%
+                            </div>
+                        </div>
+                    </a>
+                ))
+            }
+        </div>
+    </div>
+
+    <!-- BEARISH MOVERS -->
+    <div
+        class="glass-card overflow-hidden animate-fade-up border-t-2 border-t-bearish/40"
+        style="animation-delay: 100ms"
+    >
+        <div
+            class="px-6 py-4 border-b border-white/5 bg-bearish/[0.03] flex items-center justify-between"
+        >
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-lg bg-bearish/20 flex items-center justify-center text-bearish"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline><polyline
+                            points="17 18 23 18 23 12"></polyline></svg
+                    >
+                </div>
+                <h3 class="text-xs font-mono font-black text-white/80 uppercase tracking-widest">
+                    Bearish Vector
+                </h3>
+            </div>
+            <span class="text-[8px] font-mono text-white/20 uppercase tracking-tight"
+                >Bottom 10 Decile</span
+            >
+        </div>
+        <div class="divide-y divide-white/5" id="hud-losers-grid">
+            {
+                losers.slice(0, 10).map((s, i) => (
+                    <a
+                        href={`/stocks/${s.symbol}`}
+                        class="flex items-center gap-4 px-6 py-4 hover:bg-bearish/[0.04] transition-all group no-underline border-l-2 border-transparent hover:border-bearish"
+                    >
+                        <span class="text-[8px] font-mono text-white/20 w-3">{i + 1}</span>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-[11px] font-bold text-white/90 group-hover:text-bearish transition-colors truncate">
+                                {s.name}
+                            </div>
+                            <div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">
+                                ENTITY:{s.symbol}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] font-mono font-bold text-white/70">
+                                {fmtPrice(s.price)}
+                            </div>
+                            <div class="text-[10px] font-mono font-bold text-bearish">
+                                {s.changePercent.toFixed(2)}%
+                            </div>
+                        </div>
+                    </a>
+                ))
+            }
+        </div>
+    </div>
+</div>

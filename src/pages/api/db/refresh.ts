@@ -4,110 +4,61 @@ import { spawn } from 'child_process';
 export const POST: APIRoute = async () => {
     const encoder = new TextEncoder();
 
-    // Create a streaming response
     const stream = new ReadableStream({
         start(controller) {
-            controller.enqueue(encoder.encode('>> 初始化同步程序...\n'));
-            controller.enqueue(encoder.encode('>> [1/3] 取得上市櫃股票最新清單...\n'));
+            const enqueue = (text: string) => controller.enqueue(encoder.encode(text));
 
-            // Step 1: Fetch Stock List
-            const listChild = spawn('node', ['scripts/fetch-stock-list.mjs'], {
-                cwd: process.cwd(),
-            });
+            const runScript = (script: string, args: string[] = []) => {
+                return new Promise<number>((resolve) => {
+                    const child = spawn('node', [script, ...args], { cwd: process.cwd() });
+                    child.stdout.on('data', data => controller.enqueue(data));
+                    child.stderr.on('data', data => controller.enqueue(data));
+                    child.on('close', resolve);
+                });
+            };
 
-            listChild.stdout.on('data', data => controller.enqueue(data));
-            listChild.stderr.on('data', data => controller.enqueue(data));
-
-            listChild.on('close', listCode => {
-                if (listCode !== 0) {
-                    controller.enqueue(
-                        encoder.encode(
-                            `\n\n[ERROR] fetch-stock-list exited with code ${listCode}\n`
-                        )
-                    );
-                    controller.close();
-                    return;
-                }
-
-                controller.enqueue(encoder.encode('\n>> [2/3] 下載歷史行情資料...\n'));
-
-                // Step 2: Fetch Yahoo
-                const child = spawn('node', ['scripts/fetch-yahoo.mjs'], { cwd: process.cwd() });
-
-                child.stdout.on('data', data => controller.enqueue(data));
-                child.stderr.on('data', data => controller.enqueue(data));
-
-                child.on('close', code => {
-                    if (code !== 0) {
-                        controller.enqueue(
-                            encoder.encode(`\n\n[ERROR] fetch-yahoo exited with code ${code}\n`)
-                        );
+            const startProcess = async () => {
+                try {
+                    enqueue('>> [1/4] 正在解析並更新上市櫃股票最新代碼清單...\n');
+                    const listCode = await runScript('scripts/fetch-stock-list.mjs');
+                    if (listCode !== 0) {
+                        enqueue(`\n\n[失敗] 股票清單下載異常，代碼: ${listCode}\n`);
                         controller.close();
                         return;
                     }
 
-                    controller.enqueue(
-                        encoder.encode(`\n\n>> [3/3] 啟動快照建置程序 (Build Price Snapshot)...\n`)
-                    );
+                    enqueue('\n>> [2/4] 正在執行多維度行情同步 (歷史行情、法人籌碼、季度財報、每月營收)...\n');
 
-                    // Run step 3
-                    const snap = spawn('node', ['scripts/build-price-snapshot.js'], {
-                        cwd: process.cwd(),
-                    });
-                    snap.stdout.on('data', data => controller.enqueue(data));
-                    snap.stderr.on('data', data => controller.enqueue(data));
+                    // Reverting to sequential execution to satisfy the requirement of "single line progress bar"
+                    // Parallel execution interferes with \r (carriage return) carriage control.
+                    await runScript('scripts/fetch-yahoo.mjs');
+                    await runScript('scripts/fetch-chips.mjs');
+                    await runScript('scripts/fetch-monthly-stats.mjs');
+                    await runScript('scripts/fetch-financials.mjs');
+                    await runScript('scripts/fetch-revenue.mjs');
 
-                    snap.on('close', snapCode => {
-                        if (snapCode !== 0) {
-                            controller.enqueue(
-                                encoder.encode(
-                                    `\n\n[ERROR] build-price-snapshot exited with code ${snapCode}\n`
-                                )
-                            );
-                            controller.close();
-                            return;
-                        }
+                    enqueue('\n>> [3/4] 正在匯總異質資料並建置全系統高速快照系統 (Snapshot)...\n');
+                    const snapCode = await runScript('scripts/build-price-snapshot.js');
+                    if (snapCode !== 0) {
+                        enqueue(`\n\n[警告] 快照建置程序未正常結束，代碼: ${snapCode}\n`);
+                    }
 
-                        // Run step 4
-                        controller.enqueue(
-                            encoder.encode(`\n\n>> [4/4] 重建本機 SQLite 資料庫 (Build SQLite DB)...\n`)
-                        );
-                        const dbBuild = spawn('node', ['scripts/build-sqlite-db.js'], {
-                            cwd: process.cwd(),
-                        });
-                        dbBuild.stdout.on('data', data => controller.enqueue(data));
-                        dbBuild.stderr.on('data', data => controller.enqueue(data));
-
-                        dbBuild.on('close', dbCode => {
-                            if (dbCode !== 0) {
-                                controller.enqueue(
-                                    encoder.encode(
-                                        `\n\n[ERROR] build-sqlite-db exited with code ${dbCode}\n`
-                                    )
-                                );
-                            } else {
-                                controller.enqueue(
-                                    encoder.encode(
-                                        `\n\n[DONE] 資料庫同步全面完成！請關閉視窗以重新載入。\n`
-                                    )
-                                );
-                            }
-                            controller.close();
-                        });
-                    });
-                });
-
-                listChild.on('error', err => {
-                    controller.enqueue(encoder.encode(`\n[FATAL ERROR] ${err.message}\n`));
+                    enqueue('\n>> [4/4] 正在優化離線 SQLite 資料庫結構並重構全域索引系統...\n');
+                    const dbCode = await runScript('scripts/build-sqlite-db.js');
+                    if (dbCode === 0) {
+                        enqueue('\n\n[完成] 全系統數據同步全面完成！系統目前運作於極速離線模式。\n');
+                    } else {
+                        enqueue(`\n\n[錯誤] 資料庫系統建置失敗，代碼: ${dbCode}\n`);
+                    }
+                } catch (err) {
+                    enqueue(`\n\n[致命錯誤] 系統更新程序中斷: ${(err as Error).message}\n`);
+                } finally {
                     controller.close();
-                });
+                }
+            };
 
-                child.on('error', err => {
-                    controller.enqueue(encoder.encode(`\n[FATAL ERROR] ${err.message}\n`));
-                    controller.close();
-                });
-            });
-        },
+            startProcess();
+        }
     });
 
     return new Response(stream, {

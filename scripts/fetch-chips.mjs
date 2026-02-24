@@ -59,7 +59,7 @@ async function main() {
     const data = await fetchWithRetry(url);
 
     if (!data || data.stat !== 'OK' || !data.data) {
-        console.error('   ❌ 無資料或非交易日');
+        console.error('   ❌ 目前無資料或非交易日');
         return;
     }
 

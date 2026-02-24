@@ -1,0 +1,31 @@
+---
+/**
+ * DividendIntelligenceWall.astro - Top yield entities tracking
+ */
+---
+
+<div class="glass-card p-8 border-white/5 flex flex-col h-full bg-warning/[0.01]">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-1.5 h-1.5 rounded-full bg-warning"></div>
+            <h3 class="text-[10px] font-mono font-black text-white/80 uppercase tracking-[0.2em]">
+                Yield Intelligence
+            </h3>
+        </div>
+        <span
+            class="text-[8px] font-mono px-2 py-0.5 rounded bg-warning/10 text-warning border border-warning/20 font-black tracking-widest uppercase"
+        >
+            Alpha_Matrix
+        </span>
+    </div>
+
+    <div class="space-y-3 flex-1" id="dividend-wall">
+        {/* Loading State */}
+        <div class="flex items-center justify-center h-full py-16 opacity-30">
+            <div
+                class="w-6 h-6 border-2 border-warning border-t-transparent rounded-full animate-spin"
+            >
+            </div>
+        </div>
+    </div>
+</div>

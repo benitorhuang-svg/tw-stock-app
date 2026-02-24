@@ -1,0 +1,135 @@
+---
+/**
+ * InstitutionalMatrix.astro - Tri-column streak monitoring grid
+ */
+---
+
+<div
+    class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden min-h-0 animate-fade-up"
+    style="animation-delay: 100ms"
+>
+    <!-- Foreign Matrix -->
+    <section
+        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-xl group hover:border-bullish/20 transition-all duration-500"
+    >
+        <header
+            class="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-bullish/10 to-transparent"
+        >
+            <div>
+                <h3
+                    class="text-xs font-black text-white/90 tracking-[0.2em] flex items-center gap-2 uppercase"
+                >
+                    <span class="w-1.5 h-1.5 rounded-full bg-bullish"></span>
+                    Foreign Channels
+                </h3>
+                <p class="text-[9px] font-mono text-bullish/50 mt-1 uppercase tracking-widest">
+                    Global Capital Flow
+                </p>
+            </div>
+            <span
+                id="foreign-count"
+                class="text-[10px] font-mono text-white/20 font-bold tracking-tighter"
+                >SCANNING...</span
+            >
+        </header>
+        <div id="foreign-list" class="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-3">
+            <div class="flex flex-col items-center justify-center h-full gap-4 opacity-20">
+                <div
+                    class="w-8 h-8 border-2 border-bullish/30 border-t-bullish rounded-full animate-spin"
+                >
+                </div>
+                <span class="font-mono text-[10px] tracking-[0.3em] uppercase"
+                    >Synching_Frequencies</span
+                >
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Matrix -->
+    <section
+        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-xl group hover:border-accent/20 transition-all duration-500"
+    >
+        <header
+            class="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-accent/10 to-transparent"
+        >
+            <div>
+                <h3
+                    class="text-xs font-black text-white/90 tracking-[0.2em] flex items-center gap-2 uppercase"
+                >
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                    Trust Domains
+                </h3>
+                <p class="text-[9px] font-mono text-accent/50 mt-1 uppercase tracking-widest">
+                    Domestic Support
+                </p>
+            </div>
+            <span
+                id="trust-count"
+                class="text-[10px] font-mono text-white/20 font-bold tracking-tighter"
+                >SCANNING...</span
+            >
+        </header>
+        <div id="trust-list" class="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-3">
+            <div class="flex flex-col items-center justify-center h-full gap-4 opacity-20">
+                <div
+                    class="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin"
+                >
+                </div>
+                <span class="font-mono text-[10px] tracking-[0.3em] uppercase">Accessing_Node</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dealer Matrix -->
+    <section
+        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-xl group hover:border-yellow-400/20 transition-all duration-500"
+    >
+        <header
+            class="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-yellow-400/10 to-transparent"
+        >
+            <div>
+                <h3
+                    class="text-xs font-black text-white/90 tracking-[0.2em] flex items-center gap-2 uppercase"
+                >
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                    Dealer Vectors
+                </h3>
+                <p class="text-[9px] font-mono text-yellow-400/50 mt-1 uppercase tracking-widest">
+                    Momentum Arbitrage
+                </p>
+            </div>
+            <span
+                id="dealer-count"
+                class="text-[10px] font-mono text-white/20 font-bold tracking-tighter"
+                >SCANNING...</span
+            >
+        </header>
+        <div id="dealer-list" class="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-3">
+            <div class="flex flex-col items-center justify-center h-full gap-4 opacity-20">
+                <div
+                    class="w-8 h-8 border-2 border-yellow-400/30 border-t-yellow-400 rounded-full animate-spin"
+                >
+                </div>
+                <span class="font-mono text-[10px] tracking-[0.3em] uppercase"
+                    >Isolating_Signals</span
+                >
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>

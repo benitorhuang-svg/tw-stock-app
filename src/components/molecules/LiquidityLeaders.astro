@@ -1,0 +1,63 @@
+---
+/**
+ * LiquidityLeaders.astro - Top volume stocks sidebar
+ */
+import { fmtPrice } from '../../utils/format';
+
+interface Props {
+    topVolume: any[];
+}
+
+const { topVolume } = Astro.props;
+---
+
+<div class="glass-card overflow-hidden border-t-2 border-t-accent/40">
+    <div
+        class="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-white/[0.02]"
+    >
+        <h3 class="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+            Liquidity Leaders
+        </h3>
+        <div class="flex gap-1">
+            <div class="w-1 h-1 rounded-full bg-accent"></div>
+            <div class="w-1 h-1 rounded-full bg-accent/30"></div>
+        </div>
+    </div>
+    <div
+        class="divide-y divide-white/5 max-h-[600px] overflow-y-auto custom-scrollbar"
+        id="hud-volume-grid"
+    >
+        {
+            topVolume.map((s, i) => (
+                <a
+                    href={`/stocks/${s.symbol}`}
+                    class="flex items-center gap-4 px-6 py-4 hover:bg-accent/[0.04] transition-all group no-underline border-l-2 border-transparent hover:border-accent"
+                >
+                    <span class="text-[8px] font-mono text-white/20 w-3">{i + 1}</span>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-[11px] font-bold text-white/90 group-hover:text-accent transition-colors truncate">
+                            {s.name}
+                        </div>
+                        <div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">
+                            {s.symbol}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] font-mono font-bold text-white/70">
+                            {fmtPrice(s.price)}
+                        </div>
+                        <div
+                            class:list={[
+                                'text-[9px] font-mono font-bold',
+                                s.changePercent >= 0 ? 'text-bullish' : 'text-bearish',
+                            ]}
+                        >
+                            {s.changePercent > 0 ? '+' : ''}
+                            {s.changePercent.toFixed(1)}%
+                        </div>
+                    </div>
+                </a>
+            ))
+        }
+    </div>
+</div>

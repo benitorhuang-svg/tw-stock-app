@@ -30,10 +30,10 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
             const res = await fetch(url, { signal: controller.signal });
             clearTimeout(timeout);
             if (res.ok) return await res.json();
-            console.warn(`   ⚠️ HTTP ${res.status}, 重試 ${i + 1}/${retries}`);
+            console.warn(`   ⚠️ 伺服器 HTTP ${res.status}, 正在進行第 ${i + 1}/${retries} 次重試`);
         } catch (e) {
             clearTimeout(timeout);
-            console.warn(`   ⚠️ Error: ${e.message}, 重試 ${i + 1}/${retries}`);
+            console.warn(`   ⚠️ 請求錯誤: ${e.message}, 正在進行第 ${i + 1}/${retries} 次重試`);
         }
         await new Promise(r => setTimeout(r, 2000));
     }

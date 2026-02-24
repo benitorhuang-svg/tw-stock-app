@@ -4,34 +4,38 @@ import { getStrategy } from '../../data/strategies';
 
 interface ScreenerBody {
     strategyId?: string;
-    pe?: { min?: number; max?: number };
-    pb?: { min?: number; max?: number };
-    dividendYield?: { min?: number; max?: number };
-    revenueYoY?: { min?: number; max?: number };
+    filters?: {
+        pe?: number;
+        pb?: number;
+        yield?: number;
+        rev?: number;
+        margin?: number;
+        eps?: number;
+        foreign?: number;
+        trust?: number;
+    };
     page?: number;
     limit?: number;
 }
 
-const PRESET_FILTERS: Record<string, Omit<ScreenerBody, 'page' | 'limit' | 'strategyId'>> = {
-    'low-pe': { pe: { max: 15 } },
-    'low-pb': { pb: { max: 1.5 } },
-    'high-dividend': { dividendYield: { min: 5 } },
-    'revenue-growth': { revenueYoY: { min: 10 } },
-    momentum: { pe: { max: 25 } },
-    'smart-money': {},
+const PRESET_FILTERS: Record<string, any> = {
+    'low-pe': { filters: { pe: 15 } },
+    'low-pb': { filters: { pb: 1.5 } },
+    'high-dividend': { filters: { yield: 5 } },
+    'revenue-growth': { filters: { rev: 10 } },
+    'volume-breakout': { strategyId: 'volume-breakout' },
 };
 
 export const POST: APIRoute = async ({ request }) => {
     try {
         const body = (await request.json()) as ScreenerBody;
-        const strategyId = body.strategyId;
-        const strategy = strategyId ? getStrategy(strategyId) : undefined;
-
+        const strategy = body.strategyId ? getStrategy(body.strategyId) : undefined;
         const mergedFilters: ScreenerBody = {
-            ...PRESET_FILTERS[strategyId || ''],
+            ...PRESET_FILTERS[body.strategyId || ''],
             ...body,
         };
 
+        const f = mergedFilters.filters || {};
         const page = Math.max(1, Number(mergedFilters.page || 1));
         const limit = Math.min(200, Math.max(1, Number(mergedFilters.limit || 50)));
         const offset = (page - 1) * limit;
@@ -45,51 +49,45 @@ export const POST: APIRoute = async ({ request }) => {
         `;
         const params: any[] = [];
 
-        if (mergedFilters.pe?.min !== undefined) {
-            fromAndWhereSql += ' AND lp.pe >= ?';
-            params.push(mergedFilters.pe.min);
-        }
-        if (mergedFilters.pe?.max !== undefined) {
+        // Quantitative Vectors
+        if (f.pe !== undefined) {
             fromAndWhereSql += ' AND lp.pe > 0 AND lp.pe <= ?';
-            params.push(mergedFilters.pe.max);
+            params.push(f.pe);
         }
-        if (mergedFilters.pb?.min !== undefined) {
-            fromAndWhereSql += ' AND lp.pb >= ?';
-            params.push(mergedFilters.pb.min);
-        }
-        if (mergedFilters.pb?.max !== undefined) {
+        if (f.pb !== undefined) {
             fromAndWhereSql += ' AND lp.pb > 0 AND lp.pb <= ?';
-            params.push(mergedFilters.pb.max);
+            params.push(f.pb);
         }
-        if (mergedFilters.dividendYield?.min !== undefined) {
+        if (f.yield !== undefined && f.yield > 0) {
             fromAndWhereSql += ' AND lp.yield >= ?';
-            params.push(mergedFilters.dividendYield.min);
+            params.push(f.yield);
         }
-        if (mergedFilters.dividendYield?.max !== undefined) {
-            fromAndWhereSql += ' AND lp.yield <= ?';
-            params.push(mergedFilters.dividendYield.max);
-        }
-        if (mergedFilters.revenueYoY?.min !== undefined) {
+        if (f.rev !== undefined && f.rev > -20) {
             fromAndWhereSql += ' AND lp.revenue_yoy >= ?';
-            params.push(mergedFilters.revenueYoY.min);
+            params.push(f.rev);
         }
-        if (mergedFilters.revenueYoY?.max !== undefined) {
-            fromAndWhereSql += ' AND lp.revenue_yoy <= ?';
-            params.push(mergedFilters.revenueYoY.max);
+        if (f.margin !== undefined && f.margin > -10) {
+            fromAndWhereSql += ' AND lp.operating_margin >= ?';
+            params.push(f.margin);
+        }
+        if (f.eps !== undefined && f.eps > -5) {
+            fromAndWhereSql += ' AND lp.eps >= ?';
+            params.push(f.eps);
         }
 
-        if (strategyId === 'volume-breakout' || strategyId === 'breakout') {
-            fromAndWhereSql += ' AND lp.volume > (lp.ma20 * 1.5) AND lp.close > lp.ma20';
-        }
-        if (strategyId === 'foreign-buy') {
+        // Institutional Domain Vectors
+        if (f.foreign !== undefined && f.foreign > 0) {
+            // This would ideally join a 'streaks' table or compute on the fly
+            // For now, let's assume if streak > 0, we check if today's foreign_inv > 0
             fromAndWhereSql += ' AND COALESCE(ch.foreign_inv, 0) > 0';
         }
-        if (strategyId === 'trust-buy') {
+        if (f.trust !== undefined && f.trust > 0) {
             fromAndWhereSql += ' AND COALESCE(ch.invest_trust, 0) > 0';
         }
-        if (strategyId === 'smart-money') {
-            fromAndWhereSql +=
-                ' AND lp.change_pct < -2 AND (COALESCE(ch.foreign_inv, 0) + COALESCE(ch.invest_trust, 0)) > 0';
+
+        // Preset Strategy Logic
+        if (mergedFilters.strategyId === 'volume-breakout') {
+            fromAndWhereSql += ' AND lp.volume > (lp.ma20 * 1.5) AND lp.close > lp.ma20';
         }
 
         const totalRow = dbService.queryOne<{ total: number }>(
@@ -113,52 +111,40 @@ export const POST: APIRoute = async ({ request }) => {
                 lp.gross_margin,
                 lp.operating_margin,
                 lp.net_margin,
+                lp.eps,
                 COALESCE(ch.foreign_inv, 0) AS foreign_inv,
                 COALESCE(ch.invest_trust, 0) AS invest_trust,
                 COALESCE(ch.dealer, 0) AS dealer
             ${fromAndWhereSql}
-            ORDER BY lp.volume DESC, lp.change_pct DESC
+            ORDER BY lp.volume DESC
             LIMIT ? OFFSET ?
         `;
 
         const rows = dbService.queryAll<any>(rowsSql, [...params, limit, offset]);
 
-        const results = rows.map((r: any) => {
-            const matchedStrategies: string[] = [];
-            if (strategy?.name) {
-                matchedStrategies.push(strategy.name);
-            } else {
-                if ((mergedFilters.pe?.max ?? 0) > 0) matchedStrategies.push('低本益比');
-                if ((mergedFilters.pb?.max ?? 0) > 0) matchedStrategies.push('低P/B');
-                if ((mergedFilters.dividendYield?.min ?? 0) > 0) matchedStrategies.push('高殖利率');
-                if ((mergedFilters.revenueYoY?.min ?? 0) > 0) matchedStrategies.push('營收成長');
-            }
-            if (matchedStrategies.length === 0) matchedStrategies.push('智能篩選');
-
-            return {
-                symbol: r.symbol,
-                name: r.name || r.symbol,
-                sector: r.sector,
-                matchedStrategies,
-                fundamentals: {
-                    pe: r.pe || 0,
-                    pb: r.pb || 0,
-                    dividendYield: r.yield || 0,
-                    revenueYoY: r.revenue_yoy || 0,
-                    grossMargin: r.gross_margin || 0,
-                    operatingMargin: r.operating_margin || 0,
-                    netMargin: r.net_margin || 0,
-                },
-                price: r.close,
-                changePercent: r.change_pct,
-                volume: r.volume,
-                chips: {
-                    foreign: r.foreign_inv || 0,
-                    trust: r.invest_trust || 0,
-                    dealer: r.dealer || 0,
-                },
-            };
-        });
+        const results = rows.map((r: any) => ({
+            symbol: r.symbol,
+            name: r.name || r.symbol,
+            sector: r.sector,
+            fundamentals: {
+                pe: r.pe || 0,
+                pb: r.pb || 0,
+                dividendYield: r.yield || 0,
+                revenueYoY: r.revenue_yoy || 0,
+                grossMargin: r.gross_margin || 0,
+                operatingMargin: r.operating_margin || 0,
+                netMargin: r.net_margin || 0,
+                eps: r.eps || 0,
+            },
+            price: r.close,
+            changePercent: r.change_pct,
+            volume: r.volume,
+            chips: {
+                foreign: r.foreign_inv || 0,
+                trust: r.invest_trust || 0,
+                dealer: r.dealer || 0,
+            },
+        }));
 
         return new Response(
             JSON.stringify({

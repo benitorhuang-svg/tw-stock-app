@@ -68,64 +68,98 @@ const priceRange = priceMax - priceMin || 1;
 const volMax = Math.max(...candles.map(c => c.vol), 1);
 
 // SVG chart dimensions
-const chartW = 600;
-const chartH = 280;
-const barW = (chartW / candles.length) * 0.6;
+const chartW = 800;
+const chartH = 400;
+const subChartH = 120;
+const barW = (chartW / candles.length) * 0.7;
 const gap = chartW / candles.length;
 
-// Price to Y coordinate
-const pToY = (p: number) => ((priceMax - p) / priceRange) * (chartH * 0.75) + 10;
-// Volume bar height
-const vToH = (v: number) => (v / volMax) * (chartH * 0.2);
+// Price mapping
+const pToY = (p: number) => ((priceMax - p) / priceRange) * (chartH * 0.7) + 20;
+const vToH = (v: number) => (v / volMax) * (chartH * 0.15);
 
-// Moving average (simple 5-period)
-const ma5Points = candles
-    .map((_, i) => {
-        if (i < 4) return null;
-        const avg = candles.slice(i - 4, i + 1).reduce((s, c) => s + c.c, 0) / 5;
-        return { x: i * gap + gap / 2, y: pToY(avg) };
-    })
-    .filter(Boolean);
-const ma5Path = ma5Points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p!.x},${p!.y}`).join(' ');
+// 📈 MA Suite (5, 10, 20, 60)
+function calcMA(days: number) {
+    const points = candles
+        .map((_, i) => {
+            if (i < days - 1) return null;
+            const avg = candles.slice(i - (days - 1), i + 1).reduce((s, c) => s + c.c, 0) / days;
+            return { x: i * gap + gap / 2, y: pToY(avg) };
+        })
+        .filter(Boolean);
+    return points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p!.x},${p!.y}`).join(' ');
+}
 
-// MA20 line
-const ma20Points = candles
+const ma5Path = calcMA(5);
+const ma10Path = calcMA(10);
+const ma20Path = calcMA(20);
+const ma60Path = calcMA(60);
+
+// 🛠️ Bollinger Bands (20, 2)
+const bBands = candles
     .map((_, i) => {
         if (i < 19) return null;
-        const avg = candles.slice(i - 19, i + 1).reduce((s, c) => s + c.c, 0) / 20;
-        return { x: i * gap + gap / 2, y: pToY(avg) };
+        const slice = candles.slice(i - 19, i + 1).map(c => c.c);
+        const ma = slice.reduce((a, b) => a + b, 0) / 20;
+        const std = Math.sqrt(slice.reduce((s, c) => s + Math.pow(c - ma, 2), 0) / 20);
+        return {
+            x: i * gap + gap / 2,
+            upper: pToY(ma + std * 2),
+            lower: pToY(ma - std * 2),
+            mid: pToY(ma),
+        };
     })
     .filter(Boolean);
-const ma20Path = ma20Points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p!.x},${p!.y}`).join(' ');
 
-// MACD calculation from real close prices (EMA12 - EMA26)
+// 📊 RSI Calculation (14)
+function calcRSI(period = 14) {
+    let gains = 0,
+        losses = 0;
+    const rsi = candles.map((c, i) => {
+        if (i === 0) return 50;
+        const diff = c.c - candles[i - 1].c;
+        const g = Math.max(diff, 0);
+        const l = Math.max(-diff, 0);
+        if (i <= period) {
+            gains += g;
+            losses += l;
+            return 50;
+        }
+        gains = (gains * (period - 1) + g) / period;
+        losses = (losses * (period - 1) + l) / period;
+        const rs = losses === 0 ? 100 : gains / losses;
+        return 100 - 100 / (1 + rs);
+    });
+    return rsi;
+}
+const rsiValues = calcRSI(14);
+
+// 📉 MACD (Already mostly implemented, refining)
 function calcEMA(data: number[], period: number): number[] {
     const k = 2 / (period + 1);
     const ema: number[] = [data[0]];
-    for (let i = 1; i < data.length; i++) {
-        ema.push(data[i] * k + ema[i - 1] * (1 - k));
-    }
+    for (let i = 1; i < data.length; i++) ema.push(data[i] * k + ema[i - 1] * (1 - k));
     return ema;
 }
-
 const closes = candles.map(c => c.c);
 const ema12 = calcEMA(closes, 12);
 const ema26 = calcEMA(closes, 26);
-const macdData = candles.map((_, i) => {
-    const dif = ema12[i] - ema26[i];
-    return { dif, dea: 0, hist: 0 };
-});
-// Calculate DEA (signal line = EMA9 of DIF)
-const difValues = macdData.map(d => d.dif);
+const difValues = ema12.map((e, i) => e - ema26[i]);
 const deaValues = calcEMA(difValues, 9);
-for (let i = 0; i < macdData.length; i++) {
-    macdData[i].dea = deaValues[i];
-    macdData[i].hist = macdData[i].dif - macdData[i].dea;
-}
+const macdHist = difValues.map((d, i) => d - deaValues[i]);
 const macdMax = Math.max(
-    ...macdData.map(d => Math.max(Math.abs(d.dif), Math.abs(d.dea), Math.abs(d.hist))),
+    ...difValues.map(Math.abs),
+    ...deaValues.map(Math.abs),
+    ...macdHist.map(Math.abs),
     0.1
 );
+
+// Technical confidence score
+const lastCandle = candles[candles.length - 1];
+const maAlignment = lastCandle.c > (closes[closes.length - 6] || 0) ? 1 : -1;
+const rsiScore =
+    rsiValues[rsiValues.length - 1] > 70 ? -1 : rsiValues[rsiValues.length - 1] < 30 ? 1 : 0;
+const strength = maAlignment + rsiScore;
 
 const showNoData = price <= 0;
 ---
@@ -189,31 +223,96 @@ const showNoData = price <= 0;
 
     <!-- Price labels (left axis) -->
     <div
-        class="absolute left-2 top-12 bottom-[140px] flex flex-col justify-between text-[9px] font-mono text-text-muted z-10"
+        class="absolute left-2 top-12 bottom-[140px] flex flex-col justify-between text-[9px] font-mono text-text-muted z-10 py-10"
     >
         <span>{priceMax.toFixed(1)}</span>
+        <span>{(priceMax * 0.75 + priceMin * 0.25).toFixed(1)}</span>
         <span>{((priceMax + priceMin) / 2).toFixed(1)}</span>
+        <span>{(priceMax * 0.25 + priceMin * 0.75).toFixed(1)}</span>
         <span>{priceMin.toFixed(1)}</span>
     </div>
 
+    <!-- Technical Status Legend (Top Left Overlay) -->
+    <div class="absolute top-20 left-12 z-10 flex flex-col gap-1 pointer-events-none">
+        <div class="flex items-center gap-3 text-[10px] font-mono">
+            <span class="text-white/40"
+                >MA5: <span class="text-warning">{lastCandle.c.toFixed(1)}</span></span
+            >
+            <span class="text-white/40"
+                >MA10: <span class="text-accent">{lastCandle.c.toFixed(1)}</span></span
+            >
+            <span class="text-white/40"
+                >MA20: <span class="text-purple-400">{lastCandle.c.toFixed(1)}</span></span
+            >
+            <span class="text-white/40"
+                >MA60: <span class="text-blue-500">{lastCandle.c.toFixed(1)}</span></span
+            >
+        </div>
+        <div class="flex items-center gap-2 mt-1">
+            <span
+                class:list={[
+                    'px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider',
+                    strength > 0
+                        ? 'bg-bullish/20 text-bullish'
+                        : strength < 0
+                          ? 'bg-bearish/20 text-bearish'
+                          : 'bg-white/10 text-white/50',
+                ]}
+            >
+                {
+                    strength > 0
+                        ? 'Bullish Trend'
+                        : strength < 0
+                          ? 'Bearish Pressure'
+                          : 'Neutral Market'
+                }
+            </span>
+            <span class="text-[9px] font-mono text-white/40 uppercase"
+                >RSI(14): {rsiValues[rsiValues.length - 1].toFixed(1)}</span
+            >
+        </div>
+    </div>
+
     <!-- Main Chart Canvas -->
-    <div class="pt-14 px-10 h-[calc(100%-120px)]">
+    <div class="pt-14 px-10 h-[calc(100%-140px)]">
         <svg viewBox={`0 0 ${chartW} ${chartH}`} class="w-full h-full" preserveAspectRatio="none">
             <!-- Grid lines -->
             {
-                [0.25, 0.5, 0.75].map(pct => (
+                [0.2, 0.4, 0.6, 0.8].map(pct => (
                     <line
                         x1="0"
                         y1={chartH * pct}
                         x2={chartW}
                         y2={chartH * pct}
-                        stroke="hsl(0,0%,100%,0.04)"
+                        stroke="rgba(255,255,255,0.03)"
                         stroke-width="0.5"
                     />
                 ))
             }
 
-            <!-- Volume bars (bottom 20%) -->
+            {/* Bollinger Bands Fill */}
+            {
+                hasRealData && (
+                    <path
+                        d={(() => {
+                            const validBands = bBands.filter(
+                                (b): b is Exclude<typeof b, null> => b !== null
+                            );
+                            const top = validBands.map(b => `${b.x},${b.upper}`).join(' L ');
+                            const bot = validBands
+                                .slice()
+                                .reverse()
+                                .map(b => `${b.x},${b.lower}`)
+                                .join(' L ');
+                            return `M ${top} L ${bot} Z`;
+                        })()}
+                        fill="rgba(var(--accent-rgb), 0.03)"
+                        stroke="none"
+                    />
+                )
+            }
+
+            <!-- Volume bars (bottom 15%) -->
             {
                 candles.map((c, i) => {
                     const x = i * gap + (gap - barW) / 2;
@@ -224,7 +323,7 @@ const showNoData = price <= 0;
                             y={chartH - h}
                             width={barW}
                             height={h}
-                            fill={c.bull ? 'hsl(142,71%,45%,0.15)' : 'hsl(346,77%,50%,0.15)'}
+                            fill={c.bull ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}
                             rx="1"
                         />
                     );
@@ -242,14 +341,14 @@ const showNoData = price <= 0;
                     const wickBot = pToY(c.l);
                     const color = c.bull ? '#22c55e' : '#ef4444';
                     return (
-                        <g>
+                        <g class="candle-group">
                             <line
                                 x1={x}
                                 y1={wickTop}
                                 x2={x}
                                 y2={wickBot}
                                 stroke={color}
-                                stroke-width="1"
+                                stroke-width="1.2"
                             />
                             <rect
                                 x={x - barW / 2}
@@ -257,88 +356,189 @@ const showNoData = price <= 0;
                                 width={barW}
                                 height={bodyH}
                                 fill={color}
-                                rx="0.5"
+                                rx="1"
                             />
                         </g>
                     );
                 })
             }
 
-            <!-- MA5 line -->
-            <path d={ma5Path} fill="none" stroke="hsl(48,100%,60%)" stroke-width="1.2" opacity="0.7"
-            ></path>
-            <!-- MA20 line -->
-            {
-                ma20Path && (
-                    <path
-                        d={ma20Path}
-                        fill="none"
-                        stroke="hsl(280,80%,65%)"
-                        stroke-width="1.2"
-                        opacity="0.5"
-                    />
-                )
-            }
+            <!-- Moving Averages -->
+            <path d={ma5Path} fill="none" stroke="#eab308" stroke-width="1.5" opacity="0.8"></path>
+            <path d={ma10Path} fill="none" stroke="#0ea5e9" stroke-width="1.5" opacity="0.7"></path>
+            <path d={ma20Path} fill="none" stroke="#a855f7" stroke-width="1.5" opacity="0.6"></path>
+            <path d={ma60Path} fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"></path>
         </svg>
     </div>
 
-    <!-- MACD Sub-chart -->
-    <div class="h-[120px] px-10 border-t border-white/[0.05]">
-        <div class="flex items-center gap-2 py-1.5 px-2">
-            <span class="text-[9px] font-mono font-bold text-text-muted tracking-wider">MACD</span>
-            <span class="text-[9px] font-mono text-accent">DIF</span>
-            <span class="text-[9px] font-mono text-warning">DEA</span>
+    <!-- Indicators Strip (MACD / RSI Toggleable) -->
+    <div
+        class="indicator-container h-[140px] px-10 border-t border-white/[0.05] bg-black/20 flex flex-col relative"
+        id="indicator-module"
+    >
+        <!-- MACD View -->
+        <div class="indicator-view active flex flex-col h-full" id="view-macd">
+            <div class="flex items-center justify-between py-2 px-2">
+                <div class="flex items-center gap-4">
+                    <span
+                        class="text-[9px] font-mono font-bold text-white/30 tracking-widest uppercase"
+                        >MACD</span
+                    >
+                    <div class="flex gap-3 text-[8px] font-mono">
+                        <span class="text-accent flex items-center gap-1"
+                            ><span class="w-1.5 h-1.5 bg-accent rounded-full"></span> DIF</span
+                        >
+                        <span class="text-warning flex items-center gap-1"
+                            ><span class="w-1.5 h-1.5 bg-warning rounded-full"></span> DEA</span
+                        >
+                    </div>
+                </div>
+                <button
+                    class="indicator-switch text-[8px] font-mono text-accent hover:text-white transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
+                    data-to="rsi">Switch to RSI</button
+                >
+            </div>
+
+            <svg viewBox={`0 0 ${chartW} 80`} class="flex-1 w-full" preserveAspectRatio="none">
+                <line
+                    x1="0"
+                    y1="40"
+                    x2={chartW}
+                    y2="40"
+                    stroke="rgba(255,255,255,0.05)"
+                    stroke-width="0.5"></line>
+                {
+                    macdHist.map((hVal, i) => {
+                        const x = i * gap + (gap - barW) / 2;
+                        const h = (Math.abs(hVal) / macdMax) * 35;
+                        const y = hVal >= 0 ? 40 - h : 40;
+                        return (
+                            <rect
+                                x={x}
+                                y={y}
+                                width={barW}
+                                height={h}
+                                fill={hVal >= 0 ? 'rgba(239,68,68,0.4)' : 'rgba(34,197,94,0.4)'}
+                                rx="0.5"
+                            />
+                        );
+                    })
+                }
+                <path
+                    d={difValues
+                        .map(
+                            (v, i) =>
+                                `${i === 0 ? 'M' : 'L'}${i * gap + gap / 2},${40 - (v / macdMax) * 35}`
+                        )
+                        .join(' ')}
+                    fill="none"
+                    stroke="rgb(var(--accent-rgb))"
+                    stroke-width="1.2"></path>
+                <path
+                    d={deaValues
+                        .map(
+                            (v, i) =>
+                                `${i === 0 ? 'M' : 'L'}${i * gap + gap / 2},${40 - (v / macdMax) * 35}`
+                        )
+                        .join(' ')}
+                    fill="none"
+                    stroke="#eab308"
+                    stroke-width="1.2"></path>
+            </svg>
         </div>
-        <svg viewBox={`0 0 ${chartW} 80`} class="w-full h-[80px]" preserveAspectRatio="none">
-            <!-- Zero line -->
-            <line x1="0" y1="40" x2={chartW} y2="40" stroke="hsl(0,0%,100%,0.06)" stroke-width="0.5"
-            ></line>
 
-            <!-- Histogram bars -->
-            {
-                macdData.map((d, i) => {
-                    const x = i * gap + (gap - barW) / 2;
-                    const h = (Math.abs(d.hist) / macdMax) * 35;
-                    const y = d.hist >= 0 ? 40 - h : 40;
-                    return (
-                        <rect
-                            x={x}
-                            y={y}
-                            width={barW}
-                            height={h}
-                            fill={d.hist >= 0 ? 'hsl(346,77%,50%,0.5)' : 'hsl(142,71%,45%,0.5)'}
-                            rx="0.5"
-                        />
-                    );
-                })
-            }
-
-            <!-- DIF line -->
-            <polyline
-                points={macdData
-                    .map((d, i) => `${i * gap + gap / 2},${40 - (d.dif / macdMax) * 35}`)
-                    .join(' ')}
-                fill="none"
-                stroke="hsl(217,91%,60%)"
-                stroke-width="1"
-                opacity="0.8"></polyline>
-            <!-- DEA line -->
-            <polyline
-                points={macdData
-                    .map((d, i) => `${i * gap + gap / 2},${40 - (d.dea / macdMax) * 35}`)
-                    .join(' ')}
-                fill="none"
-                stroke="hsl(38,92%,50%)"
-                stroke-width="1"
-                opacity="0.8"></polyline>
-        </svg>
+        <!-- RSI View -->
+        <div class="indicator-view hidden flex flex-col h-full" id="view-rsi">
+            <div class="flex items-center justify-between py-2 px-2">
+                <div class="flex items-center gap-4">
+                    <span
+                        class="text-[9px] font-mono font-bold text-white/30 tracking-widest uppercase"
+                        >RSI(14)</span
+                    >
+                    <div class="flex gap-3 text-[8px] font-mono">
+                        <span class="text-white/60">Overbought: 70</span>
+                        <span class="text-white/60">Oversold: 30</span>
+                    </div>
+                </div>
+                <button
+                    class="indicator-switch text-[8px] font-mono text-accent hover:text-white transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
+                    data-to="macd">Switch to MACD</button
+                >
+            </div>
+            <svg viewBox={`0 0 ${chartW} 80`} class="flex-1 w-full" preserveAspectRatio="none">
+                <line
+                    x1="0"
+                    y1="24"
+                    x2={chartW}
+                    y2="24"
+                    stroke="rgba(239,68,68,0.2)"
+                    stroke-width="0.5"
+                    stroke-dasharray="2,2"></line>
+                <line
+                    x1="0"
+                    y1="56"
+                    x2={chartW}
+                    y2="56"
+                    stroke="rgba(34,197,94,0.2)"
+                    stroke-width="0.5"
+                    stroke-dasharray="2,2"></line>
+                <path
+                    d={rsiValues
+                        .map(
+                            (v, i) =>
+                                `${i === 0 ? 'M' : 'L'}${i * gap + gap / 2},${80 - (v / 100) * 80}`
+                        )
+                        .join(' ')}
+                    fill="none"
+                    stroke="rgb(var(--accent-rgb))"
+                    stroke-width="1.5"></path>
+            </svg>
+        </div>
     </div>
+
+    <!-- Styles for Toggling -->
+    <style>
+        .indicator-view.hidden {
+            display: none !important;
+        }
+        .indicator-view.active {
+            display: flex !important;
+        }
+    </style>
+
+    <script>
+        const container = document.getElementById('indicator-module');
+        if (container) {
+            container.addEventListener('click', e => {
+                const target = e.target as HTMLElement;
+                if (target.classList.contains('indicator-switch')) {
+                    const to = target.getAttribute('data-to');
+                    const macd = document.getElementById('view-macd');
+                    const rsi = document.getElementById('view-rsi');
+                    if (to === 'rsi' && macd && rsi) {
+                        macd.classList.add('hidden');
+                        macd.classList.remove('active');
+                        rsi.classList.remove('hidden');
+                        rsi.classList.add('active');
+                    } else if (to === 'macd' && macd && rsi) {
+                        rsi.classList.add('hidden');
+                        rsi.classList.remove('active');
+                        macd.classList.remove('hidden');
+                        macd.classList.add('active');
+                    }
+                }
+            });
+        }
+    </script>
 
     <!-- No data overlay -->
     {
         showNoData && (
-            <div class="absolute inset-0 flex flex-col items-center justify-center bg-[#050914]/90 z-50">
-                <p class="text-sm font-mono text-text-muted">圖表引擎啟動中...</p>
+            <div class="absolute inset-0 flex flex-col items-center justify-center bg-[#050914]/95 z-50 backdrop-blur-sm">
+                <div class="w-12 h-12 border-2 border-accent/20 border-t-accent rounded-full animate-spin mb-4" />
+                <p class="text-xs font-mono text-white/40 uppercase tracking-[0.3em]">
+                    Synching Market Nodes...
+                </p>
             </div>
         )
     }

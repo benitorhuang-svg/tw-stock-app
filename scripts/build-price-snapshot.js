@@ -17,6 +17,7 @@ const __dirname = path.dirname(__filename);
 const PRICES_DIR = path.join(__dirname, '../public/data/prices');
 const OUTPUT_FILE = path.join(__dirname, '../public/data/latest_prices.json');
 const INDEX_FILE = path.join(__dirname, '../public/data/price_index.json');
+const CHIPS_DIR = path.join(__dirname, '../public/data/chips');
 
 function parseCSV(csvText) {
     if (!csvText) return null;
@@ -38,11 +39,11 @@ function parseCSV(csvText) {
 }
 
 async function buildPriceSnapshot() {
-    console.log('🚀 Building price snapshot...');
+    console.log('🚀 正在建置行情數據快照...');
 
-    // Dynamically read the prices directory to get all available stocks
+    // 動態讀取價格目錄以獲取所有可用股票
     if (!fs.existsSync(PRICES_DIR)) {
-        console.error('❌ Prices directory not found');
+        console.error('❌ 找不到價格資料目錄');
         process.exit(1);
     }
 
@@ -55,7 +56,7 @@ async function buildPriceSnapshot() {
 
     const symbols = Object.keys(priceIndex);
 
-    console.log(`📊 Processing ${symbols.length} stocks...`);
+    console.log(`📊 正在處理 ${symbols.length} 檔股票數據...`);
 
     // Load real fundamental data
     const MONTHLY_STATS_FILE = path.join(__dirname, '../public/data/monthly_stats.json');
@@ -68,7 +69,7 @@ async function buildPriceSnapshot() {
         for (const s of stats) {
             statsMap[s.symbol] = s;
         }
-        console.log(`  📈 Loaded ${stats.length} monthly stats (PE/PB/Yield)`);
+        console.log(`  📈 已載入 ${stats.length} 筆每月統計數據 (本益比/股淨比/殖利率)`);
     }
 
     const revenueMap = {};
@@ -77,7 +78,7 @@ async function buildPriceSnapshot() {
         for (const r of rev) {
             revenueMap[r.symbol] = r;
         }
-        console.log(`  💰 Loaded ${rev.length} revenue records`);
+        console.log(`  💰 已載入 ${rev.length} 筆營收紀錄`);
     }
 
     const financialsMap = {};
@@ -86,7 +87,46 @@ async function buildPriceSnapshot() {
         for (const f of fin) {
             financialsMap[f.symbol] = f;
         }
-        console.log(`  📊 Loaded ${fin.length} financial records`);
+        console.log(`  📊 已載入 ${fin.length} 筆財務報表紀錄`);
+    }
+
+    // 籌碼連買計算
+    const streakMap = {};
+    if (fs.existsSync(CHIPS_DIR)) {
+        const chipFiles = fs.readdirSync(CHIPS_DIR).filter(f => f.endsWith('.json')).sort().reverse().slice(0, 20);
+        console.log(`  🤝 正在分析 ${chipFiles.length} 份籌碼檔案以計算連買/連賣天數...`);
+
+        const history = {}; // symbol -> days[]
+
+        for (const file of chipFiles) {
+            try {
+                const data = JSON.parse(fs.readFileSync(path.join(CHIPS_DIR, file), 'utf-8'));
+                for (const item of data) {
+                    if (!history[item.symbol]) history[item.symbol] = [];
+                    history[item.symbol].push(item);
+                }
+            } catch (e) { }
+        }
+
+        for (const symbol in history) {
+            const days = history[symbol];
+            const calc = (key) => {
+                let streak = 0;
+                if (!days[0] || days[0][key] === 0) return 0;
+                const isBuy = days[0][key] > 0;
+                for (const d of days) {
+                    if (isBuy && d[key] > 0) streak++;
+                    else if (!isBuy && d[key] < 0) streak--;
+                    else break;
+                }
+                return streak;
+            };
+            streakMap[symbol] = {
+                foreign: calc('foreign_inv'),
+                trust: calc('invest_trust'),
+                dealer: calc('dealer')
+            };
+        }
     }
 
     const latestPrices = {};
@@ -124,6 +164,9 @@ async function buildPriceSnapshot() {
                         grossMargin: fin?.grossMargin || 0,
                         operatingMargin: fin?.operatingMargin || 0,
                         netMargin: fin?.netMargin || 0,
+                        foreignStreak: streakMap[symbol]?.foreign || 0,
+                        trustStreak: streakMap[symbol]?.trust || 0,
+                        dealerStreak: streakMap[symbol]?.dealer || 0,
                     };
                     processed++;
                 }
@@ -132,19 +175,19 @@ async function buildPriceSnapshot() {
             errors++;
         }
 
-        if (processed % 100 === 0) {
-            process.stdout.write(`\r  Processed: ${processed}/${symbols.length}`);
+        if (processed % 100 === 0 || processed === symbols.length) {
+            process.stdout.write(`\r  已處理: ${processed}/${symbols.length}`);
         }
     }
 
-    console.log(`\n✅ Processed ${processed} stocks (${errors} errors)`);
+    console.log(`\n✅ 成功處理 ${processed} 檔股票 (${errors} 筆錯誤)`);
 
     // Write output
     fs.writeFileSync(OUTPUT_FILE, JSON.stringify(latestPrices, null, 2));
 
     const fileSizeKB = (fs.statSync(OUTPUT_FILE).size / 1024).toFixed(2);
-    console.log(`📦 Output: ${OUTPUT_FILE} (${fileSizeKB} KB)`);
-    console.log('🎉 Done!');
+    console.log(`📦 輸出檔案: ${OUTPUT_FILE} (${fileSizeKB} KB)`);
+    console.log('🎉 建置完成！');
 }
 
 buildPriceSnapshot().catch(console.error);

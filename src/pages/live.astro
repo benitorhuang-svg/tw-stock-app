@@ -1,169 +1,112 @@
 ---
 /**
- * live.astro — Live Market Data via Client-Side Polling
- * Independent from backend Node.js (Suitable for GitHub Pages / PWA)
+ * live.astro — Momentum_Nexus (FORCE_FIELD) Terminal
+ * High-fidelity real-time data orchestration with modular architecture.
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
 import LiveFilterPanel from '../components/organisms/LiveFilterPanel.astro';
 import LiveControlPanel from '../components/organisms/LiveControlPanel.astro';
+import LiveDataTable from '../components/organisms/LiveDataTable.astro';
 import SyncHourglass from '../components/atoms/SyncHourglass.astro';
 ---
 
-<MainTerminal title="LIVE 即時行情" fullWidth>
+<MainTerminal title="Momentum_Nexus (FORCE_FIELD)" fullWidth>
     <div slot="header-actions" class="flex items-center justify-center mr-2 gap-2">
-        <div class="flex items-center gap-1.5 font-mono text-text-muted shrink-0 mr-1">
-            <span class="opacity-40 text-[9px] hidden sm:inline uppercase">Sync:</span>
-            <span
-                id="last-update-time"
-                class="text-text-primary tracking-widest font-bold text-[10px]">--:--:--</span
+        <div class="flex items-center gap-1.5 font-mono text-white/40 shrink-0 mr-1">
+            <span class="opacity-40 text-[9px] hidden sm:inline uppercase">Uplink_Sync:</span>
+            <span id="last-update-time" class="text-accent tracking-widest font-black text-[10px]"
+                >--:--:--</span
             >
         </div>
         <SyncHourglass size="small" />
     </div>
 
     <div class="h-full flex flex-col bg-base relative overflow-hidden">
-        <!-- Main Content -->
         <main class="flex-1 overflow-hidden p-4 lg:p-6 lg:pb-0 flex flex-col gap-4">
             <span id="live-indicator" class="hidden"></span>
-            <!-- Unified Dashboard Toolbar (Single Row) -->
-            <div
-                class="flex flex-wrap lg:flex-nowrap items-center gap-3 px-3 py-2 glass-card !bg-surface/5 !border-white/5 shadow-2xl shrink-0"
-            >
-                <!-- 1. Left: Filters -->
-                <LiveFilterPanel />
 
-                <!-- 2. Right: Breadth + Button -->
-                <div class="flex items-center justify-end gap-4 flex-1 min-w-0">
+            <!-- Dashboard Toolbar -->
+            <div
+                class="flex flex-wrap lg:flex-nowrap items-center gap-4 px-4 py-3 glass-card !bg-white/[0.02] !border-white/5 shadow-2xl shrink-0"
+            >
+                <LiveFilterPanel />
+                <div
+                    class="flex items-center justify-end gap-6 flex-1 min-w-0 border-l border-white/5 pl-4"
+                >
                     <LiveControlPanel />
                 </div>
             </div>
 
-            <!-- Data Table -->
+            <!-- Momentum Grid (Organism) -->
+            <LiveDataTable />
+
+            <!-- System Status Line -->
             <div
-                class="glass-card overflow-hidden flex-1 flex flex-col min-h-0 !border-white/5 !bg-surface/5 shadow-2xl"
+                class="flex items-center justify-between px-2 py-3 text-[8px] font-mono text-white/10 uppercase tracking-[0.2em]"
             >
-                <div class="overflow-y-auto overflow-x-auto custom-scrollbar flex-1 rounded-lg">
-                    <table class="w-full text-left border-collapse whitespace-nowrap">
-                        <thead
-                            class="sticky top-0 bg-surface/90 backdrop-blur-xl z-20 text-[10px] font-black text-white/40 uppercase border-b border-white/5"
-                        >
-                            <tr>
-                                <th
-                                    class="px-3 py-2 border-b border-border/50 cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="Code"
-                                    >標的 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                                <th
-                                    class="px-2 py-2 border-b border-border/50 text-right cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="ClosingPrice"
-                                    >成交 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                                <th
-                                    class="px-2 py-2 border-b border-border/50 text-right cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="ChangePct"
-                                    >幅度 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                                <th
-                                    class="px-2 py-2 border-b border-border/50 text-right cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="Change"
-                                    >漲跌 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                                <th
-                                    class="px-2 py-2 border-b border-border/50 text-right cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="OpeningPrice"
-                                    >開盤 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                                <th
-                                    class="px-2 py-2 border-b border-border/50 text-right cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="HighestPrice"
-                                    >最高 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                                <th
-                                    class="px-2 py-2 border-b border-border/50 text-right cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="LowestPrice"
-                                    >最低 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                                <th
-                                    class="px-2 py-2 border-b border-border/50 text-right cursor-pointer hover:text-accent sortable select-none"
-                                    data-sort="TradeVolume"
-                                    >成交量 <span class="sort-icon ml-1 opacity-50">↕</span></th
-                                >
-                            </tr>
-                        </thead>
-                        <tbody
-                            id="live-table-body"
-                            class="divide-y divide-border/30 text-xs font-mono"
-                        >
-                            <!-- Rows injected by JS -->
-                            <tr class="text-center"
-                                ><td colspan="8" class="py-12 text-text-muted"
-                                    >點擊「開始連線」以獲取即時資料</td
-                                ></tr
-                            >
-                        </tbody>
-                    </table>
+                <div>Session_ID: {Math.random().toString(36).substring(7).toUpperCase()}</div>
+                <div class="flex items-center gap-4">
+                    <span>Frame_Rate: 60FPS</span>
+                    <span class="text-accent/40">Data_Source: TWSE_Realtime_Nexus</span>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+        // ═══ Forensic Momentum Engine ═══
         let pollInterval: any = null;
 
-        // Cleanup interval when navigating away
         document.addEventListener('astro:before-preparation', () => {
             if (pollInterval) clearInterval(pollInterval);
         });
 
-        // Initialize on page load
         document.addEventListener('astro:page-load', () => {
             let isPolling = false;
 
-            // Accordion Logic
             async function openIntradayAccordion(
                 trElement: HTMLElement,
                 code: string,
                 name: string,
                 prevClose: number
             ) {
-                // Remove existing
                 const existing = document.querySelector('.chart-accordion-row');
                 if (existing) {
                     const isSame = existing.previousElementSibling === trElement;
                     existing.remove();
-                    // Also reset class of previous opened
                     document
                         .querySelectorAll('.open-accordion')
                         .forEach(el =>
                             el.classList.remove(
                                 'open-accordion',
-                                'bg-glass-hover',
+                                'bg-accent/[0.05]',
                                 'border-accent/40'
                             )
                         );
-                    if (isSame) return; // Just closing
+                    if (isSame) return;
                 }
 
-                // Create new row
-                trElement.classList.add('open-accordion', 'bg-glass-hover', 'border-accent/40');
+                trElement.classList.add('open-accordion', 'bg-accent/[0.05]', 'border-accent/40');
                 const accordionTr = document.createElement('tr');
-                accordionTr.className = 'chart-accordion-row bg-surface/30';
+                accordionTr.className = 'chart-accordion-row bg-white/[0.01]';
                 accordionTr.innerHTML = `
-                    <td colspan="3" class="p-0 border-r border-border/20 border-dashed align-top relative">
-                        <!-- Connecting Line visual -->
+                    <td colspan="3" class="p-0 border-r border-white/5 border-dashed align-top relative">
                         <div class="absolute right-0 top-0 bottom-0 w-px bg-accent/20"></div>
-                        <div class="p-4 pl-6 text-xs text-text-muted opacity-80 leading-relaxed font-sans">
-                            <strong class="text-text-primary text-sm tracking-widest font-bold">${name}</strong> (${code})<br/><br/>
-                            點擊即時擷取個股當日盤中每分鐘價格變化。<br/>
-                            使用 <span class="text-accent font-mono text-[10px]">Yahoo Finance</span> 資料代理。
+                        <div class="p-6 pl-8 text-[11px] text-white/40 leading-relaxed font-mono">
+                            <strong class="text-accent text-sm tracking-widest font-black">${name}</strong> <span class="opacity-20">(${code})</span><br/><br/>
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="w-1 h-1 rounded-full bg-accent animate-pulse"></div>
+                                <span>Establishing Intraday Stream...</span>
+                            </div>
+                            Tracing per-minute price dynamics via <span class="text-accent/60">Y-Forensic API</span>.
                         </div>
                     </td>
-                    <td colspan="6" class="p-4 relative h-[250px] align-top bg-gradient-to-br from-transparent to-surface/40">
-                        <div id="acc-loading" class="absolute inset-4 flex flex-col items-center justify-center bg-base/80 z-10 backdrop-blur-sm rounded-lg">
+                    <td colspan="5" class="p-4 relative h-[250px] align-top bg-gradient-to-br from-transparent to-accent/[0.02]">
+                        <div id="acc-loading" class="absolute inset-4 flex flex-col items-center justify-center bg-black/80 z-10 backdrop-blur-sm rounded-xl">
                             <div class="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin mb-2"></div>
-                            <span class="text-[10px] text-accent tracking-widest font-mono">LOADING YAHOO CHART...</span>
+                            <span class="text-[9px] text-accent tracking-widest font-black uppercase">Intercepting_Data...</span>
                         </div>
-                        <div id="acc-error" class="hidden absolute inset-4 flex flex-col items-center justify-center bg-surface/90 z-10 text-bearish text-xs font-mono border border-bearish/30 p-4 text-center rounded-lg"></div>
+                        <div id="acc-error" class="hidden absolute inset-4 flex flex-col items-center justify-center bg-red-950/20 z-10 text-bearish text-[10px] font-mono border border-bearish/30 p-4 text-center rounded-xl uppercase tracking-widest"></div>
                         <svg id="acc-svg" class="w-full h-full overflow-visible" viewBox="0 0 600 220" preserveAspectRatio="none"></svg>
                     </td>
                 `;
@@ -177,27 +120,22 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
                     const res = await fetch(`/api/intraday?symbol=${code}`);
                     const json = await res.json();
                     if (json.status !== 'success')
-                        throw new Error(json.message || 'API Proxy Error');
+                        throw new Error(json.message || 'ENGINE_UPLINK_FAILURE');
 
                     const data = json.data;
-                    if (!data || !data.length) throw new Error('昨日至今無交易紀錄');
+                    if (!data || !data.length) throw new Error('NO_MARKET_ACTIVITY_DETECTED');
 
-                    // Sync the latest price with our real-time table (which may be seconds ahead of Yahoo)
                     const tablePriceStr = trElement
                         .querySelector('.cell-close')
                         ?.textContent?.trim();
                     if (tablePriceStr) {
                         const tablePrice = parseFloat(tablePriceStr);
-                        if (!isNaN(tablePrice)) {
-                            data[data.length - 1].price = tablePrice;
-                        }
+                        if (!isNaN(tablePrice)) data[data.length - 1].price = tablePrice;
                     }
                     const currentPrice = data[data.length - 1].price;
 
-                    // Render SVG Chart Fixed Timeline
-                    const w = 600;
-                    const h = 200; // Leave 20px bottom for x-axis labels
-
+                    const w = 600,
+                        h = 200;
                     const firstDate = new Date(data[0].time);
                     const startMs = new Date(
                         firstDate.getFullYear(),
@@ -208,26 +146,23 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
                         0
                     ).getTime();
                     const endMs = startMs + 4.5 * 60 * 60 * 1000;
-                    const rangeMs = endMs - startMs; // 270 minutes
+                    const rangeMs = endMs - startMs;
 
                     const prices = data.map((d: any) => d.price);
                     const minP = Math.min(...prices, prevClose, currentPrice);
                     const maxP = Math.max(...prices, prevClose, currentPrice);
                     const range = Math.max(maxP - minP, 0.01);
-                    const chartMin = minP - range * 0.1;
-                    const chartMax = maxP + range * 0.1;
-                    const chartRange = chartMax - chartMin;
+                    const chartMin = minP - range * 0.1,
+                        chartMax = maxP + range * 0.1,
+                        chartRange = chartMax - chartMin;
 
-                    let pathD = '';
-                    let areaD = '';
-
+                    let pathD = '',
+                        areaD = '';
                     data.forEach((d: any, i: number) => {
                         let x = ((d.time - startMs) / rangeMs) * w;
                         if (x < 0) x = 0;
                         if (x > w) x = w;
-
                         const y = h - ((d.price - chartMin) / chartRange) * h;
-
                         if (i === 0) {
                             pathD += `M${x},${y} `;
                             areaD += `M${x},${h} L${x},${y} `;
@@ -235,81 +170,45 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
                             pathD += `L${x},${y} `;
                             areaD += `L${x},${y} `;
                         }
-
-                        if (i === data.length - 1) {
-                            areaD += `L${x},${h} Z`;
-                        }
+                        if (i === data.length - 1) areaD += `L${x},${h} Z`;
                     });
 
                     const prevY = h - ((prevClose - chartMin) / chartRange) * h;
-                    const isBullish = currentPrice >= prevClose;
-                    const strokeColor = isBullish ? '#ef4444' : '#22c55e';
-                    const fillGradient = isBullish ? 'url(#gradBull)' : 'url(#gradBear)';
+                    const strokeColor = currentPrice >= prevClose ? '#ef4444' : '#22c55e';
+                    const fillGradient =
+                        currentPrice >= prevClose ? 'url(#gradBull)' : 'url(#gradBear)';
 
-                    // Vertical Timelines
                     const timelines = [0, 60, 120, 180, 240, 270]
                         .map(mins => {
                             const lx = (mins / 270) * w;
-                            const hr = Math.floor(9 + mins / 60);
-                            const mn = mins % 60;
+                            const hr = Math.floor(9 + mins / 60),
+                                mn = mins % 60;
                             const tStr = `${hr.toString().padStart(2, '0')}:${mn.toString().padStart(2, '0')}`;
-                            let anchor = 'middle';
-                            if (mins === 0) anchor = 'start';
-                            if (mins === 270) anchor = 'end';
-                            return `<line x1="${lx}" y1="0" x2="${lx}" y2="${h}" stroke="#ffffff" stroke-opacity="0.05" stroke-dasharray="2 2" />
-                                <text x="${lx}" y="${h + 15}" fill="#ffffff" fill-opacity="0.3" font-size="9" font-family="monospace" text-anchor="${anchor}">${tStr}</text>`;
+                            return `<line x1="${lx}" y1="0" x2="${lx}" y2="${h}" stroke="#ffffff" stroke-opacity="0.05" stroke-dasharray="2 2" /><text x="${lx}" y="${h + 15}" fill="#ffffff" fill-opacity="0.3" font-size="8" font-family="monospace" text-anchor="${mins === 0 ? 'start' : mins === 270 ? 'end' : 'middle'}">${tStr}</text>`;
                         })
                         .join('');
 
                     if (svgEl) {
-                        const pulseCx = ((data[data.length - 1].time - startMs) / rangeMs) * w;
-                        const pulseCy = h - ((currentPrice - chartMin) / chartRange) * h;
-
+                        const pulseCx = ((data[data.length - 1].time - startMs) / rangeMs) * w,
+                            pulseCy = h - ((currentPrice - chartMin) / chartRange) * h;
                         svgEl.innerHTML = `
                             <defs>
-                                <linearGradient id="gradBull" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#ef4444" stop-opacity="0.25" />
-                                    <stop offset="100%" stop-color="#ef4444" stop-opacity="0.0" />
-                                </linearGradient>
-                                <linearGradient id="gradBear" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#22c55e" stop-opacity="0.25" />
-                                    <stop offset="100%" stop-color="#22c55e" stop-opacity="0.0" />
-                                </linearGradient>
+                                <linearGradient id="gradBull" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ef4444" stop-opacity="0.2" /><stop offset="100%" stop-color="#ef4444" stop-opacity="0" /></linearGradient>
+                                <linearGradient id="gradBear" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity="0.2" /><stop offset="100%" stop-color="#22c55e" stop-opacity="0" /></linearGradient>
                             </defs>
-                            
                             ${timelines}
-
-                            <!-- Reference Line -->
-                            <line x1="0" y1="${prevY}" x2="${w}" y2="${prevY}" stroke="#ffffff" stroke-opacity="0.25" stroke-dasharray="5 5" stroke-width="1.5" />
-                            <text x="5" y="${prevY - 5}" fill="#ffffff" fill-opacity="0.6" font-size="10" font-family="monospace">昨收 ${prevClose.toFixed(2)}</text>
-                            
-                            <!-- Max/Min Texts -->
-                            <text x="${w - 5}" y="${12}" fill="#ffffff" fill-opacity="0.5" font-size="10" font-family="monospace" text-anchor="end">最高 ${maxP.toFixed(2)}</text>
-                            <text x="${w - 5}" y="${h - 5}" fill="#ffffff" fill-opacity="0.5" font-size="10" font-family="monospace" text-anchor="end">最低 ${minP.toFixed(2)}</text>
-
-                            <!-- Area Fill -->
-                            <path d="${areaD}" fill="${fillGradient}" />
-                            
-                            <!-- Main Line -->
-                            <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" />
-                            
-                            <!-- Current Price Horizontal Line & Tag -->
-                            <line x1="${Math.min(w, pulseCx)}" y1="${pulseCy}" x2="${w}" y2="${pulseCy}" stroke="${strokeColor}" stroke-opacity="0.6" stroke-dasharray="3 3" stroke-width="1" />
-                            <rect x="${w - 50}" y="${pulseCy - 10}" width="50" height="20" fill="${strokeColor}" rx="4" />
-                            <text x="${w - 5}" y="${pulseCy + 3}" fill="#ffffff" font-weight="bold" font-size="10" font-family="monospace" text-anchor="end">${currentPrice.toFixed(2)}</text>
-
-                            <!-- Pulse Dot at End -->
+                            <line x1="0" y1="${prevY}" x2="${w}" y2="${prevY}" stroke="#ffffff" stroke-opacity="0.2" stroke-dasharray="4 4" />
+                            <text x="5" y="${prevY - 5}" fill="#ffffff" fill-opacity="0.4" font-size="9" font-family="monospace">PREV_CLOSE ${prevClose.toFixed(2)}</text>
+                            <path d="${areaD}" fill="${fillGradient}" /><path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linejoin="round" />
+                            <rect x="${w - 45}" y="${pulseCy - 10}" width="45" height="20" fill="${strokeColor}" rx="4" /><text x="${w - 5}" y="${pulseCy + 4}" fill="#ffffff" font-weight="black" font-size="10" font-family="monospace" text-anchor="end">${currentPrice.toFixed(2)}</text>
                             <circle cx="${Math.min(w, pulseCx)}" cy="${pulseCy}" r="3" fill="${strokeColor}" />
-                            <circle cx="${Math.min(w, pulseCx)}" cy="${pulseCy}" r="8" fill="${strokeColor}" opacity="0.3">
-                                <animate attributeName="r" values="3;10;3" dur="2s" repeatCount="indefinite" />
-                                <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite" />
-                            </circle>
+                            <circle cx="${Math.min(w, pulseCx)}" cy="${pulseCy}" r="8" fill="${strokeColor}" opacity="0.3"><animate attributeName="r" values="3;12;3" dur="2s" repeatCount="indefinite" /><animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite" /></circle>
                         `;
                     }
                     if (loadingEl) loadingEl.classList.add('hidden');
                 } catch (e: any) {
                     if (errorEl) {
-                        errorEl.innerHTML = `<strong>無法顯示線圖</strong><br/><span class="opacity-70 mt-2">${e.message}</span>`;
+                        errorEl.innerHTML = `<strong>UPLINK_INTERRUPTED</strong><br/><span class="opacity-50 mt-2">${e.message}</span>`;
                         errorEl.classList.remove('hidden');
                     }
                     if (loadingEl) loadingEl.classList.add('hidden');
@@ -317,689 +216,410 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
             }
 
             const toggleBtn = document.getElementById('toggle-polling-btn');
-            const indicator = document.getElementById('live-indicator');
             const updateTimeEl = document.getElementById('last-update-time');
             const tbody = document.getElementById('live-table-body');
-
             const searchInput = document.getElementById('live-search-input') as HTMLInputElement;
 
-            // If we are not on the live page, don't run
             if (!toggleBtn) return;
 
-            let retryTimeout: any = null;
-            let currentData: any[] = [];
-            let currentSortCol = 'TradeVolume';
-            let currentSortAsc = false;
-            let searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            let retryTimeout: any = null,
+                currentData: any[] = [],
+                currentSortCol = 'TradeVolume',
+                currentSortAsc = false,
+                searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-            if (searchInput) {
+            if (searchInput)
                 searchInput.addEventListener('input', e => {
                     searchQuery = (e.target as HTMLInputElement).value;
                     renderData();
                 });
-            }
 
-            const filterStarred = document.getElementById('filter-starred') as HTMLInputElement;
-            const filterSector = document.getElementById('filter-sector') as HTMLSelectElement;
-            const filterTrend = document.getElementById('filter-trend') as HTMLInputElement;
-            const filterVolume = document.getElementById('filter-volume') as HTMLInputElement;
-            const filterMarket = document.getElementById('filter-market') as HTMLSelectElement;
-            const filterPrice = document.getElementById('filter-price') as HTMLSelectElement;
-            const filterReset = document.getElementById('live-filter-reset');
+            const filters = [
+                'filter-starred',
+                'filter-sector',
+                'filter-trend',
+                'filter-volume',
+                'filter-market',
+                'filter-price',
+            ].map(id => document.getElementById(id));
+            filters.forEach(el => el?.addEventListener('input', renderData));
+            filters.forEach(el => el?.addEventListener('change', renderData));
 
-            const filteredCount = document.getElementById('filtered-count');
-            const volDisplay = document.getElementById('vol-display');
-            const trendDisplay = document.getElementById('trend-display');
-
-            if (filterVolume) {
-                filterVolume.addEventListener('input', renderData);
-            }
-
-            [filterStarred, filterSector, filterTrend, filterMarket, filterPrice].forEach(el => {
-                if (el) el.addEventListener('change', renderData);
+            document.getElementById('live-filter-reset')?.addEventListener('click', () => {
+                if (searchInput) searchInput.value = '';
+                filters.forEach(el => {
+                    if (el instanceof HTMLSelectElement) el.value = '';
+                    else if (el instanceof HTMLInputElement) {
+                        if (el.type === 'checkbox') el.checked = false;
+                        else el.value = '0';
+                    }
+                });
+                const trendDisp = document.getElementById('trend-display'),
+                    volDisp = document.getElementById('vol-display'),
+                    starIcon = document.querySelector('.star-toggle-icon');
+                if (trendDisp) {
+                    trendDisp.textContent = '0%';
+                    trendDisp.className =
+                        'text-[9px] font-mono font-black text-accent leading-none';
+                }
+                if (volDisp) volDisp.textContent = '0';
+                if (starIcon) starIcon.textContent = '☆';
+                searchQuery = '';
+                renderData();
             });
 
-            if (filterTrend) {
-                filterTrend.addEventListener('input', renderData);
-            }
-
-            if (filterReset) {
-                filterReset.addEventListener('click', () => {
-                    if (searchInput) searchInput.value = '';
-                    if (filterMarket) filterMarket.value = '';
-                    if (filterSector) filterSector.value = '';
-                    if (filterPrice) filterPrice.value = '';
-                    if (filterTrend) {
-                        filterTrend.value = '0';
-                        if (trendDisplay) {
-                            trendDisplay.textContent = '0%';
-                            trendDisplay.classList.remove('text-bullish', 'text-bearish');
-                            trendDisplay.classList.add('text-accent');
-                        }
-                    }
-                    if (filterVolume) {
-                        filterVolume.value = '0';
-                        if (volDisplay) volDisplay.textContent = '0';
-                    }
-                    if (filterStarred) {
-                        filterStarred.checked = false;
-                        const starIcon = document.querySelector('.star-toggle-icon');
-                        if (starIcon) starIcon.textContent = '☆';
-                    }
-
-                    searchQuery = '';
-
-                    // Add a tiny pulse animation to the reset button
-                    filterReset.classList.add('scale-90');
-                    setTimeout(() => filterReset?.classList.remove('scale-90'), 100);
-
-                    renderData();
-                });
-            }
-
-            // Simple sector classifier based on symbol prefix
-            function getSectorClient(symbol: string) {
-                const prefix = symbol.substring(0, 2);
-                if (['2330', '2454', '3034'].includes(symbol)) return 'semiconductor';
-                if (['2317', '2308', '2382'].includes(symbol)) return 'electronics';
-                if (['2603', '2609'].includes(symbol)) return 'shipping';
-                if (['00', '01', '02', '03', '04', '05', '06', '07', '08', '09'].includes(prefix))
-                    return 'etf';
-                if (
-                    prefix === '23' ||
-                    prefix === '35' ||
-                    prefix === '49' ||
-                    prefix === '52' ||
-                    prefix === '62' ||
-                    prefix === '80'
-                )
-                    return 'semiconductor';
-                if (prefix === '24' || prefix === '33') return 'computer';
-                if (prefix === '31' || prefix === '36') return 'communication';
-                if (prefix === '34') return 'optoelectronics';
-                if (prefix === '28' || prefix === '58' || prefix === '60') return 'finance';
-                if (prefix === '26' || prefix === '56') return 'shipping';
-                if (prefix === '20' || ['9958', '9930'].includes(symbol)) return 'steel';
-                if (
-                    prefix === '11' ||
-                    prefix === '18' ||
-                    prefix === '25' ||
-                    prefix === '55' ||
-                    ['9940', '9945', '9946'].includes(symbol)
-                )
-                    return 'construction';
-                if (
-                    prefix === '15' ||
-                    prefix === '16' ||
-                    prefix === '30' ||
-                    prefix === '32' ||
-                    prefix === '45' ||
-                    prefix === '53' ||
-                    prefix === '61' ||
-                    prefix === '81'
-                )
-                    return 'electronics';
-                return 'other';
-            }
-
-            document.querySelectorAll('th.sortable').forEach(th => {
+            document.querySelectorAll('th.sortable').forEach(th =>
                 th.addEventListener('click', () => {
                     const sortCol = th.getAttribute('data-sort');
                     if (!sortCol) return;
-
-                    if (currentSortCol === sortCol) {
-                        currentSortAsc = !currentSortAsc;
-                    } else {
+                    if (currentSortCol === sortCol) currentSortAsc = !currentSortAsc;
+                    else {
                         currentSortCol = sortCol;
                         currentSortAsc = false;
                     }
                     renderData();
-                });
+                })
+            );
+
+            tbody?.addEventListener('click', e => {
+                const target = e.target as HTMLElement;
+                const starBtn = target.closest('.watchlist-toggle-btn') as HTMLElement;
+                if (starBtn) {
+                    e.stopPropagation();
+                    const code = starBtn.dataset.code;
+                    if (!code) return;
+                    let wl = JSON.parse(localStorage.getItem('watchlist') || '[]');
+                    wl = wl.includes(code) ? wl.filter((c: any) => c !== code) : [...wl, code];
+                    localStorage.setItem('watchlist', JSON.stringify(wl));
+                    renderData();
+                    return;
+                }
+                const tr = target.closest('tr[data-code]') as HTMLElement;
+                if (!tr || target.closest('.cell-info')) return;
+                const code = tr.getAttribute('data-code'),
+                    name = tr.getAttribute('data-name'),
+                    prevC = parseFloat(tr.getAttribute('data-prev') || '0');
+                if (code && name) openIntradayAccordion(tr, code, name, prevC);
             });
 
-            if (tbody) {
-                tbody.addEventListener('click', e => {
-                    const target = e.target as HTMLElement;
-
-                    // Watchlist Toggle
-                    const starBtn = target.closest('.watchlist-toggle-btn') as HTMLElement;
-                    if (starBtn) {
-                        e.stopPropagation();
-                        const codeToToggle = starBtn.dataset.code;
-                        if (!codeToToggle) return;
-
-                        let wlStr = localStorage.getItem('watchlist');
-                        let wl: string[] = wlStr ? JSON.parse(wlStr) : [];
-                        if (wl.includes(codeToToggle)) {
-                            wl = wl.filter(c => c !== codeToToggle);
-                        } else {
-                            wl.push(codeToToggle);
-                        }
-                        localStorage.setItem('watchlist', JSON.stringify(wl));
-                        renderData(); // Re-render to sort & update star
-                        return;
-                    }
-
-                    const tr = target.closest('tr[data-code]') as HTMLElement;
-                    if (!tr || target.closest('.cell-info')) return; // Avoid opening accordion if clicking directly on the watchlist box
-
-                    const code = tr.getAttribute('data-code');
-                    const name = tr.getAttribute('data-name');
-                    const prevC = parseFloat(tr.getAttribute('data-prev') || '0');
-                    if (code && name) {
-                        openIntradayAccordion(tr, code, name, prevC);
-                    }
-                });
-            }
-
             async function fetchLiveData() {
-                if (!indicator || !tbody) return;
+                if (!tbody) return;
                 try {
-                    // Clear any pending retry when manually called
                     if (retryTimeout) clearTimeout(retryTimeout);
+                    const res = await fetch('/api/live');
+                    if (!res.ok) throw new Error('DATA_SOURCE_OFFLINE');
+                    const result = await res.json();
+                    if (result.status === 'error') throw new Error(result.message);
 
-                    if (currentData.length === 0) {
-                        tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-12 text-text-muted animate-pulse">連線取得資料中...</td></tr>`;
-                    }
-
-                    // Fetch from our local Astro API to bypass CORS and rate limits
-                    const response = await fetch('/api/live');
-                    if (!response.ok) throw new Error('API 伺服器無回應');
-
-                    const result = await response.json();
-
-                    if (result.status === 'error') {
-                        throw new Error(result.message || '證交所連接被拒絕');
-                    }
-
-                    currentData = result.data.map((stock: any) => {
-                        const closePrice = parseFloat(stock.ClosingPrice || 0);
-                        const change = parseFloat(stock.Change || 0);
-                        const prevClose = closePrice > 0 ? closePrice - change : 0;
-                        const changePct = prevClose > 0 ? (change / prevClose) * 100 : 0;
-                        const vol = Math.round(parseFloat(stock.TradeVolume || 0) / 1000);
-                        const sector = getSectorClient(stock.Code);
-
+                    currentData = result.data.map((s: any) => {
+                        const close = parseFloat(s.ClosingPrice || 0),
+                            change = parseFloat(s.Change || 0),
+                            prev = close > 0 ? close - change : 0;
                         return {
-                            ...stock,
-                            _closePrice: closePrice,
+                            ...s,
+                            _closePrice: close,
                             _change: change,
-                            _changePct: changePct,
-                            _vol: vol,
-                            _open: parseFloat(stock.OpeningPrice || 0),
-                            _high: parseFloat(stock.HighestPrice || 0),
-                            _low: parseFloat(stock.LowestPrice || 0),
-                            _sector: sector,
+                            _changePct: prev > 0 ? (change / prev) * 100 : 0,
+                            _vol: Math.round(parseFloat(s.TradeVolume || 0) / 1000),
+                            _open: parseFloat(s.OpeningPrice || 0),
+                            _high: parseFloat(s.HighestPrice || 0),
+                            _low: parseFloat(s.LowestPrice || 0),
                         };
                     });
-
                     renderData();
-
-                    // Time is now updated at the start of fetch/render for better perceived sync
-                } catch (error) {
-                    console.error('Fetch live data failed:', error);
-
-                    let countdown = 15;
-                    const updateCountdown = () => {
-                        if (countdown <= 0) {
+                } catch (error: any) {
+                    console.error('Buffer fetch failed:', error);
+                    let cd = 15;
+                    const count = () => {
+                        if (cd <= 0) {
                             if (isPolling) fetchLiveData();
                             return;
                         }
-                        if (tbody) {
-                            tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-8 text-bearish italic">連線失敗，將於 ${countdown} 秒後自動重試...</td></tr>`;
-                        }
-                        countdown--;
-                        if (isPolling) retryTimeout = setTimeout(updateCountdown, 1000);
+                        tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-12 text-bearish font-mono text-[10px] tracking-widest uppercase italic">Uplink_Lost. Reconnecting in ${cd}s...</td></tr>`;
+                        cd--;
+                        if (isPolling) retryTimeout = setTimeout(count, 1000);
                     };
-                    updateCountdown();
+                    count();
                 }
             }
 
             function renderData() {
                 if (!tbody) return;
+                let wl = JSON.parse(localStorage.getItem('watchlist') || '[]');
+                const tsSearch = searchQuery.toLowerCase(),
+                    tsSector =
+                        (document.getElementById('filter-sector') as HTMLSelectElement)?.value ||
+                        '',
+                    tsTrend =
+                        (document.getElementById('filter-trend') as HTMLInputElement)?.value || '0',
+                    tsVol = parseInt(
+                        (document.getElementById('filter-volume') as HTMLInputElement)?.value ||
+                            '0',
+                        10
+                    ),
+                    tsStarred = (document.getElementById('filter-starred') as HTMLInputElement)
+                        ?.checked,
+                    tsMarket =
+                        (document.getElementById('filter-market') as HTMLSelectElement)?.value ||
+                        '',
+                    tsPriceRange =
+                        (document.getElementById('filter-price') as HTMLSelectElement)?.value || '';
 
-                // 1. Filter
-                let filtered = currentData;
-
-                let wlStr = localStorage.getItem('watchlist');
-                let watchlist: string[] = wlStr ? JSON.parse(wlStr) : [];
-
-                const tsSearch = searchQuery.toLowerCase();
-                const tsSector = filterSector?.value || '';
-                const tsTrend = filterTrend?.value || '0';
-                const tsVol = parseInt(filterVolume?.value || '0', 10);
-                const tsStarred = filterStarred?.checked;
-                const tsMarket =
-                    (document.getElementById('filter-market') as HTMLSelectElement)?.value || '';
-                const tsPriceRange =
-                    (document.getElementById('filter-price') as HTMLSelectElement)?.value || '';
-
-                filtered = filtered.filter(s => {
+                let filtered = currentData.filter(s => {
                     if (tsMarket && s._market !== tsMarket.toUpperCase()) return false;
-
                     if (
                         tsSearch &&
                         !s.Code.toLowerCase().includes(tsSearch) &&
                         !s.Name.toLowerCase().includes(tsSearch)
                     )
                         return false;
-
-                    if (tsStarred && !watchlist.includes(s.Code)) return false;
-
-                    if (tsSector && s._sector !== tsSector) return false;
-
+                    if (tsStarred && !wl.includes(s.Code)) return false;
                     if (tsPriceRange) {
                         const [min, max] = tsPriceRange.split('-').map(Number);
                         if (s._closePrice < min || s._closePrice > max) return false;
                     }
-
                     if (tsVol > 0 && s._vol < tsVol) return false;
-
                     if (tsTrend !== '0') {
-                        const trendVal = parseFloat(tsTrend);
-                        if (trendVal > 0 && s._changePct < trendVal) return false;
-                        if (trendVal < 0 && s._changePct > trendVal) return false;
+                        const t = parseFloat(tsTrend);
+                        if ((t > 0 && s._changePct < t) || (t < 0 && s._changePct > t))
+                            return false;
                     }
                     return true;
                 });
 
-                if (filteredCount) {
-                    filteredCount.textContent = `${filtered.length}`;
-                }
-
-                // 2. Sort
+                const filteredCount = document.getElementById('filtered-count');
+                if (filteredCount) filteredCount.textContent = `${filtered.length}`;
 
                 filtered.sort((a, b) => {
-                    // Priority to starred (watchlist) stocks
-                    const aStar = watchlist.includes(a.Code);
-                    const bStar = watchlist.includes(b.Code);
-                    if (aStar && !bStar) return -1;
-                    if (!aStar && bStar) return 1;
-
-                    let valA, valB;
-                    switch (currentSortCol) {
-                        case 'Code':
-                            valA = a.Code;
-                            valB = b.Code;
-                            break;
-                        case 'Name':
-                            valA = a.Name;
-                            valB = b.Name;
-                            break;
-                        case 'ClosingPrice':
-                            valA = a._closePrice;
-                            valB = b._closePrice;
-                            break;
-                        case 'ChangePct':
-                            valA = a._changePct;
-                            valB = b._changePct;
-                            break;
-                        case 'Change':
-                            valA = a._change;
-                            valB = b._change;
-                            break;
-                        case 'OpeningPrice':
-                            valA = a._open;
-                            valB = b._open;
-                            break;
-                        case 'HighestPrice':
-                            valA = a._high;
-                            valB = b._high;
-                            break;
-                        case 'LowestPrice':
-                            valA = a._low;
-                            valB = b._low;
-                            break;
-                        case 'TradeVolume':
-                            valA = a._vol;
-                            valB = b._vol;
-                            break;
-                        default:
-                            valA = a._vol;
-                            valB = b._vol;
-                            break;
+                    const as = wl.includes(a.Code),
+                        bs = wl.includes(b.Code);
+                    if (as !== bs) return as ? -1 : 1;
+                    let va = (a as any)[`_${currentSortCol.replace('_', '')}`] || a[currentSortCol],
+                        vb = (b as any)[`_${currentSortCol.replace('_', '')}`] || b[currentSortCol];
+                    if (currentSortCol === 'ClosingPrice') {
+                        va = a._closePrice;
+                        vb = b._closePrice;
                     }
-
-                    if (typeof valA === 'number' && isNaN(valA)) valA = 0;
-                    if (typeof valB === 'number' && isNaN(valB)) valB = 0;
-
-                    if (typeof valA === 'string' && typeof valB === 'string') {
-                        return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                    if (currentSortCol === 'ChangePct') {
+                        va = a._changePct;
+                        vb = b._changePct;
                     }
-                    return currentSortAsc ? valA - valB : valB - valA;
+                    if (currentSortCol === 'Change') {
+                        va = a._change;
+                        vb = b._change;
+                    }
+                    if (currentSortCol === 'TradeVolume') {
+                        va = a._vol;
+                        vb = b._vol;
+                    }
+                    if (typeof va === 'string')
+                        return currentSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+                    return currentSortAsc ? va - vb : vb - va;
                 });
 
-                // Update Sort Icons
                 document.querySelectorAll('th.sortable').forEach(th => {
                     const icon = th.querySelector('.sort-icon');
                     if (icon) {
                         if (th.getAttribute('data-sort') === currentSortCol) {
                             icon.textContent = currentSortAsc ? '▲' : '▼';
-                            icon.classList.remove('opacity-50');
-                            icon.classList.add('text-accent');
+                            icon.className = 'sort-icon text-accent font-black transition-all';
                         } else {
                             icon.textContent = '↕';
-                            icon.classList.add('opacity-50');
-                            icon.classList.remove('text-accent');
+                            icon.className = 'sort-icon opacity-50';
                         }
                     }
                 });
 
-                const topPicks = filtered.slice(0, 300);
-
-                if (topPicks.length === 0) {
-                    tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-12 text-text-muted">找不到符合「${searchQuery}」的項目</td></tr>`;
+                const top = filtered.slice(0, 300);
+                if (top.length === 0) {
+                    tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-24 text-white/20 font-mono text-[9px] tracking-widest uppercase">Zero_Signals_Detected</td></tr>`;
                     return;
                 }
 
-                if (tbody) {
-                    // DOM Diffing to prevent flash and preserve open accordions
-                    const existingRows = new Map();
-                    Array.from(tbody.children).forEach(tr => {
-                        if (tr.hasAttribute('data-code')) {
-                            existingRows.set(tr.getAttribute('data-code'), tr);
-                        } else if (tr.classList.contains('chart-accordion-row')) {
-                            const prevCode = tr.previousElementSibling?.getAttribute('data-code');
-                            if (prevCode) existingRows.set(prevCode + '-acc', tr);
-                        } else {
-                            // Remove placeholder/error rows immediately
-                            tr.remove();
-                        }
-                    });
+                const existing = new Map();
+                Array.from(tbody.children).forEach(tr => {
+                    if (tr.hasAttribute('data-code'))
+                        existing.set(tr.getAttribute('data-code'), tr);
+                    else if (tr.classList.contains('chart-accordion-row')) {
+                        const pc = tr.previousElementSibling?.getAttribute('data-code');
+                        if (pc) existing.set(pc + '-acc', tr);
+                    } else tr.remove();
+                });
 
-                    let currentIndex = 0;
-                    topPicks.forEach(stock => {
-                        let tr = existingRows.get(stock.Code) as HTMLElement;
-                        if (!tr) {
-                            tr = document.createElement('tr');
-                            tr.className =
-                                'hover:bg-glass-hover transition-colors cursor-pointer group';
-                            tr.setAttribute('data-code', stock.Code);
-                            tr.setAttribute('data-name', stock.Name);
+                let cur = 0;
+                top.forEach(s => {
+                    let tr = existing.get(s.Code) as HTMLElement;
+                    if (!tr) {
+                        tr = document.createElement('tr');
+                        tr.className =
+                            'hover:bg-white/[0.04] transition-all cursor-pointer group border-b border-white/[0.02]';
+                        tr.setAttribute('data-code', s.Code);
+                        tr.setAttribute('data-name', s.Name);
+                        tr.innerHTML = `<td class="px-4 py-3 cell-info"><div class="flex items-center gap-3"><button class="watchlist-toggle-btn text-white/20 hover:text-accent transition-all" data-code="${s.Code}"><span class="text-xs star-icon">☆</span></button><div class="min-w-0"><div class="text-[12px] font-black text-white group-hover:text-accent transition-all truncate cell-name"></div><div class="text-[8px] font-mono text-white/20 tracking-widest cell-code"></div></div></div></td><td class="px-4 py-3 text-right cell-close text-[12px] font-mono"></td><td class="px-4 py-3 text-right cell-pct text-[12px] font-black font-mono"></td><td class="px-4 py-3 text-right cell-change text-[12px] font-bold font-mono"></td><td class="px-4 py-3 text-right opacity-30 cell-open text-[11px] font-mono"></td><td class="px-4 py-3 text-right opacity-30 cell-high text-[11px] font-mono"></td><td class="px-4 py-3 text-right opacity-30 cell-low text-[11px] font-mono"></td><td class="px-4 py-3 text-right text-white/30 cell-vol text-[12px] font-mono font-bold"></td>`;
+                    } else existing.delete(s.Code);
 
-                            tr.innerHTML = `
-                            <td class="px-3 py-2 cell-info min-w-[160px]">
-                                <div class="flex items-center gap-2">
-                                    <button class="watchlist-toggle-btn text-text-muted hover:text-accent p-0.5 transition-colors flex-shrink-0" data-code="${stock.Code}">
-                                        <span class="text-xs star-icon">☆</span>
-                                    </button>
-                                    <div class="min-w-0">
-                                        <div class="text-[13px] font-semibold text-text-primary group-hover:text-accent transition-colors truncate cell-name"></div>
-                                        <div class="text-[9px] font-mono text-text-muted opacity-60 cell-code"></div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-2 py-2 text-right cell-close text-[13px]"></td>
-                            <td class="px-2 py-2 text-right cell-pct text-[13px]"></td>
-                            <td class="px-2 py-2 text-right cell-change text-[13px]"></td>
-                            <td class="px-2 py-2 text-right opacity-60 cell-open text-[13px]"></td>
-                            <td class="px-2 py-2 text-right opacity-60 cell-high text-[13px]"></td>
-                            <td class="px-2 py-2 text-right opacity-60 cell-low text-[13px]"></td>
-                            <td class="px-2 py-2 text-right text-text-secondary cell-vol text-[13px]"></td>
-                        `;
-                        } else {
-                            existingRows.delete(stock.Code);
-                        }
+                    const color =
+                        s._change > 0
+                            ? 'text-bullish'
+                            : s._change < 0
+                              ? 'text-bearish'
+                              : 'text-white/40';
+                    const prev = s._closePrice > 0 ? (s._closePrice - s._change).toFixed(2) : '0';
+                    tr.setAttribute('data-prev', prev);
 
-                        let changeStr = stock.Change;
-                        let pctStr = '0.00%';
-                        let colorClass = 'text-text-secondary';
+                    if (tr.querySelector('.cell-code'))
+                        tr.querySelector('.cell-code')!.textContent = s.Code;
+                    if (tr.querySelector('.cell-name'))
+                        tr.querySelector('.cell-name')!.textContent = s.Name;
+                    const si = tr.querySelector('.star-icon');
+                    if (si) {
+                        const ist = wl.includes(s.Code);
+                        si.textContent = ist ? '★' : '☆';
+                        si.className = ist
+                            ? 'text-xs star-icon text-accent drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]'
+                            : 'text-xs star-icon';
+                    }
 
-                        if (stock._change > 0) {
-                            colorClass = 'text-bullish font-bold';
-                            pctStr = '+' + stock._changePct.toFixed(2) + '%';
-                            changeStr = '+' + stock.Change;
-                        } else if (stock._change < 0) {
-                            colorClass = 'text-bearish font-bold';
-                            pctStr = stock._changePct.toFixed(2) + '%';
-                        }
+                    const cc = tr.querySelector('.cell-close');
+                    if (cc) {
+                        cc.className = 'px-4 py-3 text-right cell-close ' + color;
+                        cc.textContent = s._closePrice.toFixed(2);
+                    }
+                    const cp = tr.querySelector('.cell-pct');
+                    if (cp) {
+                        cp.className = 'px-4 py-3 text-right cell-pct ' + color;
+                        cp.textContent = (s._change > 0 ? '+' : '') + s._changePct.toFixed(2) + '%';
+                    }
+                    const ch = tr.querySelector('.cell-change');
+                    if (ch) {
+                        ch.className = 'px-4 py-3 text-right cell-change ' + color;
+                        ch.textContent = (s._change > 0 ? '+' : '') + s.Change;
+                    }
+                    if (tr.querySelector('.cell-open'))
+                        tr.querySelector('.cell-open')!.textContent = s._open.toFixed(2);
+                    if (tr.querySelector('.cell-high'))
+                        tr.querySelector('.cell-high')!.textContent = s._high.toFixed(2);
+                    if (tr.querySelector('.cell-low'))
+                        tr.querySelector('.cell-low')!.textContent = s._low.toFixed(2);
+                    if (tr.querySelector('.cell-vol'))
+                        tr.querySelector('.cell-vol')!.textContent = s._vol.toLocaleString();
 
-                        const prevCloseStr =
-                            stock._closePrice > 0
-                                ? (stock._closePrice - stock._change).toFixed(2)
-                                : '0';
-                        tr.setAttribute('data-prev', prevCloseStr);
+                    if (tbody.children[cur] !== tr)
+                        tbody.insertBefore(tr, tbody.children[cur] || null);
+                    cur++;
+                    const acc = existing.get(s.Code + '-acc');
+                    if (acc) {
+                        if (tbody.children[cur] !== acc)
+                            tbody.insertBefore(acc as HTMLElement, tbody.children[cur] || null);
+                        existing.delete(s.Code + '-acc');
+                        cur++;
+                    }
+                });
+                existing.forEach(tr => (tr as HTMLElement).remove());
 
-                        if (tr.querySelector('.cell-code'))
-                            tr.querySelector('.cell-code')!.textContent = stock.Code;
-                        if (tr.querySelector('.cell-name'))
-                            tr.querySelector('.cell-name')!.textContent = stock.Name;
-
-                        const starIcon = tr.querySelector('.star-icon');
-                        if (starIcon) {
-                            const isStarred = watchlist.includes(stock.Code);
-                            starIcon.textContent = isStarred ? '★' : '☆';
-                            if (isStarred)
-                                starIcon.classList.add(
-                                    'text-accent',
-                                    'drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]'
-                                );
-                            else
-                                starIcon.classList.remove(
-                                    'text-accent',
-                                    'drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]'
-                                );
-                        }
-
-                        const cClose = tr.querySelector('.cell-close');
-                        if (cClose) {
-                            cClose.className = 'px-4 py-2 text-right cell-close ' + colorClass;
-                            cClose.textContent = stock._closePrice.toFixed(2);
-                        }
-
-                        const cPct = tr.querySelector('.cell-pct');
-                        if (cPct) {
-                            cPct.className = 'px-4 py-2 text-right cell-pct ' + colorClass;
-                            cPct.textContent = pctStr;
-                        }
-
-                        const cChange = tr.querySelector('.cell-change');
-                        if (cChange) {
-                            cChange.className = 'px-4 py-2 text-right cell-change ' + colorClass;
-                            cChange.textContent = changeStr;
-                        }
-
-                        if (tr.querySelector('.cell-open'))
-                            tr.querySelector('.cell-open')!.textContent = stock._open.toFixed(2);
-                        if (tr.querySelector('.cell-high'))
-                            tr.querySelector('.cell-high')!.textContent = stock._high.toFixed(2);
-                        if (tr.querySelector('.cell-low'))
-                            tr.querySelector('.cell-low')!.textContent = stock._low.toFixed(2);
-                        if (tr.querySelector('.cell-vol'))
-                            tr.querySelector('.cell-vol')!.textContent =
-                                stock._vol.toLocaleString();
-
-                        if (tbody.children[currentIndex] !== tr) {
-                            tbody.insertBefore(tr, tbody.children[currentIndex] || null);
-                        }
-                        currentIndex++;
-
-                        const acc = existingRows.get(stock.Code + '-acc');
-                        if (acc) {
-                            if (tbody.children[currentIndex] !== acc) {
-                                tbody.insertBefore(
-                                    acc as HTMLElement,
-                                    tbody.children[currentIndex] || null
-                                );
-                            }
-                            existingRows.delete(stock.Code + '-acc');
-                            currentIndex++;
-                        }
-                    });
-
-                    // Clean up remaining unmatched rows
-                    existingRows.forEach(tr => (tr as HTMLElement).remove());
-                }
-
-                // Calculate Top Summary Stats over the entire currentData array (not just filtered)
-                let up = 0;
-                let flat = 0;
-                let down = 0;
+                // Breadth
+                let up = 0,
+                    flat = 0,
+                    down = 0;
                 currentData.forEach(s => {
                     if (s._change > 0) up++;
                     else if (s._change < 0) down++;
                     else flat++;
                 });
-
-                const total = up + down + flat;
-                const ratioEl = document.getElementById('breadth-ratio');
-                const upEl = document.getElementById('breadth-up');
-                const downEl = document.getElementById('breadth-down');
-                const flatEl = document.getElementById('breadth-flat');
-
-                if (upEl) upEl.textContent = String(up);
-                if (downEl) downEl.textContent = String(down);
-                if (flatEl) flatEl.textContent = String(flat);
-                if (ratioEl) ratioEl.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
-
-                if (total > 0) {
-                    const barUp = document.getElementById('breadth-bar-up');
-                    const barDown = document.getElementById('breadth-bar-down');
-                    const barFlat = document.getElementById('breadth-bar-flat');
-
-                    const pUp = (up / total) * 100;
-                    const pDown = (down / total) * 100;
-                    const pFlat = (flat / total) * 100;
-
-                    if (barUp) barUp.style.width = pUp + '%';
-                    if (barDown) barDown.style.width = pDown + '%';
-                    if (barFlat) barFlat.style.width = pFlat + '%';
+                const tot = up + down + flat;
+                const rEl = document.getElementById('breadth-ratio'),
+                    uEl = document.getElementById('breadth-up'),
+                    dEl = document.getElementById('breadth-down'),
+                    fEl = document.getElementById('breadth-flat');
+                if (uEl) uEl.textContent = String(up);
+                if (dEl) dEl.textContent = String(down);
+                if (fEl) fEl.textContent = String(flat);
+                if (rEl) rEl.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
+                if (tot > 0) {
+                    const bU = document.getElementById('breadth-bar-up'),
+                        bD = document.getElementById('breadth-bar-down'),
+                        bF = document.getElementById('breadth-bar-flat');
+                    if (bU) bU.style.width = (up / tot) * 100 + '%';
+                    if (bD) bD.style.width = (down / tot) * 100 + '%';
+                    if (bF) bF.style.width = (flat / tot) * 100 + '%';
                 }
             }
 
             toggleBtn.addEventListener('click', () => {
                 isPolling = !isPolling;
-                const hgContainer = document.getElementById('hourglass-container');
-                const hgMain = document.getElementById('main-hourglass');
-
+                const hgC = document.getElementById('hourglass-container'),
+                    hgM = document.getElementById('main-hourglass');
                 if (isPolling) {
                     sessionStorage.setItem('livePolling', 'true');
-                    toggleBtn.innerText = '停止連線';
-                    toggleBtn.classList.remove(
-                        'bg-accent',
-                        'shadow-[0_8px_25px_rgba(59,130,246,0.3)]'
-                    );
-                    toggleBtn.classList.add(
-                        'bg-bearish/20',
-                        'text-bearish',
-                        'border',
-                        'border-bearish/50',
-                        'shadow-[0_8px_25px_rgba(239,68,68,0.2)]'
-                    );
-                    if (hgContainer) hgContainer.classList.remove('hidden');
-
-                    const restartAnim = () => {
-                        if (hgMain) {
-                            hgMain.style.animation = 'none';
-                            hgMain.classList.remove('hg-animate-sync');
-                            void hgMain.offsetWidth;
-                            hgMain.style.animation = 'hourglass-flip 15s ease-in-out infinite';
-                            hgMain.classList.add('hg-animate-sync');
+                    toggleBtn.innerText = '停止監測';
+                    toggleBtn.className =
+                        'h-9 px-6 font-black tracking-widest bg-bearish/10 text-bearish border border-bearish/30 rounded-lg text-[10px] uppercase shadow-[0_4px_15px_rgba(239,68,68,0.1)] transition-all';
+                    if (hgC) hgC.classList.remove('hidden');
+                    const start = () => {
+                        if (hgM) {
+                            hgM.style.animation = 'none';
+                            void hgM.offsetWidth;
+                            hgM.style.animation = 'hourglass-flip 15s ease-in-out infinite';
                         }
-
                         if (updateTimeEl) {
                             const now = new Date();
                             updateTimeEl.innerText = now.toLocaleTimeString();
-                            // Visual feedback
-                            updateTimeEl.classList.add('animate-pulse', 'text-accent');
-                            setTimeout(() => {
-                                updateTimeEl.classList.remove('animate-pulse', 'text-accent');
-                            }, 1000);
+                            updateTimeEl.classList.add('animate-pulse');
+                            setTimeout(() => updateTimeEl.classList.remove('animate-pulse'), 1000);
                         }
                     };
-
-                    restartAnim();
-
+                    start();
                     fetchLiveData();
-                    // Clear existing interval just in case
                     if (pollInterval) clearInterval(pollInterval);
                     pollInterval = setInterval(() => {
-                        restartAnim();
+                        start();
                         fetchLiveData();
                     }, 15000);
                 } else {
                     sessionStorage.setItem('livePolling', 'false');
-                    toggleBtn.innerText = '開始連線';
-                    toggleBtn.classList.add(
-                        'bg-accent',
-                        'shadow-[0_8px_25px_rgba(59,130,246,0.3)]'
-                    );
-                    toggleBtn.classList.remove(
-                        'bg-bearish/20',
-                        'text-bearish',
-                        'border',
-                        'border-bearish/50',
-                        'shadow-[0_8px_25px_rgba(239,68,68,0.2)]'
-                    );
-                    if (hgContainer) hgContainer.classList.add('hidden');
-                    if (hgMain) hgMain.style.animation = 'none';
-
-                    if (!indicator) return;
-                    indicator.className = 'hidden';
+                    toggleBtn.innerText = '開始監測';
+                    toggleBtn.className =
+                        'h-9 px-6 font-black tracking-widest bg-accent text-white rounded-lg border-none text-[10px] uppercase shadow-[0_4px_15px_rgba(59,130,246,0.3)] transition-all';
+                    if (hgC) hgC.classList.add('hidden');
                     clearInterval(pollInterval);
                     pollInterval = null;
                     if (retryTimeout) clearTimeout(retryTimeout);
                 }
             });
 
-            // Auto-start polling if previously active
-            if (sessionStorage.getItem('livePolling') === 'true') {
-                toggleBtn.click();
-            }
+            if (sessionStorage.getItem('livePolling') === 'true') toggleBtn.click();
         });
     </script>
-
-    <style>
-        @keyframes hourglass-flip {
-            0%,
-            90% {
-                transform: rotate(0deg);
-            }
-            92% {
-                transform: rotate(-10deg);
-            }
-            98% {
-                transform: rotate(190deg);
-            }
-            100% {
-                transform: rotate(180deg);
-            }
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: hsl(0 0% 100% / 0.1);
-            border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: hsl(0 0% 100% / 0.2);
-        }
-        .custom-range {
-            -webkit-appearance: none;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            outline: none;
-        }
-        .custom-range::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            background: #3b82f6;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid white;
-            transition: all 0.2s;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        }
-        .custom-range::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-        }
-    </style>
 </MainTerminal>
+
+<style is:global>
+    @keyframes hourglass-flip {
+        0%,
+        90% {
+            transform: rotate(0deg);
+        }
+        92% {
+            transform: rotate(-10deg);
+        }
+        98% {
+            transform: rotate(190deg);
+        }
+        100% {
+            transform: rotate(180deg);
+        }
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>
