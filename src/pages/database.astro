@@ -84,26 +84,9 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
     let requestSeq = 0;
 
     const getEl = (id: string) => document.getElementById(id);
-    const tableList = getEl('table-list');
-    const welcomeMsg = getEl('welcome-message');
-    const dataTable = getEl('data-table');
-    const tableHead = getEl('table-head');
-    const tableBody = getEl('table-body');
-    const tableNameLabel = getEl('current-table-name');
-    const rowCountBadge = getEl('row-count-badge');
-    const loadingBar = getEl('db-loading-bar');
-    const dbError = getEl('db-error');
-    const errorMsg = getEl('error-message');
-    const queryTimeLabel = getEl('query-time');
-    const pageNumLabel = getEl('page-num');
-    const tableControls = getEl('table-controls');
-    const tableNameContainer = getEl('table-name-container');
-    const explorerToolbar = getEl('explorer-toolbar');
-    const topScrollbar = getEl('top-scrollbar');
-    const topScrollContent = getEl('top-scroll-content');
-    const tableScrollContainer = getEl('table-scroll-container');
 
     function setLoading(isLoading: boolean) {
+        const loadingBar = getEl('db-loading-bar');
         if (!loadingBar) return;
         if (isLoading) {
             loadingBar.style.opacity = '1';
@@ -127,17 +110,19 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
 
         const startTime = performance.now();
         setLoading(true);
-        if (dbError) dbError.classList.add('hidden');
-        if (welcomeMsg) welcomeMsg.classList.add('hidden');
-        if (tableNameContainer) tableNameContainer.classList.remove('hidden');
-        if (explorerToolbar) {
-            explorerToolbar.classList.remove('hidden', 'opacity-0');
-        }
-        if (tableControls) {
-            tableControls.classList.remove('hidden', 'opacity-0');
-        }
-        if (dataTable) dataTable.classList.remove('hidden');
-        if (topScrollbar) topScrollbar.classList.remove('hidden');
+
+        const toggleOpt = (id: string, action: 'add' | 'remove', ...classes: string[]) => {
+            const el = getEl(id);
+            if (el) el.classList[action](...classes);
+        };
+
+        toggleOpt('db-error', 'add', 'hidden');
+        toggleOpt('welcome-message', 'add', 'hidden');
+        toggleOpt('table-name-container', 'remove', 'hidden');
+        toggleOpt('explorer-toolbar', 'remove', 'hidden', 'opacity-0');
+        toggleOpt('table-controls', 'remove', 'hidden', 'opacity-0');
+        toggleOpt('data-table', 'remove', 'hidden');
+        toggleOpt('top-scrollbar', 'remove', 'hidden');
 
         try {
             const offset = (page - 1) * limit;
@@ -152,24 +137,28 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
 
             const data = await res.json();
 
+            const tableNameLabel = getEl('current-table-name');
             if (tableNameLabel) tableNameLabel.textContent = name;
+
+            const rowCountBadge = getEl('row-count-badge');
             if (rowCountBadge) {
                 rowCountBadge.textContent = `${data.total.toLocaleString()} ENTITIES`;
                 rowCountBadge.classList.remove('hidden');
             }
+
+            const pageNumLabel = getEl('page-num');
             if (pageNumLabel) pageNumLabel.textContent = page.toString();
             currentPage = page;
 
-            // Handle Pagination Buttons
-            const prevBtn = getEl('prev-page') as HTMLButtonElement | null;
-            const nextBtn = getEl('next-page') as HTMLButtonElement | null;
+            const prevBtn = getEl('prev-page') as HTMLButtonElement;
+            const nextBtn = getEl('next-page') as HTMLButtonElement;
             if (prevBtn) prevBtn.disabled = page <= 1;
             if (nextBtn) {
                 const totalPages = Math.ceil(data.total / limit);
                 nextBtn.disabled = page >= totalPages;
             }
 
-            // Render Header
+            const tableHead = getEl('table-head');
             if (tableHead) {
                 tableHead.innerHTML = `<tr>${data.columns
                     .map(
@@ -184,11 +173,9 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
                     .join('')}</tr>`;
             }
 
-            // Render Body
+            const tableBody = getEl('table-body');
             if (tableBody) {
                 const rows = data.rows;
-
-                // Precompute column metadata to avoid string manipulations in nested loops
                 const renderableCols = data.columns.map((col: any) => {
                     const lName = col.name.toLowerCase();
                     return {
@@ -198,7 +185,6 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
                     };
                 });
 
-                // Use robust string builder approach for performance
                 tableBody.innerHTML = rows
                     .map(
                         (row: any) => `
@@ -235,13 +221,15 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
                 }
             }
 
+            const queryTimeLabel = getEl('query-time');
             if (queryTimeLabel)
                 queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
         } catch (err: any) {
             if (err.name === 'AbortError') return;
             console.error(err);
-            if (dbError) dbError.classList.remove('hidden');
-            if (dataTable) dataTable.classList.add('hidden');
+            toggleOpt('db-error', 'remove', 'hidden');
+            toggleOpt('data-table', 'add', 'hidden');
+            const errorMsg = getEl('error-message');
             if (errorMsg) errorMsg.textContent = err.message;
         } finally {
             setLoading(false);
@@ -249,51 +237,69 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
     }
 
     function initExplorer() {
-        // Table selection
-        tableList?.addEventListener('click', e => {
-            const btn = (e.target as HTMLElement).closest('button');
-            if (!btn) return;
-            tableList
-                .querySelectorAll('button')
-                .forEach(b =>
-                    b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent')
-                );
-            btn.classList.add('bg-white/[0.1]', 'text-accent', 'border-l-accent');
-            activeTable = btn.dataset.table || '';
-            currentPage = 1;
-            loadTable(activeTable);
-        });
+        if (!getEl('table-list')) return;
 
-        // Pagination
-        getEl('prev-page')?.addEventListener('click', () => {
-            if (currentPage > 1) loadTable(activeTable, currentPage - 1);
-        });
+        const tableList = getEl('table-list');
+        // Prevent duplicate listener
+        if (tableList && !tableList.dataset.bound) {
+            tableList.dataset.bound = 'true';
+            tableList.addEventListener('click', e => {
+                const btn = (e.target as HTMLElement).closest('button');
+                if (!btn) return;
+                tableList
+                    .querySelectorAll('button')
+                    .forEach(b =>
+                        b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent')
+                    );
+                btn.classList.add('bg-white/[0.1]', 'text-accent', 'border-l-accent');
+                activeTable = btn.dataset.table || '';
+                currentPage = 1;
+                loadTable(activeTable);
+            });
+        }
 
-        getEl('next-page')?.addEventListener('click', () => {
-            loadTable(activeTable, currentPage + 1);
-        });
+        const prevPage = getEl('prev-page');
+        if (prevPage && !prevPage.dataset.bound) {
+            prevPage.dataset.bound = 'true';
+            prevPage.addEventListener('click', () => {
+                if (currentPage > 1) loadTable(activeTable, currentPage - 1);
+            });
+        }
 
-        if (topScrollbar && tableScrollContainer) {
+        const nextPage = getEl('next-page');
+        if (nextPage && !nextPage.dataset.bound) {
+            nextPage.dataset.bound = 'true';
+            nextPage.addEventListener('click', () => {
+                loadTable(activeTable, currentPage + 1);
+            });
+        }
+
+        const topScrollbar = getEl('top-scrollbar');
+        const tableScrollContainer = getEl('table-scroll-container');
+        const topScrollContent = getEl('top-scroll-content');
+        const dataTable = getEl('data-table');
+
+        if (topScrollbar && tableScrollContainer && !topScrollbar.dataset.bound) {
+            topScrollbar.dataset.bound = 'true';
             let isSyncingTop = false;
             let isSyncingBottom = false;
 
-            topScrollbar.addEventListener('scroll', function () {
+            topScrollbar.addEventListener('scroll', function (this: HTMLElement) {
                 if (!isSyncingTop) {
                     isSyncingBottom = true;
-                    tableScrollContainer.scrollLeft = this.scrollLeft;
+                    if (tableScrollContainer) tableScrollContainer.scrollLeft = this.scrollLeft;
                 }
                 isSyncingTop = false;
             });
 
-            tableScrollContainer.addEventListener('scroll', function () {
+            tableScrollContainer.addEventListener('scroll', function (this: HTMLElement) {
                 if (!isSyncingBottom) {
                     isSyncingTop = true;
-                    topScrollbar.scrollLeft = this.scrollLeft;
+                    if (topScrollbar) topScrollbar.scrollLeft = this.scrollLeft;
                 }
                 isSyncingBottom = false;
             });
 
-            // Reliable width synchronization
             if (topScrollContent && dataTable) {
                 const rsObserver = new ResizeObserver(() => {
                     topScrollContent.style.width = `${dataTable.scrollWidth}px`;
@@ -303,34 +309,41 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
             }
         }
 
-        // Global Search with debounce
-        let searchTimeout: any;
-        getEl('global-search')?.addEventListener('input', e => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
+        const globalSearch = getEl('global-search');
+        if (globalSearch && !globalSearch.dataset.bound) {
+            globalSearch.dataset.bound = 'true';
+            let searchTimeout: any;
+            globalSearch.addEventListener('input', e => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    loadTable(activeTable, 1);
+                }, 300);
+            });
+        }
+
+        const pageLimit = getEl('page-limit');
+        if (pageLimit && !pageLimit.dataset.bound) {
+            pageLimit.dataset.bound = 'true';
+            pageLimit.addEventListener('change', e => {
+                limit = parseInt((e.target as HTMLSelectElement).value);
                 loadTable(activeTable, 1);
-            }, 300);
-        });
+            });
+        }
 
-        // Page Limit
-        getEl('page-limit')?.addEventListener('change', e => {
-            limit = parseInt((e.target as HTMLSelectElement).value);
-            loadTable(activeTable, 1);
-        });
-
-        // SSE for ticks
-        if (typeof EventSource !== 'undefined') {
+        const tickCountEl = getEl('tick-count');
+        if (typeof EventSource !== 'undefined' && tickCountEl && !tickCountEl.dataset.bound) {
+            tickCountEl.dataset.bound = 'true';
             const es = new EventSource('/api/sse/stream');
-            const tickCountEl = getEl('tick-count');
             es.addEventListener('tick', e => {
                 try {
                     const ticks = JSON.parse(e.data);
-                    if (tickCountEl) tickCountEl.textContent = String(ticks.length);
+                    if (getEl('tick-count'))
+                        getEl('tick-count')!.textContent = String(ticks.length);
                 } catch {}
             });
+            document.addEventListener('astro:before-swap', () => es.close(), { once: true });
         }
     }
 
     document.addEventListener('astro:page-load', initExplorer);
-    initExplorer();
 </script>
