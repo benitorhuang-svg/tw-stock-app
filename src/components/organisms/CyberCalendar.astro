@@ -1,0 +1,363 @@
+---
+/**
+ * CyberCalendar.astro (Organism) — Market Heat Map Calendar (戳戳樂)
+ *
+ * Atomic Design: ORGANISM
+ * Composes: Date trigger (Atom) + Popover grid (Molecule) + API data fetching
+ *
+ * Fetches ratio data from /api/market/monthly-ratios and dispatches
+ * 'calendarDateSelect' events for parent pages to handle data sync.
+ */
+interface Props {
+    id?: string;
+    value?: string;
+    class?: string;
+}
+
+const { id = 'cyber-calendar', value = '', class: className = '' } = Astro.props;
+const todayDisplay = value || '2026-02-24';
+---
+
+<div class={`relative cyber-calendar-wrapper group ${className}`} id={`${id}-wrapper`}>
+    <!-- Main Trigger (Registry Atom) -->
+    <div
+        id={`${id}-trigger`}
+        class="relative w-full flex items-center gap-3 px-4 py-3 bg-[#0a0c10]/80 hover:bg-[#111827]/90 border border-accent/20 hover:border-accent/50 rounded-2xl transition-all duration-500 cursor-pointer overflow-hidden group/btn z-10 shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+        role="button"
+        tabindex="0"
+    >
+        <div
+            class="absolute inset-0 opacity-[0.08] pointer-events-none bg-gradient-to-br from-accent via-transparent to-accent group-hover/btn:animate-pulse"
+        >
+        </div>
+        <div
+            class="absolute inset-0 opacity-[0.05] pointer-events-none bg-[linear-gradient(rgba(59,130,246,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.1)_1px,transparent_1px)] bg-[size:6px_6px]"
+        >
+        </div>
+
+        <div
+            class="relative flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-base-deep/90 border border-accent/30 group-hover/btn:border-accent/60 transition-all duration-500 shadow-inner"
+        >
+            <span class="text-[10px] font-black text-accent tracking-tighter">OS</span>
+            <div class="absolute -top-[1px] left-2 right-2 h-[2px] bg-accent/50 rounded-full"></div>
+            <div
+                class="absolute -bottom-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping opacity-20"
+            >
+            </div>
+            <div
+                class="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 bg-accent rounded-full shadow-[0_0_8px_#3b82f6]"
+            >
+            </div>
+        </div>
+
+        <div class="flex flex-col items-start select-none">
+            <div class="flex items-center gap-2">
+                <span class="text-[9px] font-black text-accent/50 uppercase tracking-[0.3em]"
+                    >Temporal Registry</span
+                >
+                <span class="w-1 h-1 rounded-full bg-accent/40 animate-pulse"></span>
+            </div>
+            <span
+                class="text-base font-mono font-black text-white tracking-widest leading-none mt-1"
+                id={`${id}-label`}>{todayDisplay}</span
+            >
+        </div>
+
+        <div
+            class="ml-auto flex items-center gap-2 text-accent/20 group-hover/btn:text-accent transition-all duration-500 translate-x-1 group-hover/btn:translate-x-0"
+        >
+            <div class="w-[1px] h-6 bg-accent/10"></div>
+            <svg
+                class="w-5 h-5 opacity-40 group-hover/btn:opacity-100"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </div>
+    </div>
+
+    <input type="date" id={id} value={value} class="hidden" />
+
+    <!-- Popover -->
+    <div
+        id={`${id}-popover`}
+        class="hidden absolute top-full left-0 mt-3 z-[200] w-72 bg-[#0d1117] border border-accent/30 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8),0_0_0_1px_rgba(59,130,246,0.1)] overflow-hidden animate-pop-in origin-top"
+    >
+        <div class="p-4 bg-surface/40 border-b border-border/20 flex items-center justify-between">
+            <button
+                type="button"
+                class="nav-prev p-1.5 hover:bg-accent/10 rounded-lg text-accent transition-all cursor-pointer"
+                >◀</button
+            >
+            <span class="month-year font-mono font-black text-white text-base tracking-[0.1em]"
+            ></span>
+            <button
+                type="button"
+                class="nav-next p-1.5 hover:bg-accent/10 rounded-lg text-accent transition-all cursor-pointer"
+                >▶</button
+            >
+        </div>
+
+        <div class="p-3">
+            <div class="grid grid-cols-7 mb-2 opacity-40">
+                {
+                    ['日', '一', '二', '三', '四', '五', '六'].map(d => (
+                        <div class="text-center text-[10px] font-black text-text-muted">{d}</div>
+                    ))
+                }
+            </div>
+            <div id={`${id}-days`} class="grid grid-cols-7 gap-1"></div>
+        </div>
+
+        <div class="p-3 bg-accent/5 border-t border-accent/10 flex justify-center">
+            <button
+                type="button"
+                class="today-btn px-10 py-2 rounded-xl bg-[#3b82f6] text-[11px] font-black text-white uppercase tracking-widest hover:bg-[#2563eb] active:scale-95 transition-all shadow-[0_4px_15px_rgba(59,130,246,0.4)] cursor-pointer"
+            >
+                Synchronize Today
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes pop-in {
+        from {
+            opacity: 0;
+            transform: translateY(-8px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    .animate-pop-in {
+        animation: pop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+</style>
+
+<script is:inline define:vars={{ id, initialValue: value }}>
+    (function () {
+        const wrapper = document.getElementById(`${id}-wrapper`);
+        const trigger = document.getElementById(`${id}-trigger`);
+        const popover = document.getElementById(`${id}-popover`);
+        const input = document.getElementById(id);
+        const label = document.getElementById(`${id}-label`);
+        const daysGrid = document.getElementById(`${id}-days`);
+        const monthYearTxt = popover.querySelector('.month-year');
+
+        // ═══ Ratio Cache (per-month, avoids redundant API calls) ═══
+        const ratioCache = {};
+
+        async function fetchMonthlyRatios(year, month) {
+            const key = `${year}-${String(month + 1).padStart(2, '0')}`;
+            if (ratioCache[key]) return ratioCache[key];
+            try {
+                const res = await fetch(
+                    `/api/market/monthly-ratios?year=${year}&month=${month + 1}`
+                );
+                if (res.ok) {
+                    const data = await res.json();
+                    ratioCache[key] = data.ratios || {};
+                    return ratioCache[key];
+                }
+            } catch (err) {
+                console.warn('[CyberCalendar] Failed to fetch ratios:', err);
+            }
+            return {};
+        }
+
+        function parseDate(dateStr) {
+            if (!dateStr) return new Date();
+            const parts = dateStr.split('-').map(Number);
+            return new Date(parts[0], parts[1] - 1, parts[2] || 1);
+        }
+
+        let currentDate = parseDate(initialValue || label.textContent);
+        let displayMonth = currentDate.getMonth();
+        let displayYear = currentDate.getFullYear();
+
+        // ═══ Atomic CSS Generator (戳戳樂 Style with REAL Ratios) ═══
+        function createDayNode(content, type, ratio) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.textContent = content;
+
+            let classes =
+                'aspect-square flex flex-col items-center justify-center text-[13px] font-mono font-black rounded-xl transition-all duration-300 border-b-4 overflow-hidden relative group/day ';
+
+            // 1. 決定背景底色 (Strict: Blue / Red / Green)
+            if (type === 'other') {
+                classes +=
+                    'opacity-[0.02] cursor-default pointer-events-none border-transparent bg-white/5 ';
+            } else if (ratio === null || ratio === undefined) {
+                // ═══ 沒開市 → 藍色 ═══
+                classes += 'bg-[#1e40af]/50 text-blue-200/70 border-[#1e3a5f] ';
+            } else {
+                // ═══ 有開市 → 紅色 (Ratio >= 1) 或 綠色 (Ratio < 1) ═══
+                if (ratio >= 1.0) {
+                    // 紅色系 (多頭/平盤)
+                    classes +=
+                        ratio >= 1.2
+                            ? 'bg-[#ef4444] text-white border-[#b91c1c] '
+                            : 'bg-[#ef4444]/60 text-white/90 border-[#b91c1c]/40 ';
+                } else {
+                    // 綠色系 (空頭)
+                    classes +=
+                        ratio <= 0.8
+                            ? 'bg-[#22c55e] text-white border-[#15803d] '
+                            : 'bg-[#22c55e]/60 text-white/90 border-[#15803d]/40 ';
+                }
+            }
+
+            // 2. 決定狀態疊加 (Selected/Today)
+            if (type === 'selected') {
+                // 選中：白色發光外框標示，不改變背景色
+                classes +=
+                    'ring-4 ring-white shadow-[0_0_20px_rgba(255,255,255,0.8)] z-10 scale-105 -translate-y-1 ';
+            } else if (type === 'today') {
+                // 今日：底部指示線
+                classes += 'border-b-[#fbbf24] ';
+            }
+
+            // 3. 互動效果
+            if (type !== 'other') {
+                classes += 'cursor-pointer hover:scale-110 hover:-translate-y-1.5 hover:shadow-xl ';
+            }
+
+            // Gloss overlay
+            const gloss = document.createElement('div');
+            gloss.className =
+                'absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none';
+            btn.appendChild(gloss);
+
+            // Ratio tooltip on hover
+            if (type !== 'other' && ratio !== null && ratio !== undefined) {
+                const tip = document.createElement('div');
+                tip.className =
+                    'absolute bottom-0.5 right-0.5 text-[6px] opacity-0 group-hover/day:opacity-50 transition-opacity pointer-events-none text-white font-black';
+                tip.textContent = ratio.toFixed(1);
+                btn.appendChild(tip);
+            }
+
+            btn.className = classes;
+            return btn;
+        }
+
+        // ═══ Async Render Calendar (fetches real data) ═══
+        async function renderCalendar() {
+            daysGrid.innerHTML = '';
+            monthYearTxt.textContent = `${displayYear} / ${String(displayMonth + 1).padStart(2, '0')}`;
+
+            const firstDay = new Date(displayYear, displayMonth, 1).getDay();
+            const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
+            const prevMonthDays = new Date(displayYear, displayMonth, 0).getDate();
+            const today = new Date();
+            const isMatch = (d, m, y, date) =>
+                d === date.getDate() && m === date.getMonth() && y === date.getFullYear();
+
+            // Show loading skeleton
+            for (let i = 0; i < 35; i++) {
+                const sk = document.createElement('div');
+                sk.className = 'aspect-square rounded-xl bg-white/5 animate-pulse';
+                daysGrid.appendChild(sk);
+            }
+
+            // Fetch ACTUAL ratios from API
+            const ratios = await fetchMonthlyRatios(displayYear, displayMonth);
+            daysGrid.innerHTML = '';
+
+            // Previous month days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                daysGrid.appendChild(createDayNode(prevMonthDays - i, 'other', null));
+            }
+
+            // Current month days (戳戳樂 Grid with REAL DATA)
+            for (let i = 1; i <= daysInMonth; i++) {
+                let state = 'normal';
+                if (isMatch(i, displayMonth, displayYear, currentDate)) state = 'selected';
+                else if (isMatch(i, displayMonth, displayYear, today)) state = 'today';
+
+                const ratio = ratios[i] !== undefined ? ratios[i] : null;
+                const day = createDayNode(i, state, ratio);
+
+                day.addEventListener('click', e => {
+                    e.stopPropagation();
+                    const selected = new Date(displayYear, displayMonth, i);
+                    const formatted = `${selected.getFullYear()}-${String(selected.getMonth() + 1).padStart(2, '0')}-${String(selected.getDate()).padStart(2, '0')}`;
+                    input.value = formatted;
+                    label.textContent = formatted;
+                    currentDate = selected;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    popover.classList.add('hidden');
+                    renderCalendar();
+                });
+                daysGrid.appendChild(day);
+            }
+        }
+
+        // ═══ Event Listeners ═══
+        trigger.addEventListener('click', e => {
+            e.stopPropagation();
+            popover.classList.toggle('hidden');
+            if (!popover.classList.contains('hidden')) {
+                renderCalendar();
+                const rect = popover.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    popover.style.left = 'auto';
+                    popover.style.right = '0';
+                }
+                if (rect.left < 0) {
+                    popover.style.left = '0';
+                    popover.style.right = 'auto';
+                }
+            }
+        });
+
+        popover.querySelector('.nav-prev').addEventListener('click', e => {
+            e.stopPropagation();
+            displayMonth--;
+            if (displayMonth < 0) {
+                displayMonth = 11;
+                displayYear--;
+            }
+            renderCalendar();
+        });
+
+        popover.querySelector('.nav-next').addEventListener('click', e => {
+            e.stopPropagation();
+            displayMonth++;
+            if (displayMonth > 11) {
+                displayMonth = 0;
+                displayYear++;
+            }
+            renderCalendar();
+        });
+
+        popover.querySelector('.today-btn').addEventListener('click', e => {
+            e.stopPropagation();
+            const now = new Date();
+            const formatted = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            input.value = formatted;
+            label.textContent = formatted;
+            currentDate = now;
+            displayMonth = now.getMonth();
+            displayYear = now.getFullYear();
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            renderCalendar();
+            setTimeout(() => popover.classList.add('hidden'), 150);
+        });
+
+        document.addEventListener('click', e => {
+            if (!wrapper.contains(e.target)) popover.classList.add('hidden');
+        });
+
+        renderCalendar();
+    })();
+</script>

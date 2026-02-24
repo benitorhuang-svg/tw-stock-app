@@ -4,16 +4,8 @@
  * Premium data table with real-time search and sorting.
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
+import { fmtVol, fmtPct, fmtPrice } from '../utils/format';
 import type { StockFullData } from '../utils/stockDataService';
-
-const fmtVol = (v: number) => {
-    const cv = Math.ceil(v);
-    if (cv >= 10000) return `${(cv / 10000).toFixed(1)}萬`;
-    if (cv > 0) return cv.toLocaleString('zh-TW');
-    return '—';
-};
-const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
-const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 
 let stocks: StockFullData[] = [];
 let loadError = '';

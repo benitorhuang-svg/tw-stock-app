@@ -3,6 +3,8 @@
  * StockCard.astro — Compact stock info card with price & change
  * Used in grids like volume leaders, high yield, etc.
  */
+import { fmtVol, fmtPct, fmtPrice } from '../../utils/format';
+
 interface Props {
     symbol: string;
     name: string;
@@ -29,15 +31,6 @@ const {
 
 const bull = changePercent > 0;
 const bear = changePercent < 0;
-
-const fmtVol = (v: number) => {
-    const cv = Math.ceil(v);
-    if (cv >= 10000) return `${(cv / 10000).toFixed(1)}萬`;
-    if (cv > 0) return cv.toLocaleString('zh-TW');
-    return '—';
-};
-const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
-const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 ---
 
 <a

@@ -153,6 +153,7 @@ db.exec(`
     CREATE INDEX idx_latest_revenue_yoy ON latest_prices(revenue_yoy DESC);
     CREATE INDEX idx_chips_date_symbol ON chips(date DESC, symbol);
     CREATE INDEX idx_chips_symbol_date_desc ON chips(symbol, date DESC);
+    CREATE INDEX idx_history_date_breadth ON price_history(date, close, change_pct);
 `);
 
 // 載入股票清單

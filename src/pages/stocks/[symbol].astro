@@ -15,6 +15,7 @@ import TabTechnical from '../../components/organisms/TabTechnical.astro';
 import TabChips from '../../components/organisms/TabChips.astro';
 import TabFundamentals from '../../components/organisms/TabFundamentals.astro';
 import TabAlerts from '../../components/organisms/TabAlerts.astro';
+import { fmtVol } from '../../utils/format';
 
 const { symbol } = Astro.params;
 
@@ -70,12 +71,6 @@ if (!stock) {
 
 // TypeScript assertion: stock is guaranteed non-null after fallback
 const stockData = stock as StockFullData;
-
-/** Format volume for display */
-const fmtVol = (v: number) => {
-    const cv = Math.ceil(v);
-    return cv > 0 ? cv.toLocaleString('zh-TW') : '—';
-};
 
 const isBullish = stockData.change > 0;
 const isBearish = stockData.change < 0;

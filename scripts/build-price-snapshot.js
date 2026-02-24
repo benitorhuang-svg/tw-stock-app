@@ -40,13 +40,19 @@ function parseCSV(csvText) {
 async function buildPriceSnapshot() {
     console.log('🚀 Building price snapshot...');
 
-    // Read price index
-    if (!fs.existsSync(INDEX_FILE)) {
-        console.error('❌ price_index.json not found');
+    // Dynamically read the prices directory to get all available stocks
+    if (!fs.existsSync(PRICES_DIR)) {
+        console.error('❌ Prices directory not found');
         process.exit(1);
     }
 
-    const priceIndex = JSON.parse(fs.readFileSync(INDEX_FILE, 'utf-8'));
+    const files = fs.readdirSync(PRICES_DIR).filter(f => f.endsWith('.csv'));
+    const priceIndex = {};
+    files.forEach(file => {
+        const symbol = file.split('_')[0];
+        if (symbol) priceIndex[symbol] = file;
+    });
+
     const symbols = Object.keys(priceIndex);
 
     console.log(`📊 Processing ${symbols.length} stocks...`);

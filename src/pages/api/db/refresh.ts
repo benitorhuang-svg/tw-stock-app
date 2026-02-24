@@ -50,7 +50,7 @@ export const POST: APIRoute = async () => {
                         encoder.encode(`\n\n>> [3/3] 啟動快照建置程序 (Build Price Snapshot)...\n`)
                     );
 
-                    // Run step 2
+                    // Run step 3
                     const snap = spawn('node', ['scripts/build-price-snapshot.js'], {
                         cwd: process.cwd(),
                     });
@@ -64,14 +64,36 @@ export const POST: APIRoute = async () => {
                                     `\n\n[ERROR] build-price-snapshot exited with code ${snapCode}\n`
                                 )
                             );
-                        } else {
-                            controller.enqueue(
-                                encoder.encode(
-                                    `\n\n[DONE] 資料庫同步全面完成！請關閉視窗以重新載入。\n`
-                                )
-                            );
+                            controller.close();
+                            return;
                         }
-                        controller.close();
+
+                        // Run step 4
+                        controller.enqueue(
+                            encoder.encode(`\n\n>> [4/4] 重建本機 SQLite 資料庫 (Build SQLite DB)...\n`)
+                        );
+                        const dbBuild = spawn('node', ['scripts/build-sqlite-db.js'], {
+                            cwd: process.cwd(),
+                        });
+                        dbBuild.stdout.on('data', data => controller.enqueue(data));
+                        dbBuild.stderr.on('data', data => controller.enqueue(data));
+
+                        dbBuild.on('close', dbCode => {
+                            if (dbCode !== 0) {
+                                controller.enqueue(
+                                    encoder.encode(
+                                        `\n\n[ERROR] build-sqlite-db exited with code ${dbCode}\n`
+                                    )
+                                );
+                            } else {
+                                controller.enqueue(
+                                    encoder.encode(
+                                        `\n\n[DONE] 資料庫同步全面完成！請關閉視窗以重新載入。\n`
+                                    )
+                                );
+                            }
+                            controller.close();
+                        });
                     });
                 });
 

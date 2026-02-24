@@ -1,0 +1,65 @@
+---
+/**
+ * MarketBreadth.astro — (Molecule) Visual Breadth Bar with Range Anchors
+ * Provides the visual progress bar and extreme side counts.
+ * Atomic Design: This is a Molecule that provides the core 'Breadth Vitals'.
+ */
+interface Props {
+    up: number;
+    down: number;
+    flat: number;
+    total: number;
+    class?: string;
+}
+
+const { up, down, flat, total, class: className = '' } = Astro.props;
+
+const pctUp = total > 0 ? (up / total) * 100 : 0;
+const pctDown = total > 0 ? (down / total) * 100 : 0;
+const pctFlat = total > 0 ? (flat / total) * 100 : 0;
+---
+
+<div class:list={['market-breadth-molecule flex items-center gap-2.5 w-full py-1', className]}>
+    <!-- Range Anchor: Down (Left) -->
+    <span
+        class="text-[10px] font-mono font-black text-bearish/90 min-w-[24px] text-right"
+        id="breadth-range-down">{down}</span
+    >
+
+    <!-- Bar Engine -->
+    <div
+        class="relative flex-1 h-2 rounded-full bg-[#1e293b] border border-white/5 overflow-hidden flex shadow-inner group/breadth"
+    >
+        <div
+            id="breadth-bar-down"
+            class="h-full bg-bearish transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-10"
+            style={`width: ${pctDown}%`}
+        >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        </div>
+
+        <div
+            id="breadth-bar-flat"
+            class="h-full bg-slate-600/40 transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+            style={`width: ${pctFlat}%`}
+        >
+        </div>
+
+        <div
+            id="breadth-bar-up"
+            class="h-full bg-bullish transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-10"
+            style={`width: ${pctUp}%`}
+        >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        </div>
+
+        <!-- Center Divider -->
+        <div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/20 z-20"></div>
+    </div>
+
+    <!-- Range Anchor: Up (Right) -->
+    <span
+        class="text-[10px] font-mono font-black text-bullish/90 min-w-[24px]"
+        id="breadth-range-up">{up}</span
+    >
+</div>

@@ -20,7 +20,6 @@ export class SqliteService {
 
     private resolveHealthyDbPath(): string {
         const candidates = [
-            path.resolve(process.cwd(), 'stocks.db'),
             path.resolve(process.cwd(), 'public', 'data', 'stocks.db'),
         ];
 
@@ -29,7 +28,7 @@ export class SqliteService {
 
             try {
                 const probe = new Database(candidate, { readonly: true, fileMustExist: true });
-                const integrity = probe.prepare('PRAGMA integrity_check').pluck().get() as string;
+                const integrity = (probe.prepare('PRAGMA integrity_check') as any).pluck(true).get() as string;
                 probe.close();
 
                 if (integrity === 'ok') {
@@ -82,7 +81,7 @@ export class SqliteService {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'")
             .get()
             ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number })
-                  .count
+                .count
             : 0;
 
         return {

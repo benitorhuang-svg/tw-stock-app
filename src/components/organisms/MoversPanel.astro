@@ -3,6 +3,8 @@
  * MoversPanel.astro — Top movers (gainers/losers) panel
  * Shows a ranked list of stocks with change indicators.
  */
+import { fmtVol, fmtPct, fmtPrice } from '../../utils/format';
+
 interface Props {
     title: string;
     stocks: Array<{
@@ -19,15 +21,6 @@ interface Props {
 const { title, stocks, variant = 'bullish', class: className = '' } = Astro.props;
 const isBull = variant === 'bullish';
 const accentColor = isBull ? 'bullish' : 'bearish';
-
-const fmtVol = (v: number) => {
-    const cv = Math.ceil(v);
-    if (cv >= 10000) return `${(cv / 10000).toFixed(1)}萬`;
-    if (cv > 0) return cv.toLocaleString('zh-TW');
-    return '—';
-};
-const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
-const fmtPrice = (v: number) => (v > 0 ? v.toFixed(2) : '—');
 ---
 
 <section class:list={['glass-card overflow-hidden', className]}>

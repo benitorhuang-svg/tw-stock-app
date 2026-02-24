@@ -36,7 +36,54 @@
 - **Monaspace**: `JetBrains Mono` (用於所有數值顯示)。
 - **Sizing**: 標籤一律使用 `uppercase tracking-[0.15em] font-black text-[10px]` 的嚴肅風格。
 
-## 三、重構與清理 (Aesthetic Integrity)
+## 三、原子化設計元件登記 (Atomic Design Registry)
+
+> 本專案遵循 Atomic Design 方法論：Atoms → Molecules → Organisms → Templates (Layouts) → Pages
+
+### Atoms (`src/components/atoms/`)
+| 元件 | 用途 |
+|------|------|
+| `Badge.astro` | 狀態標籤 (上漲/下跌/平盤) |
+| `CyberButton.astro` | 通用按鈕 |
+| `ErrorBoundary.astro` | 錯誤邊界 |
+| `NavTab.astro` | 導航分頁按鈕 |
+| `Skeleton.astro` | 骨架載入動畫 |
+| `SyncHourglass.astro` | 同步等待沙漏動畫 |
+
+### Molecules (`src/components/molecules/`)
+| 元件 | 組成 | 用途 |
+|------|------|------|
+| `MarketBreadth.astro` | 漲跌平 Bar Engine | 視覺化漲跌比例進度條 |
+| `MarketStatusPanel.astro` | CyberCalendar + MarketBreadth + Metrics | Dashboard 左欄市況總覽面板 |
+| `StockCard.astro` | Badge + fmtVol/fmtPct | 股票資訊卡片 (用於成交熱門格) |
+| `StatCard.astro` | Label + Value + Change indicator | 通用指標數值卡片 |
+| `DesktopNavTabs.astro` | NavTab[] | 桌面端主導航列 |
+| `MobileNavTabs.astro` | NavTab[] | 行動端底部導航列 |
+| `PageHero.astro` | 標題 + 描述 | 頁面大標 Hero 區塊 |
+
+### Organisms (`src/components/organisms/`)
+| 元件 | 組成 | 用途 |
+|------|------|------|
+| `CyberCalendar.astro` | Trigger (Atom) + Popover Grid + API fetch | 市場熱力日曆 (戳戳樂) |
+| `MoversPanel.astro` | StockRow[] + Header | 漲幅/跌幅排行面板 |
+| `TabBar.astro` | Tab Buttons + Switch Logic | 個股頁 5-tab 導航器 |
+| `TabOverview.astro` | StatCard[] + Charts | 總覽分頁 |
+| `TabTechnical.astro` | K 線圖 + 技術指標 | 技術面分頁 |
+| `TabChips.astro` | 三大法人圖表 | 籌碼面分頁 |
+| `TabFundamentals.astro` | PE 河流圖 + 營收 | 基本面分頁 |
+| `TabAlerts.astro` | AI 報告 + 停損設定 | AI 報告分頁 |
+| `LiveControlPanel.astro` | CyberButton + MarketBreadth | 即時監控面板 |
+| `LiveFilterPanel.astro` | 篩選滑桿組 | 即時篩選器 |
+| `StockScreener.astro` | Filter + Table | 選股引擎核心 |
+
+### Shared Utilities (`src/utils/`)
+| 模組 | 用途 |
+|------|------|
+| `format.ts` | fmtVol / fmtPct / fmtPrice (全站共用) |
+| `stockDataService.ts` | 股票資料存取服務 |
+| `priceService.ts` | 歷史價格存取服務 |
+
+## 四、重構與清理 (Aesthetic Integrity)
 
 1. **Delete the Ugly**: 任何帶有「過時陰影」、「預設藍色連結」、「不明確的內距」的舊組件，應在大規模重構中直接移除。
 2. **Unified Rendering**: 所有的 `StockCard` 必須統一使用 HSL 變量，嚴禁在元件中寫死十六進位色彩。
