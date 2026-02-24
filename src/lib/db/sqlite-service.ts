@@ -11,10 +11,14 @@ export class SqliteService {
     private db: InstanceType<typeof Database>;
     private dbPath: string;
     private cachedTables: Set<string>;
+    private columnCache: Map<string, { name: string, type: string }[]> = new Map();
+    private rowCountCache: Map<string, number> = new Map();
 
     private constructor() {
         this.dbPath = this.resolveHealthyDbPath();
         this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
+        this.db.pragma('cache_size = -32000'); // 32MB cache
+        this.db.pragma('mmap_size = 3145728000'); // Memory-map up to ~3GB
         this.cachedTables = new Set(this.loadTableNames());
     }
 
@@ -122,11 +126,17 @@ export class SqliteService {
      */
     public getTableColumns(table: string): { name: string; type: string }[] {
         const safe = this.validateTableName(table);
+        if (this.columnCache.has(safe)) {
+            return this.columnCache.get(safe)!;
+        }
+
         const columns = this.db.prepare(`PRAGMA table_info("${safe}")`).all() as {
             name: string;
             type: string;
         }[];
-        return columns.map(c => ({ name: c.name, type: c.type }));
+        const mapped = columns.map(c => ({ name: c.name, type: c.type }));
+        this.columnCache.set(safe, mapped);
+        return mapped;
     }
 
     /**
@@ -141,13 +151,19 @@ export class SqliteService {
         const params: any[] = [];
 
         if (options.search) {
-            const columns = this.getTableColumns(table);
-            const whereClause = columns
-                .map(col => `"${col.name}" LIKE ?`)
-                .join(' OR ');
-            sql += ` WHERE ${whereClause}`;
-            const searchPattern = `%${options.search}%`;
-            columns.forEach(() => params.push(searchPattern));
+            // Optimize search to only text or integer columns, skip pure floats which kill performance
+            const searchableColumns = this.getTableColumns(table).filter(
+                col => !col.type.toUpperCase().includes('REAL') && !col.type.toUpperCase().includes('FLOAT') && !col.type.toUpperCase().includes('DOUBLE')
+            );
+
+            if (searchableColumns.length > 0) {
+                const whereClause = searchableColumns
+                    .map(col => `"${col.name}" LIKE ?`)
+                    .join(' OR ');
+                sql += ` WHERE ${whereClause}`;
+                const searchPattern = `%${options.search}%`;
+                searchableColumns.forEach(() => params.push(searchPattern));
+            }
         }
 
         sql += ` LIMIT ? OFFSET ?`;
@@ -161,22 +177,39 @@ export class SqliteService {
      */
     public getTableRowCount(table: string, search?: string): number {
         const safe = this.validateTableName(table);
+
+        // Use cache for pure row count without search
+        if (!search && this.rowCountCache.has(safe)) {
+            return this.rowCountCache.get(safe)!;
+        }
+
         let sql = `SELECT count(*) as count FROM "${safe}"`;
         const params: any[] = [];
 
         if (search) {
-            const columns = this.getTableColumns(table);
-            const whereClause = columns
-                .map(col => `"${col.name}" LIKE ?`)
-                .join(' OR ');
-            sql += ` WHERE ${whereClause}`;
-            const searchPattern = `%${search}%`;
-            columns.forEach(() => params.push(searchPattern));
+            const searchableColumns = this.getTableColumns(table).filter(
+                col => !col.type.toUpperCase().includes('REAL') && !col.type.toUpperCase().includes('FLOAT') && !col.type.toUpperCase().includes('DOUBLE')
+            );
+
+            if (searchableColumns.length > 0) {
+                const whereClause = searchableColumns
+                    .map(col => `"${col.name}" LIKE ?`)
+                    .join(' OR ');
+                sql += ` WHERE ${whereClause}`;
+                const searchPattern = `%${search}%`;
+                searchableColumns.forEach(() => params.push(searchPattern));
+            }
         }
 
         const result = this.db.prepare(sql).get(...params) as {
             count: number;
         };
+
+        // Cache the total count
+        if (!search) {
+            this.rowCountCache.set(safe, result.count);
+        }
+
         return result.count;
     }
 }

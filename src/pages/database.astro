@@ -67,6 +67,8 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
     function escapeHtml(str: unknown): string {
         if (str === null || str === undefined) return '';
         const s = String(str);
+        // Fast path: avoid expensive replace chains if no special chars present (handles 95%+ of dataset)
+        if (!/[&<>"']/.test(s)) return s;
         return s
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -186,27 +188,36 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
             if (tableBody) {
                 const rows = data.rows;
 
+                // Precompute column metadata to avoid string manipulations in nested loops
+                const renderableCols = data.columns.map((col: any) => {
+                    const lName = col.name.toLowerCase();
+                    return {
+                        name: col.name,
+                        isPct: lName.includes('pct'),
+                        isPrice: lName.includes('price') || lName.includes('close'),
+                    };
+                });
+
+                // Use robust string builder approach for performance
                 tableBody.innerHTML = rows
                     .map(
                         (row: any) => `
                     <tr class="hover:bg-glass-hover transition-colors group/row">
-                        ${data.columns
+                        ${renderableCols
                             .map((col: any) => {
                                 const val = row[col.name];
                                 const isNull = val === null || val === undefined;
                                 let style = 'text-text-muted';
                                 let display = isNull ? 'NULL' : escapeHtml(val);
+
                                 if (!isNull && typeof val === 'number') {
-                                    if (col.name.toLowerCase().includes('pct')) {
+                                    if (col.isPct) {
                                         style =
                                             val >= 0
                                                 ? 'text-bullish font-bold'
                                                 : 'text-bearish font-bold';
                                         display = (val > 0 ? '+' : '') + val.toFixed(2) + '%';
-                                    } else if (
-                                        col.name.toLowerCase().includes('price') ||
-                                        col.name.toLowerCase().includes('close')
-                                    ) {
+                                    } else if (col.isPrice) {
                                         style = 'text-accent font-bold';
                                     } else {
                                         style = 'text-text-secondary font-mono';
