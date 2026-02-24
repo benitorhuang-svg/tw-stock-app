@@ -27,13 +27,13 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
             <span id="live-indicator" class="hidden"></span>
             <!-- Unified Dashboard Toolbar (Single Row) -->
             <div
-                class="flex flex-wrap lg:flex-nowrap items-center gap-2 px-2 py-1.5 glass-card !bg-surface/5 !border-white/5 shadow-2xl shrink-0"
+                class="flex flex-wrap lg:flex-nowrap items-center gap-3 px-3 py-2 glass-card !bg-surface/5 !border-white/5 shadow-2xl shrink-0"
             >
                 <!-- 1. Left: Filters -->
                 <LiveFilterPanel />
 
                 <!-- 2. Right: Breadth + Button -->
-                <div class="flex items-center gap-3 flex-1 min-w-0">
+                <div class="flex items-center justify-end gap-4 flex-1 min-w-0">
                     <LiveControlPanel />
                 </div>
             </div>
@@ -341,60 +341,61 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
 
             const filterStarred = document.getElementById('filter-starred') as HTMLInputElement;
             const filterSector = document.getElementById('filter-sector') as HTMLSelectElement;
-            const filterTrend = document.getElementById('filter-trend') as HTMLSelectElement;
+            const filterTrend = document.getElementById('filter-trend') as HTMLInputElement;
             const filterVolume = document.getElementById('filter-volume') as HTMLInputElement;
+            const filterMarket = document.getElementById('filter-market') as HTMLSelectElement;
+            const filterPrice = document.getElementById('filter-price') as HTMLSelectElement;
+            const filterReset = document.getElementById('live-filter-reset');
+
             const filteredCount = document.getElementById('filtered-count');
             const volDisplay = document.getElementById('vol-display');
-            const volUp = document.getElementById('vol-up');
-            const volDn = document.getElementById('vol-dn');
+            const trendDisplay = document.getElementById('trend-display');
 
-            function updateVolumeDisplay() {
-                if (!filterVolume || !volDisplay) return;
-                const val = parseInt(filterVolume.value, 10);
-                volDisplay.textContent =
-                    val === 0
-                        ? '0'
-                        : val >= 10000
-                          ? (val / 10000).toFixed(1) + '萬'
-                          : val.toString();
-            }
-
-            if (volUp && filterVolume) {
-                volUp.addEventListener('click', () => {
-                    const step = parseInt(filterVolume.step || '1000', 10);
-                    filterVolume.value = String(
-                        Math.min(
-                            parseInt(filterVolume.max, 10),
-                            parseInt(filterVolume.value, 10) + step
-                        )
-                    );
-                    updateVolumeDisplay();
-                    renderData();
-                });
-            }
-            if (volDn && filterVolume) {
-                volDn.addEventListener('click', () => {
-                    const step = parseInt(filterVolume.step || '1000', 10);
-                    filterVolume.value = String(
-                        Math.max(
-                            parseInt(filterVolume.min, 10),
-                            parseInt(filterVolume.value, 10) - step
-                        )
-                    );
-                    updateVolumeDisplay();
-                    renderData();
-                });
-            }
             if (filterVolume) {
-                filterVolume.addEventListener('input', () => {
-                    updateVolumeDisplay();
-                    renderData();
-                });
+                filterVolume.addEventListener('input', renderData);
             }
 
-            [filterStarred, filterSector, filterTrend].forEach(el => {
+            [filterStarred, filterSector, filterTrend, filterMarket, filterPrice].forEach(el => {
                 if (el) el.addEventListener('change', renderData);
             });
+
+            if (filterTrend) {
+                filterTrend.addEventListener('input', renderData);
+            }
+
+            if (filterReset) {
+                filterReset.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    if (filterMarket) filterMarket.value = '';
+                    if (filterSector) filterSector.value = '';
+                    if (filterPrice) filterPrice.value = '';
+                    if (filterTrend) {
+                        filterTrend.value = '0';
+                        if (trendDisplay) {
+                            trendDisplay.textContent = '0%';
+                            trendDisplay.classList.remove('text-bullish', 'text-bearish');
+                            trendDisplay.classList.add('text-accent');
+                        }
+                    }
+                    if (filterVolume) {
+                        filterVolume.value = '0';
+                        if (volDisplay) volDisplay.textContent = '0';
+                    }
+                    if (filterStarred) {
+                        filterStarred.checked = false;
+                        const starIcon = document.querySelector('.star-toggle-icon');
+                        if (starIcon) starIcon.textContent = '☆';
+                    }
+
+                    searchQuery = '';
+
+                    // Add a tiny pulse animation to the reset button
+                    filterReset.classList.add('scale-90');
+                    setTimeout(() => filterReset?.classList.remove('scale-90'), 100);
+
+                    renderData();
+                });
+            }
 
             // Simple sector classifier based on symbol prefix
             function getSectorClient(symbol: string) {
@@ -534,10 +535,7 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
 
                     renderData();
 
-                    if (updateTimeEl) {
-                        const date = result.lastFetch ? new Date(result.lastFetch) : new Date();
-                        updateTimeEl.innerText = date.toLocaleTimeString();
-                    }
+                    // Time is now updated at the start of fetch/render for better perceived sync
                 } catch (error) {
                     console.error('Fetch live data failed:', error);
 
@@ -568,27 +566,39 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
 
                 const tsSearch = searchQuery.toLowerCase();
                 const tsSector = filterSector?.value || '';
-                const tsTrend = filterTrend?.value || '';
+                const tsTrend = filterTrend?.value || '0';
                 const tsVol = parseInt(filterVolume?.value || '0', 10);
                 const tsStarred = filterStarred?.checked;
+                const tsMarket =
+                    (document.getElementById('filter-market') as HTMLSelectElement)?.value || '';
+                const tsPriceRange =
+                    (document.getElementById('filter-price') as HTMLSelectElement)?.value || '';
 
                 filtered = filtered.filter(s => {
+                    if (tsMarket && s._market !== tsMarket.toUpperCase()) return false;
+
                     if (
                         tsSearch &&
                         !s.Code.toLowerCase().includes(tsSearch) &&
                         !s.Name.toLowerCase().includes(tsSearch)
                     )
                         return false;
+
                     if (tsStarred && !watchlist.includes(s.Code)) return false;
+
                     if (tsSector && s._sector !== tsSector) return false;
+
+                    if (tsPriceRange) {
+                        const [min, max] = tsPriceRange.split('-').map(Number);
+                        if (s._closePrice < min || s._closePrice > max) return false;
+                    }
+
                     if (tsVol > 0 && s._vol < tsVol) return false;
-                    if (tsTrend) {
-                        // approximately 9.5% up/down to represent limit up/down for Taiwan stocks
-                        if (tsTrend === 'limit-up' && s._changePct < 9.5) return false;
-                        if (tsTrend === 'limit-down' && s._changePct > -9.5) return false;
-                        if (tsTrend === 'up' && s._change <= 0) return false;
-                        if (tsTrend === 'down' && s._change >= 0) return false;
-                        if (tsTrend === 'flat' && s._change !== 0) return false;
+
+                    if (tsTrend !== '0') {
+                        const trendVal = parseFloat(tsTrend);
+                        if (trendVal > 0 && s._changePct < trendVal) return false;
+                        if (trendVal < 0 && s._changePct > trendVal) return false;
                     }
                     return true;
                 });
@@ -679,7 +689,10 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
 
                 if (topPicks.length === 0) {
                     tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-12 text-text-muted">找不到符合「${searchQuery}」的項目</td></tr>`;
-                } else {
+                    return;
+                }
+
+                if (tbody) {
                     // DOM Diffing to prevent flash and preserve open accordions
                     const existingRows = new Map();
                     Array.from(tbody.children).forEach(tr => {
@@ -874,12 +887,36 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
                         'shadow-[0_8px_25px_rgba(239,68,68,0.2)]'
                     );
                     if (hgContainer) hgContainer.classList.remove('hidden');
-                    if (hgMain) hgMain.style.animation = 'hourglass-flip 15s ease-in-out infinite';
+
+                    const restartAnim = () => {
+                        if (hgMain) {
+                            hgMain.style.animation = 'none';
+                            hgMain.classList.remove('hg-animate-sync');
+                            void hgMain.offsetWidth;
+                            hgMain.style.animation = 'hourglass-flip 15s ease-in-out infinite';
+                            hgMain.classList.add('hg-animate-sync');
+                        }
+
+                        if (updateTimeEl) {
+                            const now = new Date();
+                            updateTimeEl.innerText = now.toLocaleTimeString();
+                            // Visual feedback
+                            updateTimeEl.classList.add('animate-pulse', 'text-accent');
+                            setTimeout(() => {
+                                updateTimeEl.classList.remove('animate-pulse', 'text-accent');
+                            }, 1000);
+                        }
+                    };
+
+                    restartAnim();
 
                     fetchLiveData();
                     // Clear existing interval just in case
                     if (pollInterval) clearInterval(pollInterval);
-                    pollInterval = setInterval(fetchLiveData, 15000); // 15秒更新一次避免被Ban
+                    pollInterval = setInterval(() => {
+                        restartAnim();
+                        fetchLiveData();
+                    }, 15000);
                 } else {
                     sessionStorage.setItem('livePolling', 'false');
                     toggleBtn.innerText = '開始連線';
@@ -915,10 +952,15 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
     <style>
         @keyframes hourglass-flip {
             0%,
-            85% {
+            90% {
                 transform: rotate(0deg);
             }
-            95%,
+            92% {
+                transform: rotate(-10deg);
+            }
+            98% {
+                transform: rotate(190deg);
+            }
             100% {
                 transform: rotate(180deg);
             }

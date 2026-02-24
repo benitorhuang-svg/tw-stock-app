@@ -1,7 +1,7 @@
 ---
 /**
- * MarketBreadth.astro — Market breadth visualization bar
- * Shows advancing vs declining stocks with proportional bar and labels.
+ * MarketBreadth.astro — Deeply Compact Market Breadth Visualization
+ * Minimizes horizontal and vertical space for dense toolbars.
  */
 interface Props {
     up: number;
@@ -18,52 +18,27 @@ const pctDown = total > 0 ? (down / total) * 100 : 0;
 const pctFlat = total > 0 ? (flat / total) * 100 : 0;
 ---
 
-<div class:list={['market-breadth flex flex-col gap-1', className]}>
-    <div class="flex justify-between items-center px-1 h-3.5 relative overflow-hidden">
-        <!-- Left: Down Count -->
-        <div class="flex items-center gap-1.5 shrink-0">
-            <span class="text-[8px] font-black text-bearish/60 uppercase">D</span>
-            <span
-                class="text-[10px] font-mono font-bold text-bearish leading-none"
-                id="breadth-down">{down}</span
-            >
-        </div>
-
-        <!-- Center: Ratio -->
-        <div class="flex items-center gap-1 text-accent/50">
-            <span class="text-[7px] font-black uppercase tracking-tighter">RATIO</span>
-            <span
-                class="text-[10px] font-mono font-black text-accent leading-none"
-                id="breadth-ratio"
-            >
-                {down > 0 ? (up / down).toFixed(2) : '∞'}
-            </span>
-        </div>
-
-        <!-- Right: Up Count -->
-        <div class="flex items-center gap-1.5 shrink-0">
-            <span class="text-[10px] font-mono font-bold text-bullish leading-none" id="breadth-up"
-                >{up}</span
-            >
-            <span class="text-[8px] font-black text-bullish/60 uppercase">U</span>
-        </div>
-
-        <!-- Hidden but present for JS updates -->
-        <span id="breadth-flat" class="hidden">{flat}</span>
-    </div>
-
-    <div
-        class="w-full h-1.5 rounded-full bg-base-deep/80 border border-white/5 overflow-hidden flex relative shadow-inner"
+<div class:list={['market-breadth flex items-center gap-2', className]}>
+    <!-- Tiny Leading Down Count -->
+    <span
+        class="text-[10px] font-mono font-bold text-bearish/80 leading-none shrink-0"
+        id="breadth-down">{down}</span
     >
-        <!-- Declining Bar -->
+
+    <!-- Ultra Sleek Thin Bar Container -->
+    <div
+        class="relative flex-1 h-1.5 min-w-[120px] max-w-[200px] rounded-full bg-white/5 border border-white/5 overflow-hidden flex shadow-inner"
+    >
+        <!-- Declining Segment -->
         <div
             id="breadth-bar-down"
-            class="h-full bg-bearish shadow-[0_0_10px_rgba(34,197,94,0.3)] transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-10"
+            class="h-full bg-bearish transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-10"
             style={`width: ${pctDown}%`}
         >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
         </div>
 
-        <!-- Flat Bar -->
+        <!-- Flat Segment -->
         <div
             id="breadth-bar-flat"
             class="h-full bg-text-muted/10 transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)]"
@@ -71,18 +46,38 @@ const pctFlat = total > 0 ? (flat / total) * 100 : 0;
         >
         </div>
 
-        <!-- Advancing Bar -->
+        <!-- Advancing Segment -->
         <div
             id="breadth-bar-up"
-            class="h-full bg-bullish shadow-[0_0_10px_rgba(239,68,68,0.3)] transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-10"
+            class="h-full bg-bullish transition-all duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] relative z-10"
             style={`width: ${pctUp}%`}
+        >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+        </div>
+
+        <!-- Micro Center Notch -->
+        <div
+            class="absolute left-1/2 top-0 bottom-0 w-px bg-white/30 z-20 shadow-[0_0_2px_rgba(255,255,255,0.3)]"
         >
         </div>
 
-        <!-- Center Divider Glow -->
-        <div
-            class="absolute left-1/2 top-0 bottom-0 w-px bg-white/20 z-20 shadow-[0_0_4px_rgba(255,255,255,0.4)]"
-        >
+        <!-- Floating Ratio Label (Reveals only if enough space or stays centered) -->
+        <div class="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+            <span
+                class="text-[8px] font-mono font-black text-white mix-blend-difference opacity-40 shrink-0"
+                id="breadth-ratio"
+            >
+                {down > 0 ? (up / down).toFixed(2) : '∞'}
+            </span>
         </div>
     </div>
+
+    <!-- Tiny Ending Up Count -->
+    <span
+        class="text-[10px] font-mono font-bold text-bullish/80 leading-none shrink-0"
+        id="breadth-up">{up}</span
+    >
+
+    <!-- Hidden but present for JS updates -->
+    <span id="breadth-flat" class="hidden">{flat}</span>
 </div>
