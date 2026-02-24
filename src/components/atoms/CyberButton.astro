@@ -1,0 +1,14 @@
+---
+// src/components/atoms/CyberButton.astro
+interface Props {
+    id?: string;
+    class?: string;
+    text: string;
+}
+
+const { id, class: className = '', text } = Astro.props;
+---
+
+<button id={id} class={`btn-cyber transition-all ${className}`}>
+    {text}
+</button>

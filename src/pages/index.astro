@@ -12,9 +12,10 @@ import StatCard from '../components/molecules/StatCard.astro';
 import type { StockFullData } from '../utils/stockDataService';
 
 const fmtVol = (v: number) => {
-    if (v >= 1_0000_0000) return `${(v / 1_0000_0000).toFixed(1)}億`;
-    if (v >= 10000) return `${(v / 10000).toFixed(1)}萬`;
-    if (v > 0) return v.toLocaleString('zh-TW');
+    const cv = Math.ceil(v);
+    if (cv >= 1_0000_0000) return `${(cv / 1_0000_0000).toFixed(1)}億`;
+    if (cv >= 10000) return `${(cv / 10000).toFixed(1)}萬`;
+    if (cv > 0) return cv.toLocaleString('zh-TW');
     return '—';
 };
 
@@ -163,9 +164,9 @@ try {
                     <!-- Center: Legend -->
                     <div class="flex items-center justify-center gap-6 lg:gap-10 text-[11px] font-bold flex-1">
                         <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-bullish"></span>
-                            <span class="text-bullish" id="breadth-up">{upCount}</span>
-                            <span class="text-[9px] text-text-muted font-normal uppercase">上漲</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-bearish"></span>
+                            <span class="text-bearish" id="breadth-down">{downCount}</span>
+                            <span class="text-[9px] text-text-muted font-normal uppercase">下跌</span>
                         </div>
                         <div class="flex items-center gap-1.5">
                             <span class="w-1.5 h-1.5 rounded-full bg-text-muted/40"></span>
@@ -173,9 +174,9 @@ try {
                             <span class="text-[9px] text-text-muted font-normal uppercase">平盤</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-bearish"></span>
-                            <span class="text-bearish" id="breadth-down">{downCount}</span>
-                            <span class="text-[9px] text-text-muted font-normal uppercase">下跌</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-bullish"></span>
+                            <span class="text-bullish" id="breadth-up">{upCount}</span>
+                            <span class="text-[9px] text-text-muted font-normal uppercase">上漲</span>
                         </div>
                     </div>
 
@@ -220,9 +221,10 @@ try {
         const headerLed = document.getElementById('connection-status-led');
         
         function formatVolume(v: number) {
-            if (v >= 100000000) return (v / 100000000).toFixed(1) + '億';
-            if (v >= 10000) return (v / 10000).toFixed(1) + '萬';
-            return v.toLocaleString('zh-TW');
+            const cv = Math.ceil(v);
+            if (cv >= 100000000) return (cv / 100000000).toFixed(1) + '億';
+            if (cv >= 10000) return (cv / 10000).toFixed(1) + '萬';
+            return cv.toLocaleString('zh-TW');
         }
 
         // Connection established

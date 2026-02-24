@@ -7,8 +7,9 @@ import MainTerminal from '../layouts/MainTerminal.astro';
 import type { StockFullData } from '../utils/stockDataService';
 
 const fmtVol = (v: number) => {
-    if (v >= 10000) return `${(v / 10000).toFixed(1)}萬`;
-    if (v > 0) return v.toLocaleString('zh-TW');
+    const cv = Math.ceil(v);
+    if (cv >= 10000) return `${(cv / 10000).toFixed(1)}萬`;
+    if (cv > 0) return cv.toLocaleString('zh-TW');
     return '—';
 };
 const fmtPct = (v: number) => (v > 0 ? `+${v.toFixed(2)}%` : `${v.toFixed(2)}%`);
@@ -587,8 +588,40 @@ const presetStrategies = allStrategies.filter(s => supportedIds.includes(s.id));
         function updateVisibilityLimit() {
             if (!rows) return;
             let visible = 0;
-            rows.forEach(row => {
+            const wlStr = localStorage.getItem('watchlist');
+            const wl = wlStr ? JSON.parse(wlStr) : [];
+            const container = document.getElementById('stock-list-grid');
+
+            if (container) {
+                // Read and sort rows, prioritizing watchlist
+                const rowArray = Array.from(rows) as HTMLElement[];
+                rowArray.sort((a, b) => {
+                    const symA = a.dataset.symbol || '';
+                    const symB = b.dataset.symbol || '';
+                    const aStar = wl.includes(symA);
+                    const bStar = wl.includes(symB);
+                    if (aStar && !bStar) return -1;
+                    if (!aStar && bStar) return 1;
+                    return 0;
+                });
+
+                // Re-append sorted rows to container
+                rowArray.forEach(row => container.appendChild(row));
+            }
+
+            rows.forEach((row, i) => {
                 const el = row as HTMLElement;
+                const sym = el.dataset.symbol || '';
+                const starBtn = el.querySelector('.watchlist-toggle-btn span');
+                if (starBtn) {
+                    const isStarred = wl.includes(sym);
+                    starBtn.textContent = isStarred ? '★' : '☆';
+                    el.querySelector('.watchlist-toggle-btn')?.classList.toggle(
+                        'text-accent',
+                        isStarred
+                    );
+                }
+
                 if (el.classList.contains('filter-hidden')) {
                     el.style.display = 'none';
                     return;
@@ -835,10 +868,25 @@ const presetStrategies = allStrategies.filter(s => supportedIds.includes(s.id));
             const btn = (e.target as HTMLElement).closest('.watchlist-toggle-btn');
             if (btn) {
                 e.preventDefault();
+                const code = (btn as HTMLElement).dataset.symbol;
+                if (!code) return;
+
+                let wlStr = localStorage.getItem('watchlist');
+                let wl: string[] = wlStr ? JSON.parse(wlStr) : [];
+
+                if (wl.includes(code)) {
+                    wl = wl.filter(c => c !== code);
+                } else {
+                    wl.push(code);
+                }
+                localStorage.setItem('watchlist', JSON.stringify(wl));
+
                 const star = btn.querySelector('span')!;
-                const isActive = star.textContent === '★';
-                star.textContent = isActive ? '☆' : '★';
-                btn.classList.toggle('text-accent', !isActive);
+                const isStarred = wl.includes(code);
+                star.textContent = isStarred ? '★' : '☆';
+                btn.classList.toggle('text-accent', isStarred);
+
+                updateVisibilityLimit(); // Re-sort and render
             }
         });
     </script>

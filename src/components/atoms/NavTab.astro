@@ -1,0 +1,25 @@
+---
+interface Props {
+    path: string;
+    label: string;
+    icon: string;
+    isActive: boolean;
+    variant: 'desktop' | 'mobile';
+}
+
+const { path, label, icon, isActive, variant } = Astro.props;
+---
+
+{
+    variant === 'desktop' ? (
+        <a href={path} class:list={['top-nav-tab', isActive && 'active']} data-astro-prefetch>
+            <span class="tab-icon">{icon}</span>
+            <span class="tab-label">{label}</span>
+        </a>
+    ) : (
+        <a href={path} class:list={['mobile-nav-item', isActive && 'active']} data-astro-prefetch>
+            <span class="text-lg">{icon}</span>
+            <span class="text-[11px] font-semibold tracking-wider">{label}</span>
+        </a>
+    )
+}

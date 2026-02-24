@@ -1,0 +1,83 @@
+---
+// src/components/atoms/SyncHourglass.astro
+interface Props {
+    class?: string;
+    size?: 'large' | 'small';
+}
+const { class: className = '', size = 'small' } = Astro.props;
+
+const svgClass = size === 'large' ? 'w-20 h-20 opacity-80' : 'w-7 h-7 opacity-80';
+---
+
+<div
+    id="hourglass-container"
+    class={`relative group hidden flex items-center justify-center ${className}`}
+>
+    <svg class={svgClass} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="main-hourglass" class="origin-center shadow-xl">
+            <!-- Glass Frame -->
+            <path
+                d="M30 20 H70 L65 45 Q65 50 65 55 L70 80 H30 L35 55 Q35 50 35 45 Z"
+                stroke="url(#glassGrad)"
+                stroke-width="2"
+                fill="rgba(255,255,255,0.05)"></path>
+            <!-- Upper Sand -->
+            <path
+                id="upper-sand"
+                d="M32 22 H68 L64 45 Q50 48 36 45 Z"
+                fill="#3b82f6"
+                fill-opacity="0.8"
+            >
+                <animate
+                    attributeName="d"
+                    values="M32 22 H68 L64 45 Q50 48 36 45 Z; M48 48 H52 L51 49 Q50 50 49 49 Z; M32 22 H68 L64 45 Q50 48 36 45 Z"
+                    dur="15s"
+                    repeatCount="indefinite"></animate>
+            </path>
+            <!-- Lower Sand -->
+            <path
+                id="lower-sand"
+                d="M48 52 H52 L51 53 Q50 54 49 53 Z"
+                fill="#3b82f6"
+                fill-opacity="0.8"
+            >
+                <animate
+                    attributeName="d"
+                    values="M48 52 H52 L51 53 Q50 54 49 53 Z; M32 78 H68 L66 60 Q50 57 34 60 Z; M48 52 H52 L51 53 Q50 54 49 53 Z"
+                    dur="15s"
+                    repeatCount="indefinite"></animate>
+            </path>
+            <!-- Falling Stream -->
+            <line
+                x1="50"
+                y1="48"
+                x2="50"
+                y2="75"
+                stroke="#3b82f6"
+                stroke-width="1.5"
+                stroke-dasharray="2 4"
+                stroke-opacity="0.6"
+            >
+                <animate
+                    attributeName="stroke-dashoffset"
+                    from="0"
+                    to="20"
+                    dur="0.5s"
+                    repeatCount="indefinite"></animate>
+            </line>
+        </g>
+        <defs>
+            <linearGradient id="glassGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"></stop>
+                <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.4"></stop>
+            </linearGradient>
+        </defs>
+    </svg>
+    {
+        size === 'large' && (
+            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[9px] font-bold text-accent tracking-[.2em] opacity-60 whitespace-nowrap">
+                UPDATE FLOW
+            </div>
+        )
+    }
+</div>

@@ -11,13 +11,7 @@ interface Props {
     class?: string;
 }
 
-const {
-    title,
-    subtitle,
-    badge,
-    badgeVariant = 'accent',
-    class: className = '',
-} = Astro.props;
+const { title, subtitle, badge, badgeVariant = 'accent', class: className = '' } = Astro.props;
 
 const badgeColors: Record<string, string> = {
     accent: 'bg-accent/15 text-accent border-accent/25',
@@ -32,21 +26,25 @@ const badgeColors: Record<string, string> = {
     <div class="flex items-end justify-between gap-4">
         <div class="min-w-0">
             <div class="flex items-center gap-3 mb-1">
-                <h1 class="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary truncate">
+                <h1
+                    class="text-2xl lg:text-3xl font-bold tracking-tight text-text-primary truncate"
+                >
                     {title}
                 </h1>
-                {badge && (
-                    <span class:list={[
-                        'inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border shrink-0',
-                        badgeColors[badgeVariant],
-                    ]}>
-                        {badge}
-                    </span>
-                )}
+                {
+                    badge && (
+                        <span
+                            class:list={[
+                                'inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border shrink-0',
+                                badgeColors[badgeVariant],
+                            ]}
+                        >
+                            {badge}
+                        </span>
+                    )
+                }
             </div>
-            {subtitle && (
-                <p class="text-sm text-text-muted mt-1 line-clamp-2">{subtitle}</p>
-            )}
+            {subtitle && <p class="text-sm text-text-muted mt-1 line-clamp-2">{subtitle}</p>}
         </div>
         <slot name="actions" />
     </div>

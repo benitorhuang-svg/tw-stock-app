@@ -12,7 +12,7 @@ export class TwseApi {
      */
     public async fetchStockList(): Promise<any[]> {
         return twseRateLimiter.schedule(async () => {
-            console.log('[TwseApi] Fetching all stocks daily snapshot...');
+            // console.log('[TwseApi] Fetching all stocks daily snapshot...'); // 隱藏此行以避免終端機洗版
             const response = await fetch(`${this.baseUrl}/exchangeReport/STOCK_DAY_ALL`, {
                 headers: {
                     'User-Agent':

@@ -209,7 +209,12 @@ class KeyboardShortcuts {
             if (res.ok) {
                 const data = await res.json();
                 this.stockList = Array.isArray(data)
-                    ? data.map((s: any) => ({ symbol: String(s.symbol || s.code || ''), name: String(s.name || '') })).filter((s: any) => s.symbol)
+                    ? data
+                          .map((s: any) => ({
+                              symbol: String(s.symbol || s.code || ''),
+                              name: String(s.name || ''),
+                          }))
+                          .filter((s: any) => s.symbol)
                     : [];
             }
         } catch {

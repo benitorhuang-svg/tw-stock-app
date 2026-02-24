@@ -1,0 +1,26 @@
+---
+import { NAV_ITEMS } from '../../config/navigation';
+import NavTab from '../atoms/NavTab.astro';
+
+const currentPath = Astro.url.pathname;
+const isActive = (path: string) =>
+    currentPath === path || (path !== '/' && currentPath.startsWith(path));
+---
+
+<nav
+    class="md:hidden fixed bottom-0 inset-x-0 z-50 mobile-bottom-nav"
+    id="mobile-bottom-nav"
+    aria-label="行動裝置導覽"
+>
+    {
+        NAV_ITEMS.map(item => (
+            <NavTab
+                variant="mobile"
+                path={item.path}
+                label={item.label}
+                icon={item.icon}
+                isActive={isActive(item.path)}
+            />
+        ))
+    }
+</nav>

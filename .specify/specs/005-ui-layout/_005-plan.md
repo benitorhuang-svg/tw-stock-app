@@ -6,6 +6,7 @@
 ## 摘要
 
 針對目前 TWStock PRO 應用程式執行全面 UI/UX 修復與優化，涵蓋：
+
 1. **安全修復** — DB Explorer XSS 漏洞
 2. **功能補全** — 非功能性按鈕、分頁、Tab 狀態保存
 3. **無障礙改善** — 鍵盤導覽、Focus 樣式、色彩對比
@@ -25,28 +26,32 @@
 ## 修復範圍與優先級
 
 ### P0+：資料接線與功能擴充（2026-02-23完成）
+
 1. 真實財報 & 籌碼資料接線
 2. 技術圖改用歷史價格 + MACD
 3. Ctrl+K 搜尋、Toast 通知、CSV 匯出、PWA、效能偵測、即時報價
 4. 增加 Stock List Load More 與 SSE 實時更新
 5. 啟用 prices API (`/api/prices/[symbol]`)
 
-
 ### P0: 安全 (必須立即修復)
+
 1. **DB Explorer XSS** — `database.astro` 的 `innerHTML` 渲染未 escape 的 cell value
 
 ### P1: 功能完整性
+
 2. **非功能性按鈕** — 「⭐ 加入自選」與「🤖 AI 分析報告」需有實際行為或改為 disabled 提示
 3. **Stock list 分頁** — 移除 `.slice(0, 100)` 硬限，改用 Load More 或無限捲動
 4. **Tab 狀態 URL Hash** — 從 URL hash 讀取/寫入 active tab，支援瀏覽器前進/後退
 
 ### P2: 無障礙與體驗
+
 5. **鍵盤 Focus 樣式** — 所有互動元素加 `focus-visible` outline
 6. **色彩對比提升** — `text-text-muted` HSL 40% → 55% 以通過 WCAG AA
 7. **空狀態 Fallback** — Dashboard、Stock list 加空資料提示
 8. **Mobile DB Explorer** — sidebar 改為 collapsible drawer
 
 ### P3: 程式碼品質
+
 9. **ErrorBoundary 整合** — 在所有頁面 layout 內包裝
 10. **未使用元件標記** — 加 `@deprecated` 註解或移除
 

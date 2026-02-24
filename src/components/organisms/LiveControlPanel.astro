@@ -1,0 +1,57 @@
+---
+// src/components/organisms/LiveControlPanel.astro
+import CyberButton from '../atoms/CyberButton.astro';
+import MarketBreadth from './MarketBreadth.astro';
+---
+
+<div class="flex items-center gap-4 flex-1 min-w-0">
+    <!-- Breadth Visual -->
+    <div class="flex-1 min-w-0">
+        <MarketBreadth up={0} down={0} flat={0} total={0} />
+    </div>
+
+    <!-- Connection Button -->
+    <div class="shrink-0">
+        <CyberButton
+            id="toggle-polling-btn"
+            class="h-9 px-6 font-black tracking-widest hover:scale-[1.03] active:scale-[0.97] transition-all bg-accent text-white rounded-lg border-none text-[10px] uppercase shadow-[0_4px_15px_rgba(59,130,246,0.3)] hover:shadow-[0_8px_20px_rgba(59,130,246,0.5)]"
+            text="開始即時監測"
+        />
+    </div>
+</div>
+
+<script>
+    function setupStatusObserver() {
+        const btn = document.getElementById('toggle-polling-btn');
+        if (!btn) return;
+
+        const updateUI = () => {
+            const isRunning = btn.innerText.includes('停止');
+            if (isRunning) {
+                btn.classList.remove('bg-accent', 'shadow-[0_4px_15px_rgba(59,130,246,0.3)]');
+                btn.classList.add(
+                    'bg-bearish/20',
+                    'text-bearish',
+                    'border',
+                    'border-bearish/40',
+                    'shadow-[0_4px_15px_rgba(34,197,94,0.1)]'
+                );
+            } else {
+                btn.classList.add('bg-accent', 'shadow-[0_4px_15px_rgba(59,130,246,0.3)]');
+                btn.classList.remove(
+                    'bg-bearish/20',
+                    'text-bearish',
+                    'border',
+                    'border-bearish/40',
+                    'shadow-[0_4px_15px_rgba(34,197,94,0.1)]'
+                );
+            }
+        };
+
+        const observer = new MutationObserver(updateUI);
+        observer.observe(btn, { childList: true, characterData: true, subtree: true });
+        updateUI();
+    }
+
+    document.addEventListener('astro:page-load', setupStatusObserver);
+</script>

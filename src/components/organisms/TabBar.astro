@@ -96,7 +96,8 @@ const tabs = [
             let nextIdx = currentIdx;
 
             if (event.key === 'ArrowRight') nextIdx = (currentIdx + 1) % tabBtns.length;
-            else if (event.key === 'ArrowLeft') nextIdx = (currentIdx - 1 + tabBtns.length) % tabBtns.length;
+            else if (event.key === 'ArrowLeft')
+                nextIdx = (currentIdx - 1 + tabBtns.length) % tabBtns.length;
             else if (event.key === 'Home') nextIdx = 0;
             else if (event.key === 'End') nextIdx = tabBtns.length - 1;
             else return;

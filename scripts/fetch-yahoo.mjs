@@ -89,7 +89,7 @@ function saveProgress(symbol, index) {
 }
 
 /**
- * 檢查檔案是否完整（大小 > MIN_FILE_SIZE）
+ * 檢查檔案是否完整且為最新（修改時間在 12 小時內）
  */
 function isFileComplete(symbol, name) {
     const safeName = sanitizeFilename(name);
@@ -98,7 +98,11 @@ function isFileComplete(symbol, name) {
     if (!fs.existsSync(filePath)) return false;
 
     const stats = fs.statSync(filePath);
-    return stats.size >= MIN_FILE_SIZE;
+    if (stats.size < MIN_FILE_SIZE) return false;
+
+    // 如果檔案超過 12 小時沒有更新，視為不完整（需要重新下載）
+    const hoursSinceModified = (Date.now() - stats.mtimeMs) / (1000 * 60 * 60);
+    return hoursSinceModified < 12;
 }
 
 /**

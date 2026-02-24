@@ -18,7 +18,10 @@ const isPositive = change !== undefined && change > 0;
 const isNegative = change !== undefined && change < 0;
 ---
 
-<div {...Astro.props} class:list={['glass-card glow-interactive p-4 flex flex-col gap-2', className]}>
+<div
+    {...Astro.props}
+    class:list={['glass-card glow-interactive p-4 flex flex-col gap-2', className]}
+>
     <span class="terminal-label">{label}</span>
     <div class="flex items-baseline gap-1.5">
         <span class="data-value text-2xl text-text-primary">

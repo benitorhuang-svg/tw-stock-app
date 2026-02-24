@@ -81,8 +81,8 @@ export class TechnicalETL {
 
         const padding = new Array(period - 1).fill(null);
         // kd result is an array of objects { k: number, d: number }
-        const kValues = [...padding, ...kd.map((v) => v.k)];
-        const dValues = [...padding, ...kd.map((v) => v.d)];
+        const kValues = [...padding, ...kd.map(v => v.k)];
+        const dValues = [...padding, ...kd.map(v => v.d)];
 
         return { k: kValues, d: dValues };
     }

@@ -17,7 +17,7 @@ const PRESET_FILTERS: Record<string, Omit<ScreenerBody, 'page' | 'limit' | 'stra
     'low-pb': { pb: { max: 1.5 } },
     'high-dividend': { dividendYield: { min: 5 } },
     'revenue-growth': { revenueYoY: { min: 10 } },
-    'momentum': { pe: { max: 25 } },
+    momentum: { pe: { max: 25 } },
     'smart-money': {},
 };
 
@@ -88,7 +88,8 @@ export const POST: APIRoute = async ({ request }) => {
             fromAndWhereSql += ' AND COALESCE(ch.invest_trust, 0) > 0';
         }
         if (strategyId === 'smart-money') {
-            fromAndWhereSql += ' AND lp.change_pct < -2 AND (COALESCE(ch.foreign_inv, 0) + COALESCE(ch.invest_trust, 0)) > 0';
+            fromAndWhereSql +=
+                ' AND lp.change_pct < -2 AND (COALESCE(ch.foreign_inv, 0) + COALESCE(ch.invest_trust, 0)) > 0';
         }
 
         const totalRow = dbService.queryOne<{ total: number }>(
@@ -159,26 +160,31 @@ export const POST: APIRoute = async ({ request }) => {
             };
         });
 
-        return new Response(JSON.stringify({
-            success: true,
-            strategy: strategy ? { id: strategy.id, name: strategy.name } : null,
-            pagination: { page, limit, total, pages: Math.ceil(total / limit) },
-            count: results.length,
-            results
-        }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-        });
-
+        return new Response(
+            JSON.stringify({
+                success: true,
+                strategy: strategy ? { id: strategy.id, name: strategy.name } : null,
+                pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+                count: results.length,
+                results,
+            }),
+            {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
     } catch (error) {
         console.error('Screener API error:', error);
-        return new Response(JSON.stringify({
-            success: false,
-            error: String(error)
-        }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response(
+            JSON.stringify({
+                success: false,
+                error: String(error),
+            }),
+            {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
     }
 };
 
@@ -198,9 +204,11 @@ export const GET: APIRoute = async ({ url }) => {
 
         return new Response(JSON.stringify({ success: true, data: rows }), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
-        return new Response(JSON.stringify({ success: false, error: String(error) }), { status: 500 });
+        return new Response(JSON.stringify({ success: false, error: String(error) }), {
+            status: 500,
+        });
     }
 };

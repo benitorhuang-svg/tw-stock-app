@@ -48,24 +48,54 @@ const dbStats = dbService.getDbStats();
             class="w-64 bg-base-deep border-r border-border flex flex-col z-20 flex-shrink-0 max-md:fixed max-md:inset-y-0 max-md:top-[64px] max-md:left-0 max-md:-translate-x-full max-md:transition-transform max-md:duration-200 max-md:shadow-2xl"
         >
             <!-- DB Health Summary -->
-            <div class="px-4 py-3 border-b border-border space-y-2">
-                <div class="flex items-center justify-between">
-                    <span class="terminal-label">資料庫狀態</span>
-                    <span class="w-2 h-2 rounded-full bg-bullish animate-glow-pulse"></span>
+            <div class="px-5 py-4 border-b border-border/50 relative overflow-hidden">
+                <!-- Decorative background glow -->
+                <div
+                    class="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"
+                >
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <div class="bg-surface rounded p-2">
-                        <div class="text-[11px] text-text-muted uppercase font-bold">資料表數</div>
-                        <div class="data-value text-sm text-accent">{tables.length}</div>
+
+                <div class="flex items-center justify-between mb-4 relative z-10">
+                    <span
+                        class="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2"
+                    >
+                        <span class="w-2 h-2 rounded-full bg-bullish animate-glow-pulse"></span>
+                        系統叢集狀態
+                    </span>
+                    <span
+                        class="text-[10px] font-mono text-text-muted opacity-80 border border-border/50 px-1.5 py-0.5 rounded"
+                        >{dbStats.sizeMB} MB</span
+                    >
+                </div>
+                <div class="grid grid-cols-2 gap-3 relative z-10">
+                    <div
+                        class="bg-surface/40 border border-border/40 rounded-lg p-2.5 backdrop-blur-sm shadow-sm transition-all hover:border-accent/30 group"
+                    >
+                        <div
+                            class="text-[10px] text-text-muted uppercase font-bold mb-1 group-hover:text-accent/80 transition-colors"
+                        >
+                            資料表總數
+                        </div>
+                        <div class="font-mono text-lg text-accent font-bold leading-none">
+                            {tables.length}
+                        </div>
                     </div>
-                    <div class="bg-surface rounded p-2">
-                        <div class="text-[11px] text-text-muted uppercase font-bold">總筆數</div>
-                        <div class="data-value text-sm text-text-primary">
+                    <div
+                        class="bg-surface/40 border border-border/40 rounded-lg p-2.5 backdrop-blur-sm shadow-sm transition-all hover:border-accent/30 group"
+                    >
+                        <div
+                            class="text-[10px] text-text-muted uppercase font-bold mb-1 group-hover:text-accent/80 transition-colors"
+                        >
+                            資料總筆數
+                        </div>
+                        <div
+                            class="font-mono text-lg text-text-primary font-bold leading-none shrink-0"
+                            style="font-size: clamp(0.9rem, 1vw, 1.125rem);"
+                        >
                             {totalRows.toLocaleString()}
                         </div>
                     </div>
                 </div>
-                <div class="text-[11px] font-mono text-text-muted">{dbStats.sizeMB} MB</div>
             </div>
 
             <!-- Table List -->
@@ -80,11 +110,16 @@ const dbStats = dbService.getDbStats();
                         tableStats.map(t => (
                             <li>
                                 <button
-                                    class="w-full text-left px-4 py-2.5 text-xs font-mono text-text-secondary hover:bg-surface-hover hover:text-text-primary transition-all flex items-center justify-between group"
+                                    class="w-full text-left px-5 py-3 text-xs font-mono text-text-secondary hover:bg-accent/5 hover:text-text-primary transition-all flex items-center justify-between group border-l-2 border-transparent"
                                     data-table={t.name}
                                 >
-                                    <span class="truncate">{t.name}</span>
-                                    <span class="text-[11px] text-text-muted font-mono opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex items-center gap-3 truncate">
+                                        <span class="text-text-muted group-hover:text-accent/70 transition-colors">
+                                            🗄️
+                                        </span>
+                                        <span class="truncate">{t.name}</span>
+                                    </div>
+                                    <span class="text-[10px] bg-surface border border-border/40 px-1.5 py-0.5 rounded text-text-muted font-mono opacity-0 group-hover:opacity-100 transition-opacity">
                                         {t.rows.toLocaleString()}
                                     </span>
                                 </button>
@@ -142,17 +177,38 @@ const dbStats = dbService.getDbStats();
                 <!-- Welcome State -->
                 <div
                     id="welcome-message"
-                    class="absolute inset-0 flex flex-col items-center justify-center text-center p-12"
+                    class="absolute inset-0 flex flex-col items-center justify-center p-6"
                 >
                     <div
-                        class="w-16 h-16 bg-surface rounded-2xl flex items-center justify-center text-3xl mb-4 border border-border animate-glow-pulse"
+                        class="glass-card p-10 max-w-xl mx-auto border-accent/20 flex flex-col items-center animate-fade-up w-full"
                     >
-                        🗃️
+                        <div
+                            class="w-24 h-24 mb-6 rounded-3xl bg-surface border border-accent/30 flex items-center justify-center text-5xl shadow-[0_0_30px_rgba(var(--accent-rgb),0.15)] animate-glow-pulse"
+                        >
+                            🗃️
+                        </div>
+                        <h3 class="text-2xl font-bold text-text-primary mb-3">
+                            SQLite 數據核心總管
+                        </h3>
+                        <p class="text-[13px] text-text-secondary mt-2 text-center leading-relaxed">
+                            本面板提供工程級的原始資料檢視與維護功能。<br />
+                            請從左側導覽列選擇目標資料表，以即時檢索市場數據、籌碼變化與基本面指標。
+                        </p>
+                        <div
+                            class="w-2/3 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent my-6"
+                        >
+                        </div>
+                        <div
+                            class="flex items-center gap-6 text-[11px] font-mono text-text-muted uppercase tracking-wider"
+                        >
+                            <span class="flex items-center gap-2"
+                                ><div class="w-1.5 h-1.5 rounded-full bg-bullish"></div> 引擎運作正常</span
+                            >
+                            <span class="flex items-center gap-2"
+                                ><div class="w-1.5 h-1.5 rounded-full bg-accent"></div> 即時連線狀態</span
+                            >
+                        </div>
                     </div>
-                    <h3 class="text-lg font-bold text-text-primary">SQLite 資料總管</h3>
-                    <p class="text-sm text-text-muted mt-2 max-w-sm">
-                        請從側邊欄選擇一個資料表以查看原始記錄、驗證狀態和資料類型。
-                    </p>
                 </div>
 
                 <!-- Error State -->

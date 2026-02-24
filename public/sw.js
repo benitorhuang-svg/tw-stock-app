@@ -6,7 +6,7 @@
  * - Cache-First for static assets and data
  */
 
-const CACHE_NAME = 'tw-stock-terminal-v2';
+const CACHE_NAME = 'tw-stock-terminal-v3';
 const ASSETS_TO_CACHE = ['/', '/manifest.json'];
 
 self.addEventListener('install', event => {

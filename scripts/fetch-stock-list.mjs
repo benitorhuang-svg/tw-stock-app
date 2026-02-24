@@ -88,8 +88,8 @@ async function fetchTWSEStocks() {
         const stocks = data.data
             .filter(row => {
                 const symbol = row[0];
-                // 只取普通股（4位數代號）
-                return /^\d{4}$/.test(symbol);
+                // 取 4 位數代碼 (普通股) 或 00 開頭的代號 (ETF)
+                return /^\d{4}$/.test(symbol) || symbol.startsWith('00');
             })
             .map(row => ({
                 symbol: row[0],
@@ -132,8 +132,8 @@ async function fetchTPExStocks() {
         const stocks = data.aaData
             .filter(row => {
                 const symbol = row[0];
-                // 只取普通股（4位數代號）
-                return /^\d{4}$/.test(symbol);
+                // 取 4 位數代碼 (普通股) 或 00 開頭的代號 (ETF)
+                return /^\d{4}$/.test(symbol) || symbol.startsWith('00');
             })
             .map(row => ({
                 symbol: row[0],

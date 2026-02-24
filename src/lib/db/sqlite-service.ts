@@ -40,7 +40,9 @@ export class SqliteService {
             }
         }
 
-        throw new Error('No healthy SQLite database found (checked stocks.db and public/data/stocks.db)');
+        throw new Error(
+            'No healthy SQLite database found (checked stocks.db and public/data/stocks.db)'
+        );
     }
 
     public static getInstance(): SqliteService {
@@ -76,8 +78,11 @@ export class SqliteService {
             return { sizeBytes: 0, sizeMB: '0.00', totalRecords: 0 };
         }
         const stats = fs.statSync(this.dbPath);
-        const stockCount = this.db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'").get()
-            ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number }).count
+        const stockCount = this.db
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'")
+            .get()
+            ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number })
+                  .count
             : 0;
 
         return {
@@ -92,7 +97,9 @@ export class SqliteService {
      */
     private loadTableNames(): string[] {
         const tables = this.db
-            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+            .prepare(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+            )
             .all() as { name: string }[];
         return tables.map(t => t.name);
     }

@@ -266,7 +266,12 @@ if (fs.existsSync(MONTHLY_STATS_JSON)) {
     );
     const updateBatch = db.transaction(list => {
         for (const item of list) {
-            updateStats.run(item.peRatio || 0, item.pbRatio || 0, item.dividendYield || 0, item.symbol);
+            updateStats.run(
+                item.peRatio || 0,
+                item.pbRatio || 0,
+                item.dividendYield || 0,
+                item.symbol
+            );
         }
     });
     updateBatch(stats);
