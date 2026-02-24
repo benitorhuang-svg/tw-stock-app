@@ -1,0 +1,120 @@
+---
+/**
+ * DatabaseWelcome.astro - The welcome state for Database Explorer containing Registry options and FAQ
+ */
+import RegistryItem from '../atoms/RegistryItem.astro';
+import FAQItem from '../atoms/FAQItem.astro';
+---
+
+<div
+    id="welcome-message"
+    class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-base-deep"
+>
+    <!-- Global Background Effects -->
+    <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] lg:w-[800px] h-[400px] lg:h-[500px] bg-accent/10 blur-[150px] rounded-full pointer-events-none"
+    >
+    </div>
+    <div
+        class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)] pointer-events-none"
+    >
+    </div>
+
+    <div
+        class="relative w-full max-w-none mx-auto p-[1px] rounded-[2.5rem] bg-gradient-to-b from-white/10 via-white/[0.02] to-white/[0.05] animate-fade-up shadow-[0_0_100px_rgba(0,0,0,0.8)] group/core flex flex-col justify-center"
+    >
+        <div
+            class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent opacity-0 group-hover/core:opacity-100 transition-all duration-1000 blur-sm"
+        >
+        </div>
+
+        <div
+            class="relative w-full h-full bg-base/80 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden p-8 xl:p-12 flex flex-col items-center justify-center gap-10 border border-border/50 shadow-glass"
+        >
+            <div class="w-full max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-stretch">
+                <!-- Left Column: Unified Registry Description -->
+                <div class="flex-[2] relative z-10">
+                    <div
+                        class="rounded-2xl border border-border/50 bg-surface/30 px-8 lg:px-12 pb-8 lg:pb-12 h-full flex flex-col justify-center relative overflow-hidden group"
+                    >
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                        </div>
+
+                        <div class="relative z-10 space-y-8">
+                            <div class="mb-10">
+                                <h3
+                                    class="text-lg font-black text-text-primary tracking-[0.2em] uppercase"
+                                >
+                                    資料庫註冊表用途總覽
+                                </h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-3">
+                                <RegistryItem
+                                    title="STOCKS"
+                                    description="紀錄台股上市櫃公司基本資料、產業類別及所屬板塊。"
+                                />
+                                <RegistryItem
+                                    title="LATEST_PRICES"
+                                    description="每日即時收盤股價、漲跌趨勢及成交量能監控。"
+                                />
+                                <RegistryItem
+                                    title="FUNDAMENTALS"
+                                    description="整合本益比、殖利率等關鍵財務指標與基本面數據。"
+                                />
+                                <RegistryItem
+                                    title="VALUATION_HISTORY"
+                                    description="追蹤歷史 PE/PB 估值位階，評估股價長期價值空間。"
+                                />
+                                <RegistryItem
+                                    title="MONTHLY_REVENUE"
+                                    description="掌握公司每月營收發布動態、年增表現與成長動能。"
+                                />
+                                <RegistryItem
+                                    title="CHIPS"
+                                    description="監控三大法人籌碼流向，詳列外資與投信買賣動向。"
+                                />
+                                <RegistryItem
+                                    title="PRICE_HISTORY"
+                                    description="累積百萬筆歷史 K 線數據，支援技術指標開發與分析。"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: FAQ Section -->
+                <div class="flex-1 w-full lg:max-w-md relative z-10 h-full">
+                    <div
+                        class="rounded-2xl border border-border/50 bg-surface/50 overflow-hidden h-full flex flex-col shadow-elevated"
+                    >
+                        <div class="px-6 pt-8 pb-4">
+                            <h3
+                                class="text-sm font-black text-text-primary tracking-[0.2em] uppercase"
+                            >
+                                FAQ
+                            </h3>
+                        </div>
+
+                        <div class="px-6 pb-6 space-y-8 overflow-y-auto custom-scrollbar flex-1">
+                            <FAQItem
+                                question="資料同步頻率為何？"
+                                answer="系統於每日台股收盤後（16:30）自動對接證交所與櫃買中心數據，確保開盤報價、法人籌碼及各類註冊資料即時入庫。"
+                            />
+                            <FAQItem
+                                question="數據缺失或代號找不到？"
+                                answer="若遇特定交易日資料延遲，請利用頂部導覽列之「數據更新」功能手動同步。新掛牌公司資料通常於上市當日盤後完成初始化。"
+                            />
+                            <FAQItem
+                                question="如何執行跨表與量化分析？"
+                                answer="目前觀測站提供核心資料表之即時檢索。若需執行多因子選股、量化回測或複雜關聯查詢，請前往頂部導覽之「策略分析」模組。"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
