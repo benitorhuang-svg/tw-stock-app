@@ -52,7 +52,8 @@
 
     --shadow-glass: 0 4px 12px rgba(0, 0, 0, 0.05);
     --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --shadow-inset: inset 0 1px 0 hsl(0 0% 0% / 0.02);
+    --color-scrollbar: hsl(217 91% 55% / 0.3);
+    --color-scrollbar-hover: hsl(217 91% 55% / 0.6);
 }
 
 .dark {
@@ -96,7 +97,8 @@
 
     --shadow-glass: 0 0 40px rgba(0, 0, 0, 0.5);
     --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
-    --shadow-inset: inset 0 1px 0 hsl(0 0% 100% / 0.05);
+    --color-scrollbar: hsl(217 100% 70% / 0.3);
+    --color-scrollbar-hover: hsl(217 100% 70% / 0.6);
 }
 
 @theme {
@@ -303,28 +305,33 @@
     }
 
     /* Scrollbar styling (Webkit) */
-    ::-webkit-scrollbar {
+    ::-webkit-scrollbar,
+    .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
         height: 6px;
     }
 
-    ::-webkit-scrollbar-track {
+    ::-webkit-scrollbar-track,
+    .custom-scrollbar::-webkit-scrollbar-track {
         background: transparent;
     }
 
-    ::-webkit-scrollbar-thumb {
-        background: hsl(0 0% 100% / 0.1);
+    ::-webkit-scrollbar-thumb,
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--color-scrollbar, hsl(0 0% 50% / 0.2));
         border-radius: 3px;
     }
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: hsl(0 0% 100% / 0.2);
+    ::-webkit-scrollbar-thumb:hover,
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: var(--color-scrollbar-hover, hsl(0 0% 50% / 0.3));
     }
 
     /* Firefox scrollbar */
-    * {
+    *,
+    .custom-scrollbar {
         scrollbar-width: thin;
-        scrollbar-color: hsl(0 0% 100% / 0.1) transparent;
+        scrollbar-color: var(--color-scrollbar, hsl(0 0% 50% / 0.2)) transparent;
     }
 }
 

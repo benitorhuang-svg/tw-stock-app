@@ -1,0 +1,23 @@
+---
+/**
+ * SyncScrollbar.astro - A standalone horizontal scrollbar that can be synced with another element.
+ */
+interface Props {
+    id: string;
+    contentId: string;
+    class?: string;
+}
+
+const { id, contentId, class: className = '' } = Astro.props;
+---
+
+<div
+    id={id}
+    class:list={[
+        'w-full h-auto pb-1 overflow-x-auto overflow-y-hidden custom-scrollbar bg-surface/50 border border-border justify-center sticky',
+        className,
+    ]}
+>
+    <!-- Needs some height to spawn a scrollbar track logically -->
+    <div id={contentId} class="h-[1px] opacity-0 pointer-events-none"></div>
+</div>

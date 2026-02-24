@@ -1,0 +1,20 @@
+---
+/**
+ * FAQItem.astro - Atom for FAQ question and answer
+ */
+interface Props {
+    question: string;
+    answer: string;
+}
+
+const { question, answer } = Astro.props;
+---
+
+<div class="space-y-3">
+    <h4 class="text-[10px] font-black text-accent tracking-[0.2em] uppercase">
+        Q: {question}
+    </h4>
+    <p class="text-[11px] text-text-secondary leading-relaxed font-medium">
+        {answer}
+    </p>
+</div>

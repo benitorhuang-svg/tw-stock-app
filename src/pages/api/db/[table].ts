@@ -5,14 +5,15 @@ export const GET: APIRoute = async ({ params, url }) => {
     const table = params.table;
     const limit = parseInt(url.searchParams.get('limit') || '100');
     const offset = parseInt(url.searchParams.get('offset') || '0');
+    const search = url.searchParams.get('search') || '';
 
     if (!table) {
         return new Response(JSON.stringify({ error: 'Table name is required' }), { status: 400 });
     }
 
     try {
-        const rows = dbService.getTableData(table, { limit, offset });
-        const count = dbService.getTableRowCount(table);
+        const rows = dbService.getTableData(table, { limit, offset, search });
+        const count = dbService.getTableRowCount(table, search);
         const columns = dbService.getTableColumns(table);
 
         return new Response(
@@ -23,6 +24,7 @@ export const GET: APIRoute = async ({ params, url }) => {
                 total: count,
                 limit,
                 offset,
+                search,
             }),
             {
                 status: 200,

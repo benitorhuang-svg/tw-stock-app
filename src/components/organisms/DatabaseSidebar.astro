@@ -19,17 +19,17 @@ const { tables, tableStats, totalRows } = Astro.props;
 
 <aside
     id="db-sidebar"
-    class="w-72 bg-[#050608]/80 backdrop-blur-2xl border-r border-white/5 flex flex-col z-20 flex-shrink-0 max-md:fixed max-md:inset-y-0 max-md:top-[64px] max-md:left-0 max-md:-translate-x-full max-md:transition-transform max-md:duration-300 shadow-[20px_0_50px_rgba(0,0,0,0.5)]"
+    class="w-72 bg-base-deep/80 backdrop-blur-2xl border-r border-border flex flex-col z-20 flex-shrink-0 max-md:fixed max-md:inset-y-0 max-md:top-[64px] max-md:left-0 max-md:-translate-x-full max-md:transition-transform max-md:duration-300 shadow-elevated"
 >
     <!-- DB Health Summary (REMOVED: Optimized for cleaner layout) -->
 
     <!-- Table List Header -->
-    <div class="px-6 py-5 flex items-center justify-between bg-black/40 border-b border-white/5">
-        <span class="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]"
-            >Data Registries</span
+    <div class="px-6 py-5 flex items-center justify-between bg-surface/50 border-b border-border">
+        <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]"
+            >資料庫註冊表</span
         >
-        <span class="text-[9px] font-mono text-white/20 uppercase tracking-widest"
-            >IDX: {tables.length}</span
+        <span class="text-[9px] font-mono text-text-secondary uppercase tracking-widest"
+            >COUNT: {tables.length}</span
         >
     </div>
 
@@ -40,13 +40,13 @@ const { tables, tableStats, totalRows } = Astro.props;
                 tableStats.map(t => (
                     <li>
                         <button
-                            class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-white/60 hover:bg-white/[0.03] hover:text-white transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
+                            class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
                             data-table={t.name}
                         >
                             <div class="flex items-center gap-3 truncate">
-                                <div class="w-6 h-6 rounded-lg overflow-hidden flex items-center justify-center bg-white/5 border border-white/10 group-hover:border-accent/40 group-hover:bg-accent/10 transition-all">
+                                <div class="w-6 h-6 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all">
                                     <svg
-                                        class="w-3.5 h-3.5 text-white/30 group-hover:text-accent"
+                                        class="w-3.5 h-3.5 text-text-muted group-hover:text-accent"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
@@ -63,7 +63,7 @@ const { tables, tableStats, totalRows } = Astro.props;
                                     {t.name}
                                 </span>
                             </div>
-                            <span class="text-[9px] text-white/20 group-hover:text-accent font-mono transition-colors">
+                            <span class="text-[9px] text-text-muted group-hover:text-accent font-mono transition-colors">
                                 {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
                             </span>
                         </button>

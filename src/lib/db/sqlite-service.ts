@@ -130,20 +130,51 @@ export class SqliteService {
     }
 
     /**
-     * Get paginated table data
+     * Get paginated table data with optional search
      */
-    public getTableData(table: string, options: { limit: number; offset: number }): any[] {
+    public getTableData(
+        table: string,
+        options: { limit: number; offset: number; search?: string }
+    ): any[] {
         const safe = this.validateTableName(table);
-        const sql = `SELECT * FROM "${safe}" LIMIT ? OFFSET ?`;
-        return this.db.prepare(sql).all(options.limit, options.offset);
+        let sql = `SELECT * FROM "${safe}"`;
+        const params: any[] = [];
+
+        if (options.search) {
+            const columns = this.getTableColumns(table);
+            const whereClause = columns
+                .map(col => `"${col.name}" LIKE ?`)
+                .join(' OR ');
+            sql += ` WHERE ${whereClause}`;
+            const searchPattern = `%${options.search}%`;
+            columns.forEach(() => params.push(searchPattern));
+        }
+
+        sql += ` LIMIT ? OFFSET ?`;
+        params.push(options.limit, options.offset);
+
+        return this.db.prepare(sql).all(...params);
     }
 
     /**
-     * Get row count for a specific table
+     * Get row count for a specific table with optional search
      */
-    public getTableRowCount(table: string): number {
+    public getTableRowCount(table: string, search?: string): number {
         const safe = this.validateTableName(table);
-        const result = this.db.prepare(`SELECT count(*) as count FROM "${safe}"`).get() as {
+        let sql = `SELECT count(*) as count FROM "${safe}"`;
+        const params: any[] = [];
+
+        if (search) {
+            const columns = this.getTableColumns(table);
+            const whereClause = columns
+                .map(col => `"${col.name}" LIKE ?`)
+                .join(' OR ');
+            sql += ` WHERE ${whereClause}`;
+            const searchPattern = `%${search}%`;
+            columns.forEach(() => params.push(searchPattern));
+        }
+
+        const result = this.db.prepare(sql).get(...params) as {
             count: number;
         };
         return result.count;

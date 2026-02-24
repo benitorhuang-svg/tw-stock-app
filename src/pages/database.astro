@@ -9,7 +9,9 @@ import DatabaseExplorer from '../components/organisms/DatabaseExplorer.astro';
 
 // SSR: Load initial table stats
 import { dbService } from '../lib/db/sqlite-service';
-const tables = dbService.getTables();
+let tables = dbService.getTables();
+// Filter out dividends since it has no data and is confusing
+tables = tables.filter(t => t !== 'dividends');
 
 const tableStats = tables.map(t => {
     try {
@@ -48,21 +50,6 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
 </MainTerminal>
 
 <style is:global>
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
     #data-table {
         table-layout: auto;
         min-width: 100%;
@@ -107,6 +94,12 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
     const errorMsg = getEl('error-message');
     const queryTimeLabel = getEl('query-time');
     const pageNumLabel = getEl('page-num');
+    const tableControls = getEl('table-controls');
+    const tableNameContainer = getEl('table-name-container');
+    const explorerToolbar = getEl('explorer-toolbar');
+    const topScrollbar = getEl('top-scrollbar');
+    const topScrollContent = getEl('top-scroll-content');
+    const tableScrollContainer = getEl('table-scroll-container');
 
     function setLoading(isLoading: boolean) {
         if (!loadingBar) return;
@@ -134,12 +127,22 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
         setLoading(true);
         if (dbError) dbError.classList.add('hidden');
         if (welcomeMsg) welcomeMsg.classList.add('hidden');
+        if (tableNameContainer) tableNameContainer.classList.remove('hidden');
+        if (explorerToolbar) {
+            explorerToolbar.classList.remove('hidden', 'opacity-0');
+        }
+        if (tableControls) {
+            tableControls.classList.remove('hidden', 'opacity-0');
+        }
         if (dataTable) dataTable.classList.remove('hidden');
+        if (topScrollbar) topScrollbar.classList.remove('hidden');
 
         try {
             const offset = (page - 1) * limit;
+            const searchInput = getEl('global-search') as HTMLInputElement;
+            const searchTerm = searchInput?.value || '';
             const res = await fetch(
-                `/api/db/${encodeURIComponent(name)}?limit=${limit}&offset=${offset}`,
+                `/api/db/${encodeURIComponent(name)}?limit=${limit}&offset=${offset}&search=${encodeURIComponent(searchTerm)}`,
                 { signal: activeController.signal }
             );
             if (seq !== requestSeq) return;
@@ -155,15 +158,24 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
             if (pageNumLabel) pageNumLabel.textContent = page.toString();
             currentPage = page;
 
+            // Handle Pagination Buttons
+            const prevBtn = getEl('prev-page') as HTMLButtonElement | null;
+            const nextBtn = getEl('next-page') as HTMLButtonElement | null;
+            if (prevBtn) prevBtn.disabled = page <= 1;
+            if (nextBtn) {
+                const totalPages = Math.ceil(data.total / limit);
+                nextBtn.disabled = page >= totalPages;
+            }
+
             // Render Header
             if (tableHead) {
                 tableHead.innerHTML = `<tr>${data.columns
                     .map(
                         (col: any) => `
-                    <th class="cursor-pointer px-6 py-4 text-[9px] tracking-[0.2em] font-black text-white/30 border-r border-white/5 hover:bg-accent/5 hover:text-accent transition-all uppercase" data-asc="false">
+                    <th class="cursor-pointer px-6 py-4 text-[9px] tracking-[0.2em] font-black text-text-muted border-r border-border hover:bg-accent-glow hover:text-accent transition-all uppercase" data-asc="false">
                         <div class="flex flex-col gap-1">
                             <span>${escapeHtml(col.name)}</span>
-                            <span class="text-[7px] text-white/10 font-mono tracking-widest">${escapeHtml(col.type)}</span>
+                            <span class="text-[7px] text-text-muted opacity-50 font-mono tracking-widest">${escapeHtml(col.type)}</span>
                         </div>
                     </th>`
                     )
@@ -172,23 +184,17 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
 
             // Render Body
             if (tableBody) {
-                const searchInput = getEl('global-search') as HTMLInputElement;
-                const filterText = searchInput?.value.toLowerCase() || '';
-                const filteredRows = filterText
-                    ? data.rows.filter((r: any) =>
-                          Object.values(r).some(v => String(v).toLowerCase().includes(filterText))
-                      )
-                    : data.rows;
+                const rows = data.rows;
 
-                tableBody.innerHTML = filteredRows
+                tableBody.innerHTML = rows
                     .map(
                         (row: any) => `
-                    <tr class="hover:bg-white/[0.02] transition-colors group/row">
+                    <tr class="hover:bg-glass-hover transition-colors group/row">
                         ${data.columns
                             .map((col: any) => {
                                 const val = row[col.name];
                                 const isNull = val === null || val === undefined;
-                                let style = 'text-white/60';
+                                let style = 'text-text-muted';
                                 let display = isNull ? 'NULL' : escapeHtml(val);
                                 if (!isNull && typeof val === 'number') {
                                     if (col.name.toLowerCase().includes('pct')) {
@@ -203,18 +209,18 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
                                     ) {
                                         style = 'text-accent font-bold';
                                     } else {
-                                        style = 'text-white/80 font-mono';
+                                        style = 'text-text-secondary font-mono';
                                     }
                                 }
-                                return `<td class="px-6 py-4 text-[11px] border-r border-white/5 ${isNull ? 'bg-red-950/20 text-red-500/80 italic' : style}"><div class="db-cell truncate">${display}</div></td>`;
+                                return `<td class="px-6 py-4 text-[11px] border-r border-border ${isNull ? 'bg-red-500/10 text-red-500 dark:text-red-400 italic' : style}"><div class="db-cell truncate">${display}</div></td>`;
                             })
                             .join('')}
                     </tr>`
                     )
                     .join('');
 
-                if (filteredRows.length === 0 && filterText) {
-                    tableBody.innerHTML = `<tr><td colspan="99" class="py-20 text-center font-mono text-white/10 text-[9px] tracking-widest uppercase">Zero_Entities_Isolated</td></tr>`;
+                if (rows.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="99" class="py-20 text-center font-mono text-text-muted opacity-50 text-[9px] tracking-widest uppercase">Zero_Entities_Isolated</td></tr>`;
                 }
             }
 
@@ -247,23 +253,58 @@ const totalRows = tableStats.reduce((s, t) => s + t.rows, 0);
             loadTable(activeTable);
         });
 
-        // Search
-        getEl('global-search')?.addEventListener(
-            'input',
-            () => activeTable && loadTable(activeTable, currentPage)
-        );
-
         // Pagination
-        getEl('prev-page')?.addEventListener(
-            'click',
-            () => currentPage > 1 && loadTable(activeTable, currentPage - 1)
-        );
-        getEl('next-page')?.addEventListener('click', () =>
-            loadTable(activeTable, currentPage + 1)
-        );
+        getEl('prev-page')?.addEventListener('click', () => {
+            if (currentPage > 1) loadTable(activeTable, currentPage - 1);
+        });
+
+        getEl('next-page')?.addEventListener('click', () => {
+            loadTable(activeTable, currentPage + 1);
+        });
+
+        if (topScrollbar && tableScrollContainer) {
+            let isSyncingTop = false;
+            let isSyncingBottom = false;
+
+            topScrollbar.addEventListener('scroll', function () {
+                if (!isSyncingTop) {
+                    isSyncingBottom = true;
+                    tableScrollContainer.scrollLeft = this.scrollLeft;
+                }
+                isSyncingTop = false;
+            });
+
+            tableScrollContainer.addEventListener('scroll', function () {
+                if (!isSyncingBottom) {
+                    isSyncingTop = true;
+                    topScrollbar.scrollLeft = this.scrollLeft;
+                }
+                isSyncingBottom = false;
+            });
+
+            // Reliable width synchronization
+            if (topScrollContent && dataTable) {
+                const rsObserver = new ResizeObserver(() => {
+                    topScrollContent.style.width = `${dataTable.scrollWidth}px`;
+                });
+                rsObserver.observe(dataTable);
+                rsObserver.observe(tableScrollContainer);
+            }
+        }
+
+        // Global Search with debounce
+        let searchTimeout: any;
+        getEl('global-search')?.addEventListener('input', e => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadTable(activeTable, 1);
+            }, 300);
+        });
+
+        // Page Limit
         getEl('page-limit')?.addEventListener('change', e => {
             limit = parseInt((e.target as HTMLSelectElement).value);
-            if (activeTable) loadTable(activeTable, 1);
+            loadTable(activeTable, 1);
         });
 
         // SSE for ticks
