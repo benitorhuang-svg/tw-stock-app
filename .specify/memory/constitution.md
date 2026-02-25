@@ -1,6 +1,6 @@
 # TW Stock App — 專案憲法
 
-> 最後更新：2026-02-22 · Version 3.0
+> 最後更新：2026-02-25 · Version 4.0
 
 ## 一、核心模組與資料分析流程圖 (Architecture & Data Flow)
 
@@ -84,12 +84,14 @@ flowchart TD
 ### IV. Atomic Design & Modularity
 
 - 採用 **Atomic Design (原子化設計)** 建立元件階層：
-    - **Atoms (原子)**: 最小功能的標記 (Button, Input, Icon)
-    - **Molecules (分子)**: 原子組合 (SearchField, StatsItem)
-    - **Organisms (生物)**: 複雜 UI 區塊 (StockCard, MultiChart, Navigation)
-    - **Templates (模板)**: 佈局排版 (PageLayout, SidebarLayout)
-    - **Pages (頁面)**: 最終呈現與資料注入
-- 遵循「高內聚、低耦合」原則，UI 邏輯與業務邏輯分離
+    - **Atoms (原子) — 11 個**: 最小功能的標記 (Badge, CyberButton, Skeleton, NavTab, SearchInput...)
+    - **Molecules (分子) — 59 個**: 原子組合 (StatCard, MarketBreadth, MoverRow, StockCard...)
+    - **Organisms (生物) — 27 個**: 複雜 UI 區塊 (StockScreener, TabBar, CyberCalendar, StrategicHUD...)
+    - **Templates/Layouts — 2 個**: 佈局排版 (MainTerminal, BaseHead)
+    - **Pages — 8 個**: 最終呈現與資料注入 (Dashboard, Screener, Live, Database, Institutional, Watchlist, Stocks...)
+    - **Engine Scripts — 13 個**: 客戶端互動邏輯 (global/dashboard/live/screener/database/stocks-symbol...)
+- 遵循「高內聯、低耦合」原則，UI 邏輯與業務邏輯分離
+- 完整元件登記詳見 `005-ui-layout/001-system-ui-architecture.md`
 
 ### V. Quantum Terminal Design System (Premium UX)
 
@@ -111,9 +113,14 @@ flowchart TD
 
 ### VI. Performance & Integrity Standards
 
-- LCP < 0.8s, FPS 穩穩定 60 (WebGL Layer)。
+- LCP < 0.8s, FPS 穩定 60 (WebGL Layer)。
 - **Zero CLS**: 所有異步組件必須有精確高度的 Skeleton。
 - **Fail-Safe UI**: 所有資料映射必須具備可選鏈 (`?.`) 與 Default Fallback，禁出現 `undefined` 字樣。
+- **SQLite 優化**: Prepared Statement Cache、WAL mode、mmap 3GB、temp_store MEMORY、synchronous OFF。
+- **API Cache**: Cache-Control headers (30s POST / 60s GET screener)。
+- **Client Font**: 非阻塞 preload + script-based 升級 (消除 FOIT)。
+- **SW v4 分層快取**: Cache-First 靜態 / Stale-While-Revalidate 數據 / Network-First HTML。
+- **Build 分割**: Vite manual chunk splitting (vendor/sqljs/chart/indicators)，ES2022 target。
 
 ### VII. Strict Specification Adherence
 
@@ -142,6 +149,10 @@ flowchart TD
 | 004 | CSV → SQLite 遷移 (800ms → <50ms)          | ✅ 已完成   |
 | 005 | 效能模式四級偵測 (high/medium/low/minimal) | ⚠️ 部分實施 |
 | 006 | 選股篩選器本地優先執行                     | ✅ 已實施   |
+| 007 | SQLite 效能調校 (WAL + Stmt Cache + mmap)  | ✅ 已實施   |
+| 008 | PWA Service Worker v4 分層快取策略         | ✅ 已實施   |
+| 009 | SSR/SSG 雙模建置 (STATIC_BUILD env var)    | ✅ 已實施   |
+| 010 | GitHub Pages 靜態部署 (deploy-pwa.yml)     | ✅ 已實施   |
 
 ## 五、測試狀態
 
@@ -153,11 +164,13 @@ flowchart TD
 ## 六、已知技術債
 
 1. 13 個 lib 模組無測試（覆蓋率 46%）
-2. SPA 導覽事件監聽器堆疊（組件未冪等初始化）
+2. SPA 導覽事件監聯器堆疊（組件未冪等初始化）
 3. twse-api.ts 缺乏重試 / backoff 機制
 4. stock-service.ts 部分使用 any 型別
-5. Mobile viewport 100vh 佈局跳動
+5. Mobile viewport 100vh 佈局跳動（已改用 `100dvh`）
 6. IndexedDB 容量未監控
+7. GitHub Pages 靜態建置時 API routes 不可用（需 SSR server）
+8. `_deprecated/` 資料夾尚未清除
 
 ## 七、SDD 開發工作流與輔助腳本 (Workflow & Automation)
 

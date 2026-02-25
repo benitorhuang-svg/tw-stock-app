@@ -11,8 +11,8 @@ type SqlValue = string | number | boolean | null | Buffer;
 
 export class SqliteService {
     private static instance: SqliteService;
-    private db: InstanceType<typeof Database>;
-    private dbPath: string;
+    private db: InstanceType<typeof Database> | null;
+    private dbPath: string | null;
     private cachedTables: Set<string>;
     private columnCache: Map<string, { name: string, type: string }[]> = new Map();
     private rowCountCache: Map<string, number> = new Map();
@@ -20,16 +20,21 @@ export class SqliteService {
 
     private constructor() {
         this.dbPath = this.resolveHealthyDbPath();
-        this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
-        this.db.pragma('journal_mode = WAL');     // WAL for concurrent reads
-        this.db.pragma('cache_size = -32000');     // 32MB page cache
-        this.db.pragma('mmap_size = 3145728000');  // Memory-map up to ~3GB
-        this.db.pragma('temp_store = MEMORY');      // Temp tables in RAM
-        this.db.pragma('synchronous = OFF');        // Readonly DB, no sync needed
-        this.cachedTables = new Set(this.loadTableNames());
+        if (this.dbPath) {
+            this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
+            this.db.pragma('journal_mode = WAL');
+            this.db.pragma('cache_size = -32000');
+            this.db.pragma('mmap_size = 3145728000');
+            this.db.pragma('temp_store = MEMORY');
+            this.db.pragma('synchronous = OFF');
+            this.cachedTables = new Set(this.loadTableNames());
+        } else {
+            this.db = null;
+            this.cachedTables = new Set();
+        }
     }
 
-    private resolveHealthyDbPath(): string {
+    private resolveHealthyDbPath(): string | null {
         const candidates = [
             path.resolve(process.cwd(), 'public', 'data', 'stocks.db'),
         ];
@@ -51,9 +56,9 @@ export class SqliteService {
             }
         }
 
-        throw new Error(
-            'No healthy SQLite database found (checked stocks.db and public/data/stocks.db)'
-        );
+        // No DB found — graceful degradation for static builds
+        console.warn('[SqliteService] No SQLite database found — running in fallback mode');
+        return null;
     }
 
     public static getInstance(): SqliteService {
@@ -70,6 +75,7 @@ export class SqliteService {
      * Get or create a cached prepared statement
      */
     private getStmt(sql: string) {
+        if (!this.db) throw new Error('DB not available');
         let stmt = this.stmtCache.get(sql);
         if (!stmt) {
             stmt = this.db.prepare(sql);
@@ -79,10 +85,12 @@ export class SqliteService {
     }
 
     public queryAll<T>(sql: string, params: SqlValue[] = []): T[] {
+        if (!this.db) return [];
         return this.getStmt(sql).all(...params) as T[];
     }
 
     public queryOne<T>(sql: string, params: SqlValue[] = []): T | undefined {
+        if (!this.db) return undefined;
         return this.getStmt(sql).get(...params) as T;
     }
 
@@ -90,6 +98,7 @@ export class SqliteService {
      * Get raw DB instance for advanced usages (like prepared statements in marketService)
      */
     public getRawDb(): InstanceType<typeof Database> {
+        if (!this.db) throw new Error('DB not available');
         return this.db;
     }
 
@@ -97,7 +106,7 @@ export class SqliteService {
      * T004: 獲取資料庫統計資訊
      */
     public getDbStats() {
-        if (!fs.existsSync(this.dbPath)) {
+        if (!this.dbPath || !this.db || !fs.existsSync(this.dbPath)) {
             return { sizeBytes: 0, sizeMB: '0.00', totalRecords: 0 };
         }
         const stats = fs.statSync(this.dbPath);
@@ -119,6 +128,7 @@ export class SqliteService {
      * Get list of all user tables
      */
     private loadTableNames(): string[] {
+        if (!this.db) return [];
         const tables = this.db
             .prepare(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
@@ -150,7 +160,7 @@ export class SqliteService {
             return this.columnCache.get(safe)!;
         }
 
-        const columns = this.db.prepare(`PRAGMA table_info("${safe}")`).all() as {
+        const columns = this.db!.prepare(`PRAGMA table_info("${safe}")`).all() as {
             name: string;
             type: string;
         }[];
@@ -189,7 +199,7 @@ export class SqliteService {
         sql += ` LIMIT ? OFFSET ?`;
         params.push(options.limit, options.offset);
 
-        return this.db.prepare(sql).all(...params) as T[];
+        return this.db!.prepare(sql).all(...params) as T[];
     }
 
     /**
@@ -221,7 +231,7 @@ export class SqliteService {
             }
         }
 
-        const result = this.db.prepare(sql).get(...params) as {
+        const result = this.db!.prepare(sql).get(...params) as {
             count: number;
         };
 
