@@ -1,0 +1,59 @@
+name: Build & Deploy PWA
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch: # 允許手動觸發
+
+permissions:
+    contents: write
+
+jobs:
+    build-pwa:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: "npm"
+
+            - name: Install Dependencies
+              run: npm ci
+
+            - name: Install sharp for icon generation
+              run: npm install -D sharp
+
+            - name: Generate PWA Icons
+              run: node scripts/generate-pwa-icons.mjs
+
+            - name: Build Database (if data exists)
+              run: |
+                  if [ -f "public/data/stocks.json" ]; then
+                      npm run build-db || echo "DB build skipped"
+                  fi
+
+            - name: Build Astro (SSR)
+              run: npm run build
+
+            - name: Commit generated PWA assets
+              run: |
+                  git config --local user.name "github-actions[bot]"
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git add -f public/icons/
+                  git diff --cached --quiet || git commit -m "chore: generate PWA icons [skip ci]"
+                  git push || echo "Nothing to push"
+
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: tw-stock-server-bundle
+                  path: |
+                      dist/
+                      package.json
+                      package-lock.json
+                  retention-days: 7
