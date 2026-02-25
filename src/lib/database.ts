@@ -330,13 +330,10 @@ if (typeof window !== 'undefined') {
     // 頁面關閉前儲存
     window.addEventListener('beforeunload', () => {
         if (db) {
-            const data = db.export();
-            // 同步儲存（使用 localStorage 作為備份）
             try {
-                const base64 = btoa(String.fromCharCode(...data));
-                localStorage.setItem('tw-stock-db-backup', base64);
+                saveDatabase().catch(() => { });
             } catch (e) {
-                console.warn('[DB] Backup too large for localStorage');
+                console.warn('[DB] Failed to save on unload');
             }
         }
     });

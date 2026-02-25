@@ -8,7 +8,6 @@ import { ClientRouter } from 'astro:transitions';
 import BaseHead from './BaseHead.astro';
 import DesktopNavTabs from '../components/molecules/DesktopNavTabs.astro';
 import MobileNavTabs from '../components/molecules/MobileNavTabs.astro';
-import RefreshTerminal from '../components/organisms/RefreshTerminal.astro';
 import { dbService } from '../lib/db/sqlite-service';
 import '../styles/global.css';
 
@@ -60,30 +59,8 @@ const { title, description, fullWidth = false } = Astro.props;
                         </div>
                     </a>
 
-                    <!-- Consolidated Refresh & Standalone Data Obs -->
+                    <!-- Consolidated Standalone Data Obs -->
                     <div class="hidden md:flex items-center gap-3 mr-3 lg:mr-5">
-                        <!-- Data Update Group -->
-                        <div class="flex flex-col items-start group">
-                            <button
-                                id="refresh-data-btn"
-                                class="flex items-center gap-1 btn-cyber py-1 px-3 text-[11px] h-[26px] shrink-0 font-bold tracking-wider hover:shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)] transition-shadow"
-                            >
-                                <span>資料更新</span>
-                            </button>
-                            <div
-                                class="flex items-center gap-2 mt-1 ml-0.5 opacity-40 group-hover:opacity-100 transition-opacity"
-                            >
-                                <span
-                                    class="text-[9px] font-mono font-bold text-accent tracking-tighter uppercase leading-none"
-                                    >{dbStats.sizeMB} MB</span
-                                >
-                                <span
-                                    class="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]"
-                                    >DISK_USAGE</span
-                                >
-                            </div>
-                        </div>
-
                         <!-- Data Observation (Extracted Standalone) -->
                         <a
                             href="/database"
@@ -106,13 +83,6 @@ const { title, description, fullWidth = false } = Astro.props;
                 <!-- Right: System Status -->
                 <div class="flex items-center gap-3">
                     <slot name="header-actions" />
-                    <!-- Mobile Refresh Button -->
-                    <button
-                        id="mobile-refresh-data-btn"
-                        class="md:hidden btn-cyber py-1 px-2 text-xs h-[28px] shrink-0 font-bold tracking-wider hover:shadow-[0_0_15px_rgba(var(--accent-rgb),0.3)] transition-shadow"
-                    >
-                        ⚡更新
-                    </button>
                     <!-- Theme toggle -->
                     <div class="flex items-center gap-2">
                         <button
@@ -130,10 +100,8 @@ const { title, description, fullWidth = false } = Astro.props;
             <div class="nav-glow-line"></div>
         </header>
 
-        <RefreshTerminal />
-
         <!-- ═══ Main Workspace ═══ -->
-        
+
         <main
             class:list={[
                 'flex-1 overflow-y-auto overflow-x-hidden',

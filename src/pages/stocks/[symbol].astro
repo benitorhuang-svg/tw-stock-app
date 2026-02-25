@@ -16,7 +16,10 @@ import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
 import type { StockWithDetails, PriceHistoryRecord } from '../../types/stock';
 import { fetchStockPrices } from '../../utils/priceService';
 
-// Required for static builds
+// Prerender only during static builds (GitHub Pages); SSR mode renders on demand
+export const prerender = import.meta.env.STATIC_BUILD === 'true';
+
+// getStaticPaths is only used when prerender = true (static build)
 export async function getStaticPaths() {
     try {
         const { loadStockList } = await import('../../utils/stockDataService');

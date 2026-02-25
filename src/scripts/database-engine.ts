@@ -185,24 +185,46 @@ async function loadTable(name: string, page = 1) {
 }
 
 function initExplorer() {
-    if (!getEl('table-list')) return;
-
-    const tableList = getEl('table-list');
-    // Prevent duplicate listener
-    if (tableList && !tableList.dataset.bound) {
-        tableList.dataset.bound = 'true';
-        tableList.addEventListener('click', e => {
-            const btn = (e.target as HTMLElement).closest('button');
+    const sidebar = getEl('db-sidebar');
+    if (sidebar && !sidebar.dataset.bound) {
+        sidebar.dataset.bound = 'true';
+        sidebar.addEventListener('click', e => {
+            const btn = (e.target as HTMLElement).closest('button[data-table]');
             if (!btn) return;
-            tableList
-                .querySelectorAll('button')
+
+            sidebar
+                .querySelectorAll('button[data-table]')
                 .forEach(b =>
                     b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent')
                 );
             btn.classList.add('bg-white/[0.1]', 'text-accent', 'border-l-accent');
-            activeTable = btn.dataset.table || '';
-            currentPage = 1;
-            loadTable(activeTable);
+
+            activeTable = (btn as HTMLElement).dataset.table || '';
+
+            const toggleOpt = (id: string, action: 'add' | 'remove', ...classes: string[]) => {
+                const el = getEl(id);
+                if (el) el.classList[action](...classes);
+            };
+
+            if (activeTable === 'refresh') {
+                if (activeController) {
+                    activeController.abort();
+                    activeController = null;
+                }
+                toggleOpt('grid-container', 'add', 'hidden');
+                toggleOpt('explorer-toolbar', 'add', 'hidden');
+                toggleOpt('refresh-area', 'remove', 'hidden');
+                toggleOpt('refresh-area', 'add', 'flex');
+                return;
+            } else {
+                toggleOpt('grid-container', 'remove', 'hidden');
+                toggleOpt('explorer-toolbar', 'remove', 'hidden');
+                toggleOpt('refresh-area', 'add', 'hidden');
+                toggleOpt('refresh-area', 'remove', 'flex');
+
+                currentPage = 1;
+                loadTable(activeTable);
+            }
         });
     }
 

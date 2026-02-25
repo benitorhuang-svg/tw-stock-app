@@ -47,16 +47,23 @@ initPerformanceMode();
 
 // Interactive Glow Tracker — follows cursor on .glow-interactive elements
 let ticking = false;
+let glowElements: HTMLElement[] = [];
+
+// Cache glow elements on page load instead of querying every mouse move
+const cacheGlowElements = () => {
+    glowElements = Array.from(document.querySelectorAll<HTMLElement>('.glow-interactive'));
+};
+document.addEventListener('astro:page-load', cacheGlowElements);
+
 document.addEventListener('mousemove', (e: MouseEvent) => {
-    if (ticking) return;
+    if (ticking || glowElements.length === 0) return;
     ticking = true;
     requestAnimationFrame(() => {
-        const elements = document.querySelectorAll<HTMLElement>('.glow-interactive');
-        elements.forEach(el => {
+        for (const el of glowElements) {
             const rect = el.getBoundingClientRect();
             el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
             el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
-        });
+        }
         ticking = false;
     });
 });

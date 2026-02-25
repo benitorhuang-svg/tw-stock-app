@@ -83,24 +83,30 @@ const insights = [
 </div>
 
 <script define:vars={{ symbol }} is:inline>
-    // Fetch live quote for the current stock and update the price display
+    // Fetch live quote via the unified intraday API (includes price in meta)
     async function fetchLiveQuote() {
         try {
-            const res = await fetch(`/api/live-quote.json?symbol=${encodeURIComponent(symbol)}`);
+            const res = await fetch(`/api/intraday?symbol=${encodeURIComponent(symbol)}`);
             if (!res.ok) return;
-            const data = await res.json();
-            if (!data.price) return;
+            const json = await res.json();
+            if (json.status !== 'success' || !json.meta) return;
+
+            const price = json.meta.prevClose;
+            // Use last data point price if available (more current than prevClose)
+            const lastPoint = json.data?.[json.data.length - 1];
+            const currentPrice = lastPoint?.price ?? price;
+            if (!currentPrice) return;
 
             // Update all price displays in the parent page
             const priceTag = document.querySelector('[data-tab-content="overview"] .data-value');
             if (priceTag) {
-                priceTag.textContent = data.price.toFixed(2);
+                priceTag.textContent = currentPrice.toFixed(2);
             }
 
             // Update the floating price tag in the chart
             const floatingPrice = document.querySelector('#chart-area .font-mono.font-bold');
             if (floatingPrice) {
-                floatingPrice.textContent = data.price.toFixed(2);
+                floatingPrice.textContent = currentPrice.toFixed(2);
             }
 
             // Update LIVE indicator timestamp
@@ -108,12 +114,14 @@ const insights = [
                 '[data-tab-content="overview"] .terminal-label'
             );
             if (liveLabel && liveLabel.textContent?.includes('日內走勢')) {
-                const timeStr = new Date(data.time).toLocaleTimeString('zh-TW', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
+                const timeStr = lastPoint
+                    ? new Date(lastPoint.time).toLocaleTimeString('zh-TW', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                      })
+                    : '';
                 const statusEl = liveLabel.parentElement?.querySelector('.text-text-muted');
-                if (statusEl) statusEl.textContent = `即時 ${timeStr}`;
+                if (statusEl && timeStr) statusEl.textContent = `即時 ${timeStr}`;
             }
         } catch {
             // silently fail - SSR data is still shown

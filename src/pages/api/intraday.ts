@@ -1,6 +1,10 @@
 import type { APIRoute } from 'astro';
 export const prerender = false;
 
+// Server-side cache for intraday data (keyed by symbol, 30 sec TTL)
+const intradayCache = new Map<string, { data: any; ts: number }>();
+const INTRADAY_CACHE_MS = 30_000;
+
 export const GET: APIRoute = async ({ request }) => {
     const url = new URL(request.url);
     const symbol = url.searchParams.get('symbol');
@@ -12,18 +16,34 @@ export const GET: APIRoute = async ({ request }) => {
         });
     }
 
+    // Check cache first
+    const cached = intradayCache.get(symbol);
+    if (cached && Date.now() - cached.ts < INTRADAY_CACHE_MS) {
+        return new Response(JSON.stringify(cached.data), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, max-age=30',
+            },
+        });
+    }
+
     try {
         // 先假設為上市 (TWSE)
         let yahooSymbol = `${symbol}.TW`;
         let yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?range=1d&interval=1m`;
 
-        let response = await fetch(yahooUrl);
+        let response = await fetch(yahooUrl, {
+            signal: AbortSignal.timeout(8000)
+        });
 
         // 若找不到上市股票，自動 fallback 測試上櫃 (OTC)
         if (!response.ok || response.status === 404) {
             yahooSymbol = `${symbol}.TWO`;
             yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?range=1d&interval=1m`;
-            response = await fetch(yahooUrl);
+            response = await fetch(yahooUrl, {
+                signal: AbortSignal.timeout(8000)
+            });
 
             if (!response.ok) {
                 throw new Error('Yahoo Finance API failed to find this symbol.');
@@ -40,36 +60,48 @@ export const GET: APIRoute = async ({ request }) => {
 
         const timestamps = result.timestamp;
         const quotes = result.indicators.quote[0];
-        const prevClose = result.meta.previousClose;
 
         // 將兩者組合成我們前端好畫圖的 TimeSeries Array
         const timeseries = [];
         for (let i = 0; i < timestamps.length; i++) {
-            // Yahoo 有時候當成分鐘沒有交易，會吐 null，我們過濾掉或填補
             if (quotes.close[i] !== null) {
                 timeseries.push({
-                    time: timestamps[i] * 1000, // 轉成 JS Date 需要的 ms
+                    time: timestamps[i] * 1000,
                     price: quotes.close[i],
                     volume: quotes.volume[i] || 0
                 });
             }
         }
 
-        return new Response(JSON.stringify({
+        const responseData = {
             status: 'success',
             meta: {
                 symbol: result.meta.symbol,
-                prevClose: prevClose,
+                prevClose: result.meta.previousClose,
                 currency: result.meta.currency
             },
             data: timeseries
-        }), {
+        };
+
+        // Cache the result
+        intradayCache.set(symbol, { data: responseData, ts: Date.now() });
+
+        // Evict old entries (keep max 50 symbols)
+        if (intradayCache.size > 50) {
+            const oldest = intradayCache.keys().next().value;
+            if (oldest) intradayCache.delete(oldest);
+        }
+
+        return new Response(JSON.stringify(responseData), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' }
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, max-age=30',
+            }
         });
 
     } catch (error: any) {
-        console.error(`[Intraday API Error]`, error);
+        console.error(`[Intraday API Error]`, error.message);
         return new Response(JSON.stringify({
             status: 'error',
             message: error.message

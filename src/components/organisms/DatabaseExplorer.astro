@@ -7,6 +7,7 @@ import DatabaseWelcome from './DatabaseWelcome.astro';
 import DatabaseErrorState from '../molecules/DatabaseErrorState.astro';
 import DatabaseTableArea from './DatabaseTableArea.astro';
 import DatabaseFooter from '../molecules/DatabaseFooter.astro';
+import DatabaseRefreshArea from './DatabaseRefreshArea.astro';
 ---
 
 <main class="flex-1 min-w-0 flex flex-col bg-base relative">
@@ -36,4 +37,7 @@ import DatabaseFooter from '../molecules/DatabaseFooter.astro';
 
         <DatabaseFooter />
     </div>
+
+    <!-- Data Refresh Dashboard -->
+    <DatabaseRefreshArea />
 </main>

@@ -192,4 +192,3 @@ function renderRow(s: DashboardStock, i: number, variant: string): string {
 }
 
 document.addEventListener('astro:page-load', setupDashboardSync);
-setupDashboardSync();

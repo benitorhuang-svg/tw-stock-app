@@ -20,10 +20,47 @@ const { tables, tableStats } = Astro.props;
     id="db-sidebar"
     class="w-72 bg-base-deep/80 backdrop-blur-2xl border-r border-border flex flex-col z-20 flex-shrink-0 max-md:fixed max-md:inset-y-0 max-md:top-[64px] max-md:left-0 max-md:-translate-x-full max-md:transition-transform max-md:duration-300 shadow-elevated"
 >
-    <!-- DB Health Summary (REMOVED: Optimized for cleaner layout) -->
+    <!-- Sync Button at Top -->
+    <div class="p-3 border-b border-border/50 bg-surface/30">
+        <button
+            class="w-full text-left px-4 py-3 rounded-xl text-[12px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
+            data-table="refresh"
+            id="sidebar-refresh-btn"
+        >
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+                <div
+                    class="w-7 h-7 shrink-0 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all"
+                >
+                    <svg
+                        class="w-4 h-4 text-text-muted group-hover:text-accent"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        ></path>
+                    </svg>
+                </div>
+                <span
+                    class="tracking-wide group-hover:translate-x-1 transition-transform font-bold text-accent"
+                >
+                    資料更新
+                </span>
+            </div>
+            <span
+                class="text-[9px] text-accent/80 shrink-0 ml-2 font-mono tracking-widest font-bold"
+            >
+                [SYNC]
+            </span>
+        </button>
+    </div>
 
     <!-- Table List Header -->
-    <div class="px-6 py-5 flex items-center justify-between bg-surface/50 border-b border-border">
+    <div class="px-6 py-4 flex items-center justify-between bg-surface/50 border-b border-border">
         <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]"
             >資料庫註冊表</span
         >
@@ -33,7 +70,7 @@ const { tables, tableStats } = Astro.props;
     </div>
 
     <!-- Table List -->
-    <nav class="flex-1 overflow-y-auto py-2 custom-scrollbar">
+    <nav class="flex-1 overflow-y-auto py-2 custom-scrollbar flex flex-col justify-between">
         <ul class="space-y-1 px-3" id="table-list">
             {
                 tableStats.map(t => (
@@ -42,8 +79,8 @@ const { tables, tableStats } = Astro.props;
                             class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
                             data-table={t.name}
                         >
-                            <div class="flex items-center gap-3 truncate">
-                                <div class="w-6 h-6 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                <div class="w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all">
                                     <svg
                                         class="w-3.5 h-3.5 text-text-muted group-hover:text-accent"
                                         fill="none"
@@ -62,7 +99,7 @@ const { tables, tableStats } = Astro.props;
                                     {t.name}
                                 </span>
                             </div>
-                            <span class="text-[9px] text-text-muted group-hover:text-accent font-mono transition-colors">
+                            <span class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors">
                                 {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
                             </span>
                         </button>
