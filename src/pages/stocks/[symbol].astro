@@ -13,8 +13,10 @@ import TabChips from '../../components/organisms/TabChips.astro';
 import TabFundamentals from '../../components/organisms/TabFundamentals.astro';
 import TabAlerts from '../../components/organisms/TabAlerts.astro';
 import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
+import type { StockWithDetails, PriceHistoryRecord } from '../../types/stock';
+import { fetchStockPrices } from '../../utils/priceService';
 
-// Required for static builds (getStaticPaths enumerates all possible symbols)
+// Required for static builds
 export async function getStaticPaths() {
     try {
         const { loadStockList } = await import('../../utils/stockDataService');
@@ -27,21 +29,13 @@ export async function getStaticPaths() {
 
 const { symbol } = Astro.params;
 
-if (!symbol) {
-    return Astro.redirect('/')
-}
-
-// SSR: Data loading
-import type { StockWithDetails, PriceHistoryRecord } from '../../types/stock';
-import { fetchStockPrices } from '../../utils/priceService';
-
 let stock: StockWithDetails | null = null;
 let priceHistory: PriceHistoryRecord[] = [];
 
 try {
     const { getStockBySymbol } = await import('../../utils/stockDataService');
-    stock = (await getStockBySymbol?.(symbol)) ?? null;
-    priceHistory = await fetchStockPrices(symbol);
+    stock = (await getStockBySymbol?.(symbol!)) ?? null;
+    priceHistory = await fetchStockPrices(symbol!);
 } catch (e) {
     console.error('[Stock Engine] Data load error:', e);
 }
