@@ -10,21 +10,39 @@ import PageLimitSelect from '../atoms/PageLimitSelect.astro';
 <!-- Toolbar -->
 <header
     id="explorer-toolbar"
-    class="h-20 px-8 border-b border-border bg-base/95 backdrop-blur-3xl flex items-center gap-3 sticky top-0 z-40 shadow-elevated hidden opacity-0 transition-all duration-500 overflow-x-auto custom-scrollbar flex-shrink-0"
+    class="h-20 px-8 border-b border-border bg-base/95 backdrop-blur-3xl flex items-center gap-4 sticky top-0 z-40 shadow-elevated hidden opacity-0 transition-all duration-500 overflow-x-auto custom-scrollbar flex-shrink-0"
 >
-    <!-- Search Segment -->
-    <div class="flex-shrink-0 w-64 lg:w-80">
-        <SearchInput id="global-search" placeholder="在全域資料中檢索..." class="w-full" />
+    <!-- Latency Segment -->
+    <div
+        class="flex-shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent/5 border border-accent/10"
+    >
+        <svg class="w-3 h-3 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+        <span class="text-[9px] font-black text-text-muted uppercase tracking-widest">Lat:</span>
+        <span id="query-time" class="text-[10px] font-black text-accent font-mono min-w-[35px]"
+            >0ms</span
+        >
     </div>
 
-    <div class="w-px h-6 bg-border flex-shrink-0 hidden md:block"></div>
+    <!-- Group: Search + Pagination (Close together) -->
+    <div class="flex items-center gap-1">
+        <!-- Search Segment -->
+        <div class="flex-shrink-0">
+            <SearchInput id="global-search" placeholder="在全域資料中檢索..." />
+        </div>
 
-    <!-- Pagination & Limit -->
-    <div
-        id="table-controls"
-        class="flex items-center gap-3 hidden opacity-0 transition-opacity duration-300 flex-shrink-0"
-    >
-        <PaginationControls prevId="prev-page" nextId="next-page" pageNumId="page-num" />
-        <PageLimitSelect id="page-limit" />
+        <!-- Pagination & Limit -->
+        <div
+            id="table-controls"
+            class="flex items-center gap-1 hidden opacity-0 transition-opacity duration-300 flex-shrink-0 ml-1"
+        >
+            <PaginationControls prevId="prev-page" nextId="next-page" pageNumId="page-num" />
+            <PageLimitSelect id="page-limit" />
+        </div>
     </div>
 </header>

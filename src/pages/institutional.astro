@@ -5,7 +5,7 @@
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
 import InstitutionalHeader from '../components/molecules/InstitutionalHeader.astro';
-import InstitutionalMatrix from '../components/organisms/InstitutionalMatrix.astro';
+import InstitutionalMatrix from '../components/organisms/InstitutionalMatrix.svelte';
 import ForensicTicker from '../components/molecules/ForensicTicker.astro';
 ---
 
@@ -15,7 +15,7 @@ import ForensicTicker from '../components/molecules/ForensicTicker.astro';
         <InstitutionalHeader />
 
         <!-- Monitoring Matrix -->
-        <InstitutionalMatrix />
+        <InstitutionalMatrix client:load />
 
         <!-- Signal Stream -->
         <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">

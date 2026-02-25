@@ -6,7 +6,7 @@
 import MainTerminal from '../layouts/MainTerminal.astro';
 import LiveFilterPanel from '../components/organisms/LiveFilterPanel.astro';
 import LiveControlPanel from '../components/organisms/LiveControlPanel.astro';
-import LiveDataTable from '../components/organisms/LiveDataTable.astro';
+import LiveDataTable from '../components/organisms/LiveDataTable.svelte';
 import SyncHourglass from '../components/atoms/SyncHourglass.astro';
 ---
 
@@ -38,7 +38,7 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
             </div>
 
             <!-- Momentum Grid (Organism) -->
-            <LiveDataTable />
+            <LiveDataTable client:load />
 
             <!-- System Status Line -->
             <div

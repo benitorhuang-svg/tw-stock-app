@@ -24,12 +24,14 @@
     "dependencies": {
         "@astrojs/check": "^0.9.6",
         "@astrojs/node": "^9.5.2",
+        "@astrojs/svelte": "^7.2.5",
         "@tailwindcss/typography": "^0.5.19",
         "@tailwindcss/vite": "^4.2.0",
         "astro": "^5.16.15",
         "better-sqlite3": "^12.6.2",
         "chartgpu": "^0.1.6",
         "sql.js": "^1.13.0",
+        "svelte": "^5.53.3",
         "tailwindcss": "^4.2.0",
         "technicalindicators": "^3.1.0",
         "typescript": "^5.9.3"

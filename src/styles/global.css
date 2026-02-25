@@ -343,8 +343,8 @@
     /* ── Top Nav Bar ── */
     .top-nav-bar {
         background: var(--color-surface);
-        backdrop-filter: blur(40px) saturate(1.4);
-        -webkit-backdrop-filter: blur(40px) saturate(1.4);
+        backdrop-filter: blur(16px) saturate(1.2);
+        -webkit-backdrop-filter: blur(16px) saturate(1.2);
         border-bottom: 1px solid var(--color-border);
         position: relative;
     }
@@ -497,8 +497,8 @@
     /* Glass Card — Layer 1 (Frosted) */
     .glass-card {
         background: var(--color-glass);
-        backdrop-filter: blur(24px) saturate(1.2);
-        -webkit-backdrop-filter: blur(24px) saturate(1.2);
+        backdrop-filter: blur(12px) saturate(1.2);
+        -webkit-backdrop-filter: blur(12px) saturate(1.2);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-lg);
         position: relative;
@@ -514,8 +514,8 @@
     /* Glass Panel — Layer 2 (Elevated) */
     .glass-panel {
         background: var(--color-glass);
-        backdrop-filter: blur(40px) saturate(1.3);
-        -webkit-backdrop-filter: blur(40px) saturate(1.3);
+        backdrop-filter: blur(16px) saturate(1.2);
+        -webkit-backdrop-filter: blur(16px) saturate(1.2);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-glass);

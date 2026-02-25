@@ -25,6 +25,64 @@ const isActive = (path: string) =>
 </nav>
 
 <script>
+    function updateActiveTabs() {
+        const currentPath = window.location.pathname;
+
+        const updateFn = (tab: HTMLElement) => {
+            const path = tab.getAttribute('href');
+            if (!path) return;
+            // isActive = exact match OR prefix match except for root "/"
+            const isActive =
+                currentPath === path || (path !== '/' && currentPath.startsWith(path + '/'));
+            if (isActive) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        };
+
+        document.querySelectorAll<HTMLElement>('.top-nav-tab').forEach(updateFn);
+        document.querySelectorAll<HTMLElement>('.mobile-nav-item').forEach(updateFn);
+
+        const dbBtn = document.querySelector('header a[href="/database"]') as HTMLElement;
+        if (dbBtn) {
+            const isDb = currentPath === '/database' || currentPath.startsWith('/database/');
+            if (isDb) {
+                dbBtn.classList.add(
+                    'bg-accent/15',
+                    'border-accent/40',
+                    'text-accent',
+                    'shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)]',
+                    'shadow-inner'
+                );
+                dbBtn.classList.remove(
+                    'bg-glass',
+                    'border-border',
+                    'text-text-muted',
+                    'hover:text-text-primary',
+                    'hover:border-border-highlight',
+                    'hover:bg-glass-hover'
+                );
+            } else {
+                dbBtn.classList.remove(
+                    'bg-accent/15',
+                    'border-accent/40',
+                    'text-accent',
+                    'shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)]',
+                    'shadow-inner'
+                );
+                dbBtn.classList.add(
+                    'bg-glass',
+                    'border-border',
+                    'text-text-muted',
+                    'hover:text-text-primary',
+                    'hover:border-border-highlight',
+                    'hover:bg-glass-hover'
+                );
+            }
+        }
+    }
+
     // Tab indicator positioning
     function updateTabIndicator() {
         const activeTab = document.querySelector('.top-nav-tab.active') as HTMLElement;
@@ -39,26 +97,34 @@ const isActive = (path: string) =>
         }
     }
 
-    // Run on load and after view transitions
-    updateTabIndicator();
-    document.addEventListener('astro:page-load', updateTabIndicator);
+    let navInitialized = false;
 
-    // Hover preview for tabs
-    document.querySelectorAll<HTMLElement>('.top-nav-tab').forEach(tab => {
-        tab.addEventListener('mouseenter', () => {
-            const indicator = document.getElementById('tab-indicator') as HTMLElement;
-            const tabsContainer = tab.parentElement as HTMLElement;
-            if (indicator && tabsContainer) {
-                const containerRect = tabsContainer.getBoundingClientRect();
-                const tabRect = tab.getBoundingClientRect();
-                indicator.style.width = `${tabRect.width}px`;
-                indicator.style.transform = `translateX(${tabRect.left - containerRect.left}px)`;
-            }
-        });
-    });
-
-    // Reset indicator on mouse leave from tab container
-    document.querySelector('.top-nav-tabs')?.addEventListener('mouseleave', () => {
+    document.addEventListener('astro:page-load', () => {
+        // Run update logic across DOM instances manually since this area is now frozen with transition:persist
+        updateActiveTabs();
         updateTabIndicator();
+
+        if (navInitialized) return;
+        navInitialized = true;
+
+        // Use event delegation once for hover preview
+        const tabsContainer = document.querySelector('.top-nav-tabs');
+        const indicator = document.getElementById('tab-indicator') as HTMLElement;
+
+        if (tabsContainer && indicator) {
+            tabsContainer.addEventListener('mouseover', e => {
+                const tab = (e.target as HTMLElement).closest('.top-nav-tab') as HTMLElement;
+                if (tab) {
+                    const containerRect = tabsContainer.getBoundingClientRect();
+                    const tabRect = tab.getBoundingClientRect();
+                    indicator.style.width = `${tabRect.width}px`;
+                    indicator.style.transform = `translateX(${tabRect.left - containerRect.left}px)`;
+                }
+            });
+
+            tabsContainer.addEventListener('mouseleave', () => {
+                updateTabIndicator();
+            });
+        }
     });
 </script>

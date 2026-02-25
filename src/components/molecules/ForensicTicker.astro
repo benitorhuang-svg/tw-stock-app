@@ -16,9 +16,15 @@
 </div>
 
 <script>
-    function rotateTicker() {
+    let forensicTickerInterval: number | null = null;
+    let isForensicTickerRendered = false;
+
+    function startTicker() {
         const ticker = document.getElementById('momentum-ticker');
         if (!ticker) return;
+
+        if (forensicTickerInterval) clearInterval(forensicTickerInterval);
+
         const messages = [
             'Detecting institutional footprints in SEMICON sector...',
             'Analyzing momentum divergence across growth vectors...',
@@ -27,9 +33,11 @@
             'Scanning for technical breakouts in low P/E domains...',
         ];
         let i = 0;
-        setInterval(() => {
+        forensicTickerInterval = window.setInterval(() => {
+            if (!document.getElementById('momentum-ticker')) return;
             ticker.style.opacity = '0';
             setTimeout(() => {
+                if (!document.getElementById('momentum-ticker')) return;
                 ticker.textContent = messages[i];
                 ticker.style.opacity = '1';
                 i = (i + 1) % messages.length;
@@ -37,9 +45,26 @@
         }, 4000);
     }
 
-    // Initialize on load and on transition
-    rotateTicker();
-    document.addEventListener('astro:page-load', rotateTicker);
+    document.addEventListener('astro:before-preparation', () => {
+        if (forensicTickerInterval) {
+            clearInterval(forensicTickerInterval);
+            forensicTickerInterval = null;
+        }
+    });
+
+    document.addEventListener('astro:page-load', () => {
+        if (!document.getElementById('momentum-ticker')) {
+            isForensicTickerRendered = false;
+            if (forensicTickerInterval) {
+                clearInterval(forensicTickerInterval);
+                forensicTickerInterval = null;
+            }
+            return;
+        }
+        if (isForensicTickerRendered) return;
+        isForensicTickerRendered = true;
+        startTicker();
+    });
 </script>
 
 <style>

@@ -8,10 +8,8 @@ import { ClientRouter } from 'astro:transitions';
 import BaseHead from './BaseHead.astro';
 import DesktopNavTabs from '../components/molecules/DesktopNavTabs.astro';
 import MobileNavTabs from '../components/molecules/MobileNavTabs.astro';
-import { dbService } from '../lib/db/sqlite-service';
-import '../styles/global.css';
 
-const dbStats = dbService.getDbStats();
+import '../styles/global.css';
 
 interface Props {
     title: string;
@@ -38,7 +36,11 @@ const { title, description, fullWidth = false } = Astro.props;
         >
 
         <!-- ═══ Top Navigation Bar ═══ -->
-        <header class="top-nav-bar flex-shrink-0 z-50" id="top-header">
+        <header
+            class="top-nav-bar flex-shrink-0 z-50"
+            id="top-header"
+            transition:persist="top-header"
+        >
             <div
                 class="flex items-center justify-between h-16 px-4 lg:px-6 max-w-[1800px] mx-auto w-full"
             >

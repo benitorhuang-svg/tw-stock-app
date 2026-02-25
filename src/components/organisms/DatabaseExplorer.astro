@@ -5,7 +5,7 @@
 import ExplorerToolbar from '../molecules/ExplorerToolbar.astro';
 import DatabaseWelcome from './DatabaseWelcome.astro';
 import DatabaseErrorState from '../molecules/DatabaseErrorState.astro';
-import DatabaseTableArea from './DatabaseTableArea.astro';
+import DatabaseTableArea from './DatabaseTableArea.svelte';
 import DatabaseFooter from '../molecules/DatabaseFooter.astro';
 import DatabaseRefreshArea from './DatabaseRefreshArea.astro';
 ---
@@ -33,9 +33,20 @@ import DatabaseRefreshArea from './DatabaseRefreshArea.astro';
 
         <DatabaseErrorState />
 
-        <DatabaseTableArea />
+        <!-- Top Horizontal Scrollbar placeholder for SyncScrollbar sync -->
+        <div
+            id="top-scrollbar"
+            class="hidden mb-1 rounded-t-xl overflow-x-auto opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex-shrink-0"
+        >
+            <div id="top-scroll-content" class="h-2"></div>
+        </div>
 
-        <DatabaseFooter />
+        <div
+            id="table-scroll-container"
+            class="rounded-2xl border border-border/50 flex-1 overflow-auto shadow-elevated bg-surface/30 custom-scrollbar relative p-6"
+        >
+            <DatabaseTableArea client:load />
+        </div>
     </div>
 
     <!-- Data Refresh Dashboard -->

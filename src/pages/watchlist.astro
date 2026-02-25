@@ -1,12 +1,8 @@
 ---
-/**
- * watchlist.astro — Watchlist Analysis Terminal
- * Modular tracking of high-conviction entities and yield intelligence.
- */
 import MainTerminal from '../layouts/MainTerminal.astro';
 import WatchlistHero from '../components/molecules/WatchlistHero.astro';
-import HighYieldWall from '../components/organisms/HighYieldWall.astro';
 import ForensicTicker from '../components/molecules/ForensicTicker.astro';
+import WatchlistManager from '../components/organisms/WatchlistManager.svelte';
 ---
 
 <MainTerminal title="自選監控中心 | Analysis Registry">
@@ -14,30 +10,7 @@ import ForensicTicker from '../components/molecules/ForensicTicker.astro';
         <!-- Hero Header -->
         <WatchlistHero />
 
-        <!-- Watchlist Matrix -->
-        <div
-            id="watchlist-empty"
-            class="glass-card p-12 text-center animate-fade-up border border-white/5 hidden"
-        >
-            <div class="text-6xl mb-6 opacity-10">🔭</div>
-            <h3 class="text-lg font-black text-white/40 uppercase tracking-widest">
-                No Active Links Detected
-            </h3>
-            <p class="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mt-2">
-                Initialize tracking by selecting entities in the Analysis Terminal
-            </p>
-        </div>
-
-        <div
-            id="watchlist-list"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-up"
-            style="animation-delay: 100ms"
-        >
-            <!-- Injected by Registry Engine -->
-        </div>
-
-        <!-- High Yield Intelligence -->
-        <HighYieldWall />
+        <WatchlistManager client:load />
 
         <!-- Signal Stream Footer -->
         <div class="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
@@ -53,6 +26,4 @@ import ForensicTicker from '../components/molecules/ForensicTicker.astro';
             </div>
         </div>
     </div>
-
-    <script src="../scripts/watchlist-engine.ts"></script>
 </MainTerminal>

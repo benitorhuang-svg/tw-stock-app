@@ -1,14 +1,8 @@
 ---
-/**
- * stocks/index.astro — Intelligence_Center Landing Page
- * Central nexus for deep-vector stock analysis and search.
- */
 import MainTerminal from '../../layouts/MainTerminal.astro';
 import StockHubHero from '../../components/molecules/StockHubHero.astro';
-import StockSearchEngine from '../../components/organisms/StockSearchEngine.astro';
-import RecentAnalyses from '../../components/molecules/RecentAnalyses.astro';
-import DividendIntelligenceWall from '../../components/molecules/DividendIntelligenceWall.astro';
 import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
+import AnalysisHubManager from '../../components/organisms/AnalysisHubManager.svelte';
 ---
 
 <MainTerminal title="Intelligence_Center (CORE_NEXUS)">
@@ -18,21 +12,11 @@ import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
         <!-- Centerpiece Header -->
         <StockHubHero />
 
-        <!-- Search Nexus (Organism) -->
-        <StockSearchEngine />
-
-        <!-- Quick Access Matrix -->
-        <div
-            class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 animate-fade-up"
-            style="animation-delay: 200ms"
-        >
-            <RecentAnalyses />
-            <DividendIntelligenceWall />
-        </div>
+        <AnalysisHubManager client:load />
 
         <!-- Capability Tiers -->
         <div
-            class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up"
+            class="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up mt-12"
             style="animation-delay: 300ms"
         >
             {
@@ -77,6 +61,4 @@ import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
             >
         </div>
     </div>
-
-    <script src="../../scripts/stocks-index-engine.ts"></script>
 </MainTerminal>

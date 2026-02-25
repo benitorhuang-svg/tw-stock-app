@@ -60,6 +60,13 @@ async function loadTable(name: string, page = 1) {
     const startTime = performance.now();
     setLoading(true);
 
+    // Tell Svelte to clear the old heavy DOM immediately
+    window.dispatchEvent(
+        new CustomEvent('tw-db-update', {
+            detail: { type: 'DB_LOADING' }
+        })
+    );
+
     const toggleOpt = (id: string, action: 'add' | 'remove', ...classes: string[]) => {
         const el = getEl(id);
         if (el) el.classList[action](...classes);
@@ -107,71 +114,24 @@ async function loadTable(name: string, page = 1) {
             nextBtn.disabled = page >= totalPages;
         }
 
-        const tableHead = getEl('table-head');
-        if (tableHead) {
-            tableHead.innerHTML = `<tr>${(data as TableDataResponse).columns
-                .map(
-                    col => `
-                    <th class="cursor-pointer px-6 py-4 text-[9px] tracking-[0.2em] font-black text-text-muted border-r border-border hover:bg-accent-glow hover:text-accent transition-all uppercase" data-asc="false">
-                        <div class="flex flex-col gap-1">
-                            <span>${escapeHtml(col.name)}</span>
-                            <span class="text-[7px] text-text-muted opacity-50 font-mono tracking-widest">${escapeHtml(col.type)}</span>
-                        </div>
-                    </th>`
-                )
-                .join('')}</tr>`;
-        }
-
-        const tableBody = getEl('table-body');
-        if (tableBody) {
-            const renderableCols = (data as TableDataResponse).columns.map(col => {
-                const lName = col.name.toLowerCase();
-                return {
-                    name: col.name,
-                    isPct: lName.includes('pct'),
-                    isPrice: lName.includes('price') || lName.includes('close'),
-                };
-            });
-
-            tableBody.innerHTML = (data as TableDataResponse).rows
-                .map(
-                    row => `
-                    <tr class="hover:bg-glass-hover transition-colors group/row">
-                        ${renderableCols
-                            .map(col => {
-                                const val = row[col.name];
-                                const isNull = val === null || val === undefined;
-                                let style = 'text-text-muted';
-                                let display = isNull ? 'NULL' : escapeHtml(val);
-
-                                if (!isNull && typeof val === 'number') {
-                                    if (col.isPct) {
-                                        style =
-                                            val >= 0
-                                                ? 'text-bullish font-bold'
-                                                : 'text-bearish font-bold';
-                                        display = (val > 0 ? '+' : '') + val.toFixed(2) + '%';
-                                    } else if (col.isPrice) {
-                                        style = 'text-accent font-bold';
-                                    } else {
-                                        style = 'text-text-secondary font-mono';
-                                    }
-                                }
-                                return `<td class="px-6 py-4 text-[11px] border-r border-border ${isNull ? 'bg-red-500/10 text-red-500 dark:text-red-400 italic' : style}"><div class="db-cell truncate">${display}</div></td>`;
-                            })
-                            .join('')}
-                    </tr>`
-                )
-                .join('');
-
-            if ((data as TableDataResponse).rows.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="99" class="py-20 text-center font-mono text-text-muted opacity-50 text-[9px] tracking-widest uppercase">Zero_Entities_Isolated</td></tr>`;
-            }
-        }
+        // --- DELEGATE RENDERING TO SVELTE ---
+        window.dispatchEvent(
+            new CustomEvent('tw-db-update', {
+                detail: {
+                    type: 'DB_DATA',
+                    payload: {
+                        tableName: name,
+                        columns: data.columns,
+                        rows: data.rows,
+                        total: data.total,
+                        page: page
+                    }
+                }
+            })
+        );
 
         const queryTimeLabel = getEl('query-time');
-        if (queryTimeLabel)
-            queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
+        if (queryTimeLabel) queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
     } catch (err: unknown) {
         if ((err as Error).name === 'AbortError') return;
         console.error(err);
@@ -271,8 +231,12 @@ function initExplorer() {
         });
 
         if (topScrollContent && dataTable) {
+            let resizeTid: number;
             const rsObserver = new ResizeObserver(() => {
-                topScrollContent.style.width = `${dataTable.scrollWidth}px`;
+                cancelAnimationFrame(resizeTid);
+                resizeTid = requestAnimationFrame(() => {
+                    if (topScrollContent) topScrollContent.style.width = `${((dataTable as HTMLElement).scrollWidth)}px`;
+                });
             });
             rsObserver.observe(dataTable);
             rsObserver.observe(tableScrollContainer);
@@ -313,6 +277,46 @@ function initExplorer() {
         });
         document.addEventListener('astro:before-swap', () => es.close(), { once: true });
     }
+
+    // ═══ Mobile Sidebar Toggle ═══
+    const sidebarToggle = getEl('sidebar-toggle');
+    const backdrop = getEl('sidebar-backdrop');
+    if (sidebarToggle && backdrop && sidebar && !sidebarToggle.dataset.bound) {
+        sidebarToggle.dataset.bound = 'true';
+
+        const toggleSidebar = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        };
+
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        backdrop.addEventListener('click', toggleSidebar);
+
+        // Auto-close on selection
+        sidebar.addEventListener('click', (e) => {
+            if ((e.target as HTMLElement).closest('button[data-table]')) {
+                if (!sidebar.classList.contains('-translate-x-full')) {
+                    toggleSidebar();
+                }
+            }
+        });
+    }
 }
 
-document.addEventListener('astro:page-load', initExplorer);
+let explorerInitialized = false;
+
+document.addEventListener('astro:before-preparation', () => {
+    // Destroy massive DOM table to prevent view transition screenshot from creating lag spikes
+    const tableBody = document.getElementById('table-body');
+    if (tableBody) tableBody.innerHTML = '';
+});
+
+document.addEventListener('astro:page-load', () => {
+    if (!document.getElementById('db-sidebar')) {
+        explorerInitialized = false;
+        return;
+    }
+    if (explorerInitialized) return; // Prevent multiple re-bindings
+    explorerInitialized = true;
+    initExplorer();
+});

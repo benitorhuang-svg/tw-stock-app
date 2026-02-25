@@ -143,6 +143,11 @@ interface ScreenerApiResult {
 }
 
 async function execute_entity_isolation() {
+    window.dispatchEvent(
+        new CustomEvent('tw-screener-update', {
+            detail: { type: 'SCREENER_LOADING' }
+        })
+    );
     try {
         const res = await fetch('/api/screener', {
             method: 'POST',
@@ -157,55 +162,17 @@ async function execute_entity_isolation() {
 }
 
 function renderResults(results: ScreenerApiResult[]) {
-    const body = document.getElementById('screener-results');
     const countEl = document.getElementById('visible-count');
-    const emptyEl = document.getElementById('no-results');
-    if (!body) return;
-
     if (countEl) countEl.textContent = `${results.length} ENTITIES_ISOLATED`;
 
-    if (results.length === 0) {
-        body.innerHTML = '';
-        emptyEl?.classList.remove('hidden');
-        return;
-    }
-
-    emptyEl?.classList.add('hidden');
-    body.innerHTML = results
-        .map(
-            (s) => `
-        <tr class="hover:bg-accent/[0.04] transition-all group cursor-pointer border-b border-white/[0.02]" onclick="window.location.href='/stocks/${s.symbol}'">
-            <td class="py-5 px-8">
-                <div class="flex flex-col">
-                    <span class="text-[12px] font-black text-white group-hover:text-accent transition-colors">${s.name}</span>
-                    <span class="text-[9px] font-mono text-white/20 mt-1 uppercase tracking-widest">${s.symbol}</span>
-                </div>
-            </td>
-            <td class="py-5 px-8 text-right font-mono text-xs font-bold text-white/70">${s.price.toFixed(2)}</td>
-            <td class="py-5 px-8 text-right font-mono text-xs font-black ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
-                ${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%
-            </td>
-            <td class="py-5 px-8 text-right font-mono text-[11px] text-white/30 font-bold">${fmtVolClient(s.volume)}</td>
-            <td class="py-5 px-8 text-right font-mono text-xs text-white/50">${s.fundamentals.pe ? s.fundamentals.pe.toFixed(1) : '—'}</td>
-            <td class="py-5 px-8 text-right">
-                <div class="flex justify-end gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                    ${(s.fundamentals.dividendYield || 0) > 5 ? '<div class="w-2 h-2 rounded-full bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.4)]" title="High Yield"></div>' : ''}
-                    ${(s.fundamentals.pe || 100) < 15 ? '<div class="w-2 h-2 rounded-full bg-accent shadow-[0_0_8px_rgba(59,130,246,0.4)]" title="Value Focus"></div>' : ''}
-                    ${(s.fundamentals.revenueYoY || 0) > 10 ? '<div class="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.4)]" title="Growth Vector"></div>' : ''}
-                </div>
-            </td>
-        </tr>
-    `
-        )
-        .join('');
+    window.dispatchEvent(
+        new CustomEvent('tw-screener-update', {
+            detail: { type: 'SCREENER_DATA', payload: { results } }
+        })
+    );
 }
 
-function fmtVolClient(v: number) {
-    const cv = Math.ceil(v);
-    if (cv >= 100000000) return (cv / 100000000).toFixed(1) + '億';
-    if (cv >= 10000) return (cv / 10000).toFixed(1) + '萬';
-    return cv.toLocaleString();
-}
+
 
 // Initialize Screen Engine
 document.addEventListener('astro:page-load', () => {

@@ -1,5 +1,6 @@
 /**
  * Core Dashboard Synchronizer Engine for index.astro
+ * Performance-optimized: guarded init, SSE cleanup, cached DOM refs
  */
 
 interface DashboardSummary {
@@ -15,7 +16,7 @@ interface DashboardStock {
     name: string;
     price: number;
     changePercent: number;
-    volume?: number; // optional in some contexts
+    volume?: number;
 }
 
 interface SyncData {
@@ -37,11 +38,45 @@ function fmtPriceClient(v: number): string {
     return v > 0 ? v.toFixed(2) : '—';
 }
 
+// ═══ SSE lifecycle management ═══
+let activeSSE: EventSource | null = null;
+
+function cleanupSSE() {
+    if (activeSSE) {
+        activeSSE.close();
+        activeSSE = null;
+    }
+}
+
 // ═══ Dashboard Synchronizer Engine ═══
 function setupDashboardSync() {
+    // Guard: only run on dashboard page
+    const hudUp = document.getElementById('hud-up');
+    if (!hudUp) return;
+
+    // Cache all DOM refs once
+    const domRefs = {
+        ratioEl: document.getElementById('breadth-ratio-hud'),
+        upEl: hudUp,
+        downEl: document.getElementById('hud-down'),
+        volEl: document.getElementById('hud-volume'),
+        chgEl: document.getElementById('hud-avg-change'),
+        dateEl: document.getElementById('hud-date'),
+        barUp: document.getElementById('hud-bar-up'),
+        barDown: document.getElementById('hud-bar-down'),
+        barFlat: document.getElementById('hud-bar-flat'),
+        gainersGrid: document.getElementById('hud-gainers-grid'),
+        losersGrid: document.getElementById('hud-losers-grid'),
+        volGrid: document.getElementById('hud-volume-grid'),
+        datePicker: document.getElementById('market-date-picker-hud') as HTMLInputElement | null,
+    };
+
+    // Cleanup previous SSE if any
+    cleanupSSE();
+
     if (typeof EventSource !== 'undefined') {
-        const es = new EventSource('/api/sse/stream');
-        es.addEventListener('tick', e => {
+        activeSSE = new EventSource('/api/sse/stream');
+        activeSSE.addEventListener('tick', e => {
             try {
                 const ticks = JSON.parse(e.data);
                 if (!ticks || !Array.isArray(ticks)) return;
@@ -54,7 +89,7 @@ function setupDashboardSync() {
                     count = 0;
                 let latestDate = '';
 
-                ticks.forEach(t => {
+                for (const t of ticks) {
                     const price = parseFloat(t.Close || t.price || 0);
                     const chgPct = parseFloat(t.ChangePct || t.changePercent || 0);
                     const vol = parseFloat(t.Volume || t.volume || 0);
@@ -67,9 +102,10 @@ function setupDashboardSync() {
                         count++;
                         if (t.Date) latestDate = t.Date;
                     }
-                });
+                }
 
                 updateHUD(
+                    domRefs,
                     up,
                     down,
                     flat,
@@ -83,14 +119,13 @@ function setupDashboardSync() {
         });
     }
 
-    const datePicker = document.getElementById('market-date-picker-hud') as HTMLInputElement;
-    datePicker?.addEventListener('change', async e => {
+    domRefs.datePicker?.addEventListener('change', async e => {
         const newDate = (e.target as HTMLInputElement).value;
         if (!newDate) return;
         try {
             const res = await fetch(`/api/market/history?date=${newDate}`);
             const data = await res.json();
-            if (res.ok && !data.error) syncDashboardData(data, newDate);
+            if (res.ok && !data.error) syncDashboardData(domRefs, data, newDate);
         } catch (err) {
             console.error('[Sync Error]', err);
         }
@@ -98,6 +133,7 @@ function setupDashboardSync() {
 }
 
 function updateHUD(
+    refs: Record<string, HTMLElement | null>,
     up: number,
     down: number,
     flat: number,
@@ -106,56 +142,36 @@ function updateHUD(
     date: string
 ) {
     const total = up + down + flat;
-    const ratioEl = document.getElementById('breadth-ratio-hud');
-    const upEl = document.getElementById('hud-up');
-    const downEl = document.getElementById('hud-down');
-    const volEl = document.getElementById('hud-volume');
-    const chgEl = document.getElementById('hud-avg-change');
-    const dateEl = document.getElementById('hud-date');
 
-    if (ratioEl) ratioEl.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
-    if (upEl) upEl.textContent = String(up);
-    if (downEl) downEl.textContent = String(down);
-    if (volEl) volEl.textContent = fmtVolClient(vol);
-    if (chgEl) {
-        chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
-        chgEl.className = `text-xl font-mono font-bold ${chg >= 0 ? 'text-bullish' : 'text-bearish'}`;
+    if (refs.ratioEl) refs.ratioEl.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
+    if (refs.upEl) refs.upEl.textContent = String(up);
+    if (refs.downEl) refs.downEl.textContent = String(down);
+    if (refs.volEl) refs.volEl.textContent = fmtVolClient(vol);
+    if (refs.chgEl) {
+        refs.chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+        refs.chgEl.className = `text-xl font-mono font-bold ${chg >= 0 ? 'text-bullish' : 'text-bearish'}`;
     }
-    if (dateEl && date) dateEl.textContent = date;
+    if (refs.dateEl && date) refs.dateEl.textContent = date;
 
-    const barUp = document.getElementById('hud-bar-up');
-    const barDown = document.getElementById('hud-bar-down');
-    const barFlat = document.getElementById('hud-bar-flat');
-    if (barUp) barUp.style.width = (total > 0 ? (up / total) * 100 : 0) + '%';
-    if (barDown) barDown.style.width = (total > 0 ? (down / total) * 100 : 0) + '%';
-    if (barFlat) barFlat.style.width = (total > 0 ? (flat / total) * 100 : 0) + '%';
+    if (refs.barUp) refs.barUp.style.width = (total > 0 ? (up / total) * 100 : 0) + '%';
+    if (refs.barDown) refs.barDown.style.width = (total > 0 ? (down / total) * 100 : 0) + '%';
+    if (refs.barFlat) refs.barFlat.style.width = (total > 0 ? (flat / total) * 100 : 0) + '%';
 }
 
-function syncDashboardData(data: SyncData, date: string) {
+function syncDashboardData(refs: Record<string, HTMLElement | null>, data: SyncData, date: string) {
     const { summary, gainers, losers, volumeLeaders } = data;
-    updateHUD(
-        summary.up,
-        summary.down,
-        summary.flat,
-        summary.totalVolume,
-        summary.avgChange,
-        date
-    );
+    updateHUD(refs, summary.up, summary.down, summary.flat, summary.totalVolume, summary.avgChange, date);
 
-    const gainersGrid = document.getElementById('hud-gainers-grid');
-    const losersGrid = document.getElementById('hud-losers-grid');
-    const volGrid = document.getElementById('hud-volume-grid');
-
-    if (gainersGrid)
-        gainersGrid.innerHTML = gainers
+    if (refs.gainersGrid)
+        refs.gainersGrid.innerHTML = gainers
             .map((s, i) => renderRow(s, i, 'bullish'))
             .join('');
-    if (losersGrid)
-        losersGrid.innerHTML = losers
+    if (refs.losersGrid)
+        refs.losersGrid.innerHTML = losers
             .map((s, i) => renderRow(s, i, 'bearish'))
             .join('');
-    if (volGrid)
-        volGrid.innerHTML = volumeLeaders
+    if (refs.volGrid)
+        refs.volGrid.innerHTML = volumeLeaders
             .map((s, i) => renderRow(s, i, 'accent'))
             .join('');
 }
@@ -191,4 +207,24 @@ function renderRow(s: DashboardStock, i: number, variant: string): string {
         </a>`;
 }
 
-document.addEventListener('astro:page-load', setupDashboardSync);
+// Cleanup SSE on page navigation
+document.addEventListener('astro:before-preparation', () => {
+    cleanupSSE();
+    const gainerGrid = document.getElementById('hud-gainers-grid');
+    const loserGrid = document.getElementById('hud-losers-grid');
+    const volGrid = document.getElementById('hud-volume-grid');
+    if (gainerGrid) gainerGrid.innerHTML = '';
+    if (loserGrid) loserGrid.innerHTML = '';
+    if (volGrid) volGrid.innerHTML = '';
+});
+
+let dashboardRendered = false;
+document.addEventListener('astro:page-load', () => {
+    if (!document.getElementById('hud-up')) {
+        dashboardRendered = false; // reset when leaving
+        return;
+    }
+    if (dashboardRendered) return;
+    dashboardRendered = true;
+    setupDashboardSync();
+});

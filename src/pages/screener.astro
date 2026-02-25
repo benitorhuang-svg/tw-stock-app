@@ -9,6 +9,7 @@ import ForensicFilteringMatrix from '../components/organisms/ForensicFilteringMa
 import ForensicTicker from '../components/molecules/ForensicTicker.astro';
 import TacticalIntelligenceHUD from '../components/organisms/TacticalIntelligenceHUD.astro';
 import BacktestHeatmap from '../components/molecules/BacktestHeatmap.astro';
+import ScreenerResults from '../components/organisms/ScreenerResults.svelte';
 
 try {
     const svc = await import('../utils/stockDataService');
@@ -67,46 +68,12 @@ const presetStrategies = allStrategies.filter(s => supportedIds.includes(s.id));
                         <div class="flex items-center gap-4">
                             <button
                                 class="text-[10px] font-mono text-white/20 hover:text-white transition-all uppercase"
-                                >Export_CSV</button
+                                id="visible-count">AWAITING_PARAMETERS</button
                             >
                         </div>
                     </header>
 
-                    <div class="overflow-x-auto min-h-[400px]">
-                        <table class="w-full text-left border-separate border-spacing-0">
-                            <thead>
-                                <tr
-                                    class="bg-white/[0.01] text-[9px] uppercase text-white/30 font-black tracking-widest"
-                                >
-                                    <th class="py-4 px-8 border-b border-white/5">Entity</th>
-                                    <th class="py-4 px-8 border-b border-white/5 text-right"
-                                        >Quote</th
-                                    >
-                                    <th class="py-4 px-8 border-b border-white/5 text-right"
-                                        >Variance</th
-                                    >
-                                    <th class="py-4 px-8 border-b border-white/5 text-right"
-                                        >Volume</th
-                                    >
-                                    <th class="py-4 px-8 border-b border-white/5 text-right"
-                                        >PE_Domain</th
-                                    >
-                                    <th class="py-4 px-8 border-b border-white/5 text-right"
-                                        >Forensic</th
-                                    >
-                                </tr>
-                            </thead>
-                            <tbody id="screener-results" class="divide-y divide-white/[0.02]">
-                                <!-- Injected by Forensic Logic -->
-                            </tbody>
-                        </table>
-                        <div
-                            id="no-results"
-                            class="hidden py-32 text-center text-white/20 font-mono text-xs tracking-widest uppercase"
-                        >
-                            No entities match the current vectors
-                        </div>
-                    </div>
+                    <ScreenerResults client:load />
                 </div>
 
                 <!-- Signal Stream -->

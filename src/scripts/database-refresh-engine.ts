@@ -175,6 +175,11 @@ export function initDatabaseRefreshTerminal() {
     }
 }
 
+let dbRefreshTerminalInitialized = false;
+
 document.addEventListener('astro:page-load', () => {
+    if (!document.getElementById('refresh-area')) return;
+    if (dbRefreshTerminalInitialized) return;
+    dbRefreshTerminalInitialized = true;
     initDatabaseRefreshTerminal();
 });

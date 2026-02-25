@@ -115,9 +115,16 @@ async function initIntelligence() {
     }
 }
 
+let watchlistRendered = false;
+
 document.addEventListener('astro:page-load', () => {
+    // Guard: only run on watchlist page
+    if (!document.getElementById('watchlist-list')) {
+        watchlistRendered = false; // Reset to re-fetch on return
+        return;
+    }
+    if (watchlistRendered) return;
+    watchlistRendered = true;
     initRegistry();
     initIntelligence();
 });
-initRegistry();
-initIntelligence();

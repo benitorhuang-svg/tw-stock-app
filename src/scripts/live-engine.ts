@@ -1,7 +1,8 @@
 /**
  * Core Live Polling & Grid Engine for live.astro
+ * Performance-optimized: cached DOM refs, reduced querySelector calls,
+ * proper cleanup, batch DOM updates
  */
-// ═══ Forensic Momentum Engine ═══
 let pollInterval: ReturnType<typeof setInterval> | null = null;
 
 interface LiveStock {
@@ -28,10 +29,58 @@ document.addEventListener('astro:before-preparation', () => {
         clearInterval(pollInterval);
         pollInterval = null;
     }
+    const tbody = document.getElementById('live-table-body');
+    if (tbody) tbody.innerHTML = '';
 });
 
+let liveEngineRendered = false;
+
 document.addEventListener('astro:page-load', () => {
+    const toggleBtn = document.getElementById('toggle-polling-btn') as HTMLButtonElement | null;
+    const updateTimeEl = document.getElementById('last-update-time');
+    const tbody = document.getElementById('live-table-body');
+    const searchInput = document.getElementById('live-search-input') as HTMLInputElement | null;
+
+    // Guard: only run on live page
+    if (!toggleBtn || !tbody) {
+        liveEngineRendered = false;
+        return;
+    }
+    if (liveEngineRendered) return;
+    liveEngineRendered = true;
+
     let isPolling = false;
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null,
+        currentData: LiveStock[] = [],
+        currentSortCol = 'TradeVolume',
+        currentSortAsc = false,
+        searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+    // Cache filter elements once
+    const filterElements = {
+        starred: document.getElementById('filter-starred') as HTMLInputElement | null,
+        sector: document.getElementById('filter-sector') as HTMLSelectElement | null,
+        trend: document.getElementById('filter-trend') as HTMLInputElement | null,
+        volume: document.getElementById('filter-volume') as HTMLInputElement | null,
+        market: document.getElementById('filter-market') as HTMLSelectElement | null,
+        price: document.getElementById('filter-price') as HTMLSelectElement | null,
+    };
+
+    // Cache sort header elements
+    const sortHeaders = document.querySelectorAll<HTMLElement>('th.sortable');
+
+    // Cache breadth elements
+    const breadthRefs = {
+        ratio: document.getElementById('breadth-ratio'),
+        up: document.getElementById('breadth-up'),
+        down: document.getElementById('breadth-down'),
+        flat: document.getElementById('breadth-flat'),
+        barUp: document.getElementById('breadth-bar-up'),
+        barDown: document.getElementById('breadth-bar-down'),
+        barFlat: document.getElementById('breadth-bar-flat'),
+    };
+
+
 
     async function openIntradayAccordion(
         trElement: HTMLElement,
@@ -127,7 +176,8 @@ document.addEventListener('astro:page-load', () => {
 
             let pathD = '',
                 areaD = '';
-            data.forEach((d: { time: number; price: number }, i: number) => {
+            for (let i = 0; i < data.length; i++) {
+                const d = data[i];
                 let x = ((d.time - startMs) / rangeMs) * w;
                 if (x < 0) x = 0;
                 if (x > w) x = w;
@@ -140,7 +190,7 @@ document.addEventListener('astro:page-load', () => {
                     areaD += `L${x},${y} `;
                 }
                 if (i === data.length - 1) areaD += `L${x},${h} Z`;
-            });
+            }
 
             const prevY = h - ((prevClose - chartMin) / chartRange) * h;
             const strokeColor = currentPrice >= prevClose ? '#ef4444' : '#22c55e';
@@ -185,19 +235,6 @@ document.addEventListener('astro:page-load', () => {
         }
     }
 
-    const toggleBtn = document.getElementById('toggle-polling-btn') as HTMLButtonElement | null;
-    const updateTimeEl = document.getElementById('last-update-time');
-    const tbody = document.getElementById('live-table-body');
-    const searchInput = document.getElementById('live-search-input') as HTMLInputElement | null;
-
-    if (!toggleBtn) return;
-
-    let retryTimeout: ReturnType<typeof setTimeout> | null = null,
-        currentData: LiveStock[] = [],
-        currentSortCol = 'TradeVolume',
-        currentSortAsc = false,
-        searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
-
     // Debounced search for better performance
     let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
     if (searchInput)
@@ -209,20 +246,15 @@ document.addEventListener('astro:page-load', () => {
             }, 150);
         });
 
-    const filters = [
-        'filter-starred',
-        'filter-sector',
-        'filter-trend',
-        'filter-volume',
-        'filter-market',
-        'filter-price',
-    ].map(id => document.getElementById(id));
-    filters.forEach(el => el?.addEventListener('input', renderData));
-    filters.forEach(el => el?.addEventListener('change', renderData));
+    const filterEls = Object.values(filterElements).filter(Boolean);
+    filterEls.forEach(el => {
+        el?.addEventListener('input', renderData);
+        el?.addEventListener('change', renderData);
+    });
 
     document.getElementById('live-filter-reset')?.addEventListener('click', () => {
         if (searchInput) searchInput.value = '';
-        filters.forEach(el => {
+        filterEls.forEach(el => {
             if (el instanceof HTMLSelectElement) el.value = '';
             else if (el instanceof HTMLInputElement) {
                 if (el.type === 'checkbox') el.checked = false;
@@ -243,7 +275,7 @@ document.addEventListener('astro:page-load', () => {
         renderData();
     });
 
-    document.querySelectorAll('th.sortable').forEach(th =>
+    sortHeaders.forEach(th =>
         th.addEventListener('click', () => {
             const sortCol = th.getAttribute('data-sort');
             if (!sortCol) return;
@@ -256,7 +288,7 @@ document.addEventListener('astro:page-load', () => {
         })
     );
 
-    tbody?.addEventListener('click', e => {
+    tbody.addEventListener('click', e => {
         const target = e.target as HTMLElement;
         const starBtn = target.closest('.watchlist-toggle-btn') as HTMLElement;
         if (starBtn) {
@@ -301,6 +333,13 @@ document.addEventListener('astro:page-load', () => {
                     _low: parseFloat(String(s.LowestPrice || '0')),
                 };
             });
+
+            window.dispatchEvent(
+                new CustomEvent('tw-live-update', {
+                    detail: { type: 'DATA', payload: { data: currentData } }
+                })
+            );
+
             renderData();
         } catch (error: unknown) {
             console.error('Buffer fetch failed:', error);
@@ -310,7 +349,6 @@ document.addEventListener('astro:page-load', () => {
                     if (isPolling) fetchLiveData();
                     return;
                 }
-                tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-12 text-bearish font-mono text-[10px] tracking-widest uppercase italic">Uplink_Lost. Reconnecting in ${cd}s...</td></tr>`;
                 cd--;
                 if (isPolling) retryTimeout = setTimeout(count, 1000);
             };
@@ -319,200 +357,56 @@ document.addEventListener('astro:page-load', () => {
     }
 
     function renderData() {
-        if (!tbody) return;
-        const wl: string[] = JSON.parse(localStorage.getItem('watchlist') || '[]');
-        const wlSet = new Set(wl); // O(1) lookup instead of O(n) includes
         const tsSearch = searchQuery.toLowerCase(),
-            tsTrend = (document.getElementById('filter-trend') as HTMLInputElement)?.value || '0',
-            tsVol = parseInt(
-                (document.getElementById('filter-volume') as HTMLInputElement)?.value || '0',
-                10
-            ),
-            tsStarred = (document.getElementById('filter-starred') as HTMLInputElement)?.checked,
-            tsMarket = (document.getElementById('filter-market') as HTMLSelectElement)?.value || '',
-            tsPriceRange = (document.getElementById('filter-price') as HTMLSelectElement)?.value || '';
+            tsTrend = filterElements.trend?.value || '0',
+            tsVol = parseInt(filterElements.volume?.value || '0', 10),
+            tsStarred = filterElements.starred?.checked,
+            tsMarket = filterElements.market?.value || '',
+            tsPriceRange = filterElements.price?.value || '';
 
-        let filtered = currentData.filter(s => {
-            if (tsMarket && s._market !== tsMarket.toUpperCase()) return false;
-            if (
-                tsSearch &&
-                !s.Code.toLowerCase().includes(tsSearch) &&
-                !s.Name.toLowerCase().includes(tsSearch)
-            )
-                return false;
-            if (tsStarred && !wlSet.has(s.Code)) return false;
-            if (tsPriceRange) {
-                const [min, max] = tsPriceRange.split('-').map(Number);
-                if (s._closePrice < min || s._closePrice > max) return false;
-            }
-            if (tsVol > 0 && s._vol < tsVol) return false;
-            if (tsTrend !== '0') {
-                const t = parseFloat(tsTrend);
-                if ((t > 0 && s._changePct < t) || (t < 0 && s._changePct > t))
-                    return false;
-            }
-            return true;
-        });
-
-        const filteredCount = document.getElementById('filtered-count');
-        if (filteredCount) filteredCount.textContent = `${filtered.length}`;
-
-        filtered.sort((a, b) => {
-            const as = wlSet.has(a.Code),
-                bs = wlSet.has(b.Code);
-            if (as !== bs) return as ? -1 : 1;
-            let va: string | number = (a as any)[`_${currentSortCol.replace('_', '')}`] ?? (a as any)[currentSortCol] ?? 0,
-                vb: string | number = (b as any)[`_${currentSortCol.replace('_', '')}`] ?? (b as any)[currentSortCol] ?? 0;
-            if (currentSortCol === 'ClosingPrice') {
-                va = a._closePrice;
-                vb = b._closePrice;
-            }
-            if (currentSortCol === 'ChangePct') {
-                va = a._changePct;
-                vb = b._changePct;
-            }
-            if (currentSortCol === 'Change') {
-                va = a._change;
-                vb = b._change;
-            }
-            if (currentSortCol === 'TradeVolume') {
-                va = a._vol;
-                vb = b._vol;
-            }
-            if (typeof va === 'string' && typeof vb === 'string')
-                return currentSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-
-            const numA = typeof va === 'number' ? va : parseFloat(String(va)) || 0;
-            const numB = typeof vb === 'number' ? vb : parseFloat(String(vb)) || 0;
-            return currentSortAsc ? numA - numB : numB - numA;
-        });
-
-        document.querySelectorAll('th.sortable').forEach(th => {
-            const icon = th.querySelector('.sort-icon');
-            if (icon) {
-                if (th.getAttribute('data-sort') === currentSortCol) {
-                    icon.textContent = currentSortAsc ? '▲' : '▼';
-                    icon.className = 'sort-icon text-accent font-black transition-all';
-                } else {
-                    icon.textContent = '↕';
-                    icon.className = 'sort-icon opacity-50';
+        // Svelte component will do the heavy lifting. We just broadcast the controls' states!
+        window.dispatchEvent(
+            new CustomEvent('tw-live-update', {
+                detail: {
+                    type: 'FILTERS',
+                    payload: {
+                        search: tsSearch,
+                        trend: tsTrend,
+                        volume: tsVol,
+                        starred: tsStarred,
+                        market: tsMarket,
+                        price: tsPriceRange
+                    }
                 }
-            }
-        });
+            })
+        );
+    }
 
-        const top = filtered.slice(0, 300);
-        if (top.length === 0) {
-            tbody.innerHTML = `<tr class="text-center"><td colspan="8" class="py-24 text-white/20 font-mono text-[9px] tracking-widest uppercase">Zero_Signals_Detected</td></tr>`;
-            return;
-        }
+    // Tell Svelte about initial sync
+    window.dispatchEvent(
+        new CustomEvent('tw-live-update', {
+            detail: { type: 'FILTERS', payload: { search: searchQuery, trend: filterElements.trend?.value || '0', volume: parseInt(filterElements.volume?.value || '0', 10), starred: filterElements.starred?.checked, market: filterElements.market?.value || '', price: filterElements.price?.value || '' } }
+        })
+    );
 
-        const existing = new Map();
-        Array.from(tbody.children).forEach(tr => {
-            if (tr.hasAttribute('data-code'))
-                existing.set(tr.getAttribute('data-code'), tr);
-            else if (tr.classList.contains('chart-accordion-row')) {
-                const pc = tr.previousElementSibling?.getAttribute('data-code');
-                if (pc) existing.set(pc + '-acc', tr);
-            } else tr.remove();
-        });
-
-        let cur = 0;
-        top.forEach(s => {
-            let tr = existing.get(s.Code) as HTMLElement;
-            if (!tr) {
-                tr = document.createElement('tr');
-                tr.className =
-                    'hover:bg-white/[0.04] transition-all cursor-pointer group border-b border-white/[0.02]';
-                tr.setAttribute('data-code', s.Code);
-                tr.setAttribute('data-name', s.Name);
-                tr.innerHTML = `<td class="px-4 py-3 cell-info"><div class="flex items-center gap-3"><button class="watchlist-toggle-btn text-white/20 hover:text-accent transition-all" data-code="${s.Code}"><span class="text-xs star-icon">☆</span></button><div class="min-w-0"><div class="text-[12px] font-black text-white group-hover:text-accent transition-all truncate cell-name"></div><div class="text-[8px] font-mono text-white/20 tracking-widest cell-code"></div></div></div></td><td class="px-4 py-3 text-right cell-close text-[12px] font-mono"></td><td class="px-4 py-3 text-right cell-pct text-[12px] font-black font-mono"></td><td class="px-4 py-3 text-right cell-change text-[12px] font-bold font-mono"></td><td class="px-4 py-3 text-right opacity-30 cell-open text-[11px] font-mono"></td><td class="px-4 py-3 text-right opacity-30 cell-high text-[11px] font-mono"></td><td class="px-4 py-3 text-right opacity-30 cell-low text-[11px] font-mono"></td><td class="px-4 py-3 text-right text-white/30 cell-vol text-[12px] font-mono font-bold"></td>`;
-            } else existing.delete(s.Code);
-
-            const color =
-                s._change > 0
-                    ? 'text-bullish'
-                    : s._change < 0
-                        ? 'text-bearish'
-                        : 'text-white/40';
-            const prev = s._closePrice > 0 ? (s._closePrice - s._change).toFixed(2) : '0';
-            tr.setAttribute('data-prev', prev);
-
-            if (tr.querySelector('.cell-code'))
-                tr.querySelector('.cell-code')!.textContent = s.Code;
-            if (tr.querySelector('.cell-name'))
-                tr.querySelector('.cell-name')!.textContent = s.Name;
-            const si = tr.querySelector('.star-icon');
-            if (si) {
-                const ist = wlSet.has(s.Code);
-                si.textContent = ist ? '★' : '☆';
-                si.className = ist
-                    ? 'text-xs star-icon text-accent drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]'
-                    : 'text-xs star-icon';
-            }
-
-            const cc = tr.querySelector('.cell-close');
-            if (cc) {
-                cc.className = 'px-4 py-3 text-right cell-close ' + color;
-                cc.textContent = s._closePrice.toFixed(2);
-            }
-            const cp = tr.querySelector('.cell-pct');
-            if (cp) {
-                cp.className = 'px-4 py-3 text-right cell-pct ' + color;
-                cp.textContent = (s._change > 0 ? '+' : '') + s._changePct.toFixed(2) + '%';
-            }
-            const ch = tr.querySelector('.cell-change');
-            if (ch) {
-                ch.className = 'px-4 py-3 text-right cell-change ' + color;
-                ch.textContent = (s._change > 0 ? '+' : '') + s.Change;
-            }
-            if (tr.querySelector('.cell-open'))
-                tr.querySelector('.cell-open')!.textContent = s._open.toFixed(2);
-            if (tr.querySelector('.cell-high'))
-                tr.querySelector('.cell-high')!.textContent = s._high.toFixed(2);
-            if (tr.querySelector('.cell-low'))
-                tr.querySelector('.cell-low')!.textContent = s._low.toFixed(2);
-            if (tr.querySelector('.cell-vol'))
-                tr.querySelector('.cell-vol')!.textContent = s._vol.toLocaleString();
-
-            if (tbody.children[cur] !== tr)
-                tbody.insertBefore(tr, tbody.children[cur] || null);
-            cur++;
-            const acc = existing.get(s.Code + '-acc');
-            if (acc) {
-                if (tbody.children[cur] !== acc)
-                    tbody.insertBefore(acc as HTMLElement, tbody.children[cur] || null);
-                existing.delete(s.Code + '-acc');
-                cur++;
-            }
-        });
-        existing.forEach(tr => (tr as HTMLElement).remove());
-
-        // Breadth
-        let up = 0,
-            flat = 0,
-            down = 0;
-        currentData.forEach(s => {
-            if (s._change > 0) up++;
-            else if (s._change < 0) down++;
-            else flat++;
-        });
-        const tot = up + down + flat;
-        const rEl = document.getElementById('breadth-ratio'),
-            uEl = document.getElementById('breadth-up'),
-            dEl = document.getElementById('breadth-down'),
-            fEl = document.getElementById('breadth-flat');
-        if (uEl) uEl.textContent = String(up);
-        if (dEl) dEl.textContent = String(down);
-        if (fEl) fEl.textContent = String(flat);
-        if (rEl) rEl.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
-        if (tot > 0) {
-            const bU = document.getElementById('breadth-bar-up'),
-                bD = document.getElementById('breadth-bar-down'),
-                bF = document.getElementById('breadth-bar-flat');
-            if (bU) bU.style.width = (up / tot) * 100 + '%';
-            if (bD) bD.style.width = (down / tot) * 100 + '%';
-            if (bF) bF.style.width = (flat / tot) * 100 + '%';
-        }
+    // Breadth Calculation
+    let up = 0,
+        flat = 0,
+        down = 0;
+    for (const s of currentData) {
+        if (s._change > 0) up++;
+        else if (s._change < 0) down++;
+        else flat++;
+    }
+    const tot = up + down + flat;
+    if (breadthRefs.up) breadthRefs.up.textContent = String(up);
+    if (breadthRefs.down) breadthRefs.down.textContent = String(down);
+    if (breadthRefs.flat) breadthRefs.flat.textContent = String(flat);
+    if (breadthRefs.ratio) breadthRefs.ratio.textContent = down > 0 ? (up / down).toFixed(2) : 'MAX';
+    if (tot > 0) {
+        if (breadthRefs.barUp) breadthRefs.barUp.style.width = (up / tot) * 100 + '%';
+        if (breadthRefs.barDown) breadthRefs.barDown.style.width = (down / tot) * 100 + '%';
+        if (breadthRefs.barFlat) breadthRefs.barFlat.style.width = (flat / tot) * 100 + '%';
     }
 
     toggleBtn.addEventListener('click', () => {

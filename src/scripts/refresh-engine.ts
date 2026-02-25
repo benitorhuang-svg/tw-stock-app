@@ -188,7 +188,11 @@ export function initRefreshTerminal() {
     closeRefresh.addEventListener('click', reloadPage);
 }
 
+let refreshTerminalInitialized = false;
 // Bind to event
 document.addEventListener('astro:page-load', () => {
+    if (!document.getElementById('refresh-terminal')) return;
+    if (refreshTerminalInitialized) return;
+    refreshTerminalInitialized = true;
     initRefreshTerminal();
 });

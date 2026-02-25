@@ -155,4 +155,15 @@ async function initIntelligenceCenter() {
     initYieldWall();
 }
 
-document.addEventListener('astro:page-load', initIntelligenceCenter);
+let stocksIndexRendered = false;
+
+document.addEventListener('astro:page-load', () => {
+    // Guard: only run on the main dashboard (index)
+    if (!document.getElementById('analysis-hub-search')) {
+        stocksIndexRendered = false;
+        return;
+    }
+    if (stocksIndexRendered) return;
+    stocksIndexRendered = true;
+    initIntelligenceCenter();
+});
