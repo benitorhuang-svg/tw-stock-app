@@ -80,12 +80,19 @@
                 watchlistSet = new Set(wl);
             }
         });
-        // Initialize polling if button is already active (rare but possible on View Transitions)
-        const toggleBtn = document.getElementById('toggle-polling-btn');
-        if (toggleBtn && toggleBtn.classList.contains('active-radar')) {
-            // Since polling was decoupled from inside Svelte, rely on the global events.
-        }
     });
+
+    function toggleWatchlist(code: string) {
+        const wl = JSON.parse(localStorage.getItem('watchlist') || '[]');
+        const index = wl.indexOf(code);
+        if (index > -1) {
+            wl.splice(index, 1);
+        } else {
+            wl.push(code);
+        }
+        localStorage.setItem('watchlist', JSON.stringify(wl));
+        watchlistSet = new Set(wl);
+    }
 
     $: filteredAndSorted = stocks
         .filter(s => {
@@ -136,6 +143,18 @@
             return currentSortAsc ? valA - valB : valB - valA;
         });
 
+    import LiveIntradayDeepDive from './LiveIntradayDeepDive.svelte';
+
+    let expandedCode = '';
+
+    function toggleExpand(code: string) {
+        if (expandedCode === code) {
+            expandedCode = '';
+        } else {
+            expandedCode = code;
+        }
+    }
+
     onDestroy(() => {
         if (pollInterval) clearInterval(pollInterval);
     });
@@ -150,13 +169,13 @@
                 class="sticky top-0 bg-surface/90 backdrop-blur-md z-20 text-[10px] font-black text-white/40 uppercase border-b border-white/5"
             >
                 <tr>
-                    {#each [{ label: 'ENTITY', col: 'Code', align: 'left' }, { label: 'QUOTATION', col: 'ClosingPrice', align: 'right' }, { label: 'VARIANCE', col: 'ChangePct', align: 'right' }, { label: 'DIFF', col: 'Change', align: 'right' }, { label: 'OPEN', col: 'OpeningPrice', align: 'right' }, { label: 'MAX', col: 'HighestPrice', align: 'right' }, { label: 'MIN', col: 'LowestPrice', align: 'right' }, { label: 'VOLUME', col: 'TradeVolume', align: 'right' }] as h}
+                    {#each [{ label: 'ENTITY', col: 'Code', align: 'left' }, { label: 'QUOTATION', col: 'ClosingPrice', align: 'right' }, { label: 'VARIANCE', col: 'ChangePct', align: 'right' }, { label: 'DIFF', col: 'Change', align: 'right' }, { label: 'OPEN', col: 'OpeningPrice', align: 'right' }, { label: 'MAX', col: 'HighestPrice', align: 'right' }, { label: 'MIN', col: 'LowestPrice', align: 'right' }, { label: 'VOLUME', col: 'TradeVolume', align: 'right' }, { label: '', col: '', align: 'right', noSort: true }] as h}
                         <th
                             class="py-3 border-b border-white/5 cursor-pointer hover:text-accent select-none group"
                             class:px-3={h.align === 'left'}
                             class:px-2={h.align === 'right'}
                             class:text-right={h.align === 'right'}
-                            on:click={() => toggleSort(h.col)}
+                            on:click={() => h.col && toggleSort(h.col)}
                         >
                             <span
                                 class="flex items-center gap-1.5"
@@ -179,7 +198,7 @@
                 {#if errorState}
                     <tr class="text-center group">
                         <td
-                            colspan="8"
+                            colspan="9"
                             class="py-24 text-bearish font-mono text-[10px] tracking-[0.2em] uppercase italic"
                         >
                             {errorState}
@@ -188,7 +207,7 @@
                 {:else if filteredAndSorted.length === 0}
                     <tr class="text-center group">
                         <td
-                            colspan="8"
+                            colspan="9"
                             class="py-24 text-white/20 font-mono text-[10px] tracking-[0.2em] uppercase"
                         >
                             {loadingState}
@@ -196,18 +215,46 @@
                     </tr>
                 {:else}
                     {#each filteredAndSorted as s (s.Code)}
-                        <tr class="hover:bg-accent/[0.04] transition-colors cursor-pointer group">
+                        <!-- Main Data Row -->
+                        <tr
+                            class="hover:bg-accent/[0.04] transition-all cursor-pointer group relative"
+                            class:active-row={expandedCode === s.Code}
+                            on:click={() => toggleExpand(s.Code)}
+                        >
                             <td
                                 class="px-3 py-3 border-r border-white/5 relative bg-inherit z-10 sticky left-0 group-hover:bg-accent/[0.04] transition-colors"
+                                class:border-l-4={expandedCode === s.Code}
+                                class:border-l-accent={expandedCode === s.Code}
                             >
-                                <span
-                                    class="font-bold text-white/90 group-hover:text-accent transition-colors mr-2 cursor-pointer no-underline block truncate max-w-[120px]"
-                                >
-                                    {s.Name}
-                                </span>
-                                <span class="text-[9px] text-white/30 uppercase mt-0.5 block"
-                                    >{s.Code}</span
-                                >
+                                <div class="flex items-center gap-2 pr-2">
+                                    <!-- Star Toggle -->
+                                    <button
+                                        class="text-sm transition-all duration-300 transform active:scale-125 {watchlistSet.has(
+                                            s.Code
+                                        )
+                                            ? 'text-warning drop-shadow-[0_0_8px_rgba(255,193,7,0.4)]'
+                                            : 'text-white/5 hover:text-white/20'}"
+                                        on:click|stopPropagation={() => toggleWatchlist(s.Code)}
+                                        title="Toggle Watchlist"
+                                    >
+                                        ★
+                                    </button>
+
+                                    <div class="flex flex-col min-w-0 flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <span
+                                                class="font-bold text-white/90 group-hover:text-accent transition-colors truncate"
+                                            >
+                                                {s.Name}
+                                            </span>
+                                        </div>
+                                        <span
+                                            class="text-[9px] text-white/30 uppercase mt-0.5 tracking-tighter"
+                                        >
+                                            {s.Code}
+                                        </span>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-2 py-3 text-right">
                                 <span
@@ -265,7 +312,29 @@
                             <td class="px-2 py-3 text-right text-white/50"
                                 >{s._vol > 0 ? s._vol.toLocaleString() : '—'}</td
                             >
+                            <td class="px-2 py-3 text-center">
+                                <a
+                                    href={`/stocks/${s.Code}`}
+                                    class="opacity-0 group-hover:opacity-100 transition-all bg-accent/10 hover:bg-accent text-accent hover:text-white px-2.5 py-1 rounded text-[8px] font-black tracking-widest uppercase no-underline whitespace-nowrap border border-accent/20"
+                                    on:click|stopPropagation
+                                >
+                                    Analysis ↗
+                                </a>
+                            </td>
                         </tr>
+
+                        <!-- Expansion Row (Intraday Deep Dive) -->
+                        {#if expandedCode === s.Code}
+                            <tr>
+                                <td colspan="9" class="p-0 border-b border-white/5 bg-black/20">
+                                    <LiveIntradayDeepDive
+                                        symbol={s.Code}
+                                        name={s.Name}
+                                        currentPrice={s._closePrice}
+                                    />
+                                </td>
+                            </tr>
+                        {/if}
                     {/each}
                 {/if}
             </tbody>
@@ -274,6 +343,17 @@
 </div>
 
 <style>
-    /* Styling isolated to component scope */
-    /* Sticky cell requires base background inheritance for seamless scrolling */
+    .active-row {
+        background: var(--color-accent-glow) !important;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .active-row td {
+        color: white !important;
+    }
+
+    /* Prevent sticky column border overlap */
+    .active-row td {
+        border-bottom-color: var(--color-accent) / 0.1 !important;
+    }
 </style>

@@ -1,74 +1,50 @@
 /**
  * Core Engine for StockScreener.astro
+ * EXTREME OPTIMIZATION: Row Caching, Throttled Paint, Manual GC
  */
 import { toast } from '../lib/toast';
-import type { ScreenerFilterPayload, ScreenerResult } from '../types/stock';
+import type { ScreenerResult } from '../types/stock';
+
+let screenerRendered = false;
+let rowMap = new Map<string, HTMLElement>();
+import { getEl } from '../lib/dom';
 
 function initScreenerEngine() {
+    const tbody = getEl('screener-results');
+    if (!tbody) return;
+
     let activeStrategyName = '';
     let lastResults: ScreenerResult[] = [];
-    let activeFilters: ScreenerFilterPayload | null = null;
-
-    const resultsContainer = document.getElementById('screener-results');
-    const screenerResultsTbody = document.getElementById('screener-results');
-    const resultsCount = document.getElementById('screener-count');
-    const emptyState = document.getElementById('screener-empty');
-    const activeStrategyLabel = document.getElementById('active-strategy-label');
-    const csvExportBtn = document.getElementById('csv-export-btn');
-
-    // Return early if not on screener page
-    if (!screenerResultsTbody) return;
-
-    const PRESET_PAYLOAD: Record<string, Partial<ScreenerFilterPayload>> = {
-        'low-pe': { pe: { max: 15 } },
-        'low-pb': { pb: { max: 1.5 } },
-        'high-dividend': { dividendYield: { min: 5 } },
-        'revenue-growth': { revenueYoY: { min: 10 } },
-        'volume-breakout': {},
-        breakout: {},
-        'foreign-buy': {},
-        'trust-buy': {},
-    };
-
-    const formatNum = (value: number | undefined | null, digits = 2) => {
-        if (value === undefined || value === null || Number.isNaN(value)) return '—';
-        return Number(value).toFixed(digits);
-    };
+    let refreshTimeout: number | null = null;
 
     function renderResults(stocks: ScreenerResult[]) {
-        if (!screenerResultsTbody) return;
+        rowMap.clear();
+        tbody!.innerHTML = stocks.map(stock => {
+            const isBull = (stock.changePercent || 0) >= 0;
+            return `
+                <tr tabindex="0" class="hover:bg-accent/5 transition-colors cursor-pointer border-b border-border/10" data-link="/stocks/${stock.symbol}" data-symbol="${stock.symbol}">
+                    <td class="px-3 py-2 text-xs font-mono text-text-secondary">${stock.symbol}</td>
+                    <td class="px-3 py-2 text-sm font-semibold text-text-primary uppercase tracking-tight">${stock.name || '—'}</td>
+                    <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary cell-price">${stock.price?.toFixed(2) || '—'}</td>
+                    <td class="px-3 py-2 text-xs font-mono text-right ${isBull ? 'text-bullish' : 'text-bearish'}">${stock.changePercent?.toFixed(2) || '0.00'}%</td>
+                    <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${stock.fundamentals?.pe?.toFixed(1) || '—'}</td>
+                    <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${stock.fundamentals?.pb?.toFixed(2) || '—'}</td>
+                    <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${stock.fundamentals?.dividendYield?.toFixed(2) || '0.00'}%</td>
+                    <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${(stock.volume || 0).toLocaleString()}</td>
+                    <td class="px-3 py-2 text-xs text-accent font-bold opacity-80">${(stock.matchedStrategies || []).join(' / ')}</td>
+                </tr>`;
+        }).join('');
 
-        screenerResultsTbody.innerHTML = stocks
-            .map(
-                stock => `
-            <tr tabindex="0" class="hover:bg-accent/5 transition-colors cursor-pointer" data-link="/stocks/${stock.symbol}" data-symbol="${stock.symbol}">
-                <td class="px-3 py-2 text-xs font-mono text-text-secondary">${stock.symbol}</td>
-                <td class="px-3 py-2 text-sm font-semibold text-text-primary">${stock.name || '—'}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.price)}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right ${Number(stock.changePercent) >= 0 ? 'text-bullish' : 'text-bearish'}">${formatNum(stock.changePercent)}%</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.fundamentals?.pe, 1)}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.fundamentals?.pb, 2)}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.fundamentals?.dividendYield, 2)}%</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${Number(stock.volume || 0).toLocaleString()}</td>
-                <td class="px-3 py-2 text-xs text-accent">${(stock.matchedStrategies || []).join(' / ')}</td>
-            </tr>
-        `
-            )
-            .join('');
+        // Cache rows for instant SSE selection
+        tbody!.querySelectorAll('tr[data-symbol]').forEach(row => {
+            rowMap.set((row as HTMLElement).dataset.symbol!, row as HTMLElement);
+        });
     }
 
-    screenerResultsTbody?.addEventListener('click', event => {
-        const target = event.target as HTMLElement;
-        const row = target.closest<HTMLTableRowElement>('tr[data-link]');
-        const href = row?.dataset.link;
-        if (href) window.location.href = href;
-    });
-    screenerResultsTbody?.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-            const row = (event.target as HTMLElement).closest<HTMLTableRowElement>('tr[data-link]');
-            const href = row?.dataset.link;
-            if (href) window.location.href = href;
-        }
+    // Delegation
+    tbody.addEventListener('click', e => {
+        const h = (e.target as HTMLElement).closest<HTMLElement>('tr[data-link]')?.dataset.link;
+        if (h) window.location.href = h;
     });
 
     document.querySelectorAll('[data-strategy]').forEach(card => {
@@ -76,222 +52,60 @@ function initScreenerEngine() {
             const strategyId = (card as HTMLElement).dataset.strategy;
             if (!strategyId) return;
 
-            document.querySelectorAll('[data-strategy]').forEach(c => {
-                c.classList.remove('border-accent/50', 'bg-accent/5');
-            });
-            card.classList.add('border-accent/50', 'bg-accent/5');
-
-            activeStrategyName =
-                card.querySelector('h4')?.textContent?.trim() ||
-                card.querySelector('h3')?.textContent?.trim() ||
-                strategyId;
-            if (activeStrategyLabel) activeStrategyLabel.textContent = activeStrategyName;
-
-            const filters: ScreenerFilterPayload = {
-                page: 1,
-                limit: 50,
-                strategyId,
-                ...(PRESET_PAYLOAD[strategyId] || {}),
-            };
-            activeFilters = { ...filters };
+            activeStrategyName = card.querySelector('h4, h3')?.textContent?.trim() || strategyId;
+            getEl('active-strategy-label')!.textContent = activeStrategyName;
 
             try {
-                if (resultsCount) resultsCount.textContent = '...';
-                emptyState?.classList.add('hidden');
-                resultsContainer?.classList.remove('hidden');
-                if (screenerResultsTbody)
-                    screenerResultsTbody.innerHTML = Array.from({ length: 8 })
-                        .map(
-                            () =>
-                                '<tr class="table-loading-row border-b border-border/30"><td colspan="9"><div class="skeleton"></div></td></tr>'
-                        )
-                        .join('');
+                tbody.innerHTML = Array.from({ length: 8 }).map(() => '<tr class="h-12"><td colspan="9"><div class="skeleton h-4"></div></td></tr>').join('');
 
                 const res = await fetch('/api/screener', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(filters),
+                    body: JSON.stringify({ strategyId, limit: 50 })
                 });
-
                 const data = await res.json();
 
                 if (data.success) {
-                    if (resultsCount) resultsCount.textContent = data.pagination.total;
                     lastResults = data.results;
                     renderResults(data.results);
-                    csvExportBtn?.classList.toggle('hidden', data.results.length === 0);
-
-                    if (data.results.length === 0) {
-                        if (screenerResultsTbody)
-                            screenerResultsTbody.innerHTML =
-                                '<tr><td colspan="9" class="py-12 text-center text-text-muted text-sm italic">沒有符合條件的股票</td></tr>';
-                    } else {
-                        toast.show({
-                            message: `找到 ${data.results.length} 檔符合「${activeStrategyName}」`,
-                            type: 'success',
-                            duration: 2500,
-                        });
-                    }
-                } else {
-                    if (screenerResultsTbody)
-                        screenerResultsTbody.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-bearish text-sm">${data.error || '查詢失敗'}</td></tr>`;
-                    if (resultsCount) resultsCount.textContent = '0';
-                    csvExportBtn?.classList.add('hidden');
-                    toast.show({ message: data.error || '篩選查詢失敗', type: 'error' });
+                    getEl('screener-count')!.textContent = data.pagination.total;
+                    toast.show({ message: `Found ${data.results.length} stocks`, type: 'success' });
                 }
             } catch (err) {
-                console.error('[Screener] Fetch error:', err);
-                if (screenerResultsTbody)
-                    screenerResultsTbody.innerHTML =
-                        '<tr><td colspan="9" class="py-12 text-center text-bearish text-sm">無法連線到篩選服務，請稍後再試</td></tr>';
-                if (resultsCount) resultsCount.textContent = '0';
-                csvExportBtn?.classList.add('hidden');
-                toast.show({ message: '無法連線到篩選服務', type: 'error' });
+                toast.show({ message: 'Engine Error', type: 'error' });
             }
         });
     });
 
-    csvExportBtn?.addEventListener('click', () => {
-        if (lastResults.length === 0) return;
-        const headers = ['股票代號', '股票名稱', '價格', '漲跌幅%', '本益比', '股價淨值比', '殖利率', '成交量', '策略'];
-        const rows = lastResults.map((s: ScreenerResult) => [
-            s.symbol,
-            s.name || '',
-            s.price ?? '',
-            s.changePercent ?? '',
-            s.fundamentals?.pe ?? '',
-            s.fundamentals?.pb ?? '',
-            s.fundamentals?.dividendYield ?? '',
-            s.volume ?? '',
-            (s.matchedStrategies || []).join('; '),
-        ]);
-        const csvContent = [
-            headers.join(','),
-            ...rows.map(r => r.map(c => `"${c}"`).join(',')),
-        ].join('\n');
-        const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        const date = new Date().toISOString().slice(0, 10);
-        link.download = `選股結果_${activeStrategyName}_${date}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        toast.show({
-            message: `已匯出 ${lastResults.length} 筆結果`,
-            type: 'success',
-            duration: 2000,
-        });
-    });
-
-    // real-time price updates for screener results (SSE logic)
-    if (typeof EventSource !== 'undefined') {
-        const win = window as unknown as { __screenerSSE?: EventSource | null };
-        if (!win.__screenerSSE) {
-            win.__screenerSSE = new EventSource('/api/sse/stream');
-            win.__screenerSSE.addEventListener('tick', e => {
-                try {
-                    const ticks = JSON.parse(e.data);
-                    if (!document.getElementById('screener-results')) return;
-
-                    ticks.forEach((t: { symbol: string; price: number }) => {
-                        const row = document.querySelector(`tr[data-symbol="${t.symbol}"]`);
-                        if (row) {
-                            const priceCell = row.querySelector('td:nth-child(3)');
-                            if (priceCell) priceCell.textContent = t.price.toFixed(2);
-                            row.classList.add('flash');
-                            setTimeout(() => row.classList.remove('flash'), 800);
-                        }
-                    });
-
-                    // auto-refresh current screener results (throttled)
-                    if (activeFilters) {
-                        const winScope = window as unknown as { __screenerRefreshTimeout: number | null };
-                        if (!winScope.__screenerRefreshTimeout) {
-                            winScope.__screenerRefreshTimeout = window.setTimeout(async () => {
-                                try {
-                                    const res = await fetch('/api/screener', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify(activeFilters),
-                                    });
-                                    const data = await res.json();
-                                    if (data.success && document.getElementById('screener-results')) {
-                                        lastResults = data.results;
-                                        renderResults(data.results);
-                                    }
-                                } catch { }
-                                winScope.__screenerRefreshTimeout = null;
-                            }, 30000);
-                        }
+    // SSE Dynamic Updates (Fast-Patch)
+    const win = window as any;
+    if (typeof EventSource !== 'undefined' && !win.__screenerSSE) {
+        win.__screenerSSE = new EventSource('/api/sse/stream');
+        win.__screenerSSE.addEventListener('tick', (e: MessageEvent) => {
+            const ticks = JSON.parse(e.data);
+            requestAnimationFrame(() => {
+                for (let i = 0; i < ticks.length; i++) {
+                    const row = rowMap.get(ticks[i].symbol);
+                    if (row) {
+                        const cell = row.querySelector('.cell-price');
+                        if (cell) cell.textContent = ticks[i].price.toFixed(2);
+                        row.style.background = 'rgba(59, 130, 246, 0.05)';
+                        setTimeout(() => row.style.background = '', 500);
                     }
-                } catch (err) {
-                    console.error('[SSE tick] parse error', err);
                 }
             });
-        }
-    }
-
-    function sortResultsBy(colIndex: number) {
-        const keys = [
-            'symbol',
-            'name',
-            'price',
-            'changePercent',
-            'pe',
-            'pb',
-            'dividendYield',
-            'volume',
-            'matchedStrategies',
-        ];
-        const key = keys[colIndex] || 'symbol';
-        lastResults.sort((a, b) => {
-            let va: string | number = 0, vb: string | number = 0;
-            if (['pe', 'pb', 'dividendYield'].includes(key)) {
-                va = (a.fundamentals as Record<string, number>)[key] ?? 0;
-                vb = (b.fundamentals as Record<string, number>)[key] ?? 0;
-            } else if (key === 'matchedStrategies') {
-                va = (a.matchedStrategies || []).join(', ');
-                vb = (b.matchedStrategies || []).join(', ');
-            } else {
-                va = (a as unknown as Record<string, string | number>)[key] ?? 0;
-                vb = (b as unknown as Record<string, string | number>)[key] ?? 0;
-            }
-            if (typeof va === 'number' && typeof vb === 'number') return va - vb;
-            return String(va).localeCompare(String(vb));
         });
-        renderResults(lastResults);
     }
 
-    document.querySelectorAll('.data-table-pro th').forEach((th, i) => {
-        th.addEventListener('click', () => sortResultsBy(i));
-    });
+    document.addEventListener('astro:before-preparation', () => {
+        if (win.__screenerSSE) { win.__screenerSSE.close(); win.__screenerSSE = null; }
+        if (refreshTimeout) clearTimeout(refreshTimeout);
+        rowMap.clear();
+    }, { once: true });
 }
 
-// Cleanup SSE correctly and prevent execution out of bounds
-document.addEventListener('astro:before-preparation', () => {
-    const win = window as unknown as { __screenerRefreshTimeout?: number | null, __screenerSSE?: EventSource | null };
-    if (win.__screenerRefreshTimeout) {
-        clearTimeout(win.__screenerRefreshTimeout);
-        win.__screenerRefreshTimeout = null;
-    }
-    if (win.__screenerSSE) {
-        win.__screenerSSE.close();
-        win.__screenerSSE = null;
-    }
-});
-
-let screenerRendered = false;
-
-// Run correctly using standard wrapper
 document.addEventListener('astro:page-load', () => {
-    if (!document.getElementById('screener-results')) {
-        screenerRendered = false;
-        return;
-    }
+    if (!getEl('screener-results')) { screenerRendered = false; return; }
     if (screenerRendered) return;
     screenerRendered = true;
     initScreenerEngine();

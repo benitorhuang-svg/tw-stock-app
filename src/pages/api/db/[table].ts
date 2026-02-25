@@ -13,15 +13,15 @@ export const GET: APIRoute = async ({ params, url }) => {
     }
 
     try {
-        const rows = dbService.getTableData(table, { limit, offset, search });
+        const rows = dbService.getTableDataMatrix(table, { limit, offset, search });
         const count = dbService.getTableRowCount(table, search);
         const columns = dbService.getTableColumns(table);
 
         return new Response(
             JSON.stringify({
                 tableName: table,
-                columns,
-                rows,
+                columns, // [{name, type}, ...]
+                rows,    // [[val1, val2, ...], ...]
                 total: count,
                 limit,
                 offset,

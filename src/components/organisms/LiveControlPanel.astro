@@ -19,39 +19,3 @@ import MarketBreadth from '../molecules/MarketBreadth.astro';
         />
     </div>
 </div>
-
-<script>
-    function setupStatusObserver() {
-        const btn = document.getElementById('toggle-polling-btn');
-        if (!btn) return;
-
-        const updateUI = () => {
-            const isRunning = btn.innerText.includes('停止');
-            if (isRunning) {
-                btn.classList.remove('bg-accent', 'shadow-[0_4px_15px_rgba(59,130,246,0.3)]');
-                btn.classList.add(
-                    'bg-bearish/20',
-                    'text-bearish',
-                    'border',
-                    'border-bearish/40',
-                    'shadow-[0_4px_15px_rgba(34,197,94,0.1)]'
-                );
-            } else {
-                btn.classList.add('bg-accent', 'shadow-[0_4px_15px_rgba(59,130,246,0.3)]');
-                btn.classList.remove(
-                    'bg-bearish/20',
-                    'text-bearish',
-                    'border',
-                    'border-bearish/40',
-                    'shadow-[0_4px_15px_rgba(34,197,94,0.1)]'
-                );
-            }
-        };
-
-        const observer = new MutationObserver(updateUI);
-        observer.observe(btn, { childList: true, characterData: true, subtree: true });
-        updateUI();
-    }
-
-    document.addEventListener('astro:page-load', setupStatusObserver);
-</script>

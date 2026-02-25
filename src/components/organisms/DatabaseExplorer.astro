@@ -43,7 +43,7 @@ import DatabaseRefreshArea from './DatabaseRefreshArea.astro';
 
         <div
             id="table-scroll-container"
-            class="rounded-2xl border border-border/50 flex-1 overflow-auto shadow-elevated bg-surface/30 custom-scrollbar relative p-6"
+            class="rounded-xl border border-border/50 flex-1 overflow-auto shadow-elevated bg-surface/10 custom-scrollbar relative [contain:content] [backface-visibility:hidden] [transform:translateZ(0)]"
         >
             <DatabaseTableArea client:load />
         </div>

@@ -46,24 +46,19 @@ registerServiceWorker();
 initPerformanceMode();
 
 // Interactive Glow Tracker — follows cursor on .glow-interactive elements
-let ticking = false;
-let glowElements: HTMLElement[] = [];
-
-// Cache glow elements on page load instead of querying every mouse move
-const cacheGlowElements = () => {
-    glowElements = Array.from(document.querySelectorAll<HTMLElement>('.glow-interactive'));
-};
-document.addEventListener('astro:page-load', cacheGlowElements);
-
+// Optimized: Uses event delegation to avoid broad DOM loops and layout thrashing
 document.addEventListener('mousemove', (e: MouseEvent) => {
-    if (ticking || glowElements.length === 0) return;
-    ticking = true;
+    const target = e.target as HTMLElement;
+    const glowEl = target.closest('.glow-interactive') as HTMLElement;
+
+    if (!glowEl) return;
+
+    // Only update if mouse is actually moving over a glow element
     requestAnimationFrame(() => {
-        for (const el of glowElements) {
-            const rect = el.getBoundingClientRect();
-            el.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-            el.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
-        }
-        ticking = false;
+        const rect = glowEl.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        glowEl.style.setProperty('--mouse-x', `${x}px`);
+        glowEl.style.setProperty('--mouse-y', `${y}px`);
     });
 });

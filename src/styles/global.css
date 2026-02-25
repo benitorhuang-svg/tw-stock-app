@@ -249,6 +249,41 @@
 }
 
 /* ── Base Styles ── */
+/* ══════════════════════════════════════════════════
+   PERFORMANCE PRIMERS (EXTREME OPTIMIZATION)
+   ══════════════════════════════════════════════════ */
+@layer base {
+
+    /* Reduce Paint Overheads */
+    .gpu-layer {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+        will-change: transform;
+    }
+
+    /* Content Visibility — Only render what's near the viewport */
+    .render-optimized {
+        content-visibility: auto;
+        contain-intrinsic-size: 1px 500px;
+    }
+
+    /* Strict Containment — prevent any internal changes from reflowing the engine */
+    .contain-strict {
+        contain: strict;
+    }
+
+    .contain-content {
+        contain: content;
+    }
+
+    /* Faster scrolling on mobile */
+    .smooth-scroll {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+}
+
 @layer base {
 
     *,

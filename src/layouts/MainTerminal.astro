@@ -61,20 +61,44 @@ const { title, description, fullWidth = false } = Astro.props;
                         </div>
                     </a>
 
-                    <!-- Consolidated Standalone Data Obs -->
-                    <div class="hidden md:flex items-center gap-3 mr-3 lg:mr-5">
-                        <!-- Data Observation (Extracted Standalone) -->
+                    <!-- Consolidated Standalone Capsules -->
+                    <div class="hidden md:flex items-center gap-2 mr-3 lg:mr-5">
+                        <!-- Data Observation -->
                         <a
                             href="/database"
+                            id="nav-db-btn"
                             class:list={[
                                 'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group',
                                 Astro.url.pathname === '/database'
-                                    ? 'bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
                                     : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
                             ]}
                             data-astro-prefetch
                         >
                             <span>數據觀測</span>
+                        </a>
+
+                        <!-- Real-time Opening -->
+                        <a
+                            href="/live"
+                            id="nav-live-btn"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group relative',
+                                Astro.url.pathname === '/live'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span class="relative flex h-1.5 w-1.5 mr-0.5">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"
+                                ></span>
+                                <span
+                                    class="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent"
+                                ></span>
+                            </span>
+                            <span>即時開盤</span>
                         </a>
                     </div>
 

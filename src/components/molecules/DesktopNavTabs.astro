@@ -10,15 +10,17 @@ const isActive = (path: string) =>
 <nav class="hidden md:flex items-center" aria-label="主要導覽" id="desktop-nav">
     <div class="top-nav-tabs">
         {
-            NAV_ITEMS.filter(item => item.label !== '數據觀測').map(item => (
-                <NavTab
-                    variant="desktop"
-                    path={item.path}
-                    label={item.label}
-                    icon={item.icon}
-                    isActive={isActive(item.path)}
-                />
-            ))
+            NAV_ITEMS.filter(item => item.label !== '數據觀測' && item.label !== '即時開盤').map(
+                item => (
+                    <NavTab
+                        variant="desktop"
+                        path={item.path}
+                        label={item.label}
+                        icon={item.icon}
+                        isActive={isActive(item.path)}
+                    />
+                )
+            )
         }
         <div class="tab-indicator" id="tab-indicator"></div>
     </div>
@@ -44,43 +46,45 @@ const isActive = (path: string) =>
         document.querySelectorAll<HTMLElement>('.top-nav-tab').forEach(updateFn);
         document.querySelectorAll<HTMLElement>('.mobile-nav-item').forEach(updateFn);
 
-        const dbBtn = document.querySelector('header a[href="/database"]') as HTMLElement;
-        if (dbBtn) {
-            const isDb = currentPath === '/database' || currentPath.startsWith('/database/');
-            if (isDb) {
-                dbBtn.classList.add(
-                    'bg-accent/15',
-                    'border-accent/40',
-                    'text-accent',
-                    'shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)]',
-                    'shadow-inner'
-                );
-                dbBtn.classList.remove(
-                    'bg-glass',
-                    'border-border',
-                    'text-text-muted',
-                    'hover:text-text-primary',
-                    'hover:border-border-highlight',
-                    'hover:bg-glass-hover'
-                );
-            } else {
-                dbBtn.classList.remove(
-                    'bg-accent/15',
-                    'border-accent/40',
-                    'text-accent',
-                    'shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)]',
-                    'shadow-inner'
-                );
-                dbBtn.classList.add(
-                    'bg-glass',
-                    'border-border',
-                    'text-text-muted',
-                    'hover:text-text-primary',
-                    'hover:border-border-highlight',
-                    'hover:bg-glass-hover'
-                );
+        ['/database', '/live'].forEach(basePath => {
+            const btn = document.querySelector(`header a[href="${basePath}"]`) as HTMLElement;
+            if (btn) {
+                const isActive = currentPath === basePath || currentPath.startsWith(basePath + '/');
+                if (isActive) {
+                    btn.classList.add(
+                        'bg-accent/15',
+                        'border-accent/40',
+                        'text-accent',
+                        'shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)]',
+                        'shadow-inner'
+                    );
+                    btn.classList.remove(
+                        'bg-glass',
+                        'border-border',
+                        'text-text-muted',
+                        'hover:text-text-primary',
+                        'hover:border-border-highlight',
+                        'hover:bg-glass-hover'
+                    );
+                } else {
+                    btn.classList.remove(
+                        'bg-accent/15',
+                        'border-accent/40',
+                        'text-accent',
+                        'shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)]',
+                        'shadow-inner'
+                    );
+                    btn.classList.add(
+                        'bg-glass',
+                        'border-border',
+                        'text-text-muted',
+                        'hover:text-text-primary',
+                        'hover:border-border-highlight',
+                        'hover:bg-glass-hover'
+                    );
+                }
             }
-        }
+        });
     }
 
     // Tab indicator positioning
