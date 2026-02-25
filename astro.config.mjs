@@ -12,9 +12,8 @@ export default defineConfig({
     // Static for GitHub Pages (pre-render all pages)
     // Server (SSR) for local dev / production
     output: isStaticBuild ? 'static' : 'server',
-    ...(!isStaticBuild && {
-        adapter: node({ mode: 'standalone' }),
-    }),
+    // Always include adapter — Astro 5 requires it for prerender=false routes
+    adapter: node({ mode: 'standalone' }),
     // GitHub Pages base path (repo name)
     ...(isStaticBuild && {
         base: '/tw-stock-app',
