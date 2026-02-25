@@ -30,11 +30,21 @@ const { title, description = 'TWStock Quantum Terminal — 台股高級金融終
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
+    id="google-fonts"
     rel="preload"
     as="style"
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap"
-    onload="this.onload=null;this.rel='stylesheet'"
 />
+<script is:inline>
+    // Non-blocking font load: preload → stylesheet after page load
+    const f = document.getElementById('google-fonts');
+    if (f) {
+        f.onload = function () {
+            f.rel = 'stylesheet';
+        };
+        f.rel = 'preload';
+    }
+</script>
 <noscript>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap"

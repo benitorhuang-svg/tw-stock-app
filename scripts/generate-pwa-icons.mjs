@@ -14,7 +14,6 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const ICONS_DIR = path.join(ROOT, 'public', 'icons');
-const FAVICON_SVG = path.join(ROOT, 'public', 'favicon.svg');
 
 const SIZES = [72, 96, 128, 144, 152, 192, 384, 512];
 

@@ -3,7 +3,7 @@ name: Build & Deploy PWA to GitHub Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch: # 允許手動觸發
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -42,7 +42,9 @@ jobs:
               npm run build-db || echo "DB build skipped"
           fi
 
-      - name: Build Astro (SSR)
+      - name: Build Astro (Static for GitHub Pages)
+        env:
+          STATIC_BUILD: "true"
         run: npm run build
 
       - name: Setup Pages
@@ -51,7 +53,7 @@ jobs:
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist/client
+          path: ./dist
 
   deploy:
     needs: build

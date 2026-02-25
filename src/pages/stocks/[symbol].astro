@@ -14,10 +14,21 @@ import TabFundamentals from '../../components/organisms/TabFundamentals.astro';
 import TabAlerts from '../../components/organisms/TabAlerts.astro';
 import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
 
+// Required for static builds (getStaticPaths enumerates all possible symbols)
+export async function getStaticPaths() {
+    try {
+        const { loadStockList } = await import('../../utils/stockDataService');
+        const stocks = await loadStockList();
+        return stocks.map(s => ({ params: { symbol: s.symbol } }));
+    } catch {
+        return [];
+    }
+}
+
 const { symbol } = Astro.params;
 
 if (!symbol) {
-    return Astro.redirect('/');
+    return Astro.redirect('/')
 }
 
 // SSR: Data loading

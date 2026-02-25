@@ -8,21 +8,25 @@ import DatabaseSidebar from '../components/organisms/DatabaseSidebar.astro';
 import DatabaseExplorer from '../components/organisms/DatabaseExplorer.astro';
 import DatabaseSidebarActions from '../components/molecules/DatabaseSidebarActions.astro';
 
-// SSR: Load initial table stats
-import { dbService } from '../lib/db/sqlite-service';
-let tables = dbService.getTables();
-// Filter out dividends since it has no data and is confusing
-tables = tables.filter(t => t !== 'dividends');
+// SSR: Load initial table stats (fallback for static builds)
+let tables: string[] = [];
+let tableStats: { name: string; rows: number; cols: number }[] = [];
 
-const tableStats = tables.map(t => {
-    try {
-        const count = dbService.getTableRowCount(t);
-        const columns = dbService.getTableColumns(t);
-        return { name: t, rows: count, cols: columns.length };
-    } catch {
-        return { name: t, rows: 0, cols: 0 };
-    }
-});
+try {
+    const { dbService } = await import('../lib/db/sqlite-service');
+    tables = dbService.getTables().filter(t => t !== 'dividends');
+    tableStats = tables.map(t => {
+        try {
+            const count = dbService.getTableRowCount(t);
+            const columns = dbService.getTableColumns(t);
+            return { name: t, rows: count, cols: columns.length };
+        } catch {
+            return { name: t, rows: 0, cols: 0 };
+        }
+    });
+} catch {
+    // Static build: no DB available, show empty state
+}
 ---
 
 <MainTerminal title="數據觀測 (SQLite)" fullWidth>

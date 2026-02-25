@@ -3,11 +3,22 @@ import { defineConfig } from 'astro/config';
 import node from '@astrojs/node';
 import tailwindcss from '@tailwindcss/vite';
 
+// GitHub Pages = static build (STATIC_BUILD=true)
+// Local dev / production = SSR with Node adapter
+const isStaticBuild = process.env.STATIC_BUILD === 'true';
+
 // https://astro.build/config
 export default defineConfig({
-    output: 'server',
-    adapter: node({
-        mode: 'standalone',
+    // Static for GitHub Pages (pre-render all pages)
+    // Server (SSR) for local dev / production
+    output: isStaticBuild ? 'static' : 'server',
+    ...(!isStaticBuild && {
+        adapter: node({ mode: 'standalone' }),
+    }),
+    // GitHub Pages base path (repo name)
+    ...(isStaticBuild && {
+        base: '/tw-stock-app',
+        site: 'https://benitorhuang-svg.github.io',
     }),
     server: {
         host: 'localhost',
@@ -38,7 +49,7 @@ export default defineConfig({
         },
     },
     prefetch: {
-        prefetchAll: false,     // Don't prefetch all links — only data-astro-prefetch
-        defaultStrategy: 'hover', // Prefetch on hover for faster perceived nav
+        prefetchAll: false,
+        defaultStrategy: 'hover',
     },
 });

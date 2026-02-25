@@ -5,7 +5,6 @@ import LiquidityLeaders from '../components/molecules/LiquidityLeaders.astro';
 import MoversMatrix from '../components/organisms/MoversMatrix.astro';
 import ForensicTicker from '../components/molecules/ForensicTicker.astro';
 import SentimentTrendModal from '../components/organisms/SentimentTrendModal.astro';
-import { dbService } from '../lib/db/sqlite-service';
 
 interface DashboardStock {
     symbol: string;
@@ -47,7 +46,9 @@ let totalVolume = 0;
 let avgChange = 0;
 
 try {
-    // Use direct SQL aggregation instead of loading all stocks into JS
+    // Fast path: direct SQL aggregation (SSR mode with DB available)
+    const { dbService } = await import('../lib/db/sqlite-service');
+
     const summary = dbService.queryOne<{
         total: number;
         up: number;
@@ -78,7 +79,6 @@ try {
         dataDate = summary.latest_date || '';
     }
 
-    // Top gainers/losers/volume — SQL LIMIT is O(n log k) vs JS sort O(n log n)
     const mapRow = (r: any): DashboardStock => ({
         symbol: r.symbol,
         name: r.name || r.symbol,
@@ -126,8 +126,36 @@ try {
             `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.volume > 0 ORDER BY lp.volume DESC LIMIT 10`
         )
         .map(mapRow);
-} catch (e) {
-    console.error('Dashboard data load error:', e);
+} catch {
+    // Fallback: JSON-based data loading (static build / no DB)
+    try {
+        const svc = await import('../utils/stockDataService');
+        const all = await svc.getStocksWithPrices();
+        totalStocks = all.length;
+        dataDate = all.find(s => s.date)?.date || '';
+        const withPrice = all.filter(s => s.price > 0);
+        upCount = withPrice.filter(s => s.changePercent > 0).length;
+        downCount = withPrice.filter(s => s.changePercent < 0).length;
+        flatCount = withPrice.filter(s => s.changePercent === 0).length;
+        totalVolume = withPrice.reduce((sum, s) => sum + s.volume, 0);
+        avgChange =
+            withPrice.length > 0
+                ? withPrice.reduce((sum, s) => sum + s.changePercent, 0) / withPrice.length
+                : 0;
+        gainers = withPrice
+            .filter(s => s.changePercent > 0)
+            .sort((a, b) => b.changePercent - a.changePercent)
+            .slice(0, 10) as DashboardStock[];
+        losers = withPrice
+            .filter(s => s.changePercent < 0)
+            .sort((a, b) => a.changePercent - b.changePercent)
+            .slice(0, 10) as DashboardStock[];
+        topVolume = [...withPrice]
+            .sort((a, b) => b.volume - a.volume)
+            .slice(0, 10) as DashboardStock[];
+    } catch (e2) {
+        console.error('Dashboard data load error:', e2);
+    }
 }
 ---
 
