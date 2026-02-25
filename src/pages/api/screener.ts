@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { dbService } from '../../lib/db/sqlite-service';
 import { getStrategy } from '../../data/strategies';
+import type { ScreenerResult } from '../../types/stock';
 
 interface ScreenerBody {
     strategyId?: string;
@@ -18,7 +19,27 @@ interface ScreenerBody {
     limit?: number;
 }
 
-const PRESET_FILTERS: Record<string, any> = {
+interface ScreenerRow {
+    symbol: string;
+    name: string;
+    sector: string | null;
+    close: number;
+    change_pct: number;
+    volume: number;
+    pe: number;
+    pb: number;
+    yield: number;
+    revenue_yoy: number;
+    gross_margin: number;
+    operating_margin: number;
+    net_margin: number;
+    eps: number;
+    foreign_inv: number;
+    invest_trust: number;
+    dealer: number;
+}
+
+const PRESET_FILTERS: Record<string, ScreenerBody> = {
     'low-pe': { filters: { pe: 15 } },
     'low-pb': { filters: { pb: 1.5 } },
     'high-dividend': { filters: { yield: 5 } },
@@ -47,7 +68,7 @@ export const POST: APIRoute = async ({ request }) => {
                 AND ch.date = (SELECT MAX(date) FROM chips)
             WHERE 1 = 1
         `;
-        const params: any[] = [];
+        const params: (string | number)[] = [];
 
         // Quantitative Vectors
         if (f.pe !== undefined) {
@@ -120,9 +141,9 @@ export const POST: APIRoute = async ({ request }) => {
             LIMIT ? OFFSET ?
         `;
 
-        const rows = dbService.queryAll<any>(rowsSql, [...params, limit, offset]);
+        const rows = dbService.queryAll<ScreenerRow>(rowsSql, [...params, limit, offset]);
 
-        const results = rows.map((r: any) => ({
+        const results: ScreenerResult[] = rows.map(r => ({
             symbol: r.symbol,
             name: r.name || r.symbol,
             sector: r.sector,
@@ -177,7 +198,20 @@ export const POST: APIRoute = async ({ request }) => {
 export const GET: APIRoute = async ({ url }) => {
     try {
         const limit = Math.min(200, Math.max(1, Number(url.searchParams.get('limit') || '50')));
-        const rows = dbService.queryAll(
+
+        interface SimpleScreenerRow {
+            symbol: string;
+            name: string;
+            sector: string | null;
+            close: number;
+            change_pct: number;
+            volume: number;
+            pe: number;
+            pb: number;
+            yield: number;
+        }
+
+        const rows = dbService.queryAll<SimpleScreenerRow>(
             `
             SELECT s.symbol, s.name, s.sector, lp.close, lp.change_pct, lp.volume, lp.pe, lp.pb, lp.yield
             FROM latest_prices lp

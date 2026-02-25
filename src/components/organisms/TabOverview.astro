@@ -3,6 +3,11 @@
  * TabOverview.astro — Overview Tab Content (002-tab-overview)
  * Intraday chart, order book, trade tape, AI quick insights
  */
+import IntradayChart from '../molecules/IntradayChart.astro';
+import OrderBook from '../molecules/OrderBook.astro';
+import TradeTape from '../molecules/TradeTape.astro';
+import AiQuickInsights from '../molecules/AiQuickInsights.astro';
+
 interface Props {
     symbol: string;
     price: number;
@@ -14,7 +19,7 @@ interface Props {
     volume: number;
 }
 
-const { symbol, price, change, changePercent, open, high, low, volume } = Astro.props;
+const { symbol, price, change } = Astro.props;
 
 const isBullish = change > 0;
 const isBearish = change < 0;
@@ -33,7 +38,7 @@ const tradeTape = Array.from({ length: 12 }, (_, i) => ({
     time: `13:${String(30 - i * 2).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
     price: +(basePrice + (Math.random() - 0.5) * 3).toFixed(2),
     vol: Math.floor(Math.random() * 80) + 1,
-    type: Math.random() > 0.5 ? 'buy' : 'sell',
+    type: (Math.random() > 0.5 ? 'buy' : 'sell') as 'buy' | 'sell',
 }));
 
 // AI Insights mock
@@ -49,179 +54,35 @@ const insights = [
         <!-- Left: Intraday Chart Area -->
         <div class="lg:col-span-8 space-y-4">
             <!-- Intraday Chart -->
-            <div class="glass-card p-6 h-[360px] flex flex-col relative overflow-hidden">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="terminal-label">日內走勢</h3>
-                    <div class="flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
-                        <span class="text-[10px] font-mono text-text-muted tracking-wider"
-                            >即時連線</span
-                        >
-                    </div>
-                </div>
-                <!-- Simulated chart area with CSS gradient -->
-                <div class="flex-1 relative rounded-lg overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-accent/5 to-transparent">
-                    </div>
-                    <!-- Chart grid lines -->
-                    <div class="absolute inset-0 flex flex-col justify-between py-4">
-                        {
-                            [0, 1, 2, 3, 4].map(() => (
-                                <div class="border-b border-white/[0.03] w-full" />
-                            ))
-                        }
-                    </div>
-                    <!-- Price line simulation via SVG -->
-                    <svg
-                        class="absolute inset-0 w-full h-full"
-                        preserveAspectRatio="none"
-                        viewBox="0 0 400 200"
-                    >
-                        <defs>
-                            <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                                <stop
-                                    offset="0%"
-                                    stop-color={isBullish ? 'hsl(142,71%,45%)' : 'hsl(346,77%,50%)'}
-                                    stop-opacity="0.3"></stop>
-                                <stop
-                                    offset="100%"
-                                    stop-color={isBullish ? 'hsl(142,71%,45%)' : 'hsl(346,77%,50%)'}
-                                    stop-opacity="0"></stop>
-                            </linearGradient>
-                        </defs>
-                        <path
-                            d="M0,120 Q30,115 60,100 T120,90 T180,95 T240,70 T300,60 T360,65 T400,50"
-                            fill="none"
-                            stroke={isBullish ? 'hsl(142,71%,45%)' : 'hsl(346,77%,50%)'}
-                            stroke-width="2"></path>
-                        <path
-                            d="M0,120 Q30,115 60,100 T120,90 T180,95 T240,70 T300,60 T360,65 T400,50 L400,200 L0,200 Z"
-                            fill="url(#chartGrad)"></path>
-                    </svg>
-                    <!-- Floating price tag -->
-                    <div
-                        class:list={[
-                            'absolute right-4 top-1/4 px-3 py-1.5 rounded-md font-mono text-sm font-bold',
-                            isBullish
-                                ? 'bg-bullish/20 text-bullish shadow-[0_0_15px_hsl(142,71%,45%,0.3)]'
-                                : isBearish
-                                  ? 'bg-bearish/20 text-bearish shadow-[0_0_15px_hsl(346,77%,50%,0.3)]'
-                                  : 'bg-surface text-text-muted',
-                        ]}
-                    >
-                        {price > 0 ? price.toFixed(2) : '—'}
-                    </div>
-                </div>
-            </div>
+            <IntradayChart price={price} isBullish={isBullish} isBearish={isBearish} />
 
             <!-- AI Quick Insights -->
-            <div class="glass-card p-5 border-t-2 border-accent/30">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="text-base">🤖</span>
-                    <h3 class="terminal-label">AI 快評</h3>
-                    <span class="w-2 h-2 bg-accent rounded-full animate-glow-pulse"></span>
-                </div>
-                <div class="space-y-2.5">
-                    {
-                        insights.map((text, i) => (
-                            <p
-                                class="text-sm text-text-secondary leading-relaxed flex items-start gap-2"
-                                style={`animation: fade-up 0.5s cubic-bezier(0.16,1,0.3,1) ${i * 150}ms both`}
-                            >
-                                <span class="text-accent mt-0.5 flex-shrink-0">•</span>
-                                <span>{text}</span>
-                            </p>
-                        ))
-                    }
-                </div>
-            </div>
+            <AiQuickInsights symbol={symbol} insights={insights} />
         </div>
 
         <!-- Right: Order Book + Trade Tape -->
         <div class="lg:col-span-4 space-y-4">
             <!-- Order Book -->
-            <div class="glass-card p-4">
-                <h3 class="terminal-label mb-3">五檔報價</h3>
-                <!-- Asks (sell side) - reversed -->
-                <div class="space-y-0.5 mb-2">
-                    {
-                        askPrices
-                            .slice()
-                            .reverse()
-                            .map((p, i) => {
-                                const vol = askVolumes[4 - i];
-                                const pct = (vol / maxBookVol) * 100;
-                                return (
-                                    <div class="relative flex items-center justify-between px-2 py-1 rounded text-xs font-mono">
-                                        <div
-                                            class="absolute inset-y-0 right-0 bg-bearish/10 rounded"
-                                            style={`width: ${pct}%`}
-                                        />
-                                        <span class="relative text-bearish">{p.toFixed(2)}</span>
-                                        <span class="relative text-text-muted">{vol}</span>
-                                    </div>
-                                );
-                            })
-                    }
-                </div>
-                <!-- Current price divider -->
-                <div class="flex items-center gap-2 py-1.5 px-2 my-1 bg-white/[0.03] rounded">
-                    <span class:list={['font-mono font-bold text-sm', priceColor]}>
-                        {price > 0 ? price.toFixed(2) : '—'}
-                    </span>
-                    <span class:list={['text-[10px] font-mono', priceColor]}>
-                        {isBullish ? '▲' : isBearish ? '▼' : '—'}{
-                            change !== 0 ? Math.abs(change).toFixed(2) : ''
-                        }
-                    </span>
-                </div>
-                <!-- Bids (buy side) -->
-                <div class="space-y-0.5 mt-2">
-                    {
-                        bidPrices.map((p, i) => {
-                            const vol = bidVolumes[i];
-                            const pct = (vol / maxBookVol) * 100;
-                            return (
-                                <div class="relative flex items-center justify-between px-2 py-1 rounded text-xs font-mono">
-                                    <div
-                                        class="absolute inset-y-0 right-0 bg-bullish/10 rounded"
-                                        style={`width: ${pct}%`}
-                                    />
-                                    <span class="relative text-bullish">{p.toFixed(2)}</span>
-                                    <span class="relative text-text-muted">{vol}</span>
-                                </div>
-                            );
-                        })
-                    }
-                </div>
-            </div>
+            <OrderBook
+                price={price}
+                change={change}
+                isBullish={isBullish}
+                isBearish={isBearish}
+                priceColor={priceColor}
+                askPrices={askPrices}
+                askVolumes={askVolumes}
+                bidPrices={bidPrices}
+                bidVolumes={bidVolumes}
+                maxBookVol={maxBookVol}
+            />
 
             <!-- Trade Tape -->
-            <div class="glass-card p-4 max-h-[300px] overflow-y-auto">
-                <h3 class="terminal-label mb-3">逐筆明細</h3>
-                <div class="space-y-0.5">
-                    {
-                        tradeTape.map(t => (
-                            <div class="flex items-center justify-between text-xs font-mono px-1 py-1 rounded hover:bg-white/[0.02] transition-colors">
-                                <span class="text-text-muted">{t.time}</span>
-                                <span
-                                    class:list={[
-                                        t.type === 'buy' ? 'text-bullish' : 'text-bearish',
-                                    ]}
-                                >
-                                    {t.price.toFixed(2)}
-                                </span>
-                                <span class="text-text-muted">{t.vol}</span>
-                            </div>
-                        ))
-                    }
-                </div>
-            </div>
+            <TradeTape tradeTape={tradeTape} />
         </div>
     </div>
 </div>
 
-<script define:vars={{ symbol }}>
+<script define:vars={{ symbol }} is:inline>
     // Fetch live quote for the current stock and update the price display
     async function fetchLiveQuote() {
         try {

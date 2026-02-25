@@ -1,19 +1,40 @@
-/**
- * 股票資料服務
- * 封裝所有股票相關的資料庫操作
- */
+import { query, execute, batchInsert } from './database';
+import type {
+    Stock,
+    DailyPrice,
+    Fundamental,
+    Dividend,
+    PortfolioItem,
+    Transaction
+} from '../types/database';
+import type { SqlValue } from './database';
 
-import { query, execute, batchInsert, saveDatabase } from './database';
+export interface PortfolioSummaryItem extends PortfolioItem {
+    currentPrice: number;
+    cost: number;
+    value: number;
+    pl: number;
+    plPercent: string;
+    stock_name?: string;
+}
+
+export interface FilteredStock extends Stock {
+    pe: number | null;
+    pb: number | null;
+    dividend_yield: number | null;
+    eps: number | null;
+    roe: number | null;
+}
 
 // P0 Optimization: Query result caching for filterStocks
-const queryCache = new Map<string, { data: any[]; timestamp: number }>();
+const queryCache = new Map<string, { data: FilteredStock[]; timestamp: number }>();
 const QUERY_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-function getCacheKey(conditions: any): string {
+function getCacheKey(conditions: Record<string, number | undefined>): string {
     return JSON.stringify(conditions);
 }
 
-function getCachedResult(key: string): any[] | null {
+function getCachedResult(key: string): FilteredStock[] | null {
     const cached = queryCache.get(key);
     if (!cached) return null;
     if (Date.now() - cached.timestamp > QUERY_CACHE_TTL) {
@@ -23,7 +44,7 @@ function getCachedResult(key: string): any[] | null {
     return cached.data;
 }
 
-function setCacheResult(key: string, data: any[]): void {
+function setCacheResult(key: string, data: FilteredStock[]): void {
     queryCache.set(key, { data, timestamp: Date.now() });
     // Cleanup: remove oldest if >50 cached queries
     if (queryCache.size > 50) {
@@ -32,65 +53,6 @@ function setCacheResult(key: string, data: any[]): void {
         )[0];
         if (oldest) queryCache.delete(oldest[0]);
     }
-}
-
-// ================== 型別定義 ==================
-
-export interface Stock {
-    symbol: string;
-    name: string;
-    industry?: string;
-    market?: string;
-}
-
-export interface DailyPrice {
-    symbol: string;
-    date: string;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    volume: number;
-    turnover?: number;
-}
-
-export interface Fundamental {
-    symbol: string;
-    date: string;
-    pe?: number;
-    pb?: number;
-    dividend_yield?: number;
-    eps?: number;
-    roe?: number;
-}
-
-export interface Dividend {
-    symbol: string;
-    year: number;
-    cash_dividend: number;
-    stock_dividend: number;
-    total_dividend: number;
-}
-
-export interface PortfolioItem {
-    id?: number;
-    symbol: string;
-    shares: number;
-    avg_cost: number;
-    buy_date?: string;
-    notes?: string;
-}
-
-export interface Transaction {
-    id?: number;
-    symbol: string;
-    type: 'buy' | 'sell';
-    shares: number;
-    price: number;
-    fee?: number;
-    tax?: number;
-    date: string;
-    notes?: string;
 }
 
 // ================== 股票基本資料 ==================
@@ -238,7 +200,7 @@ export async function addToPortfolio(item: PortfolioItem): Promise<number> {
 
 export async function updatePortfolioItem(id: number, item: Partial<PortfolioItem>): Promise<void> {
     const sets: string[] = [];
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (item.shares !== undefined) {
         sets.push('shares = ?');
@@ -298,7 +260,7 @@ export async function getPortfolioSummary(): Promise<{
     totalCost: number;
     totalValue: number;
     unrealizedPL: number;
-    items: any[];
+    items: PortfolioSummaryItem[];
 }> {
     const portfolio = await getPortfolio();
     let totalCost = 0;
@@ -350,7 +312,7 @@ export async function filterStocks(conditions: {
     minYield?: number;
     maxYield?: number;
     minROE?: number;
-}): Promise<any[]> {
+}): Promise<FilteredStock[]> {
     // P0 Optimization: Check cache first (5 minute TTL)
     const cacheKey = getCacheKey(conditions);
     const cachedResult = getCachedResult(cacheKey);
@@ -368,7 +330,7 @@ export async function filterStocks(conditions: {
         ) f ON s.symbol = f.symbol AND f.rn = 1
         WHERE 1=1
     `;
-    const params: any[] = [];
+    const params: SqlValue[] = [];
 
     if (conditions.minPE !== undefined) {
         sql += ' AND f.pe >= ?';
@@ -393,7 +355,7 @@ export async function filterStocks(conditions: {
 
     sql += ' ORDER BY s.symbol';
 
-    const results = await query(sql, params);
+    const results = await query<FilteredStock>(sql, params);
 
     // P0 Optimization: Cache the results for 5 minutes
     setCacheResult(cacheKey, results);

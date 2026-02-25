@@ -1,0 +1,82 @@
+---
+/**
+ * IndicatorMacd.astro
+ */
+interface Props {
+    chartW: number;
+    gap: number;
+    barW: number;
+    macdHist: number[];
+    macdMax: number;
+    difValues: number[];
+    deaValues: number[];
+}
+
+const { chartW, gap, barW, macdHist, macdMax, difValues, deaValues } = Astro.props;
+---
+
+<div class="indicator-view active flex flex-col h-full" id="view-macd">
+    <div class="flex items-center justify-between py-2 px-2">
+        <div class="flex items-center gap-4">
+            <span class="text-[9px] font-mono font-bold text-white/30 tracking-widest uppercase"
+                >MACD</span
+            >
+            <div class="flex gap-3 text-[8px] font-mono">
+                <span class="text-accent flex items-center gap-1"
+                    ><span class="w-1.5 h-1.5 bg-accent rounded-full"></span> DIF</span
+                >
+                <span class="text-warning flex items-center gap-1"
+                    ><span class="w-1.5 h-1.5 bg-warning rounded-full"></span> DEA</span
+                >
+            </div>
+        </div>
+        <button
+            class="indicator-switch text-[8px] font-mono text-accent hover:text-white transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
+            data-to="rsi"
+        >
+            Switch to RSI
+        </button>
+    </div>
+
+    <svg viewBox={`0 0 ${chartW} 80`} class="flex-1 w-full" preserveAspectRatio="none">
+        <line x1="0" y1="40" x2={chartW} y2="40" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"
+        ></line>
+        {
+            macdHist.map((hVal, i) => {
+                const x = i * gap + (gap - barW) / 2;
+                const h = (Math.abs(hVal) / macdMax) * 35;
+                const y = hVal >= 0 ? 40 - h : 40;
+                return (
+                    <rect
+                        x={x}
+                        y={y}
+                        width={barW}
+                        height={h}
+                        fill={hVal >= 0 ? 'rgba(239,68,68,0.4)' : 'rgba(34,197,94,0.4)'}
+                        rx="0.5"
+                    />
+                );
+            })
+        }
+        <path
+            d={difValues
+                .map(
+                    (v, i) =>
+                        `${i === 0 ? 'M' : 'L'}${i * gap + gap / 2},${40 - (v / macdMax) * 35}`
+                )
+                .join(' ')}
+            fill="none"
+            stroke="rgb(var(--accent-rgb))"
+            stroke-width="1.2"></path>
+        <path
+            d={deaValues
+                .map(
+                    (v, i) =>
+                        `${i === 0 ? 'M' : 'L'}${i * gap + gap / 2},${40 - (v / macdMax) * 35}`
+                )
+                .join(' ')}
+            fill="none"
+            stroke="#eab308"
+            stroke-width="1.2"></path>
+    </svg>
+</div>

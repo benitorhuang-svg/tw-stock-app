@@ -1,0 +1,212 @@
+---
+/**
+ * ValuationRiverChart.astro
+ */
+import type { ValuationHistoryRecord } from '../../types/stock';
+
+interface Props {
+    pe: number;
+    hasRealValuation: boolean;
+    peLevels: number[];
+    mergedData: ValuationHistoryRecord[];
+}
+const { pe, hasRealValuation, peLevels, mergedData } = Astro.props;
+---
+
+<div class="glass-card p-6">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h3 class="terminal-label mb-1">估值河流圖</h3>
+            <p class="text-xs text-text-muted">Valuation River — 本益比區間與歷史股價位階</p>
+        </div>
+        <div class="flex gap-1">
+            {
+                ['P/E', 'P/B'].map((type, i) => (
+                    <button
+                        class:list={[
+                            'px-3 py-1 rounded text-xs font-semibold transition-all',
+                            i === 0
+                                ? 'bg-accent/15 text-accent border border-accent/20'
+                                : 'text-text-muted hover:text-text-secondary bg-glass border border-border',
+                        ]}
+                    >
+                        {type}
+                    </button>
+                ))
+            }
+            <div class="w-px bg-border mx-1"></div>
+            {
+                ['1年', '3年', '5年'].map((yr, i) => (
+                    <button
+                        class:list={[
+                            'px-2 py-1 rounded text-[10px] font-mono font-bold transition-all',
+                            i === 1
+                                ? 'bg-accent/10 text-accent'
+                                : 'text-text-muted hover:text-text-secondary',
+                        ]}
+                    >
+                        {yr}
+                    </button>
+                ))
+            }
+        </div>
+    </div>
+
+    <!-- River chart visualization -->
+    <div
+        class="relative h-[300px] overflow-hidden rounded-xl border border-white/[0.05] bg-black/40"
+    >
+        {/* SVG Layers */}
+        <svg
+            class:list={[
+                'absolute inset-0 w-full h-full',
+                !hasRealValuation && 'opacity-20 grayscale',
+            ]}
+            preserveAspectRatio="none"
+            viewBox="0 0 400 200"
+        >
+            {/* 🌊 Valuation Bands (The River) */}
+            {
+                hasRealValuation && mergedData.length > 1 && (
+                    <>
+                        {/* Bands from top to bottom */}
+                        {[3, 2, 1, 0].map(levelIdx => {
+                            const colors = [
+                                'rgba(239, 68, 68, 0.15)', // Zone 4-5 (Exp)
+                                'rgba(234, 179, 8, 0.1)', // Zone 3-4
+                                'rgba(34, 197, 94, 0.1)', // Zone 2-3 (Fair)
+                                'rgba(34, 197, 94, 0.15)', // Zone 1-2 (Cheap)
+                            ];
+
+                            const maxP = Math.max(
+                                ...mergedData.map(d => d!.close),
+                                ...mergedData.map(d => d!.eps_proxy * peLevels[4])
+                            );
+                            const minP = Math.min(
+                                ...mergedData.map(d => d!.close),
+                                ...mergedData.map(d => d!.eps_proxy * peLevels[0])
+                            );
+                            const range = maxP - minP || 1;
+
+                            const getP = (d: ValuationHistoryRecord, mult: number) =>
+                                200 - (((d.eps_proxy * mult - minP) / range) * 160 + 20);
+
+                            const topPath = mergedData
+                                .map(
+                                    (d, i) =>
+                                        `${(i / (mergedData.length - 1)) * 400},${getP(d, peLevels[levelIdx + 1])}`
+                                )
+                                .join(' L ');
+                            const botPath = mergedData
+                                .slice()
+                                .reverse()
+                                .map(
+                                    (d, i) =>
+                                        `${((mergedData.length - 1 - i) / (mergedData.length - 1)) * 400},${getP(d, peLevels[levelIdx])}`
+                                )
+                                .join(' L ');
+
+                            return (
+                                <path
+                                    d={`M ${topPath} L ${botPath} Z`}
+                                    fill={colors[levelIdx]}
+                                    stroke="none"
+                                />
+                            );
+                        })}
+
+                        {/* Level Lines */}
+                        {peLevels.map(mult => {
+                            const maxP = Math.max(
+                                ...mergedData.map(d => d.close),
+                                ...mergedData.map(d => d.eps_proxy * peLevels[4])
+                            );
+                            const minP = Math.min(
+                                ...mergedData.map(d => d.close),
+                                ...mergedData.map(d => d.eps_proxy * peLevels[0])
+                            );
+                            const range = maxP - minP || 1;
+                            const getP = (d: ValuationHistoryRecord, m: number) =>
+                                200 - (((d.eps_proxy * m - minP) / range) * 160 + 20);
+
+                            return (
+                                <path
+                                    d={mergedData
+                                        .map(
+                                            (d, i) =>
+                                                `${i === 0 ? 'M' : 'L'} ${(i / (mergedData.length - 1)) * 400},${getP(d, mult)}`
+                                        )
+                                        .join(' ')}
+                                    fill="none"
+                                    stroke="rgba(255,255,255,0.05)"
+                                    stroke-width="0.5"
+                                    stroke-dasharray="2,2"
+                                />
+                            );
+                        })}
+
+                        {/* 📈 Actual Price Line */}
+                        <path
+                            d={(() => {
+                                const maxP = Math.max(
+                                    ...mergedData.map(d => d.close),
+                                    ...mergedData.map(d => d.eps_proxy * peLevels[4])
+                                );
+                                const minP = Math.min(
+                                    ...mergedData.map(d => d.close),
+                                    ...mergedData.map(d => d.eps_proxy * peLevels[0])
+                                );
+                                const range = maxP - minP || 1;
+
+                                return mergedData
+                                    .map((v, i) => {
+                                        const x = (i / (mergedData.length - 1)) * 400;
+                                        const y = 200 - (((v.close - minP) / range) * 160 + 20);
+                                        return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
+                                    })
+                                    .join(' ');
+                            })()}
+                            fill="none"
+                            stroke="white"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            opacity="0.9"
+                            class="drop-shadow-lg"
+                        />
+                    </>
+                )
+            }
+        </svg>
+
+        {/* Labels overlay */}
+        <div
+            class="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between text-[8px] font-mono"
+        >
+            <div class="flex justify-between items-start">
+                <div
+                    class="bg-black/40 backdrop-blur-sm px-2 py-1 rounded border border-white/5 uppercase tracking-widest text-white/50"
+                >
+                    Price vs PE Bands
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                    <span class="text-bearish">EXPENSIVE {peLevels[4].toFixed(1)}x</span>
+                    <span class="text-white/20">FAIR {peLevels[2].toFixed(1)}x</span>
+                    <span class="text-bullish">CHEAP {peLevels[0].toFixed(1)}x</span>
+                </div>
+            </div>
+        </div>
+
+        {
+            !hasRealValuation && (
+                <div class="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-white/10 uppercase tracking-[0.4em]">
+                    Historical_River_Data_Unavailable
+                </div>
+            )
+        }
+    </div>
+    <p class="text-[10px] text-text-muted mt-2 text-center font-mono">
+        目前 P/E {pe > 0 ? pe.toFixed(1) + 'x' : '—'} — 位於{
+            pe > 20 ? '偏貴' : pe > 12 ? '均衡' : '偏低'
+        }區間
+    </p>
+</div>

@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { tickDaemon } from '../../../api/sse/daemon';
+import type { TwseStockSnapshot } from '../../../types/stock';
 
 /**
  * M4: SSE Stream Route
@@ -16,7 +17,7 @@ export const GET: APIRoute = ({ request }) => {
             let isClosed = false;
 
             // 定義傳送函數
-            const sendTick = (data: any) => {
+            const sendTick = (data: TwseStockSnapshot[]) => {
                 if (isClosed) return;
                 try {
                     const message = `data: ${JSON.stringify(data)}\n\n`;
@@ -38,7 +39,7 @@ export const GET: APIRoute = ({ request }) => {
                 tickDaemon.off('tick', sendTick);
                 try {
                     controller.close();
-                } catch (err) {}
+                } catch (err) { }
                 console.log('[SSE] Client disconnected (abort).');
             });
         },

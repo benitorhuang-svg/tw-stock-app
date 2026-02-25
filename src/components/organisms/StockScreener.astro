@@ -1,20 +1,10 @@
 ---
-/**
- * StockScreener.astro — Interactive stock screening organism
- * Connects to M3 screener logic for filtering stocks.
- */
-import Badge from '../atoms/Badge.astro';
+import ScreenerSidebar from './ScreenerSidebar.astro';
+import ScreenerResultHeader from '../molecules/ScreenerResultHeader.astro';
+import ScreenerResultTable from '../molecules/ScreenerResultTable.astro';
+import type { Strategy, StrategyCategory } from '../../types/stock';
 
-// Import strategies from data layer
-type StrategyMeta = {
-    id: string;
-    name: string;
-    description: string;
-    icon: string;
-    category?: 'fundamental' | 'technical' | 'sentiment';
-};
-
-let strategies: StrategyMeta[] = [];
+let strategies: Strategy[] = [];
 try {
     const { strategies: s } = await import('../../data/strategies');
     strategies = s?.slice(0, 12) ?? [];
@@ -26,6 +16,7 @@ try {
             description: '本益比低於 15 並排除虧損公司',
             icon: '💰',
             category: 'fundamental',
+            conditions: [],
         },
         {
             id: 'high-dividend',
@@ -33,6 +24,7 @@ try {
             description: '殖利率高於 5%',
             icon: '💵',
             category: 'fundamental',
+            conditions: [],
         },
         {
             id: 'volume-breakout',
@@ -40,6 +32,7 @@ try {
             description: '成交量放大 + 站上均線',
             icon: '🚀',
             category: 'technical',
+            conditions: [],
         },
         {
             id: 'foreign-buy',
@@ -47,14 +40,17 @@ try {
             description: '最新外資買超為正',
             icon: '🌍',
             category: 'sentiment',
+            conditions: [],
         },
     ];
 }
 
-const categoryLabel: Record<string, string> = {
+const categoryLabel: Record<StrategyCategory, string> = {
     fundamental: '基本面',
     technical: '技術面',
     sentiment: '籌碼面',
+    momentum: '動能面',
+    custom: '自定義',
 };
 ---
 
@@ -62,85 +58,10 @@ const categoryLabel: Record<string, string> = {
     id="screener-panel"
     class="grid grid-cols-1 xl:grid-cols-12 gap-4 min-h-[calc(100dvh-210px)]"
 >
-    <aside class="xl:col-span-4 glass-card p-4 flex flex-col gap-3 overflow-hidden">
-        <div class="flex items-center justify-between border-b border-border pb-3">
-            <div>
-                <div class="terminal-label">策略預設方案</div>
-                <h3 class="text-sm font-bold text-text-primary mt-1">策略條件編譯器</h3>
-            </div>
-            <Badge variant="accent">M3</Badge>
-        </div>
-
-        <div class="grid grid-cols-3 gap-2">
-            <div class="bg-surface rounded border border-border p-2">
-                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">
-                    策略數
-                </div>
-                <div class="data-value text-accent mt-1">{strategies.length}</div>
-            </div>
-            <div class="bg-surface rounded border border-border p-2">
-                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">
-                    模式
-                </div>
-                <div class="text-xs font-mono text-text-primary mt-1">SQL</div>
-            </div>
-            <div class="bg-surface rounded border border-border p-2">
-                <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">
-                    資料源
-                </div>
-                <div class="text-xs font-mono text-bullish mt-1">LOCAL</div>
-            </div>
-        </div>
-
-        <div class="space-y-2 overflow-y-auto pr-1 custom-scrollbar">
-            {
-                strategies.map(strategy => (
-                    <button
-                        class="w-full text-left glass-card glow-interactive p-3 transition-all duration-300 hover:border-accent/30 cursor-pointer group"
-                        data-strategy={strategy.id}
-                    >
-                        <div class="flex items-start gap-2.5">
-                            <span class="text-xl leading-none">{strategy.icon}</span>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <h4 class="text-sm font-bold text-text-primary group-hover:text-accent transition-colors truncate">
-                                        {strategy.name}
-                                    </h4>
-                                    {strategy.category && (
-                                        <Badge variant="muted" class="shrink-0">
-                                            {categoryLabel[strategy.category]}
-                                        </Badge>
-                                    )}
-                                </div>
-                                <p class="text-xs text-text-secondary mt-1 line-clamp-2">
-                                    {strategy.description}
-                                </p>
-                            </div>
-                        </div>
-                    </button>
-                ))
-            }
-        </div>
-    </aside>
+    <ScreenerSidebar strategies={strategies} categoryLabel={categoryLabel} />
 
     <main class="xl:col-span-8 glass-card p-0 overflow-hidden flex flex-col">
-        <header class="terminal-toolbar">
-            <div class="terminal-toolbar-left">
-                <span class="terminal-toolbar-title">系統篩選結果</span>
-                <span id="active-strategy-label" class="terminal-toolbar-meta">尚未選擇策略</span>
-            </div>
-            <div class="terminal-toolbar-right">
-                <button
-                    id="csv-export-btn"
-                    class="hidden px-3 py-1 text-[11px] font-mono font-bold rounded bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-colors cursor-pointer"
-                    aria-label="匯出 CSV"
-                >
-                    📥 匯出 CSV
-                </button>
-                <span id="screener-count" class="data-value text-sm text-accent">0</span>
-                <span class="terminal-toolbar-meta">檔符合條件</span>
-            </div>
-        </header>
+        <ScreenerResultHeader />
 
         <div id="screener-empty" class="flex-1 grid place-items-center p-8">
             <div class="text-center max-w-md">
@@ -153,325 +74,8 @@ const categoryLabel: Record<string, string> = {
             </div>
         </div>
 
-        <div id="screener-results" class="hidden flex-1 overflow-auto custom-scrollbar">
-            <table class="w-full text-left border-collapse min-w-[860px]" id="screener-table">
-                <thead class="sticky top-0 bg-base-deep z-10 border-b border-border/60">
-                    <tr>
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
-                            >股票代號</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
-                            >名稱</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
-                            >成交價</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
-                            >漲跌%</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
-                            >本益比</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
-                            >股淨比</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
-                            >殖利率</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
-                            >成交量</th
-                        >
-                        <th
-                            class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
-                            >備註標籤</th
-                        >
-                    </tr>
-                </thead>
-                <tbody id="screener-results-grid" class="divide-y divide-border/30"></tbody>
-            </table>
-        </div>
+        <ScreenerResultTable />
     </main>
 </section>
 
-<script>
-    import { downloadCSV } from '../../lib/csv-export';
-    import { toast } from '../../lib/toast';
-
-    let activeStrategyName = '';
-    let lastResults: any[] = [];
-    let activeFilters: any = null; // keep latest filter payload for auto-refresh
-    const resultsContainer = document.getElementById('screener-results');
-    const resultsGrid = document.getElementById('screener-results-grid');
-    const resultsCount = document.getElementById('screener-count');
-    const emptyState = document.getElementById('screener-empty');
-    const activeStrategyLabel = document.getElementById('active-strategy-label');
-    const csvExportBtn = document.getElementById('csv-export-btn');
-
-    const PRESET_PAYLOAD: Record<string, any> = {
-        'low-pe': { pe: { max: 15 } },
-        'low-pb': { pb: { max: 1.5 } },
-        'high-dividend': { dividendYield: { min: 5 } },
-        'revenue-growth': { revenueYoY: { min: 10 } },
-        'volume-breakout': {},
-        breakout: {},
-        'foreign-buy': {},
-        'trust-buy': {},
-    };
-
-    const formatNum = (value: number | undefined, digits = 2) => {
-        if (value === undefined || value === null || Number.isNaN(value)) return '—';
-        return Number(value).toFixed(digits);
-    };
-
-    function renderResults(stocks: any[]) {
-        if (!resultsGrid) return;
-
-        resultsGrid.innerHTML = stocks
-            .map(
-                stock => `
-            <tr tabindex="0" class="hover:bg-accent/5 transition-colors cursor-pointer" data-link="/stocks/${stock.symbol}" data-symbol="${stock.symbol}">
-                <td class="px-3 py-2 text-xs font-mono text-text-secondary">${stock.symbol}</td>
-                <td class="px-3 py-2 text-sm font-semibold text-text-primary">${stock.name || '—'}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.price)}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right ${Number(stock.changePercent) >= 0 ? 'text-bullish' : 'text-bearish'}">${formatNum(stock.changePercent)}%</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.fundamentals?.pe, 1)}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.fundamentals?.pb, 2)}</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${formatNum(stock.fundamentals?.dividendYield, 2)}%</td>
-                <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${Number(stock.volume || 0).toLocaleString()}</td>
-                <td class="px-3 py-2 text-xs text-accent">${(stock.matchedStrategies || []).join(' / ')}</td>
-            </tr>
-        `
-            )
-            .join('');
-    }
-
-    resultsGrid?.addEventListener('click', event => {
-        const target = event.target as HTMLElement;
-        const row = target.closest<HTMLTableRowElement>('tr[data-link]');
-        const href = row?.dataset.link;
-        if (href) window.location.href = href;
-    });
-    // support keyboard navigation (Enter to follow link)
-    resultsGrid?.addEventListener('keydown', event => {
-        if (event.key === 'Enter') {
-            const row = (event.target as HTMLElement).closest<HTMLTableRowElement>('tr[data-link]');
-            const href = row?.dataset.link;
-            if (href) window.location.href = href;
-        }
-    });
-
-    // Strategy card click handling
-    document.querySelectorAll('[data-strategy]').forEach(card => {
-        card.addEventListener('click', async () => {
-            const strategyId = (card as HTMLElement).dataset.strategy;
-            if (!strategyId) return;
-
-            // Visual active state
-            document.querySelectorAll('[data-strategy]').forEach(c => {
-                c.classList.remove('border-accent/50', 'bg-accent/5');
-            });
-            card.classList.add('border-accent/50', 'bg-accent/5');
-
-            activeStrategyName =
-                card.querySelector('h4')?.textContent?.trim() ||
-                card.querySelector('h3')?.textContent?.trim() ||
-                strategyId;
-            if (activeStrategyLabel) activeStrategyLabel.textContent = activeStrategyName;
-
-            const filters: any = {
-                page: 1,
-                limit: 50,
-                strategyId,
-                ...(PRESET_PAYLOAD[strategyId] || {}),
-            };
-            activeFilters = { ...filters };
-
-            try {
-                // Show loading state
-                if (resultsCount) resultsCount.textContent = '...';
-                emptyState?.classList.add('hidden');
-                resultsContainer?.classList.remove('hidden');
-                if (resultsGrid)
-                    resultsGrid.innerHTML = Array.from({ length: 8 })
-                        .map(
-                            () =>
-                                '<tr class="table-loading-row border-b border-border/30"><td colspan="9"><div class="skeleton"></div></td></tr>'
-                        )
-                        .join('');
-
-                const res = await fetch('/api/screener', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(filters),
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    if (resultsCount) resultsCount.textContent = data.pagination.total;
-                    lastResults = data.results;
-                    renderResults(data.results);
-                    csvExportBtn?.classList.toggle('hidden', data.results.length === 0);
-
-                    if (data.results.length === 0) {
-                        if (resultsGrid)
-                            resultsGrid.innerHTML =
-                                '<tr><td colspan="9" class="py-12 text-center text-text-muted text-sm italic">沒有符合條件的股票</td></tr>';
-                    } else {
-                        toast.show({
-                            message: `找到 ${data.results.length} 檔符合「${activeStrategyName}」`,
-                            type: 'success',
-                            duration: 2500,
-                        });
-                    }
-                } else {
-                    if (resultsGrid)
-                        resultsGrid.innerHTML = `<tr><td colspan="9" class="py-12 text-center text-bearish text-sm">${data.error || '查詢失敗'}</td></tr>`;
-                    if (resultsCount) resultsCount.textContent = '0';
-                    csvExportBtn?.classList.add('hidden');
-                    toast.show({ message: data.error || '篩選查詢失敗', type: 'error' });
-                }
-            } catch (err) {
-                console.error('[Screener] Fetch error:', err);
-                if (resultsGrid)
-                    resultsGrid.innerHTML =
-                        '<tr><td colspan="9" class="py-12 text-center text-bearish text-sm">無法連線到篩選服務，請稍後再試</td></tr>';
-                if (resultsCount) resultsCount.textContent = '0';
-                csvExportBtn?.classList.add('hidden');
-                toast.show({ message: '無法連線到篩選服務', type: 'error' });
-            }
-        });
-    });
-
-    // CSV Export
-    csvExportBtn?.addEventListener('click', () => {
-        if (lastResults.length === 0) return;
-        const headers = [
-            '股票代號',
-            '股票名稱',
-            '價格',
-            '漲跌幅%',
-            '本益比',
-            '股價淨值比',
-            '殖利率',
-            '成交量',
-            '策略',
-        ];
-        const rows = lastResults.map((s: any) => [
-            s.symbol,
-            s.name || '',
-            s.price ?? '',
-            s.changePercent ?? '',
-            s.fundamentals?.pe ?? '',
-            s.fundamentals?.pb ?? '',
-            s.fundamentals?.dividendYield ?? '',
-            s.volume ?? '',
-            (s.matchedStrategies || []).join('; '),
-        ]);
-        const csvContent = [
-            headers.join(','),
-            ...rows.map((r: any[]) => r.map((c: any) => `"${c}"`).join(',')),
-        ].join('\n');
-        const BOM = '\uFEFF';
-        const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        const date = new Date().toISOString().slice(0, 10);
-        link.download = `選股結果_${activeStrategyName}_${date}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        toast.show({
-            message: `已匯出 ${lastResults.length} 筆結果`,
-            type: 'success',
-            duration: 2000,
-        });
-    });
-
-    // real-time price updates for screener results
-    if (typeof EventSource !== 'undefined') {
-        const es = new EventSource('/api/sse/stream');
-        es.addEventListener('tick', e => {
-            try {
-                const ticks = JSON.parse(e.data);
-                ticks.forEach((t: any) => {
-                    const row = document.querySelector(`tr[data-symbol="${t.symbol}"]`);
-                    if (row) {
-                        const priceCell = row.querySelector('td:nth-child(3)');
-                        if (priceCell) priceCell.textContent = t.price.toFixed(2);
-                        row.classList.add('flash');
-                        setTimeout(() => row.classList.remove('flash'), 800);
-                    }
-                });
-                // auto-refresh current screener results (throttled)
-                if (activeFilters) {
-                    if (!(window as any).__screenerRefreshTimeout) {
-                        (window as any).__screenerRefreshTimeout = setTimeout(async () => {
-                            try {
-                                const res = await fetch('/api/screener', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(activeFilters),
-                                });
-                                const data = await res.json();
-                                if (data.success) {
-                                    lastResults = data.results;
-                                    renderResults(data.results);
-                                }
-                            } catch {}
-                            (window as any).__screenerRefreshTimeout = null;
-                        }, 5000);
-                    }
-                }
-            } catch (err) {
-                console.error('[SSE tick] parse error', err);
-            }
-        });
-    }
-
-    // Column-header sorting
-    function sortResultsBy(colIndex: number) {
-        const keys = [
-            'symbol',
-            'name',
-            'price',
-            'changePercent',
-            'pe',
-            'pb',
-            'dividendYield',
-            'volume',
-            'matchedStrategies',
-        ];
-        const key = keys[colIndex] || 'symbol';
-        lastResults.sort((a: any, b: any) => {
-            let va: any, vb: any;
-            if (['pe', 'pb', 'dividendYield'].includes(key)) {
-                va = a.fundamentals?.[key];
-                vb = b.fundamentals?.[key];
-            } else if (key === 'matchedStrategies') {
-                va = (a.matchedStrategies || []).join(', ');
-                vb = (b.matchedStrategies || []).join(', ');
-            } else {
-                va = a[key];
-                vb = b[key];
-            }
-            if (typeof va === 'number' && typeof vb === 'number') return va - vb;
-            return String(va || '').localeCompare(String(vb || ''));
-        });
-        renderResults(lastResults);
-    }
-
-    document.querySelectorAll('#screener-table th').forEach((th, i) => {
-        th.addEventListener('click', () => sortResultsBy(i));
-    });
-</script>
+<script src="../../scripts/stock-screener-engine.ts"></script>

@@ -13,6 +13,8 @@ let SQL: SqlJsStatic | null = null;
 const DB_NAME = 'tw-stock-db';
 const DB_STORE = 'sqlitedb';
 
+export type SqlValue = string | number | boolean | null | Uint8Array;
+
 /**
  * 初始化 SQL.js
  */
@@ -251,7 +253,7 @@ export async function importDatabase(file: File): Promise<void> {
 /**
  * 執行 SQL 查詢
  */
-export async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+export async function query<T = Record<string, SqlValue>>(sql: string, params: SqlValue[] = []): Promise<T[]> {
     const database = await getDatabase();
     const result = database.exec(sql, params);
 
@@ -259,9 +261,9 @@ export async function query<T = any>(sql: string, params: any[] = []): Promise<T
 
     const { columns, values } = result[0];
     return values.map(row => {
-        const obj: any = {};
+        const obj: Record<string, SqlValue> = {};
         columns.forEach((col, i) => {
-            obj[col] = row[i];
+            obj[col] = row[i] as SqlValue;
         });
         return obj as T;
     });
@@ -270,7 +272,7 @@ export async function query<T = any>(sql: string, params: any[] = []): Promise<T
 /**
  * 執行 SQL 命令（INSERT/UPDATE/DELETE）
  */
-export async function execute(sql: string, params: any[] = []): Promise<number> {
+export async function execute(sql: string, params: SqlValue[] = []): Promise<number> {
     const database = await getDatabase();
     database.run(sql, params);
 
@@ -283,7 +285,7 @@ export async function execute(sql: string, params: any[] = []): Promise<number> 
 /**
  * 批次插入
  */
-export async function batchInsert(table: string, columns: string[], rows: any[][]): Promise<void> {
+export async function batchInsert(table: string, columns: string[], rows: SqlValue[][]): Promise<void> {
     const database = await getDatabase();
     const placeholders = columns.map(() => '?').join(', ');
     const sql = `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;

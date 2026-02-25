@@ -1,0 +1,43 @@
+---
+/**
+ * StrategyCard.astro - Molecule for a single strategy selection card
+ */
+import Badge from '../atoms/Badge.astro';
+import StrategyIcon from '../atoms/StrategyIcon.astro';
+import type { Strategy } from '../../types/stock';
+
+interface Props {
+    strategy: Strategy;
+    categoryLabel: Record<string, string>;
+}
+
+const { strategy, categoryLabel } = Astro.props;
+---
+
+<button
+    class="w-full text-left glass-card glow-interactive p-3 transition-all duration-300 hover:border-accent/30 cursor-pointer group"
+    data-strategy={strategy.id}
+>
+    <div class="flex items-start gap-2.5">
+        <StrategyIcon icon={strategy.icon} />
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+                <h4
+                    class="text-sm font-bold text-text-primary group-hover:text-accent transition-colors truncate"
+                >
+                    {strategy.name}
+                </h4>
+                {
+                    strategy.category && (
+                        <Badge variant="muted" class="shrink-0">
+                            {categoryLabel[strategy.category] || strategy.category}
+                        </Badge>
+                    )
+                }
+            </div>
+            <p class="text-xs text-text-secondary mt-1 line-clamp-2">
+                {strategy.description}
+            </p>
+        </div>
+    </div>
+</button>

@@ -1,0 +1,80 @@
+---
+/**
+ * SentimentGauge.astro
+ */
+---
+
+<div
+    class="glass-card p-6 flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-accent/[0.05] to-transparent"
+>
+    <div class="relative w-32 h-20 flex-shrink-0">
+        <svg
+            viewBox="0 0 120 70"
+            class="w-full h-full drop-shadow-[0_0_8px_rgba(var(--accent-rgb),0.3)]"
+        >
+            <path
+                d="M10,60 A45,45 0 0,1 110,60"
+                fill="none"
+                stroke="rgba(255,255,255,0.05)"
+                stroke-width="10"
+                stroke-linecap="round"></path>
+            <path
+                id="gauge-path"
+                d="M10,60 A45,45 0 0,1 110,60"
+                fill="none"
+                stroke="url(#gauge-gradient)"
+                stroke-width="10"
+                stroke-linecap="round"
+                stroke-dasharray="157"
+                stroke-dashoffset="157"
+                style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1)"></path>
+            <defs>
+                <linearGradient id="gauge-gradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#ef4444"></stop>
+                    <stop offset="50%" stop-color="#eab308"></stop>
+                    <stop offset="100%" stop-color="#22c55e"></stop>
+                </linearGradient>
+            </defs>
+            <line
+                id="gauge-needle"
+                x1="60"
+                y1="60"
+                x2="60"
+                y2="20"
+                stroke="white"
+                stroke-width="2"
+                stroke-linecap="round"
+                transform="rotate(-90, 60, 60)"
+                style="transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)"></line>
+        </svg>
+        <div class="absolute inset-x-0 bottom-0 text-center">
+            <span class="text-xl font-mono font-black text-white tracking-tighter" id="gauge-score"
+                >--</span
+            >
+        </div>
+    </div>
+    <div class="flex-1 space-y-2">
+        <div class="flex items-center gap-3">
+            <h3 class="text-xs font-mono font-bold text-accent uppercase tracking-[0.2em]">
+                Synthetic Analysis Score
+            </h3>
+            <span
+                class="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-[10px] text-accent animate-pulse"
+                id="status-tag">ANALYZING...</span
+            >
+        </div>
+        <p class="text-sm text-white/80 leading-relaxed font-medium" id="ai-summary">
+            核心引擎加載中，正在計算數據張量與市場共識...
+        </p>
+        <div class="flex gap-4 mt-2">
+            <div class="flex flex-col">
+                <span class="text-[8px] text-white/30 uppercase">Conf_Interval</span>
+                <span class="text-[10px] font-mono text-white/60">± 2.4%</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[8px] text-white/30 uppercase">Model_Vers</span>
+                <span class="text-[10px] font-mono text-white/60">CSI-v4.2</span>
+            </div>
+        </div>
+    </div>
+</div>

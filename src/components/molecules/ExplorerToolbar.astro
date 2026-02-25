@@ -1,0 +1,30 @@
+---
+/**
+ * ExplorerToolbar.astro
+ */
+import SearchInput from '../atoms/SearchInput.astro';
+import PaginationControls from './PaginationControls.astro';
+import PageLimitSelect from '../atoms/PageLimitSelect.astro';
+---
+
+<!-- Toolbar -->
+<header
+    id="explorer-toolbar"
+    class="h-20 px-8 border-b border-border bg-base/95 backdrop-blur-3xl flex items-center gap-3 sticky top-0 z-40 shadow-elevated hidden opacity-0 transition-all duration-500 overflow-x-auto custom-scrollbar flex-shrink-0"
+>
+    <!-- Search Segment -->
+    <div class="flex-shrink-0 w-64 lg:w-80">
+        <SearchInput id="global-search" placeholder="在全域資料中檢索..." class="w-full" />
+    </div>
+
+    <div class="w-px h-6 bg-border flex-shrink-0 hidden md:block"></div>
+
+    <!-- Pagination & Limit -->
+    <div
+        id="table-controls"
+        class="flex items-center gap-3 hidden opacity-0 transition-opacity duration-300 flex-shrink-0"
+    >
+        <PaginationControls prevId="prev-page" nextId="next-page" pageNumId="page-num" />
+        <PageLimitSelect id="page-limit" />
+    </div>
+</header>

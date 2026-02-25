@@ -11,10 +11,9 @@ interface TableStat {
 interface Props {
     tables: string[];
     tableStats: TableStat[];
-    totalRows: number;
 }
 
-const { tables, tableStats, totalRows } = Astro.props;
+const { tables, tableStats } = Astro.props;
 ---
 
 <aside

@@ -4,7 +4,7 @@ import path from 'path';
 
 export const GET: APIRoute = async ({ url }) => {
     const symbol = url.searchParams.get('symbol');
-    const type = url.searchParams.get('type') || 'pe'; // pe, pb, yield
+    // const type = url.searchParams.get('type') || 'pe'; // pe, pb, yield
     const limit = parseInt(url.searchParams.get('limit') || '250'); // Approx 1 year of trading days
 
     if (!symbol) {

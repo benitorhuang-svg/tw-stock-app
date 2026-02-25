@@ -23,7 +23,7 @@ beforeEach(() => {
     createdObjectURLs = [];
     revokedURLs = [];
 
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => { });
 
     // Mock document.createElement
     vi.stubGlobal('document', {
@@ -40,7 +40,7 @@ beforeEach(() => {
 
     // Mock URL.createObjectURL / revokeObjectURL
     vi.stubGlobal('URL', {
-        createObjectURL: (blob: Blob) => {
+        createObjectURL: (_blob: Blob) => {
             const url = `blob:mock-${createdObjectURLs.length}`;
             createdObjectURLs.push(url);
             return url;

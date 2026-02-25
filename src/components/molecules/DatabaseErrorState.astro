@@ -1,0 +1,20 @@
+---
+/**
+ * DatabaseErrorState.astro
+ */
+---
+
+<!-- Error State -->
+<div
+    id="db-error"
+    class="hidden absolute inset-0 flex flex-col items-center justify-center text-center p-12 bg-red-950/20"
+>
+    <span class="text-4xl mb-4">⚠️</span>
+    <h3 class="text-red-500 font-bold uppercase tracking-widest text-sm">資料庫錯誤</h3>
+    <p id="error-message" class="text-xs text-red-400/80 mt-2 font-mono"></p>
+    <button
+        onclick="location.reload()"
+        class="px-6 py-2 rounded-xl bg-red-500/20 text-red-500 border border-red-500/30 font-bold text-xs mt-6"
+        >重試</button
+    >
+</div>

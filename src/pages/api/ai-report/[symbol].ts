@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { dbService } from '../../../lib/db/sqlite-service';
-import { getLatestInstitutional, getConsecutiveDays } from '../../../data/institutional';
+import { getConsecutiveDays } from '../../../data/institutional';
 
 export const prerender = false;
 
@@ -14,7 +14,7 @@ export const GET: APIRoute = async ({ params }) => {
         pe = row?.pe || 0;
     } catch { }
 
-    const institutional = getLatestInstitutional(symbol);
+    // const institutional = getLatestInstitutional(symbol);
     const foreignStreak = getConsecutiveDays(symbol, 'foreign');
     const investStreak = getConsecutiveDays(symbol, 'invest');
 

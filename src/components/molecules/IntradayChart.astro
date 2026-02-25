@@ -1,0 +1,70 @@
+---
+/**
+ * IntradayChart.astro
+ */
+interface Props {
+    price: number;
+    isBullish: boolean;
+    isBearish: boolean;
+}
+const { price, isBullish, isBearish } = Astro.props;
+---
+
+<!-- Intraday Chart -->
+<div class="glass-card p-6 h-[360px] flex flex-col relative overflow-hidden">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="terminal-label">日內走勢</h3>
+        <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-glow-pulse"></span>
+            <span class="text-[10px] font-mono text-text-muted tracking-wider">即時連線</span>
+        </div>
+    </div>
+    <!-- Simulated chart area with CSS gradient -->
+    <div class="flex-1 relative rounded-lg overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-accent/5 to-transparent"></div>
+        <!-- Chart grid lines -->
+        <div class="absolute inset-0 flex flex-col justify-between py-4">
+            {[0, 1, 2, 3, 4].map(() => <div class="border-b border-white/[0.03] w-full" />)}
+        </div>
+        <!-- Price line simulation via SVG -->
+        <svg
+            class="absolute inset-0 w-full h-full"
+            preserveAspectRatio="none"
+            viewBox="0 0 400 200"
+        >
+            <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop
+                        offset="0%"
+                        stop-color={isBullish ? 'hsl(142,71%,45%)' : 'hsl(346,77%,50%)'}
+                        stop-opacity="0.3"></stop>
+                    <stop
+                        offset="100%"
+                        stop-color={isBullish ? 'hsl(142,71%,45%)' : 'hsl(346,77%,50%)'}
+                        stop-opacity="0"></stop>
+                </linearGradient>
+            </defs>
+            <path
+                d="M0,120 Q30,115 60,100 T120,90 T180,95 T240,70 T300,60 T360,65 T400,50"
+                fill="none"
+                stroke={isBullish ? 'hsl(142,71%,45%)' : 'hsl(346,77%,50%)'}
+                stroke-width="2"></path>
+            <path
+                d="M0,120 Q30,115 60,100 T120,90 T180,95 T240,70 T300,60 T360,65 T400,50 L400,200 L0,200 Z"
+                fill="url(#chartGrad)"></path>
+        </svg>
+        <!-- Floating price tag -->
+        <div
+            class:list={[
+                'absolute right-4 top-1/4 px-3 py-1.5 rounded-md font-mono text-sm font-bold',
+                isBullish
+                    ? 'bg-bullish/20 text-bullish shadow-[0_0_15px_hsl(142,71%,45%,0.3)]'
+                    : isBearish
+                      ? 'bg-bearish/20 text-bearish shadow-[0_0_15px_hsl(346,77%,50%,0.3)]'
+                      : 'bg-surface text-text-muted',
+            ]}
+        >
+            {price > 0 ? price.toFixed(2) : '—'}
+        </div>
+    </div>
+</div>

@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { SqliteWriter } from '../scripts/db/sqlite-writer';
-import { dbService } from '../src/lib/db/sqlite-service';
 import fs from 'fs';
-import path from 'path';
 
 describe('M1: Data Ingestion Integration Test', () => {
     const TEST_DB = 'test_stocks.db';

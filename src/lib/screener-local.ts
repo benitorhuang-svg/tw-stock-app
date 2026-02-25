@@ -4,7 +4,7 @@
  */
 
 import { getDatabase } from './database';
-import { filterStocks, getStocks, type Stock, type Fundamental } from './stock-service';
+import { filterStocks, getStocks } from './stock-service';
 import type { ScreenerCriteria, ScreenerResult } from './screener';
 
 // 快取 TTL (毫秒)

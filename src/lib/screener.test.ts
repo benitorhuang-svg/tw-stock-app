@@ -22,31 +22,6 @@ const sampleFundamentals: FundamentalData[] = [
     { symbol: '1234', pe: -5, pb: 0.5, dividendYield: 0, roe: -10 }, // 虧損公司
 ];
 
-// 上漲趨勢價格（用於黃金交叉）
-const uptrendPrices = Array.from({ length: 25 }, (_, i) => 100 + i * 2);
-
-// 下跌後反彈價格（用於 RSI 超賣）
-const oversoldReboundPrices = [
-    100,
-    98,
-    95,
-    90,
-    85,
-    82,
-    80,
-    78,
-    77,
-    76, // 下跌
-    75,
-    74,
-    73,
-    72,
-    75,
-    78,
-    82,
-    85, // 反彈
-];
-
 // 平穩價格
 const flatPrices = Array.from({ length: 30 }, () => 100);
 

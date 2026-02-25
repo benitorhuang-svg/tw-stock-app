@@ -11,6 +11,38 @@ const REQUEST_TIMEOUT = 5000; // 5 秒超時
 const MAX_RETRIES = 3;
 const BASE_DELAY = 1000; // 首次重試等待 1 秒
 
+export interface TwsePeRatioResponse {
+    stat: string;
+    date: string;
+    title: string;
+    fields: string[];
+    data: string[][];
+    notes: string[];
+}
+
+export interface TwseStockDayResponse {
+    stat: string;
+    date: string;
+    title: string;
+    fields: string[];
+    data: string[][];
+    notes: string[];
+}
+
+export interface TwseDailyQuoteResponse {
+    stat: string;
+    date: string;
+    title: string;
+    fields8?: string[];
+    data8?: string[][];
+    tables?: {
+        title: string;
+        fields: string[];
+        data: string[][];
+    }[];
+}
+
+
 // 延遲函式 (避免請求過於頻繁)
 function delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -40,7 +72,7 @@ async function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Respo
             }
 
             return response; // 其他 HTTP 錯誤直接回傳
-        } catch (error: any) {
+        } catch (error: unknown) {
             clearTimeout(timeoutId);
 
             // 最後一次嘗試仍失敗 → 拋出
@@ -65,7 +97,7 @@ export async function getPERatio(date: string, stockNo: string) {
         const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const data = await res.json();
+        const data = (await res.json()) as TwsePeRatioResponse;
 
         if (data.stat !== 'OK' || !data.data || data.data.length === 0) {
             return null;
@@ -99,7 +131,7 @@ export async function getStockDay(date: string, stockNo: string) {
         const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const data = await res.json();
+        const data = (await res.json()) as TwseStockDayResponse;
 
         if (data.stat !== 'OK' || !data.data) {
             return null;
@@ -134,7 +166,7 @@ export async function getAllPERatios(date: string) {
         const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const data = await res.json();
+        const data = (await res.json()) as TwsePeRatioResponse;
 
         if (data.stat !== 'OK' || !data.data) {
             return [];
@@ -166,14 +198,14 @@ export async function getDailyQuotes(date: string) {
         const res = await fetchWithRetry(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const data = await res.json();
+        const data = (await res.json()) as TwseDailyQuoteResponse;
 
         if (data.stat !== 'OK') {
             return [];
         }
 
         // tables[8] 通常是個股行情
-        const table = data.tables?.find((t: any) => t.title?.includes('個股'));
+        const table = data.tables?.find(t => t.title?.includes('個股'));
         if (!table?.data) return [];
 
         return table.data.map((row: string[]) => ({

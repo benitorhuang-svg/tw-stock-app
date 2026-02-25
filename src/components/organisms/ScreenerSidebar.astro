@@ -1,0 +1,48 @@
+---
+/**
+ * ScreenerSidebar.astro - Organism for the strategy selection sidebar
+ */
+import Badge from '../atoms/Badge.astro';
+import StrategyCard from '../molecules/StrategyCard.astro';
+import type { Strategy } from '../../types/stock';
+
+interface Props {
+    strategies: Strategy[];
+    categoryLabel: Record<string, string>;
+}
+
+const { strategies, categoryLabel } = Astro.props;
+---
+
+<aside class="xl:col-span-4 glass-card p-4 flex flex-col gap-3 overflow-hidden">
+    <div class="flex items-center justify-between border-b border-border pb-3">
+        <div>
+            <div class="terminal-label">策略預設方案</div>
+            <h3 class="text-sm font-bold text-text-primary mt-1">策略條件編譯器</h3>
+        </div>
+        <Badge variant="accent">M3</Badge>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2">
+        <div class="bg-surface rounded border border-border p-2">
+            <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">策略數</div>
+            <div class="data-value text-accent mt-1">{strategies.length}</div>
+        </div>
+        <div class="bg-surface rounded border border-border p-2">
+            <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">模式</div>
+            <div class="text-xs font-mono text-text-primary mt-1">SQL</div>
+        </div>
+        <div class="bg-surface rounded border border-border p-2">
+            <div class="text-[9px] uppercase tracking-widest text-text-muted font-bold">資料源</div>
+            <div class="text-xs font-mono text-bullish mt-1">LOCAL</div>
+        </div>
+    </div>
+
+    <div class="space-y-2 overflow-y-auto pr-1 custom-scrollbar">
+        {
+            strategies.map(strategy => (
+                <StrategyCard strategy={strategy} categoryLabel={categoryLabel} />
+            ))
+        }
+    </div>
+</aside>

@@ -3,6 +3,11 @@
  * TabAlerts.astro — AI Report & Smart Alerts Tab (007-tab-alerts)
  * Sentiment gauge, AI analysis report, suggested alerts, custom rules
  */
+import SentimentGauge from '../molecules/SentimentGauge.astro';
+import NeuralHealthMonitor from '../molecules/NeuralHealthMonitor.astro';
+import AiReportMatrix from '../molecules/AiReportMatrix.astro';
+import StrategicActionMatrix from '../molecules/StrategicActionMatrix.astro';
+
 interface Props {
     symbol: string;
     name: string;
@@ -11,250 +16,30 @@ interface Props {
     changePercent: number;
 }
 
-const { symbol, name, price, change, changePercent } = Astro.props;
-
-const isBullish = change > 0;
-const isBearish = change < 0;
-
-// Sentiment score (0-100, higher = more bullish)
-const sentimentScore = isBullish
-    ? 65 + Math.floor(changePercent * 5)
-    : 35 - Math.floor(Math.abs(changePercent) * 5);
-const clampedScore = Math.max(10, Math.min(90, sentimentScore));
-const sentimentLabel =
-    clampedScore > 70
-        ? '偏多'
-        : clampedScore > 55
-          ? '中性偏多'
-          : clampedScore > 45
-            ? '中性'
-            : clampedScore > 30
-              ? '中性偏空'
-              : '偏空';
-const sentimentAdvice =
-    clampedScore > 60
-        ? `短線偏多，可留意回測支撐後的進場時機`
-        : clampedScore > 40
-          ? `觀望為主，等待方向確認後再做決策`
-          : `短線偏弱，建議減碼或設定停損`;
-
-// Gauge SVG angle (0 = far left = bearish, 180 = far right = bullish)
-const needleAngle = (clampedScore / 100) * 180 - 90; // -90 to 90 degrees
-
-// AI Report markdown content (initial placeholder, will be replaced by server data)
-let reportSections: any[] = [];
-
-// Suggested alerts from AI (placeholder)
-let suggestedAlerts: any[] = [];
-
-let reportLoading = true;
-
-// fetch server-side AI report when running in client
-if (typeof window !== 'undefined') {
-    fetch(`/api/ai-report/${encodeURIComponent(symbol)}`)
-        .then(r => r.json())
-        .then(data => {
-            reportSections = data.reportSections || [];
-            suggestedAlerts = data.suggestedAlerts || [];
-        })
-        .catch(() => {
-            // keep empty on error
-        })
-        .finally(() => {
-            reportLoading = false;
-            // trigger re-render by forcing Astro to update? not required as mapping occurs in client?
-            // Actually Astro components do not re-render automatically; we may need client hydration.
-        });
-}
-
-// Highlight terms for GenUI
-const highlightTerms = [
-    '黃金交叉',
-    'MA20',
-    '投信連買',
-    '跌破',
-    '突破',
-    '停損',
-    'EPS',
-    'KD指標',
-    'MACD',
-];
+const { symbol } = Astro.props;
 ---
 
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6" id="ai-tab-root">
     <!-- Left: AI Report -->
     <div class="lg:col-span-7 space-y-4">
         <!-- Sentiment Gauge -->
-        <div
-            class="glass-card p-6 flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-accent/[0.05] to-transparent"
-        >
-            <div class="relative w-32 h-20 flex-shrink-0">
-                <svg
-                    viewBox="0 0 120 70"
-                    class="w-full h-full drop-shadow-[0_0_8px_rgba(var(--accent-rgb),0.3)]"
-                >
-                    <path
-                        d="M10,60 A45,45 0 0,1 110,60"
-                        fill="none"
-                        stroke="rgba(255,255,255,0.05)"
-                        stroke-width="10"
-                        stroke-linecap="round"></path>
-                    <path
-                        id="gauge-path"
-                        d="M10,60 A45,45 0 0,1 110,60"
-                        fill="none"
-                        stroke="url(#gauge-gradient)"
-                        stroke-width="10"
-                        stroke-linecap="round"
-                        stroke-dasharray="157"
-                        stroke-dashoffset="157"
-                        style="transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1)"
-                    ></path>
-                    <defs>
-                        <linearGradient id="gauge-gradient" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stop-color="#ef4444"></stop>
-                            <stop offset="50%" stop-color="#eab308"></stop>
-                            <stop offset="100%" stop-color="#22c55e"></stop>
-                        </linearGradient>
-                    </defs>
-                    <line
-                        id="gauge-needle"
-                        x1="60"
-                        y1="60"
-                        x2="60"
-                        y2="20"
-                        stroke="white"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        transform="rotate(-90, 60, 60)"
-                        style="transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1)"></line>
-                </svg>
-                <div class="absolute inset-x-0 bottom-0 text-center">
-                    <span
-                        class="text-xl font-mono font-black text-white tracking-tighter"
-                        id="gauge-score">--</span
-                    >
-                </div>
-            </div>
-            <div class="flex-1 space-y-2">
-                <div class="flex items-center gap-3">
-                    <h3 class="text-xs font-mono font-bold text-accent uppercase tracking-[0.2em]">
-                        Synthetic Analysis Score
-                    </h3>
-                    <span
-                        class="px-2 py-0.5 rounded-full bg-accent/10 border border-accent/20 text-[10px] text-accent animate-pulse"
-                        id="status-tag">ANALYZING...</span
-                    >
-                </div>
-                <p class="text-sm text-white/80 leading-relaxed font-medium" id="ai-summary">
-                    核心引擎加載中，正在計算數據張量與市場共識...
-                </p>
-                <div class="flex gap-4 mt-2">
-                    <div class="flex flex-col">
-                        <span class="text-[8px] text-white/30 uppercase">Conf_Interval</span>
-                        <span class="text-[10px] font-mono text-white/60">± 2.4%</span>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-[8px] text-white/30 uppercase">Model_Vers</span>
-                        <span class="text-[10px] font-mono text-white/60">CSI-v4.2</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <SentimentGauge />
 
         <!-- AI Report Body -->
-        <div class="glass-card p-0 overflow-hidden">
-            <div
-                class="px-6 py-4 border-b border-white/5 bg-white/[0.02] flex items-center justify-between"
-            >
-                <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-accent animate-glow-pulse"></div>
-                    <span
-                        class="text-[10px] font-mono font-bold text-white/40 uppercase tracking-widest"
-                        >Forensic Report Matrix</span
-                    >
-                </div>
-                <span class="text-[9px] font-mono text-white/20 uppercase" id="report-timestamp"
-                    >Timestamp: --:--:--</span
-                >
-            </div>
-            <div class="p-6 space-y-6" id="report-content">
-                <!-- Loading State -->
-                <div class="space-y-4 animate-pulse pt-2">
-                    <div class="h-3 w-1/3 bg-white/5 rounded"></div>
-                    <div class="h-10 w-full bg-white/5 rounded"></div>
-                    <div class="h-3 w-1/4 bg-white/5 rounded mt-6"></div>
-                    <div class="h-10 w-full bg-white/5 rounded"></div>
-                </div>
-            </div>
-        </div>
+        <AiReportMatrix symbol={symbol} />
     </div>
 
     <!-- Right: Alert Center -->
     <div class="lg:col-span-5 space-y-4">
         <!-- Suggested Action Matrix -->
-        <div class="glass-card p-6 bg-accent/[0.03] border-l-2 border-accent">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 rounded-lg bg-accent/20 text-accent">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        ><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"
-                        ></path></svg
-                    >
-                </div>
-                <h3 class="text-xs font-mono font-bold text-white/80 uppercase tracking-widest">
-                    Strategic Action Vector
-                </h3>
-            </div>
-            <div class="space-y-4" id="alerts-container">
-                {/* SSR Fallback / Loading Skeleton */}
-                <div class="h-20 w-full rounded-xl bg-white/5 animate-pulse"></div>
-                <div class="h-20 w-full rounded-xl bg-white/5 animate-pulse"></div>
-            </div>
-        </div>
+        <StrategicActionMatrix />
 
         <!-- Neural Health Monitor -->
-        <div class="glass-card p-5">
-            <h3
-                class="text-[10px] font-mono font-bold text-white/30 uppercase tracking-widest mb-4"
-            >
-                Neural Health Monitor
-            </h3>
-            <div class="space-y-3">
-                {
-                    [
-                        { label: 'Data Latency', value: '42ms', color: 'text-bullish' },
-                        { label: 'Reasoning Depth', value: 'Level_9', color: 'text-accent' },
-                        { label: 'Signal Noise Ratio', value: '0.88', color: 'text-bullish' },
-                        { label: 'API Integrity', value: 'VERIFIED', color: 'text-accent' },
-                    ].map(stat => (
-                        <div class="flex items-center justify-between group">
-                            <span class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors uppercase">
-                                {stat.label}
-                            </span>
-                            <div class="flex items-center gap-2">
-                                <span class:list={['text-[10px] font-mono font-bold', stat.color]}>
-                                    {stat.value}
-                                </span>
-                                <div class="w-1 h-3 bg-white/10 rounded-full group-hover:bg-accent/40 transition-colors" />
-                            </div>
-                        </div>
-                    ))
-                }
-            </div>
-        </div>
+        <NeuralHealthMonitor />
     </div>
 </div>
 
-<script define:vars={{ symbol }}>
+<script is:inline define:vars={{ symbol }}>
     async function hydrate() {
         try {
             const res = await fetch(`/api/ai-report/${symbol}`);

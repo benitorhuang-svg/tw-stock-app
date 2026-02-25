@@ -3,7 +3,7 @@
  * 支援 CSV 格式匯入股價資料
  */
 
-import { batchInsert, saveDatabase } from './database';
+import { batchInsert, type SqlValue } from './database';
 
 export interface ImportResult {
     success: boolean;
@@ -49,7 +49,7 @@ export async function importPriceCSV(file: File, symbol: string): Promise<Import
         }
 
         // 解析資料
-        const rows: any[][] = [];
+        const rows: SqlValue[][] = [];
         for (let i = 1; i < lines.length; i++) {
             const values = parseCSVLine(lines[i]);
             if (values.length < 2) continue;
@@ -131,7 +131,7 @@ export async function importDividendCSV(file: File, symbol: string): Promise<Imp
             return result;
         }
 
-        const rows: any[][] = [];
+        const rows: SqlValue[][] = [];
         for (let i = 1; i < lines.length; i++) {
             const values = parseCSVLine(lines[i]);
             if (values.length < 2) continue;

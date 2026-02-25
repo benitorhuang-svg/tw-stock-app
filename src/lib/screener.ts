@@ -3,7 +3,7 @@
  * 實作基本面與技術面選股策略
  */
 
-import { SMA, RSI, MACD, type OHLCV } from './indicators';
+import { SMA, RSI, MACD } from './indicators';
 
 // ================== 型別定義 ==================
 

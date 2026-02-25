@@ -1,4 +1,5 @@
 import { dbService } from '../lib/db/sqlite-service';
+import type { SectorPerformance } from '../types/stock';
 
 /**
  * Market Data Service using M1 SQLite Schema
@@ -13,7 +14,64 @@ export interface StockSummary {
     date: string;
 }
 
-export function getMarketBreadth() {
+export interface MarketStats {
+    total: number;
+    up: number;
+    down: number;
+    flat: number;
+    upRatio: number;
+    downRatio: number;
+}
+
+export interface ChipFeature {
+    symbol: string;
+    foreign_buy: number;
+    trust_buy: number;
+    concentration_5d: number;
+    date: string;
+}
+
+export interface GrowthStar {
+    symbol: string;
+    name: string;
+    price: number;
+    dividend_yield: number;
+    change_rate: number;
+}
+
+export interface ChipData {
+    date: string;
+    foreign_buy: number;
+    trust_buy: number;
+    dealer_buy: number;
+}
+
+export interface ScreenResult {
+    symbol: string;
+    name: string;
+    price: number;
+    change_pct: number;
+    volume: number;
+    pe: number | null;
+    pb: number | null;
+    yield: number | null;
+    ma5: number | null;
+    ma20: number | null;
+}
+
+export interface StockDetails extends StockSummary {
+    change_pct: number;
+    pe: number | null;
+    pb: number | null;
+    yield: number | null;
+    ma5: number | null;
+    ma20: number | null;
+    macd_diff: number | null;
+    macd_dea: number | null;
+    [key: string]: string | number | null;
+}
+
+export function getMarketBreadth(): MarketStats {
     const db = dbService.getRawDb();
     try {
         const latestDateRes = db.prepare('SELECT MAX(date) as date FROM stocks').get() as {
@@ -59,14 +117,14 @@ export function getTopGainers(limit = 5): StockSummary[] {
         return db
             .prepare(
                 `
-            SELECT symbol, close as price, change_rate, volume, date
+            SELECT symbol, name, close as price, change_rate, volume, date
             FROM stocks
             WHERE date = ?
             ORDER BY change_rate DESC
             LIMIT ?
         `
             )
-            .all(latestDate, limit) as any[];
+            .all(latestDate, limit) as StockSummary[];
     } catch (e) {
         return [];
     }
@@ -81,14 +139,14 @@ export function getTopVolume(limit = 5): StockSummary[] {
         return db
             .prepare(
                 `
-            SELECT symbol, close as price, change_rate, volume, date
+            SELECT symbol, name, close as price, change_rate, volume, date
             FROM stocks
             WHERE date = ?
             ORDER BY volume DESC
             LIMIT ?
         `
             )
-            .all(latestDateRes.date, limit) as any[];
+            .all(latestDateRes.date, limit) as StockSummary[];
     } catch (e) {
         return [];
     }
@@ -103,20 +161,20 @@ export function getTopLosers(limit = 5): StockSummary[] {
         return db
             .prepare(
                 `
-            SELECT symbol, close as price, change_rate, volume, date
+            SELECT symbol, name, close as price, change_rate, volume, date
             FROM stocks
             WHERE date = ?
             ORDER BY change_rate ASC
             LIMIT ?
         `
             )
-            .all(latestDateRes.date, limit) as any[];
+            .all(latestDateRes.date, limit) as StockSummary[];
     } catch (e) {
         return [];
     }
 }
 
-export function getTopChips(limit = 5) {
+export function getTopChips(limit = 5): ChipFeature[] {
     const db = dbService.getRawDb();
     try {
         return db
@@ -128,27 +186,27 @@ export function getTopChips(limit = 5) {
             LIMIT ?
         `
             )
-            .all(limit);
+            .all(limit) as ChipFeature[];
     } catch (e) {
         return [];
     }
 }
 
-export function getGrowthStars(limit = 5) {
+export function getGrowthStars(limit = 5): GrowthStar[] {
     // Currently valuation_features stores yield, in full app we'd join more
     const db = dbService.getRawDb();
     try {
         return db
             .prepare(
                 `
-            SELECT s.symbol, s.close as price, v.dividend_yield, s.change_rate
+            SELECT s.symbol, s.name, s.close as price, v.dividend_yield, s.change_rate
             FROM stocks s
             JOIN valuation_features v ON s.symbol = v.symbol AND s.date = v.date
             ORDER BY v.dividend_yield DESC
             LIMIT ?
         `
             )
-            .all(limit);
+            .all(limit) as GrowthStar[];
     } catch (e) {
         return [];
     }
@@ -164,7 +222,7 @@ export interface ScreenFilters {
     macdBullish?: boolean;
 }
 
-export function screenStocks(filters: ScreenFilters) {
+export function screenStocks(filters: ScreenFilters): ScreenResult[] {
     const db = dbService.getRawDb();
     try {
         const latestDateRes = db.prepare('SELECT MAX(date) as date FROM stocks').get() as {
@@ -174,7 +232,7 @@ export function screenStocks(filters: ScreenFilters) {
         const latestDate = latestDateRes.date;
 
         const conditions: string[] = ['s.date = ?'];
-        const params: any[] = [latestDate];
+        const params: (string | number)[] = [latestDate];
 
         if (filters.pe) {
             conditions.push('v.pe_ratio > 0 AND v.pe_ratio <= ?');
@@ -193,7 +251,7 @@ export function screenStocks(filters: ScreenFilters) {
         }
 
         const query = `
-            SELECT s.symbol, s.close as price, s.change_rate as change_pct, s.volume,
+            SELECT s.symbol, s.name, s.close as price, s.change_rate as change_pct, s.volume,
                    v.pe_ratio as pe, v.pb_ratio as pb, v.dividend_yield as yield,
                    t.ma5, t.ma20
             FROM stocks s
@@ -204,14 +262,14 @@ export function screenStocks(filters: ScreenFilters) {
             LIMIT 100
         `;
 
-        return db.prepare(query).all(...params);
+        return db.prepare(query).all(...params) as ScreenResult[];
     } catch (e) {
         console.error('[MarketService] Screening Error:', e);
         return [];
     }
 }
 
-export function getStockDetails(symbol: string) {
+export function getStockDetails(symbol: string): StockDetails | null {
     const db = dbService.getRawDb();
     try {
         const latestDateRes = db
@@ -231,13 +289,13 @@ export function getStockDetails(symbol: string) {
             WHERE s.symbol = ? AND s.date = ?
         `
             )
-            .get(symbol, latestDateRes.date);
+            .get(symbol, latestDateRes.date) as StockDetails;
     } catch (e) {
         return null;
     }
 }
 
-export function getStockChips(symbol: string) {
+export function getStockChips(symbol: string): ChipData[] {
     const db = dbService.getRawDb();
     try {
         return db
@@ -250,13 +308,13 @@ export function getStockChips(symbol: string) {
             LIMIT 30
         `
             )
-            .all(symbol);
+            .all(symbol) as ChipData[];
     } catch (e) {
         return [];
     }
 }
 
-export function getSectorPerformance() {
+export function getSectorPerformance(): SectorPerformance[] {
     // Schema doesn't have sector yet, returning mock or empty for now
     return [];
 }

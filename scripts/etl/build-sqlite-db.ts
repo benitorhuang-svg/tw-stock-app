@@ -2,7 +2,6 @@ import { SqliteWriter } from '../db/sqlite-writer';
 import { twseApi } from '../fetchers/twse-api';
 import { yahooApi } from '../fetchers/yahoo-api';
 import { technicalETL } from './technical-features';
-import { chipETL } from './chip-features';
 
 /**
  * M1: The Master ETL Orchestrator

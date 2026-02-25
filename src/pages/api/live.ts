@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro';
+import type { TwseStockSnapshot } from '../../types/stock';
 
 const TWSE_URL = 'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL';
 
 // Server-side Memory Cache
-let cachedData: any = null;
+let cachedData: TwseStockSnapshot[] | null = null;
 let lastFetchTime: number = 0;
 const CACHE_DURATION_MS = 15000; // 15 seconds cache to prevent IP BAN
 

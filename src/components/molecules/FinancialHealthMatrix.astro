@@ -1,0 +1,90 @@
+---
+/**
+ * FinancialHealthMatrix.astro
+ */
+import type { MarginRecord, HealthBadge } from '../../types/stock';
+
+interface Props {
+    tripleUp: boolean | false;
+    marginPoints: (key: keyof MarginRecord) => string;
+    marginData: MarginRecord[];
+    healthBadges: HealthBadge[];
+}
+const { tripleUp, marginPoints, marginData, healthBadges } = Astro.props;
+---
+
+<div class="glass-card p-5 glow-interactive relative">
+    {tripleUp && <div class="absolute inset-0 rounded-2xl bg-bullish/[0.03] pointer-events-none" />}
+    <div class="flex items-center justify-between mb-1">
+        <h3 class="terminal-label">財務體檢雷達</h3>
+        {
+            tripleUp && (
+                <span class="text-[10px] font-bold text-bullish bg-bullish/15 px-2 py-0.5 rounded-full">
+                    三率三升 ✨
+                </span>
+            )
+        }
+    </div>
+    <p class="text-[10px] text-text-muted mb-3">毛利率 / 營業利益率 / 淨利率</p>
+
+    <!-- Triple Margins Mini Chart -->
+    <div class="h-[70px] mb-4 relative">
+        <svg viewBox="0 0 200 60" class="w-full h-full">
+            <polyline
+                points={marginPoints('grossMargin')}
+                fill="none"
+                stroke="hsl(217,91%,60%)"
+                stroke-width="1.5"
+                stroke-linecap="round"></polyline>
+            <polyline
+                points={marginPoints('operatingMargin')}
+                fill="none"
+                stroke="hsl(38,92%,50%)"
+                stroke-width="1.5"
+                stroke-linecap="round"></polyline>
+            <polyline
+                points={marginPoints('netMargin')}
+                fill="none"
+                stroke="hsl(142,71%,45%)"
+                stroke-width="1.5"
+                stroke-linecap="round"></polyline>
+        </svg>
+        <div
+            class="absolute bottom-0 left-0 right-0 flex justify-between text-[8px] font-mono text-text-muted px-2"
+        >
+            {marginData.map(d => <span>Q{d.quarter}</span>)}
+        </div>
+    </div>
+    <div class="flex gap-3 text-[10px] mb-4">
+        <span class="flex items-center gap-1"
+            ><span class="w-2 h-0.5 bg-accent rounded"></span>毛利率</span
+        >
+        <span class="flex items-center gap-1"
+            ><span class="w-2 h-0.5 bg-warning rounded"></span>營利率</span
+        >
+        <span class="flex items-center gap-1"
+            ><span class="w-2 h-0.5 bg-bullish rounded"></span>純益率</span
+        >
+    </div>
+
+    <!-- Health Badges -->
+    <div class="grid grid-cols-3 gap-2">
+        {
+            healthBadges.map(badge => (
+                <div
+                    class:list={[
+                        'flex items-center justify-between px-3 py-1.5 rounded-full border text-xs font-mono',
+                        badge.status === 'good'
+                            ? 'border-bullish/30 text-bullish bg-bullish/5'
+                            : badge.status === 'warn'
+                              ? 'border-warning/30 text-warning bg-warning/5'
+                              : 'border-border text-text-secondary bg-glass',
+                    ]}
+                >
+                    <span class="text-[10px] font-semibold tracking-wider">{badge.label}</span>
+                    <span class="font-bold">{badge.value}</span>
+                </div>
+            ))
+        }
+    </div>
+</div>

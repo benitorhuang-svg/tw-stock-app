@@ -135,12 +135,12 @@ function parseCSV(csv: string): StockPriceRecord[] {
 
     return lines.slice(1).map(line => {
         const values = line.split(',');
-        const record: any = {};
+        const record: Record<string, string | number> = {};
         headers.forEach((h, i) => {
             const val = values[i];
             if (h === 'Date') record[h] = val;
             else record[h] = parseFloat(val) || 0;
         });
-        return record as StockPriceRecord;
+        return record as unknown as StockPriceRecord;
     });
 }

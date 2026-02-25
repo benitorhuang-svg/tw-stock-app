@@ -1,4 +1,7 @@
 ---
+import MatrixSlider from '../molecules/MatrixSlider.astro';
+import MatrixGroup from '../molecules/MatrixGroup.astro';
+
 /**
  * ForensicFilteringMatrix.astro - Advanced multi-vector stock filtering matrix
  */
@@ -69,210 +72,97 @@
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 gap-x-12"
         id="slider-container"
     >
-        <!-- Group 1: Value Metrics -->
-        <div class="space-y-6">
-            <div class="flex items-center gap-2 mb-2">
-                <div class="w-3 h-0.5 bg-accent/40"></div>
-                <span class="text-[9px] font-mono font-bold text-white/30 uppercase tracking-widest"
-                    >Value Deciles</span
-                >
-            </div>
+        <MatrixGroup title="Value Deciles">
+            <MatrixSlider
+                id="filter-pe-max"
+                label="P/E Ratio ≤"
+                min="1"
+                max="100"
+                step="1"
+                value="100"
+                displayId="pe-display"
+                filterType="pe"
+            />
+            <MatrixSlider
+                id="filter-pb-max"
+                label="P/B Ratio ≤"
+                min="0.1"
+                max="10"
+                step="0.1"
+                value="10"
+                displayId="pb-display"
+                filterType="pb"
+            />
+            <MatrixSlider
+                id="filter-yield-min"
+                label="Yield % ≥"
+                min="0"
+                max="15"
+                step="0.5"
+                value="0"
+                displayId="yield-display"
+                colorClass="text-bullish"
+                filterType="yield"
+            />
+        </MatrixGroup>
 
-            <!-- PE -->
-            <div class="space-y-2 group" data-filter-type="pe">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >P/E Ratio ≤</span
-                    >
-                    <span class="text-xs font-mono font-bold text-accent" id="pe-display"
-                        >100.0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-pe-max"
-                    min="1"
-                    max="100"
-                    step="1"
-                    value="100"
-                    class="w-full custom-range"
-                />
-            </div>
-
-            <!-- PB -->
-            <div class="space-y-2 group" data-filter-type="pb">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >P/B Ratio ≤</span
-                    >
-                    <span class="text-xs font-mono font-bold text-accent" id="pb-display">10.0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-pb-max"
-                    min="0.1"
-                    max="10"
-                    step="0.1"
-                    value="10"
-                    class="w-full custom-range"
-                />
-            </div>
-
-            <!-- Yield -->
-            <div class="space-y-2 group" data-filter-type="yield">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >Yield % ≥</span
-                    >
-                    <span class="text-xs font-mono font-bold text-bullish" id="yield-display"
-                        >0.0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-yield-min"
-                    min="0"
-                    max="15"
-                    step="0.5"
-                    value="0"
-                    class="w-full custom-range"
-                />
-            </div>
-        </div>
-
-        <!-- Group 2: Growth & Momentum -->
-        <div class="space-y-6">
-            <div class="flex items-center gap-2 mb-2">
-                <div class="w-3 h-0.5 bg-accent/40"></div>
-                <span class="text-[9px] font-mono font-bold text-white/30 uppercase tracking-widest"
-                    >Growth Vector</span
-                >
-            </div>
-
-            <!-- Revenue YoY -->
-            <div class="space-y-2 group" data-filter-type="rev">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >Rev YoY % ≥</span
-                    >
-                    <span class="text-xs font-mono font-bold text-bullish" id="rev-display"
-                        >-20.0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-rev-min"
-                    min="-20"
-                    max="100"
-                    step="1"
-                    value="-20"
-                    class="w-full custom-range"
-                />
-            </div>
-
-            <!-- Operating Margin -->
-            <div class="space-y-2 group" data-filter-type="margin">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >Op Margin % ≥</span
-                    >
-                    <span class="text-xs font-mono font-bold text-accent" id="margin-display"
-                        >-10.0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-margin-min"
-                    min="-10"
-                    max="50"
-                    step="1"
-                    value="-10"
-                    class="w-full custom-range"
-                />
-            </div>
-
-            <!-- EPS Growth -->
-            <div class="space-y-2 group" data-filter-type="eps">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >EPS (TWD) ≥</span
-                    >
-                    <span class="text-xs font-mono font-bold text-accent" id="eps-display"
-                        >-5.0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-eps-min"
-                    min="-5"
-                    max="30"
-                    step="0.5"
-                    value="-5"
-                    class="w-full custom-range"
-                />
-            </div>
-        </div>
+        <MatrixGroup title="Growth Vector">
+            <MatrixSlider
+                id="filter-rev-min"
+                label="Rev YoY % ≥"
+                min="-20"
+                max="100"
+                step="1"
+                value="-20"
+                displayId="rev-display"
+                colorClass="text-bullish"
+                filterType="rev"
+            />
+            <MatrixSlider
+                id="filter-margin-min"
+                label="Op Margin % ≥"
+                min="-10"
+                max="50"
+                step="1"
+                value="-10"
+                displayId="margin-display"
+                filterType="margin"
+            />
+            <MatrixSlider
+                id="filter-eps-min"
+                label="EPS (TWD) ≥"
+                min="-5"
+                max="30"
+                step="0.5"
+                value="-5"
+                displayId="eps-display"
+                filterType="eps"
+            />
+        </MatrixGroup>
 
         <!-- Group 3: Capital Forensic -->
-        <div class="space-y-6">
-            <div class="flex items-center gap-2 mb-2">
-                <div class="w-3 h-0.5 bg-accent/40"></div>
-                <span class="text-[9px] font-mono font-bold text-white/30 uppercase tracking-widest"
-                    >Capital Forensic</span
-                >
-            </div>
-
-            <!-- Foreign Streak -->
-            <div class="space-y-2 group" data-filter-type="foreign">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >Foreign Streak (Days) ≥</span
-                    >
-                    <span class="text-xs font-mono font-bold text-bullish" id="foreign-display"
-                        >0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-foreign-streak"
-                    min="0"
-                    max="10"
-                    step="1"
-                    value="0"
-                    class="w-full custom-range"
-                />
-            </div>
-
-            <!-- Trust Streak -->
-            <div class="space-y-2 group" data-filter-type="trust">
-                <div class="flex justify-between items-end">
-                    <span
-                        class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors"
-                        >Trust Streak (Days) ≥</span
-                    >
-                    <span class="text-xs font-mono font-bold text-accent" id="trust-display">0</span
-                    >
-                </div>
-                <input
-                    type="range"
-                    id="filter-trust-streak"
-                    min="0"
-                    max="10"
-                    step="1"
-                    value="0"
-                    class="w-full custom-range"
-                />
-            </div>
-
-            <!-- Dividend Consistency (Example) -->
+        <MatrixGroup title="Capital Forensic">
+            <MatrixSlider
+                id="filter-foreign-streak"
+                label="Foreign Streak (Days) ≥"
+                min="0"
+                max="10"
+                step="1"
+                value="0"
+                displayId="foreign-display"
+                colorClass="text-bullish"
+                filterType="foreign"
+            />
+            <MatrixSlider
+                id="filter-trust-streak"
+                label="Trust Streak (Days) ≥"
+                min="0"
+                max="10"
+                step="1"
+                value="0"
+                displayId="trust-display"
+                filterType="trust"
+            />
             <div class="space-y-3">
                 <span class="text-[10px] text-white/40 uppercase tracking-widest block"
                     >Institutional Domain</span
@@ -288,7 +178,7 @@
                     >
                 </div>
             </div>
-        </div>
+        </MatrixGroup>
     </div>
 </div>
 

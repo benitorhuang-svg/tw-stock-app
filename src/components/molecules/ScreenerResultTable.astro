@@ -1,0 +1,60 @@
+---
+/**
+ * ScreenerResultTable.astro - Molecule for the results table
+ */
+---
+
+<div id="screener-results" class="hidden flex-1 overflow-auto custom-scrollbar">
+    <table class="w-full text-left border-collapse min-w-[860px]" id="screener-table">
+        <thead class="sticky top-0 bg-base-deep z-10 border-b border-border/60">
+            <tr>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
+                >
+                    股票代號
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
+                >
+                    名稱
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                >
+                    成交價
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                >
+                    漲跌%
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                >
+                    本益比
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                >
+                    股淨比
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                >
+                    殖利率
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted text-right"
+                >
+                    成交量
+                </th>
+                <th
+                    class="cursor-pointer px-3 py-2 text-[10px] uppercase tracking-wider text-text-muted"
+                >
+                    備註標籤
+                </th>
+            </tr>
+        </thead>
+        <tbody id="screener-results-grid" class="divide-y divide-border/30"></tbody>
+    </table>
+</div>

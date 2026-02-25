@@ -4,7 +4,7 @@
  * @coverage Server-side and Client-side database operations
  */
 
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 // Note: In a real test environment, these would be mocked or use a test database
 // For now, we'll test the module structure and exported types
@@ -258,7 +258,7 @@ describe('SQLite Service', () => {
     describe('Performance Constraints', () => {
         it('should return results within 10ms for stock lookup', async () => {
             const start = performance.now();
-            const mockStock = { symbol: '2330', name: '台積電' };
+            // const mockStock = { symbol: '2330', name: '台積電' };
             const elapsed = performance.now() - start;
 
             // Synchronous operation should be very fast
@@ -267,7 +267,7 @@ describe('SQLite Service', () => {
 
         it('should return results within 50ms for full stock list', async () => {
             const start = performance.now();
-            const mockStocks = Array(1077).fill({ symbol: '2330' });
+            // const mockStocks = Array(1077).fill({ symbol: '2330' });
             const elapsed = performance.now() - start;
 
             expect(elapsed).toBeLessThan(50);
@@ -275,7 +275,7 @@ describe('SQLite Service', () => {
 
         it('should return search results within 5ms', async () => {
             const start = performance.now();
-            const keyword = '台';
+            // const keyword = '台';
             const mockResults = [
                 { symbol: '2330', name: '台積電' },
                 { symbol: '1101', name: '台泥' },
@@ -290,8 +290,7 @@ describe('SQLite Service', () => {
     describe('Error Handling', () => {
         it('should return empty array on query error', async () => {
             // Mock error scenario
-            const mockError = new Error('Database connection failed');
-            const result = [];
+            const result: any[] = [];
 
             expect(Array.isArray(result)).toBe(true);
             expect(result.length).toBe(0);

@@ -1,0 +1,296 @@
+/**
+ * Core Data Explorer Engine for database.astro
+ */
+// ═══ Forensic Data Explorer Engine ═══
+function escapeHtml(str: unknown): string {
+    if (str === null || str === undefined) return '';
+    const s = String(str);
+    // Fast path: avoid expensive replace chains if no special chars present (handles 95%+ of dataset)
+    if (!/[&<>"']/.test(s)) return s;
+    return s
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+let activeTable = '';
+let currentPage = 1;
+let limit = 100;
+let activeController: AbortController | null = null;
+let requestSeq = 0;
+
+interface TableColumn {
+    name: string;
+    type: string;
+}
+
+interface TableDataResponse {
+    columns: TableColumn[];
+    rows: Record<string, unknown>[];
+    total: number;
+}
+
+const getEl = (id: string) => document.getElementById(id);
+
+function setLoading(isLoading: boolean) {
+    const loadingBar = getEl('db-loading-bar');
+    if (!loadingBar) return;
+    if (isLoading) {
+        loadingBar.style.opacity = '1';
+        loadingBar.style.width = '30%';
+    } else {
+        loadingBar.style.width = '100%';
+        setTimeout(() => {
+            if (loadingBar) {
+                loadingBar.style.opacity = '0';
+                loadingBar.style.width = '0';
+            }
+        }, 300);
+    }
+}
+
+async function loadTable(name: string, page = 1) {
+    if (!name) return;
+    const seq = ++requestSeq;
+    if (activeController) activeController.abort();
+    activeController = new AbortController();
+
+    const startTime = performance.now();
+    setLoading(true);
+
+    const toggleOpt = (id: string, action: 'add' | 'remove', ...classes: string[]) => {
+        const el = getEl(id);
+        if (el) el.classList[action](...classes);
+    };
+
+    toggleOpt('db-error', 'add', 'hidden');
+    toggleOpt('welcome-message', 'add', 'hidden');
+    toggleOpt('table-name-container', 'remove', 'hidden');
+    toggleOpt('explorer-toolbar', 'remove', 'hidden', 'opacity-0');
+    toggleOpt('table-controls', 'remove', 'hidden', 'opacity-0');
+    toggleOpt('data-table', 'remove', 'hidden');
+    toggleOpt('top-scrollbar', 'remove', 'hidden');
+
+    try {
+        const offset = (page - 1) * limit;
+        const searchInput = getEl('global-search') as HTMLInputElement;
+        const searchTerm = searchInput?.value || '';
+        const res = await fetch(
+            `/api/db/${encodeURIComponent(name)}?limit=${limit}&offset=${offset}&search=${encodeURIComponent(searchTerm)}`,
+            { signal: activeController.signal }
+        );
+        if (seq !== requestSeq) return;
+        if (!res.ok) throw new Error(await res.text());
+
+        const data = await res.json();
+
+        const tableNameLabel = getEl('current-table-name');
+        if (tableNameLabel) tableNameLabel.textContent = name;
+
+        const rowCountBadge = getEl('row-count-badge');
+        if (rowCountBadge) {
+            rowCountBadge.textContent = `${data.total.toLocaleString()} ENTITIES`;
+            rowCountBadge.classList.remove('hidden');
+        }
+
+        const pageNumLabel = getEl('page-num');
+        if (pageNumLabel) pageNumLabel.textContent = page.toString();
+        currentPage = page;
+
+        const prevBtn = getEl('prev-page') as HTMLButtonElement;
+        const nextBtn = getEl('next-page') as HTMLButtonElement;
+        if (prevBtn) prevBtn.disabled = page <= 1;
+        if (nextBtn) {
+            const totalPages = Math.ceil(data.total / limit);
+            nextBtn.disabled = page >= totalPages;
+        }
+
+        const tableHead = getEl('table-head');
+        if (tableHead) {
+            tableHead.innerHTML = `<tr>${(data as TableDataResponse).columns
+                .map(
+                    col => `
+                    <th class="cursor-pointer px-6 py-4 text-[9px] tracking-[0.2em] font-black text-text-muted border-r border-border hover:bg-accent-glow hover:text-accent transition-all uppercase" data-asc="false">
+                        <div class="flex flex-col gap-1">
+                            <span>${escapeHtml(col.name)}</span>
+                            <span class="text-[7px] text-text-muted opacity-50 font-mono tracking-widest">${escapeHtml(col.type)}</span>
+                        </div>
+                    </th>`
+                )
+                .join('')}</tr>`;
+        }
+
+        const tableBody = getEl('table-body');
+        if (tableBody) {
+            const renderableCols = (data as TableDataResponse).columns.map(col => {
+                const lName = col.name.toLowerCase();
+                return {
+                    name: col.name,
+                    isPct: lName.includes('pct'),
+                    isPrice: lName.includes('price') || lName.includes('close'),
+                };
+            });
+
+            tableBody.innerHTML = (data as TableDataResponse).rows
+                .map(
+                    row => `
+                    <tr class="hover:bg-glass-hover transition-colors group/row">
+                        ${renderableCols
+                            .map(col => {
+                                const val = row[col.name];
+                                const isNull = val === null || val === undefined;
+                                let style = 'text-text-muted';
+                                let display = isNull ? 'NULL' : escapeHtml(val);
+
+                                if (!isNull && typeof val === 'number') {
+                                    if (col.isPct) {
+                                        style =
+                                            val >= 0
+                                                ? 'text-bullish font-bold'
+                                                : 'text-bearish font-bold';
+                                        display = (val > 0 ? '+' : '') + val.toFixed(2) + '%';
+                                    } else if (col.isPrice) {
+                                        style = 'text-accent font-bold';
+                                    } else {
+                                        style = 'text-text-secondary font-mono';
+                                    }
+                                }
+                                return `<td class="px-6 py-4 text-[11px] border-r border-border ${isNull ? 'bg-red-500/10 text-red-500 dark:text-red-400 italic' : style}"><div class="db-cell truncate">${display}</div></td>`;
+                            })
+                            .join('')}
+                    </tr>`
+                )
+                .join('');
+
+            if ((data as TableDataResponse).rows.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="99" class="py-20 text-center font-mono text-text-muted opacity-50 text-[9px] tracking-widest uppercase">Zero_Entities_Isolated</td></tr>`;
+            }
+        }
+
+        const queryTimeLabel = getEl('query-time');
+        if (queryTimeLabel)
+            queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
+    } catch (err: unknown) {
+        if ((err as Error).name === 'AbortError') return;
+        console.error(err);
+        toggleOpt('db-error', 'remove', 'hidden');
+        toggleOpt('data-table', 'add', 'hidden');
+        const errorMsg = getEl('error-message');
+        if (errorMsg) errorMsg.textContent = (err as Error).message;
+    } finally {
+        setLoading(false);
+    }
+}
+
+function initExplorer() {
+    if (!getEl('table-list')) return;
+
+    const tableList = getEl('table-list');
+    // Prevent duplicate listener
+    if (tableList && !tableList.dataset.bound) {
+        tableList.dataset.bound = 'true';
+        tableList.addEventListener('click', e => {
+            const btn = (e.target as HTMLElement).closest('button');
+            if (!btn) return;
+            tableList
+                .querySelectorAll('button')
+                .forEach(b =>
+                    b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent')
+                );
+            btn.classList.add('bg-white/[0.1]', 'text-accent', 'border-l-accent');
+            activeTable = btn.dataset.table || '';
+            currentPage = 1;
+            loadTable(activeTable);
+        });
+    }
+
+    const prevPage = getEl('prev-page');
+    if (prevPage && !prevPage.dataset.bound) {
+        prevPage.dataset.bound = 'true';
+        prevPage.addEventListener('click', () => {
+            if (currentPage > 1) loadTable(activeTable, currentPage - 1);
+        });
+    }
+
+    const nextPage = getEl('next-page');
+    if (nextPage && !nextPage.dataset.bound) {
+        nextPage.dataset.bound = 'true';
+        nextPage.addEventListener('click', () => {
+            loadTable(activeTable, currentPage + 1);
+        });
+    }
+
+    const topScrollbar = getEl('top-scrollbar');
+    const tableScrollContainer = getEl('table-scroll-container');
+    const topScrollContent = getEl('top-scroll-content');
+    const dataTable = getEl('data-table');
+
+    if (topScrollbar && tableScrollContainer && !topScrollbar.dataset.bound) {
+        topScrollbar.dataset.bound = 'true';
+        let isSyncingTop = false;
+        let isSyncingBottom = false;
+
+        topScrollbar.addEventListener('scroll', function (this: HTMLElement) {
+            if (!isSyncingTop) {
+                isSyncingBottom = true;
+                if (tableScrollContainer) tableScrollContainer.scrollLeft = this.scrollLeft;
+            }
+            isSyncingTop = false;
+        });
+
+        tableScrollContainer.addEventListener('scroll', function (this: HTMLElement) {
+            if (!isSyncingBottom) {
+                isSyncingTop = true;
+                if (topScrollbar) topScrollbar.scrollLeft = this.scrollLeft;
+            }
+            isSyncingBottom = false;
+        });
+
+        if (topScrollContent && dataTable) {
+            const rsObserver = new ResizeObserver(() => {
+                topScrollContent.style.width = `${dataTable.scrollWidth}px`;
+            });
+            rsObserver.observe(dataTable);
+            rsObserver.observe(tableScrollContainer);
+        }
+    }
+
+    const globalSearch = getEl('global-search');
+    if (globalSearch && !globalSearch.dataset.bound) {
+        globalSearch.dataset.bound = 'true';
+        let searchTimeout: ReturnType<typeof setTimeout>;
+        globalSearch.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadTable(activeTable, 1);
+            }, 300);
+        });
+    }
+
+    const pageLimit = getEl('page-limit');
+    if (pageLimit && !pageLimit.dataset.bound) {
+        pageLimit.dataset.bound = 'true';
+        pageLimit.addEventListener('change', e => {
+            limit = parseInt((e.target as HTMLSelectElement).value);
+            loadTable(activeTable, 1);
+        });
+    }
+
+    const tickCountEl = getEl('tick-count');
+    if (typeof EventSource !== 'undefined' && tickCountEl && !tickCountEl.dataset.bound) {
+        tickCountEl.dataset.bound = 'true';
+        const es = new EventSource('/api/sse/stream');
+        es.addEventListener('tick', e => {
+            try {
+                const ticks = JSON.parse(e.data);
+                if (getEl('tick-count'))
+                    getEl('tick-count')!.textContent = String(ticks.length);
+            } catch { }
+        });
+        document.addEventListener('astro:before-swap', () => es.close(), { once: true });
+    }
+}
+
+document.addEventListener('astro:page-load', initExplorer);

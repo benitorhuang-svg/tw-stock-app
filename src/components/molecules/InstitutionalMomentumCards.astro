@@ -1,0 +1,96 @@
+---
+/**
+ * InstitutionalMomentumCards.astro
+ */
+import type { InstitutionalEntity } from '../../types/stock';
+
+interface Props {
+    entities: InstitutionalEntity[];
+    fmtNet: (n: number) => string;
+    sparkPoints: (data: number[]) => string;
+}
+const { entities, fmtNet, sparkPoints } = Astro.props;
+---
+
+<!-- Institutional Momentum Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-children">
+    {
+        entities.map(entity => {
+            const isPos = entity.net > 0;
+            return (
+                <div
+                    class:list={[
+                        'glass-card group hover:bg-white/[0.02] px-5 py-4 flex flex-col gap-3 transition-all duration-300',
+                        isPos
+                            ? 'border-r-2 border-r-bullish/20'
+                            : entity.net < 0
+                              ? 'border-r-2 border-r-bearish/20'
+                              : 'border-r-2 border-r-transparent',
+                    ]}
+                >
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div
+                                class:list={[
+                                    'w-1.5 h-1.5 rounded-full',
+                                    entity.color === 'accent'
+                                        ? 'bg-accent'
+                                        : entity.color === 'bullish'
+                                          ? 'bg-bullish'
+                                          : 'bg-warning',
+                                ]}
+                            />
+                            <span class="text-[10px] font-bold text-white/50 uppercase tracking-tighter">
+                                {entity.name} 資金動能
+                            </span>
+                        </div>
+                        {entity.days !== 0 && (
+                            <span
+                                class:list={[
+                                    'text-[9px] font-bold font-mono px-2 py-0.5 rounded bg-white/5 border border-white/5',
+                                    entity.days > 0 ? 'text-bullish' : 'text-bearish',
+                                ]}
+                            >
+                                連 {Math.abs(entity.days)} {entity.days > 0 ? 'B' : 'S'}
+                            </span>
+                        )}
+                    </div>
+                    <div class="flex items-end justify-between">
+                        <span
+                            class:list={[
+                                'text-2xl font-mono font-black tracking-tighter',
+                                isPos
+                                    ? 'text-bullish'
+                                    : entity.net < 0
+                                      ? 'text-bearish'
+                                      : 'text-text-muted',
+                            ]}
+                        >
+                            {fmtNet(entity.net)}
+                        </span>
+                        <div class="flex flex-col items-end opacity-40 group-hover:opacity-100 transition-opacity">
+                            <span class="text-[8px] font-mono text-text-muted uppercase mb-1">
+                                Momentum Trend
+                            </span>
+                            <svg viewBox="0 0 90 20" class="w-16 h-4">
+                                <polyline
+                                    points={sparkPoints(entity.trend)}
+                                    fill="none"
+                                    stroke={
+                                        isPos
+                                            ? 'hsl(142,71%,45%)'
+                                            : entity.net < 0
+                                              ? 'hsl(346,77%,50%)'
+                                              : 'rgba(255,255,255,0.2)'
+                                    }
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            );
+        })
+    }
+</div>

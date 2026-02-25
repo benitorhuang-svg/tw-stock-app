@@ -1,3 +1,5 @@
+import type { StockWithPrice } from './sqlite-service';
+
 /**
  * 資料同步服務
  * 背景同步、手動刷新、時效管理
@@ -19,8 +21,8 @@ interface SyncMeta {
 }
 
 interface LocalStockData {
-    stocks: any[];
-    fundamentals: any[];
+    stocks: StockWithPrice[];
+    fundamentals: any[]; // Consider more specific type if known
     timestamp: number;
 }
 
@@ -45,7 +47,7 @@ export function getLastSyncTime(): number {
             const parsed = JSON.parse(meta) as SyncMeta;
             return parsed.lastSyncTime;
         }
-    } catch (e) {}
+    } catch (e) { }
     return 0;
 }
 
@@ -58,7 +60,7 @@ export function getSyncStatus(): SyncMeta {
         if (meta) {
             return JSON.parse(meta) as SyncMeta;
         }
-    } catch (e) {}
+    } catch (e) { }
     return currentStatus;
 }
 
@@ -130,7 +132,7 @@ export function getLocalData(): LocalStockData | null {
         if (data) {
             return JSON.parse(data) as LocalStockData;
         }
-    } catch (e) {}
+    } catch (e) { }
     return null;
 }
 

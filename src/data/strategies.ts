@@ -1,16 +1,4 @@
-/**
- * 選股策略資料
- */
-
-export interface Strategy {
-    id: string;
-    name: string;
-    category: 'fundamental' | 'technical' | 'sentiment';
-    description: string;
-    conditions: string[];
-    icon: string;
-    sql?: string; // Optional SQL query to count matching stocks
-}
+import type { Strategy } from '../types/stock';
 
 export const strategies: Strategy[] = [
     // 基本面策略

@@ -1,0 +1,135 @@
+---
+/**
+ * TechnicalChart.astro
+ * Main candlestick chart with Moving Averages and Bollinger Bands
+ */
+import type { BBandResult } from '../../utils/technical-indicators';
+import type { CandleData } from '../../types/stock';
+
+interface Props {
+    candles: CandleData[];
+    chartW: number;
+    chartH: number;
+    gap: number;
+    barW: number;
+    pToY: (p: number) => number;
+    vToH: (v: number) => number;
+    ma5Path: string;
+    ma10Path: string;
+    ma20Path: string;
+    ma60Path: string;
+    bBands: BBandResult[];
+    hasRealData: boolean;
+}
+
+const {
+    candles,
+    chartW,
+    chartH,
+    gap,
+    barW,
+    pToY,
+    vToH,
+    ma5Path,
+    ma10Path,
+    ma20Path,
+    ma60Path,
+    bBands,
+    hasRealData,
+} = Astro.props;
+---
+
+<div class="pt-14 px-10 h-[calc(100%-140px)]">
+    <svg viewBox={`0 0 ${chartW} ${chartH}`} class="w-full h-full" preserveAspectRatio="none">
+        <!-- Grid lines -->
+        {
+            [0.2, 0.4, 0.6, 0.8].map(pct => (
+                <line
+                    x1="0"
+                    y1={chartH * pct}
+                    x2={chartW}
+                    y2={chartH * pct}
+                    stroke="rgba(255,255,255,0.03)"
+                    stroke-width="0.5"
+                />
+            ))
+        }
+
+        {/* Bollinger Bands Fill */}
+        {
+            hasRealData && (
+                <path
+                    d={(() => {
+                        if (bBands.length === 0) return '';
+                        const top = bBands.map(b => `${b.x},${b.upper}`).join(' L ');
+                        const bot = bBands
+                            .slice()
+                            .reverse()
+                            .map(b => `${b.x},${b.lower}`)
+                            .join(' L ');
+                        return `M ${top} L ${bot} Z`;
+                    })()}
+                    fill="rgba(var(--accent-rgb), 0.03)"
+                    stroke="none"
+                />
+            )
+        }
+
+        <!-- Volume bars (bottom 15%) -->
+        {
+            candles.map((c, i) => {
+                const x = i * gap + (gap - barW) / 2;
+                const h = vToH(c.vol);
+                return (
+                    <rect
+                        x={x}
+                        y={chartH - h}
+                        width={barW}
+                        height={h}
+                        fill={c.bull ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)'}
+                        rx="1"
+                    />
+                );
+            })
+        }
+
+        <!-- Candlesticks -->
+        {
+            candles.map((c, i) => {
+                const x = i * gap + gap / 2;
+                const bodyTop = pToY(Math.max(c.o, c.c));
+                const bodyBot = pToY(Math.min(c.o, c.c));
+                const bodyH = Math.max(bodyBot - bodyTop, 1);
+                const wickTop = pToY(c.h);
+                const wickBot = pToY(c.l);
+                const color = c.bull ? '#22c55e' : '#ef4444';
+                return (
+                    <g class="candle-group">
+                        <line
+                            x1={x}
+                            y1={wickTop}
+                            x2={x}
+                            y2={wickBot}
+                            stroke={color}
+                            stroke-width="1.2"
+                        />
+                        <rect
+                            x={x - barW / 2}
+                            y={bodyTop}
+                            width={barW}
+                            height={bodyH}
+                            fill={color}
+                            rx="1"
+                        />
+                    </g>
+                );
+            })
+        }
+
+        <!-- Moving Averages -->
+        <path d={ma5Path} fill="none" stroke="#eab308" stroke-width="1.5" opacity="0.8"></path>
+        <path d={ma10Path} fill="none" stroke="#0ea5e9" stroke-width="1.5" opacity="0.7"></path>
+        <path d={ma20Path} fill="none" stroke="#a855f7" stroke-width="1.5" opacity="0.6"></path>
+        <path d={ma60Path} fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0.5"></path>
+    </svg>
+</div>

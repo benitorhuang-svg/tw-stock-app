@@ -13,25 +13,23 @@ self.addEventListener('install', event => {
     // Force the waiting service worker to become the active service worker.
     self.skipWaiting();
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(ASSETS_TO_CACHE);
-        })
+        (async () => {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.addAll(ASSETS_TO_CACHE);
+        })()
     );
 });
 
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches
-            .keys()
-            .then(cacheNames => {
-                return Promise.all(
-                    cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
-                );
-            })
-            .then(() => {
-                // Take control of all open clients immediately
-                return self.clients.claim();
-            })
+        (async () => {
+            const cacheNames = await caches.keys();
+            await Promise.all(
+                cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
+            );
+            // Take control of all open clients immediately
+            return self.clients.claim();
+        })()
     );
 });
 
@@ -42,41 +40,36 @@ self.addEventListener('fetch', event => {
     // 1. Navigation Requests (HTML): Network-First
     if (request.mode === 'navigate') {
         event.respondWith(
-            fetch(request)
-                .then(response => {
-                    // Update cache for next time
-                    return caches.open(CACHE_NAME).then(cache => {
-                        cache.put(request, response.clone());
-                        return response;
-                    });
-                })
-                .catch(() => {
-                    // Fallback to cache if offline
-                    return caches.match(request) || caches.match('/');
-                })
+            (async () => {
+                try {
+                    const response = await fetch(request);
+                    const cache = await caches.open(CACHE_NAME);
+                    cache.put(request, response.clone());
+                    return response;
+                } catch {
+                    return (await caches.match(request)) || (await caches.match('/'));
+                }
+            })()
         );
         return;
     }
 
     // 2. Data and Assets: Cache-First
     event.respondWith(
-        caches.match(request).then(response => {
-            return (
-                response ||
-                fetch(request).then(fetchResponse => {
-                    // Cache data files and images dynamically
-                    if (
-                        url.pathname.includes('/data/') ||
-                        url.pathname.match(/\.(png|jpg|jpeg|svg|webp|ico)$/)
-                    ) {
-                        return caches.open(CACHE_NAME).then(cache => {
-                            cache.put(request, fetchResponse.clone());
-                            return fetchResponse;
-                        });
-                    }
-                    return fetchResponse;
-                })
-            );
-        })
+        (async () => {
+            const response = await caches.match(request);
+            if (response) return response;
+
+            const fetchResponse = await fetch(request);
+            // Cache data files and images dynamically
+            if (
+                url.pathname.includes('/data/') ||
+                url.pathname.match(/\.(png|jpg|jpeg|svg|webp|ico)$/)
+            ) {
+                const cache = await caches.open(CACHE_NAME);
+                cache.put(request, fetchResponse.clone());
+            }
+            return fetchResponse;
+        })()
     );
 });

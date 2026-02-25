@@ -1,0 +1,191 @@
+---
+/**
+ * BacktestHeatmap.astro - Quantitative Strategy Performance Matrix
+ * Displays monthly returns across years with color-coded intensity.
+ */
+
+interface BacktestPoint {
+    year: number;
+    month: number;
+    return: number;
+}
+
+interface Props {
+    strategyName?: string;
+    data?: BacktestPoint[];
+}
+
+const { strategyName = 'Alpha Momentum Vector', data = generateMockData() } = Astro.props;
+
+function generateMockData(): BacktestPoint[] {
+    const years = [2021, 2022, 2023, 2024, 2025];
+    const points: BacktestPoint[] = [];
+    years.forEach(year => {
+        for (let month = 1; month <= 12; month++) {
+            // Simulate realistic-ish returns
+            const ret = (Math.random() * 20 - 8) * (year === 2022 ? 0.5 : 1);
+            points.push({ year, month, return: +ret.toFixed(2) });
+        }
+    });
+    return points;
+}
+
+const years = [...new Set(data.map(d => d.year))].sort((a, b) => b - a);
+const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+
+const getPoint = (year: number, monthIdx: number) => {
+    return data.find(d => d.year === year && d.month === monthIdx + 1);
+};
+
+const getColorClass = (ret: number) => {
+    if (ret > 5) return 'bg-bullish/40 text-white';
+    if (ret > 0) return 'bg-bullish/10 text-bullish';
+    if (ret < -5) return 'bg-bearish/40 text-white';
+    if (ret < 0) return 'bg-bearish/10 text-bearish';
+    return 'bg-white/[0.02] text-white/20';
+};
+
+const getGlowClass = (ret: number) => {
+    if (ret > 10) return 'shadow-[inset_0_0_10px_rgba(34,197,94,0.3)]';
+    if (ret < -10) return 'shadow-[inset_0_0_10px_rgba(239,68,68,0.3)]';
+    return '';
+};
+---
+
+<div class="glass-card p-6 overflow-hidden group">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-accent/10 border border-accent/20">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="text-accent"
+                    ><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M3 9h18"
+                    ></path><path d="M9 21V9"></path></svg
+                >
+            </div>
+            <div>
+                <h3 class="text-xs font-mono font-black text-white uppercase tracking-widest">
+                    {strategyName}
+                </h3>
+                <p class="text-[9px] font-mono text-white/20 uppercase tracking-tighter">
+                    Backtest Performance Cluster
+                </p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4 text-[9px] font-mono whitespace-nowrap">
+            <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-sm bg-bullish/40"></span>
+                <span class="text-white/40">POSITIVE (>5%)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-sm bg-bearish/40"></span>
+                <span class="text-white/40">NEGATIVE (&lt;-5%)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full border-separate border-spacing-1">
+            <thead>
+                <tr>
+                    <th class="p-2"></th>
+                    {
+                        months.map(m => (
+                            <th class="p-2 text-[9px] font-mono font-bold text-white/20 text-center uppercase tracking-widest">
+                                {m}
+                            </th>
+                        ))
+                    }
+                    <th
+                        class="p-2 text-[9px] font-mono font-bold text-accent text-center uppercase tracking-widest"
+                        >YTD</th
+                    >
+                </tr>
+            </thead>
+            <tbody>
+                {
+                    years.map(year => {
+                        const yearData = data.filter(d => d.year === year);
+                        const ytd = yearData.reduce((acc, curr) => acc + curr.return, 0);
+
+                        return (
+                            <tr>
+                                <td class="p-2 text-[10px] font-mono font-black text-white/60 text-right pr-4">
+                                    {year}
+                                </td>
+                                {months.map((_, idx) => {
+                                    const p = getPoint(year, idx);
+                                    const ret = p ? p.return : 0;
+                                    return (
+                                        <td class="p-0">
+                                            <div
+                                                class:list={[
+                                                    'aspect-square min-w-[32px] rounded-md flex flex-col items-center justify-center transition-all hover:scale-110 hover:z-10 cursor-help border border-white/5',
+                                                    getColorClass(ret),
+                                                    getGlowClass(ret),
+                                                ]}
+                                                title={`${year} ${months[idx]}: ${ret}%`}
+                                            >
+                                                <span class="text-[9px] font-mono font-bold">
+                                                    {ret > 0 ? '+' : ''}
+                                                    {Math.round(ret)}%
+                                                </span>
+                                            </div>
+                                        </td>
+                                    );
+                                })}
+                                <td class="p-2">
+                                    <div
+                                        class:list={[
+                                            'px-3 py-1.5 rounded-lg text-center text-[10px] font-mono font-black border border-white/10',
+                                            ytd > 0
+                                                ? 'text-bullish bg-bullish/5'
+                                                : 'text-bearish bg-bearish/5',
+                                        ]}
+                                    >
+                                        {ytd > 0 ? '+' : ''}
+                                        {ytd.toFixed(1)}%
+                                    </div>
+                                </td>
+                            </tr>
+                        );
+                    })
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-8 flex items-center justify-between pt-6 border-t border-white/5">
+        <div class="flex gap-8">
+            <div>
+                <div class="text-[8px] font-mono text-white/20 uppercase mb-1">Total Return</div>
+                <div class="text-sm font-mono font-black text-bullish tracking-tighter">
+                    +142.8%
+                </div>
+            </div>
+            <div>
+                <div class="text-[8px] font-mono text-white/20 uppercase mb-1">Max Drawdown</div>
+                <div class="text-sm font-mono font-black text-bearish tracking-tighter">-12.4%</div>
+            </div>
+            <div>
+                <div class="text-[8px] font-mono text-white/20 uppercase mb-1">Sharpe Ratio</div>
+                <div class="text-sm font-mono font-black text-accent tracking-tighter">2.14</div>
+            </div>
+        </div>
+
+        <button
+            class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-[9px] font-mono font-bold text-white/40 hover:text-white hover:bg-white/10 transition-all uppercase tracking-widest"
+        >
+            Detailed Vector Analysis
+        </button>
+    </div>
+</div>

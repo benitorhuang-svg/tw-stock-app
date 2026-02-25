@@ -2,7 +2,6 @@
  * M2: Analytics Engine Interface
  */
 export class AnalyticsEngine {
-    private worker: Worker | null = null;
 
     /**
      * T004: 執行非同步相關性分析 (透過 Worker)

@@ -1,0 +1,41 @@
+---
+/**
+ * LiveSignals.astro - AI-generated signals and alerts stream
+ */
+---
+
+<div class="glass-card flex-1 p-6 relative h-[400px] flex flex-col">
+    <h3 class="text-xs font-mono font-black text-white/40 mb-4 uppercase tracking-[0.2em]">
+        Live Signals
+    </h3>
+    <div id="ai-messages" class="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+        <!-- Messages populate here via scripts/tab-alerts-engine.ts -->
+        <div class="flex gap-4 animate-pulse">
+            <div class="w-1 h-12 bg-white/5 rounded-full"></div>
+            <div class="space-y-2">
+                <div class="h-3 w-32 bg-white/5 rounded"></div>
+                <div class="h-2 w-48 bg-white/5 rounded"></div>
+            </div>
+        </div>
+    </div>
+    <div class="absolute bottom-6 right-6">
+        <span class="text-[8px] font-mono text-white/10 uppercase tracking-[0.3em]"
+            >Neural_Link: ACTIVE</span
+        >
+        <div class="inline-block w-1 h-1 bg-bullish rounded-full ml-2 animate-ping"></div>
+    </div>
+</div>
+
+<style>
+    /* Custom scrollbar for the messages stream */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+</style>

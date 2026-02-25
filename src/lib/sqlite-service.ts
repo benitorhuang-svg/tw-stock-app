@@ -8,6 +8,10 @@
  * 自動判斷執行環境並使用適合的引擎
  */
 
+import type BetterDatabase from 'better-sqlite3';
+import type { Database as SqlJsDatabase } from 'sql.js';
+import type { QueryParam } from '../types/stock';
+
 // ============================================================================
 // Types
 // ============================================================================
@@ -61,7 +65,7 @@ export interface ScreenerCriteria {
 // Server-side SQLite (better-sqlite3)
 // ============================================================================
 
-let serverDb: any = null;
+let serverDb: BetterDatabase | null = null;
 let serverDbAttempted = false;
 
 async function getServerDb() {
@@ -98,8 +102,8 @@ async function getServerDb() {
 // Client-side SQLite (sql.js WASM)
 // ============================================================================
 
-let clientDb: any = null;
-let clientDbPromise: Promise<any> | null = null;
+let clientDb: SqlJsDatabase | null = null;
+let clientDbPromise: Promise<SqlJsDatabase | null> | null = null;
 
 async function getClientDb() {
     if (clientDb) return clientDb;
@@ -221,7 +225,7 @@ function isServer(): boolean {
     return typeof window === 'undefined';
 }
 
-async function query<T>(sql: string, params: any[] = []): Promise<T[]> {
+async function query<T>(sql: string, params: QueryParam[] = []): Promise<T[]> {
     if (isServer()) {
         const db = await getServerDb();
         if (!db) return [];
@@ -243,8 +247,8 @@ async function query<T>(sql: string, params: any[] = []): Promise<T[]> {
 
             // 將 sql.js 結果轉換為物件陣列
             const columns = result[0].columns;
-            return result[0].values.map((row: any[]) => {
-                const obj: any = {};
+            return result[0].values.map((row: (number | string | Uint8Array | null)[]) => {
+                const obj: Record<string, unknown> = {};
                 columns.forEach((col: string, i: number) => {
                     obj[col] = row[i];
                 });
@@ -257,7 +261,7 @@ async function query<T>(sql: string, params: any[] = []): Promise<T[]> {
     }
 }
 
-async function queryOne<T>(sql: string, params: any[] = []): Promise<T | null> {
+async function queryOne<T>(sql: string, params: QueryParam[] = []): Promise<T | null> {
     const results = await query<T>(sql, params);
     return results[0] || null;
 }
@@ -440,7 +444,7 @@ export async function searchStocks(keyword: string, limit: number = 50): Promise
  */
 export async function screenStocks(criteria: ScreenerCriteria): Promise<StockWithPrice[]> {
     const conditions: string[] = [];
-    const params: any[] = [];
+    const params: QueryParam[] = [];
 
     if (criteria.peMin !== undefined) {
         conditions.push('p.pe >= ?');

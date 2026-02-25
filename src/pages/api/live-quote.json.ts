@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ request, url }) => {
+export const GET: APIRoute = async ({ url }) => {
     const symbol = url.searchParams.get('symbol');
 
     console.log('[API Debug] Request URL:', url.toString());
@@ -39,8 +39,6 @@ export const GET: APIRoute = async ({ request, url }) => {
         }
 
         const meta = result.meta;
-        const quote = result.indicators.quote[0];
-        const lastIdx = quote.close.length - 1 || 0;
 
         // Construct a simplified quote object
         const liveData = {
@@ -65,8 +63,9 @@ export const GET: APIRoute = async ({ request, url }) => {
                 'Cache-Control': 's-maxage=60, stale-while-revalidate=30',
             },
         });
-    } catch (error: any) {
-        return new Response(JSON.stringify({ error: error.message }), {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        return new Response(JSON.stringify({ error: message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' },
         });

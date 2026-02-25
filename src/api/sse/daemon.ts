@@ -1,5 +1,6 @@
 import { twseApi } from '../../../scripts/fetchers/twse-api';
 import { EventEmitter } from 'events';
+import type { TwseStockSnapshot } from '../../types/stock';
 
 /**
  * M4: Realtime Tick Daemon
@@ -8,7 +9,7 @@ import { EventEmitter } from 'events';
 export class TickDaemon extends EventEmitter {
     private static instance: TickDaemon;
     private isRunning = false;
-    private lastData: any[] = [];
+    private lastData: TwseStockSnapshot[] = [];
 
     private constructor() {
         super();
@@ -36,10 +37,11 @@ export class TickDaemon extends EventEmitter {
                 // T004: 廣播 Tick 事件給所有訂閱者 (SSE Clients)
                 try {
                     this.emit('tick', rawData);
-                } catch (emitErr: any) {
+                } catch (emitErr: unknown) {
+                    const msg = emitErr instanceof Error ? emitErr.message : String(emitErr);
                     console.warn(
                         '[TickDaemon] Listener execution error (handled):',
-                        emitErr.message
+                        msg
                     );
                 }
             } catch (err) {

@@ -1,66 +1,7 @@
-/**
- * Stock Data Service (Optimized)
- *
- * Loads stock list from stocks.json and enriches with latest price data
- * from the pre-generated latest_prices.json snapshot.
- *
- * Performance: Reads 2 JSON files instead of 1077 CSVs
- */
+import type { StockWithDetails as StockFullData, StockBasicInfo, LatestPriceData } from '../types/stock';
+export type { StockFullData, StockBasicInfo, LatestPriceData };
 
-import type { StockPriceRecord } from './priceService';
-import { industries } from '../data/industries';
-
-export interface StockBasicInfo {
-    symbol: string;
-    name: string;
-    market: string;
-}
-
-export interface LatestPriceData {
-    date: string;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    volume: number;
-    change: number;
-    changePct: number;
-    pe?: number;
-    pb?: number;
-    yield?: number;
-    revenueYoY?: number;
-    eps?: number;
-    grossMargin?: number;
-    operatingMargin?: number;
-    netMargin?: number;
-    foreignStreak?: number;
-    trustStreak?: number;
-    dealerStreak?: number;
-}
-
-export interface StockFullData extends StockBasicInfo {
-    price: number;
-    change: number;
-    changePercent: number;
-    volume: number;
-    high: number;
-    low: number;
-    open: number;
-    date?: string;
-    pe: number;
-    pb: number;
-    yield: number;
-    roe: number;
-    eps: number;
-    revenueYoY: number;
-    grossMargin: number;
-    operatingMargin: number;
-    netMargin: number;
-    foreignStreak: number;
-    trustStreak: number;
-    dealerStreak: number;
-    sector: string;
-}
+// Redundant interfaces removed, using centralized ones from ../types/stock
 
 /**
  * Load all stocks from stocks.json
@@ -168,7 +109,7 @@ function getSectorBySymbol(symbol: string): string {
 
     if (overrides[symbol]) return overrides[symbol];
 
-    const prefix = symbol.substring(0, 2);
+    const prefix = symbol.slice(0, 2);
     const num = parseInt(symbol);
 
     // 2. ETFs and Funds
@@ -282,6 +223,7 @@ export async function loadAllStocksWithPrices(): Promise<StockFullData[]> {
             high: priceData?.high || 0,
             low: priceData?.low || 0,
             open: priceData?.open || 0,
+            close: priceData?.close || 0,
             date: priceData?.date,
             pe: priceData?.pe || 0,
             pb: priceData?.pb || 0,

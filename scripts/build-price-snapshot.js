@@ -16,7 +16,6 @@ const __dirname = path.dirname(__filename);
 
 const PRICES_DIR = path.join(__dirname, '../public/data/prices');
 const OUTPUT_FILE = path.join(__dirname, '../public/data/latest_prices.json');
-const INDEX_FILE = path.join(__dirname, '../public/data/price_index.json');
 const CHIPS_DIR = path.join(__dirname, '../public/data/chips');
 
 function parseCSV(csvText) {

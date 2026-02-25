@@ -2,7 +2,10 @@
 /**
  * StrategicHUD.astro - High-Performance Market Intelligence HUD
  */
-import { fmtVol } from '../../utils/format';
+import MarketBreadthWidget from '../molecules/MarketBreadthWidget.astro';
+import VolumeIntelligenceWidget from '../molecules/VolumeIntelligenceWidget.astro';
+import MarketReturnWidget from '../molecules/MarketReturnWidget.astro';
+import TemporalIntelligenceWidget from '../molecules/TemporalIntelligenceWidget.astro';
 
 interface Props {
     upCount: number;
@@ -19,160 +22,16 @@ const { upCount, downCount, flatCount, totalStocks, totalVolume, avgChange, data
 ---
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-up">
-    <!-- Market Breadth Widget -->
-    <div
-        class="glass-card group p-5 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all"
-    >
-        <div
-            class="absolute right-[-10px] top-[-10px] text-6xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
-        >
-            📊
-        </div>
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
-                >Market Breadth intelligence</span
-            >
-            <div class="w-2 h-2 rounded-full bg-bullish animate-pulse"></div>
-        </div>
-        <h3 class="text-lg font-black text-white/90 mb-1">Sentiment Vector</h3>
-        <div class="flex items-end justify-between mt-auto">
-            <div class="flex flex-col">
-                <span class="text-[8px] text-white/20 uppercase font-mono">B/B Ratio</span>
-                <span class="text-xl font-mono font-bold text-bullish" id="breadth-ratio-hud">
-                    {(upCount / Math.max(1, downCount)).toFixed(2)}
-                </span>
-            </div>
-            <div class="text-right">
-                <div class="text-[8px] text-white/20 uppercase font-mono">Up/Down</div>
-                <div class="text-[10px] font-mono font-bold text-white/70">
-                    <span class="text-bullish" id="hud-up">{upCount}</span> / <span
-                        class="text-bearish"
-                        id="hud-down">{downCount}</span
-                    >
-                </div>
-            </div>
-        </div>
-        <div class="mt-4 h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex">
-            <div
-                id="hud-bar-up"
-                class="h-full bg-bullish transition-all duration-1000"
-                style={`width: ${(upCount / totalStocks) * 100}%`}
-            >
-            </div>
-            <div
-                id="hud-bar-flat"
-                class="h-full bg-white/20 transition-all duration-1000"
-                style={`width: ${(flatCount / totalStocks) * 100}%`}
-            >
-            </div>
-            <div
-                id="hud-bar-down"
-                class="h-full bg-bearish transition-all duration-1000"
-                style={`width: ${(downCount / totalStocks) * 100}%`}
-            >
-            </div>
-        </div>
-    </div>
+    <MarketBreadthWidget
+        upCount={upCount}
+        downCount={downCount}
+        flatCount={flatCount}
+        totalStocks={totalStocks}
+    />
 
-    <!-- Volume Intelligence -->
-    <div
-        class="glass-card group p-5 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all"
-    >
-        <div
-            class="absolute right-[-10px] top-[-10px] text-6xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
-        >
-            🌊
-        </div>
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
-                >Liquidity Intelligence</span
-            >
-            <div class="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-        </div>
-        <h3 class="text-lg font-black text-white/90 mb-1">Volume Aggregate</h3>
-        <div class="flex items-end justify-between mt-auto">
-            <div class="flex flex-col">
-                <span class="text-[8px] text-white/20 uppercase font-mono">Total Volume</span>
-                <span class="text-xl font-mono font-bold text-white/90" id="hud-volume">
-                    {fmtVol(totalVolume)}
-                </span>
-            </div>
-            <div class="text-right">
-                <span class="text-[8px] text-white/20 uppercase font-mono">Uplink Status</span>
-                <div class="text-[10px] font-mono font-bold text-accent">STABLE</div>
-            </div>
-        </div>
-    </div>
+    <VolumeIntelligenceWidget totalVolume={totalVolume} />
 
-    <!-- Market Return -->
-    <div
-        class="glass-card group p-5 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all"
-    >
-        <div
-            class="absolute right-[-10px] top-[-10px] text-6xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
-        >
-            📈
-        </div>
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
-                >Performance intelligence</span
-            >
-            <div class="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-        </div>
-        <h3 class="text-lg font-black text-white/90 mb-1">Index Deviation</h3>
-        <div class="flex items-end justify-between mt-auto">
-            <div class="flex flex-col">
-                <span class="text-[8px] text-white/20 uppercase font-mono">Avg Change</span>
-                <span
-                    class:list={[
-                        'text-xl font-mono font-bold',
-                        avgChange >= 0 ? 'text-bullish' : 'text-bearish',
-                    ]}
-                    id="hud-avg-change"
-                >
-                    {avgChange > 0 ? '+' : ''}{avgChange.toFixed(2)}%
-                </span>
-            </div>
-            <div class="text-right">
-                <span class="text-[8px] text-white/20 uppercase font-mono">Conf. Level</span>
-                <span class="text-sm font-mono font-bold text-white/40">94.2%</span>
-            </div>
-        </div>
-    </div>
+    <MarketReturnWidget avgChange={avgChange} />
 
-    <!-- Temporal status -->
-    <div
-        class="glass-card group p-5 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all"
-    >
-        <div
-            class="absolute right-[-10px] top-[-10px] text-6xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
-        >
-            ⏱️
-        </div>
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
-                >Temporal Intelligence</span
-            >
-            <div class="w-2 rounded-full h-1 bg-white/10 overflow-hidden">
-                <div class="h-full bg-accent animate-ping"></div>
-            </div>
-        </div>
-        <h3 class="text-lg font-black text-white/90 mb-1">Forensic Date</h3>
-        <div class="flex items-end justify-between mt-auto">
-            <div class="flex flex-col">
-                <span class="text-[8px] text-white/20 uppercase font-mono">Current Frame</span>
-                <span class="text-xl font-mono font-bold text-white/90" id="hud-date">
-                    {dataDate || 'REAL-TIME'}
-                </span>
-            </div>
-            <div class="text-right">
-                <input type="date" id="market-date-picker-hud" class="hidden" />
-                <label
-                    for="market-date-picker-hud"
-                    class="px-2 py-1 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/40 hover:text-white transition-colors cursor-pointer uppercase tracking-widest"
-                    >Switch Frame</label
-                >
-            </div>
-        </div>
-    </div>
+    <TemporalIntelligenceWidget dataDate={dataDate} />
 </div>

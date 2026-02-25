@@ -1,10 +1,33 @@
 ---
-/**
- * TabFundamentals.astro — Fundamentals & Valuation Tab (006-tab-fundamentals)
- * Valuation River, Revenue Momentum, Financial Health Matrix
- */
 import { getQuarterlyReports, getMonthlyRevenue, getEPSGrowth } from '../../data/financials';
 import { dbService } from '../../lib/db/sqlite-service';
+import type {
+    MarginRecord,
+    HealthBadge,
+    ValuationHistoryRecord,
+    PriceHistoryRecord,
+} from '../../types/stock';
+import ValuationRiverChart from '../molecules/ValuationRiverChart.astro';
+import RevenueMomentumChart from '../molecules/RevenueMomentumChart.astro';
+import FinancialHealthMatrix from '../molecules/FinancialHealthMatrix.astro';
+
+interface ValuationRecord {
+    date: string;
+    pe: number;
+    pb: number;
+    dividend_yield: number;
+}
+
+interface RevenueRecord {
+    year: number;
+    month: number;
+    revenue: number;
+    revenueYoY: number;
+    revenueMoM: number;
+    symbol: string;
+    accumulated: number;
+    accumulatedYoY: number;
+}
 
 interface Props {
     symbol: string;
@@ -13,7 +36,7 @@ interface Props {
     yield_: number;
     roe: number;
     eps: number;
-    priceData?: any[];
+    priceData?: PriceHistoryRecord[];
 }
 
 const { symbol, pe, pb, yield_, roe, eps, priceData = [] } = Astro.props;
@@ -24,18 +47,20 @@ const monthlyRev = getMonthlyRevenue(symbol);
 const epsGrowth = getEPSGrowth(symbol);
 
 // 🔍 Fetch real valuation history from SQL
-let valHistory: any[] = [];
+let valHistory: ValuationRecord[] = [];
 try {
-    valHistory = dbService.queryAll(
-        'SELECT date, pe, pb, dividend_yield FROM valuation_history WHERE symbol = ? ORDER BY date DESC LIMIT 250',
-        [symbol]
-    ).reverse();
+    valHistory = dbService
+        .queryAll<ValuationRecord>(
+            'SELECT date, pe, pb, dividend_yield FROM valuation_history WHERE symbol = ? ORDER BY date DESC LIMIT 250',
+            [symbol]
+        )
+        .reverse();
 } catch (e) {
     console.error('ValRiver fetch error:', e);
 }
 
 // Revenue bars (generate 12 months if we don't have enough)
-const revBars =
+const revBars: RevenueRecord[] =
     monthlyRev.length > 0
         ? monthlyRev.slice(0, 12)
         : Array.from({ length: 12 }, (_, i) => ({
@@ -52,25 +77,32 @@ const revBars =
 const maxRev = Math.max(...revBars.map(r => r.revenue), 1);
 const hasRealValuation = valHistory.length > 0 && priceData && priceData.length > 0;
 
-const mergedData = (hasRealValuation ? valHistory.map(vh => {
-    const p = priceData.find(pd => pd.Date === vh.date);
-    if (!p) return null;
-    return {
-        date: vh.date,
-        pe: vh.pe || 0,
-        pb: vh.pb || 0,
-        close: p.Close,
-        eps_proxy: p.Close / (vh.pe || 1)
-    };
-}).filter((d): d is {date: string; pe: number; pb: number; close: number; eps_proxy: number} => d !== null && d.pe > 0) : []);
+const mergedData: ValuationHistoryRecord[] = hasRealValuation
+    ? valHistory
+          .map(vh => {
+              const p = priceData.find(pd => pd.Date === vh.date);
+              if (!p) return null;
+              return {
+                  date: vh.date,
+                  pe: vh.pe || 0,
+                  pb: vh.pb || 0,
+                  close: p.Close,
+                  eps_proxy: p.Close / (vh.pe || 1),
+              };
+          })
+          .filter((d): d is ValuationHistoryRecord => d !== null && d.pe > 0)
+    : [];
 
-const peLevels = (mergedData.length > 0) ? (() => {
-    const pes = mergedData.map(d => d.pe);
-    const min = Math.min(...pes);
-    const max = Math.max(...pes);
-    const step = (max - min) / 4;
-    return [min, min+step, min+step*2, min+step*3, max];
-})() : [10, 15, 20, 25, 30];
+const peLevels =
+    mergedData.length > 0
+        ? (() => {
+              const pes = mergedData.map(d => d.pe);
+              const min = Math.min(...pes);
+              const max = Math.max(...pes);
+              const step = (max - min) / 4;
+              return [min, min + step, min + step * 2, min + step * 3, max];
+          })()
+        : [10, 15, 20, 25, 30];
 
 const hasAcceleration =
     revBars.length >= 3 &&
@@ -78,7 +110,7 @@ const hasAcceleration =
     revBars[1].revenueYoY > revBars[2].revenueYoY;
 
 // Triple margins data from quarterly reports
-const marginData =
+const marginData: MarginRecord[] =
     quarters.length > 0
         ? quarters.slice(0, 4).reverse()
         : [
@@ -92,8 +124,9 @@ const marginData =
 const tripleUp =
     marginData.length >= 2 &&
     (() => {
-        const last = marginData[marginData.length - 1] as any;
-        const prev = marginData[marginData.length - 2] as any;
+        const last = marginData[marginData.length - 1];
+        const prev = marginData[marginData.length - 2];
+        if (!last || !prev) return false;
         return (
             last.grossMargin > prev.grossMargin &&
             last.operatingMargin > prev.operatingMargin &&
@@ -102,8 +135,8 @@ const tripleUp =
     })();
 
 // Margin sparkline points
-const marginPoints = (key: string) => {
-    const data = marginData.map((d: any) => d[key] || 0);
+const marginPoints = (key: keyof MarginRecord) => {
+    const data = marginData.map(d => Number(d[key]) || 0);
     if (data.length === 0) return '';
     const max = Math.max(...data, 1);
     const min = Math.min(...data, 0);
@@ -118,7 +151,7 @@ const marginPoints = (key: string) => {
 };
 
 // Health badges
-const healthBadges = [
+const healthBadges: HealthBadge[] = [
     {
         label: 'P/E',
         value: pe > 0 ? pe.toFixed(1) : '—',
@@ -155,359 +188,23 @@ const healthBadges = [
 
 <div class="space-y-6">
     <!-- Valuation River Chart Placeholder -->
-    <div class="glass-card p-6">
-        <div class="flex items-center justify-between mb-4">
-            <div>
-                <h3 class="terminal-label mb-1">估值河流圖</h3>
-                <p class="text-xs text-text-muted">Valuation River — 本益比區間與歷史股價位階</p>
-            </div>
-            <div class="flex gap-1">
-                {
-                    ['P/E', 'P/B'].map((type, i) => (
-                        <button
-                            class:list={[
-                                'px-3 py-1 rounded text-xs font-semibold transition-all',
-                                i === 0
-                                    ? 'bg-accent/15 text-accent border border-accent/20'
-                                    : 'text-text-muted hover:text-text-secondary bg-glass border border-border',
-                            ]}
-                        >
-                            {type}
-                        </button>
-                    ))
-                }
-                <div class="w-px bg-border mx-1"></div>
-                {
-                    ['1年', '3年', '5年'].map((yr, i) => (
-                        <button
-                            class:list={[
-                                'px-2 py-1 rounded text-[10px] font-mono font-bold transition-all',
-                                i === 1
-                                    ? 'bg-accent/10 text-accent'
-                                    : 'text-text-muted hover:text-text-secondary',
-                            ]}
-                        >
-                            {yr}
-                        </button>
-                    ))
-                }
-            </div>
-        </div>
-
-        <!-- River chart visualization -->
-        <div class="relative h-[300px] overflow-hidden rounded-xl border border-white/[0.05] bg-black/40">
-            {/* SVG Layers */}
-            <svg
-                class:list={["absolute inset-0 w-full h-full", !hasRealValuation && "opacity-20 grayscale"]}
-                preserveAspectRatio="none"
-                viewBox="0 0 400 200"
-            >
-                {/* 🌊 Valuation Bands (The River) */}
-                {hasRealValuation && mergedData.length > 1 && (
-                    <>
-                        {/* Bands from top to bottom */}
-                        {[3, 2, 1, 0].map((levelIdx) => {
-                            const colors = [
-                                'rgba(239, 68, 68, 0.15)', // Zone 4-5 (Exp)
-                                'rgba(234, 179, 8, 0.1)',  // Zone 3-4
-                                'rgba(34, 197, 94, 0.1)',  // Zone 2-3 (Fair)
-                                'rgba(34, 197, 94, 0.15)'  // Zone 1-2 (Cheap)
-                            ];
-                            
-                            const maxP = Math.max(...mergedData.map(d => d!.close), ...mergedData.map(d => d!.eps_proxy * peLevels[4]));
-                            const minP = Math.min(...mergedData.map(d => d!.close), ...mergedData.map(d => d!.eps_proxy * peLevels[0]));
-                            const range = (maxP - minP) || 1;
-
-                            const getP = (d: any, mult: number) => 200 - (((d.eps_proxy * mult) - minP) / range * 160 + 20);
-
-                            const topPath = mergedData.map((d, i) => `${(i / (mergedData.length - 1)) * 400},${getP(d, peLevels[levelIdx+1])}`).join(' L ');
-                            const botPath = mergedData.slice().reverse().map((d, i) => `${((mergedData.length - 1 - i) / (mergedData.length - 1)) * 400},${getP(d, peLevels[levelIdx])}`).join(' L ');
-                            
-                            return <path d={`M ${topPath} L ${botPath} Z`} fill={colors[levelIdx]} stroke="none" />;
-                        })}
-                        
-                        {/* Level Lines */}
-                        {peLevels.map((mult) => {
-                             const maxP = Math.max(...mergedData.map(d => d.close), ...mergedData.map(d => d.eps_proxy * peLevels[4]));
-                             const minP = Math.min(...mergedData.map(d => d.close), ...mergedData.map(d => d.eps_proxy * peLevels[0]));
-                             const range = (maxP - minP) || 1;
-                             const getP = (d: any, m: number) => 200 - (((d.eps_proxy * m) - minP) / range * 160 + 20);
-                             
-                             return <path 
-                                d={mergedData.map((d, i) => `${i === 0 ? 'M' : 'L'} ${(i / (mergedData.length - 1)) * 400},${getP(d, mult)}`).join(' ')} 
-                                fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5" stroke-dasharray="2,2" 
-                             />
-                        })}
-
-                        {/* 📈 Actual Price Line */}
-                        <path
-                            d={(() => {
-                                const maxP = Math.max(...mergedData.map(d => d.close), ...mergedData.map(d => d.eps_proxy * peLevels[4]));
-                                const minP = Math.min(...mergedData.map(d => d.close), ...mergedData.map(d => d.eps_proxy * peLevels[0]));
-                                const range = (maxP - minP) || 1;
-                                
-                                return mergedData.map((v, i) => {
-                                    const x = (i / (mergedData.length - 1)) * 400;
-                                    const y = 200 - ((v.close - minP) / range * 160 + 20);
-                                    return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
-                                }).join(' ');
-                            })()}
-                            fill="none"
-                            stroke="white"
-                            stroke-width="1.8"
-                            stroke-linecap="round"
-                            opacity="0.9"
-                            class="drop-shadow-lg"
-                        />
-                    </>
-                )}
-            </svg>
-
-            {/* Labels overlay */}
-            <div class="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between text-[8px] font-mono">
-                <div class="flex justify-between items-start">
-                    <div class="bg-black/40 backdrop-blur-sm px-2 py-1 rounded border border-white/5 uppercase tracking-widest text-white/50">Price vs PE Bands</div>
-                    <div class="flex flex-col items-end gap-1">
-                        <span class="text-bearish">EXPENSIVE {peLevels[4].toFixed(1)}x</span>
-                        <span class="text-white/20">FAIR {peLevels[2].toFixed(1)}x</span>
-                        <span class="text-bullish">CHEAP {peLevels[0].toFixed(1)}x</span>
-                    </div>
-                </div>
-            </div>
-            
-            {!hasRealValuation && <div class="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-white/10 uppercase tracking-[0.4em]">Historical_River_Data_Unavailable</div>}
-        </div>
-        <p class="text-[10px] text-text-muted mt-2 text-center font-mono">
-            目前 P/E {pe > 0 ? pe.toFixed(1) + 'x' : '—'} — 位於{
-                pe > 20 ? '偏貴' : pe > 12 ? '均衡' : '偏低'
-            }區間
-        </p>
-    </div>
+    <ValuationRiverChart
+        pe={pe}
+        hasRealValuation={hasRealValuation}
+        peLevels={peLevels}
+        mergedData={mergedData}
+    />
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Revenue Momentum -->
-        <div class="glass-card p-5 glow-interactive relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-accent/10 transition-colors"></div>
-            
-            {
-                hasAcceleration && (
-                    <span class="absolute top-3 right-3 text-[10px] font-bold text-bullish bg-bullish/15 px-2 py-0.5 rounded-full animate-glow-pulse z-10">
-                        成長加速中 🚀
-                    </span>
-                )
-            }
-            <h3 class="terminal-label mb-1">營收動能趨勢</h3>
-            <p class="text-[10px] text-text-muted mb-6 uppercase tracking-widest">Revenue Streams & YoY Momentum</p>
-
-            <!-- Multi-layer Analysis Chart -->
-            <div class="relative h-[180px] w-full mt-4">
-                <!-- YoY Growth Line (SVG Overlay) -->
-                <svg class="absolute inset-x-0 top-0 w-full h-full pointer-events-none z-20" preserveAspectRatio="none" viewBox="0 0 100 100">
-                    <defs>
-                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feGaussianBlur stdDeviation="2" result="blur" />
-                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                        </filter>
-                    </defs>
-                    <path
-                        d={(() => {
-                            const points = revBars.slice().reverse().map((r, i) => {
-                                const x = (i / (revBars.length - 1)) * 100;
-                                // Map YoY % to Y (0 to 100). Assume -50% to +50% range
-                                // 50 is center (0%), 10 is 40%, 90 is -40%
-                                const y = 50 - (r.revenueYoY || 0);
-                                return `${x},${Math.max(5, Math.min(95, y))}`;
-                            });
-                            return points.length > 0 ? `M ${points.join(' L ')}` : '';
-                        })()}
-                        fill="none"
-                        stroke="rgb(var(--accent-rgb))"
-                        stroke-opacity="0.6"
-                        stroke-width="1.5"
-                        stroke-dasharray="0"
-                        style="filter: url(#glow);"
-                    />
-                </svg>
-
-                <div class="absolute inset-0 flex items-end gap-1 px-1">
-                    {
-                        revBars
-                            .slice()
-                            .reverse()
-                            .map((r, i) => {
-                                const pct = (r.revenue / maxRev) * 100;
-                                const isYoYPositive = r.revenueYoY > 0;
-                                return (
-                                    <div class="flex flex-col items-center gap-1.5 flex-1 group relative h-full justify-end">
-                                        <!-- Revenue Bar -->
-                                        <div
-                                            class:list={[
-                                                'w-full rounded-t-[2px] transition-all duration-500 group-hover:opacity-100 relative',
-                                                isYoYPositive ? 'bg-white/10 group-hover:bg-accent/30' : 'bg-white/5 group-hover:bg-bearish/30',
-                                            ]}
-                                            style={`height: ${pct * 0.7}%;`}
-                                        >
-                                            <div class:list={[
-                                                "absolute top-0 left-0 right-0 h-0.5 rounded-full transform -translate-y-1/2",
-                                                isYoYPositive ? "bg-accent" : "bg-bearish/50"
-                                            ]}></div>
-                                        </div>
-                                        
-                                        <span class="text-[7px] font-mono text-text-muted transform scale-90">
-                                            {r.month}M
-                                        </span>
-
-                                        <!-- Tooltip -->
-                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-3 py-2 bg-surface-deep/95 border border-white/10 rounded-xl text-[10px] font-mono opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-30 shadow-2xl backdrop-blur-md">
-                                            <div class="text-white/40 mb-1 border-b border-white/5 pb-1">{r.year}/{r.month}</div>
-                                            <div class="flex justify-between gap-4 mb-0.5">
-                                                <span class="text-white/60">REVENUE</span>
-                                                <span class="text-accent font-bold">{(r.revenue / 10000).toFixed(1)}億</span>
-                                            </div>
-                                            <div class="flex justify-between gap-4">
-                                                <span class="text-white/60">YoY %</span>
-                                                <span class:list={[r.revenueYoY > 0 ? 'text-bullish' : 'text-bearish', "font-bold"]}>
-                                                    {r.revenueYoY > 0 ? '+' : ''}{r.revenueYoY.toFixed(1)}%
-                                                </span>
-                                            </div>
-                                            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-surface-deep rotate-45 border-r border-b border-white/10"></div>
-                                        </div>
-                                    </div>
-                                );
-                            })
-                    }
-                </div>
-            </div>
-
-            <!-- Legend & Meta -->
-            <div class="mt-8 pt-4 border-t border-white/5 flex items-center justify-between">
-                <div class="flex gap-4">
-                    <div class="flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-accent/30 border border-accent"></span>
-                        <span class="text-[9px] font-mono text-white/40 uppercase">Revenue Value</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="w-3 h-0.5 bg-accent"></span>
-                        <span class="text-[9px] font-mono text-white/40 uppercase">YoY Growth</span>
-                    </div>
-                </div>
-                <div class="px-2 py-0.5 bg-white/5 rounded text-[8px] font-mono text-white/40">
-                    SAMPLED_MONTHS: 12
-                </div>
-            </div>
-
-            <!-- New: Revenue Analytics Table (Mini) -->
-            <div class="mt-6">
-                <table class="w-full text-[10px] font-mono">
-                    <thead>
-                        <tr class="text-white/30 border-b border-white/5">
-                            <th class="text-left py-2 font-normal">PERIOD</th>
-                            <th class="text-right py-2 font-normal">REVENUE (億)</th>
-                            <th class="text-right py-2 font-normal">MoM %</th>
-                            <th class="text-right py-2 font-normal">YoY %</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/[0.02]">
-                        {
-                            revBars.slice(0, 6).map((r) => (
-                                <tr class="hover:bg-white/[0.02] transition-colors">
-                                    <td class="py-2 text-white/60">{r.year}/{String(r.month).padStart(2, '0')}</td>
-                                    <td class="py-2 text-right text-accent">{(r.revenue / 10000).toFixed(1)}</td>
-                                    <td class:list={["py-2 text-right", r.revenueMoM >= 0 ? "text-bullish" : "text-bearish"]}>
-                                        {r.revenueMoM > 0 ? '+' : ''}{r.revenueMoM.toFixed(1)}%
-                                    </td>
-                                    <td class:list={["py-2 text-right", r.revenueYoY >= 0 ? "text-bullish" : "text-bearish"]}>
-                                        {r.revenueYoY > 0 ? '+' : ''}{r.revenueYoY.toFixed(1)}%
-                                    </td>
-                                </tr>
-                            ))
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <RevenueMomentumChart hasAcceleration={hasAcceleration} revBars={revBars} maxRev={maxRev} />
 
         <!-- Financial Health Matrix -->
-        <div class="glass-card p-5 glow-interactive relative">
-            {
-                tripleUp && (
-                    <div class="absolute inset-0 rounded-2xl bg-bullish/[0.03] pointer-events-none" />
-                )
-            }
-            <div class="flex items-center justify-between mb-1">
-                <h3 class="terminal-label">財務體檢雷達</h3>
-                {
-                    tripleUp && (
-                        <span class="text-[10px] font-bold text-bullish bg-bullish/15 px-2 py-0.5 rounded-full">
-                            三率三升 ✨
-                        </span>
-                    )
-                }
-            </div>
-            <p class="text-[10px] text-text-muted mb-3">毛利率 / 營業利益率 / 淨利率</p>
-
-            <!-- Triple Margins Mini Chart -->
-            <div class="h-[70px] mb-4 relative">
-                <svg viewBox="0 0 200 60" class="w-full h-full">
-                    <polyline
-                        points={marginPoints('grossMargin')}
-                        fill="none"
-                        stroke="hsl(217,91%,60%)"
-                        stroke-width="1.5"
-                        stroke-linecap="round"></polyline>
-                    <polyline
-                        points={marginPoints('operatingMargin')}
-                        fill="none"
-                        stroke="hsl(38,92%,50%)"
-                        stroke-width="1.5"
-                        stroke-linecap="round"></polyline>
-                    <polyline
-                        points={marginPoints('netMargin')}
-                        fill="none"
-                        stroke="hsl(142,71%,45%)"
-                        stroke-width="1.5"
-                        stroke-linecap="round"></polyline>
-                </svg>
-                <div
-                    class="absolute bottom-0 left-0 right-0 flex justify-between text-[8px] font-mono text-text-muted px-2"
-                >
-                    {marginData.map((d: any) => <span>Q{d.quarter}</span>)}
-                </div>
-            </div>
-            <div class="flex gap-3 text-[10px] mb-4">
-                <span class="flex items-center gap-1"
-                    ><span class="w-2 h-0.5 bg-accent rounded"></span>毛利率</span
-                >
-                <span class="flex items-center gap-1"
-                    ><span class="w-2 h-0.5 bg-warning rounded"></span>營利率</span
-                >
-                <span class="flex items-center gap-1"
-                    ><span class="w-2 h-0.5 bg-bullish rounded"></span>純益率</span
-                >
-            </div>
-
-            <!-- Health Badges -->
-            <div class="grid grid-cols-3 gap-2">
-                {
-                    healthBadges.map(badge => (
-                        <div
-                            class:list={[
-                                'flex items-center justify-between px-3 py-1.5 rounded-full border text-xs font-mono',
-                                badge.status === 'good'
-                                    ? 'border-bullish/30 text-bullish bg-bullish/5'
-                                    : badge.status === 'warn'
-                                      ? 'border-warning/30 text-warning bg-warning/5'
-                                      : 'border-border text-text-secondary bg-glass',
-                            ]}
-                        >
-                            <span class="text-[10px] font-semibold tracking-wider">
-                                {badge.label}
-                            </span>
-                            <span class="font-bold">{badge.value}</span>
-                        </div>
-                    ))
-                }
-            </div>
-        </div>
+        <FinancialHealthMatrix
+            tripleUp={tripleUp}
+            marginPoints={marginPoints}
+            marginData={marginData}
+            healthBadges={healthBadges}
+        />
     </div>
 </div>

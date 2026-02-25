@@ -1,0 +1,34 @@
+---
+/**
+ * NeuralHealthMonitor.astro
+ */
+---
+
+<!-- Neural Health Monitor -->
+<div class="glass-card p-5">
+    <h3 class="text-[10px] font-mono font-bold text-white/30 uppercase tracking-widest mb-4">
+        Neural Health Monitor
+    </h3>
+    <div class="space-y-3">
+        {
+            [
+                { label: 'Data Latency', value: '42ms', color: 'text-bullish' },
+                { label: 'Reasoning Depth', value: 'Level_9', color: 'text-accent' },
+                { label: 'Signal Noise Ratio', value: '0.88', color: 'text-bullish' },
+                { label: 'API Integrity', value: 'VERIFIED', color: 'text-accent' },
+            ].map(stat => (
+                <div class="flex items-center justify-between group">
+                    <span class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors uppercase">
+                        {stat.label}
+                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class:list={['text-[10px] font-mono font-bold', stat.color]}>
+                            {stat.value}
+                        </span>
+                        <div class="w-1 h-3 bg-white/10 rounded-full group-hover:bg-accent/40 transition-colors" />
+                    </div>
+                </div>
+            ))
+        }
+    </div>
+</div>

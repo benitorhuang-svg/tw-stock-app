@@ -1,0 +1,45 @@
+---
+/**
+ * TechToolbar.astro
+ */
+interface Props {
+    timeframes: string[];
+    overlays: string[];
+}
+const { timeframes, overlays } = Astro.props;
+---
+
+<div class="absolute top-4 left-4 z-40 flex items-center gap-2">
+    <!-- Timeframe Pills -->
+    <div
+        class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface/70 backdrop-blur-md border border-white/[0.08]"
+    >
+        {
+            timeframes.map((tf, i) => (
+                <button
+                    class:list={[
+                        'px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-all',
+                        i === 2
+                            ? 'bg-accent/20 text-accent'
+                            : 'text-text-muted hover:text-text-secondary',
+                    ]}
+                >
+                    {tf}
+                </button>
+            ))
+        }
+    </div>
+    <!-- Overlay Checkboxes -->
+    <div
+        class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface/70 backdrop-blur-md border border-white/[0.08]"
+    >
+        {
+            overlays.map((ov, i) => (
+                <label class="flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-mono cursor-pointer hover:bg-white/[0.05] transition-colors">
+                    <input type="checkbox" class="w-3 h-3 accent-accent" checked={i === 0} />
+                    <span class="text-text-muted">{ov}</span>
+                </label>
+            ))
+        }
+    </div>
+</div>

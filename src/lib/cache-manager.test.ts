@@ -1,9 +1,4 @@
-/**
- * Cache Manager Tests
- * @tests cache-manager.ts
- */
-
-import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 describe('Cache Manager - IndexedDB', () => {
     describe('Cache Initialization', () => {
@@ -191,7 +186,6 @@ describe('Cache Manager - IndexedDB', () => {
     describe('Performance Characteristics', () => {
         it('should retrieve cached data in < 10ms', async () => {
             const start = performance.now();
-            const mockData = { symbol: '2330' };
             const elapsed = performance.now() - start;
 
             expect(elapsed).toBeLessThan(10);

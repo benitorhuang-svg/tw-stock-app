@@ -1,0 +1,23 @@
+---
+/**
+ * ScreenerResultHeader.astro - Toolbar for the screener results
+ */
+---
+
+<header class="terminal-toolbar">
+    <div class="terminal-toolbar-left">
+        <span class="terminal-toolbar-title">系統篩選結果</span>
+        <span id="active-strategy-label" class="terminal-toolbar-meta">尚未選擇策略</span>
+    </div>
+    <div class="terminal-toolbar-right">
+        <button
+            id="csv-export-btn"
+            class="hidden px-3 py-1 text-[11px] font-mono font-bold rounded bg-accent/10 text-accent border border-accent/20 hover:bg-accent/20 transition-colors cursor-pointer"
+            aria-label="匯出 CSV"
+        >
+            📥 匯出 CSV
+        </button>
+        <span id="screener-count" class="data-value text-sm text-accent">0</span>
+        <span class="terminal-toolbar-meta">檔符合條件</span>
+    </div>
+</header>

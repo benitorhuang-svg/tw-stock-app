@@ -1,0 +1,44 @@
+---
+/**
+ * TemporalIntelligenceWidget.astro
+ */
+interface Props {
+    dataDate: string;
+}
+const { dataDate } = Astro.props;
+---
+
+<div
+    class="glass-card group p-5 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all"
+>
+    <div
+        class="absolute right-[-10px] top-[-10px] text-6xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
+    >
+        ⏱️
+    </div>
+    <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
+            >Temporal Intelligence</span
+        >
+        <div class="w-2 rounded-full h-1 bg-white/10 overflow-hidden">
+            <div class="h-full bg-accent animate-ping"></div>
+        </div>
+    </div>
+    <h3 class="text-lg font-black text-white/90 mb-1">Forensic Date</h3>
+    <div class="flex items-end justify-between mt-auto">
+        <div class="flex flex-col">
+            <span class="text-[8px] text-white/20 uppercase font-mono">Current Frame</span>
+            <span class="text-xl font-mono font-bold text-white/90" id="hud-date">
+                {dataDate || 'REAL-TIME'}
+            </span>
+        </div>
+        <div class="text-right">
+            <input type="date" id="market-date-picker-hud" class="hidden" />
+            <label
+                for="market-date-picker-hud"
+                class="px-2 py-1 rounded bg-white/5 border border-white/10 text-[8px] font-mono text-white/40 hover:text-white transition-colors cursor-pointer uppercase tracking-widest"
+                >Switch Frame</label
+            >
+        </div>
+    </div>
+</div>

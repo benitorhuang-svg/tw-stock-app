@@ -2,11 +2,13 @@
 /**
  * MoversMatrix.astro - High-Fidelity Bulls & Bears Grid
  */
-import { fmtPrice } from '../../utils/format';
+import MoverRow from '../molecules/MoverRow.astro';
+
+import type { StockFullData } from '../../types/stock';
 
 interface Props {
-    gainers: any[];
-    losers: any[];
+    gainers: StockFullData[];
+    losers: StockFullData[];
 }
 
 const { gainers, losers } = Astro.props;
@@ -45,32 +47,7 @@ const { gainers, losers } = Astro.props;
             >
         </div>
         <div class="divide-y divide-white/5" id="hud-gainers-grid">
-            {
-                gainers.slice(0, 10).map((s, i) => (
-                    <a
-                        href={`/stocks/${s.symbol}`}
-                        class="flex items-center gap-4 px-6 py-4 hover:bg-bullish/[0.04] transition-all group no-underline border-l-2 border-transparent hover:border-bullish"
-                    >
-                        <span class="text-[8px] font-mono text-white/20 w-3">{i + 1}</span>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-[11px] font-bold text-white/90 group-hover:text-bullish transition-colors truncate">
-                                {s.name}
-                            </div>
-                            <div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">
-                                ENTITY:{s.symbol}
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-[10px] font-mono font-bold text-white/70">
-                                {fmtPrice(s.price)}
-                            </div>
-                            <div class="text-[10px] font-mono font-bold text-bullish">
-                                +{s.changePercent.toFixed(2)}%
-                            </div>
-                        </div>
-                    </a>
-                ))
-            }
+            {gainers.slice(0, 10).map((s, i) => <MoverRow stock={s} index={i} variant="bullish" />)}
         </div>
     </div>
 
@@ -109,32 +86,7 @@ const { gainers, losers } = Astro.props;
             >
         </div>
         <div class="divide-y divide-white/5" id="hud-losers-grid">
-            {
-                losers.slice(0, 10).map((s, i) => (
-                    <a
-                        href={`/stocks/${s.symbol}`}
-                        class="flex items-center gap-4 px-6 py-4 hover:bg-bearish/[0.04] transition-all group no-underline border-l-2 border-transparent hover:border-bearish"
-                    >
-                        <span class="text-[8px] font-mono text-white/20 w-3">{i + 1}</span>
-                        <div class="min-w-0 flex-1">
-                            <div class="text-[11px] font-bold text-white/90 group-hover:text-bearish transition-colors truncate">
-                                {s.name}
-                            </div>
-                            <div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">
-                                ENTITY:{s.symbol}
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-[10px] font-mono font-bold text-white/70">
-                                {fmtPrice(s.price)}
-                            </div>
-                            <div class="text-[10px] font-mono font-bold text-bearish">
-                                {s.changePercent.toFixed(2)}%
-                            </div>
-                        </div>
-                    </a>
-                ))
-            }
+            {losers.slice(0, 10).map((s, i) => <MoverRow stock={s} index={i} variant="bearish" />)}
         </div>
     </div>
 </div>

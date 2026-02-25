@@ -11,7 +11,6 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '..', 'public', 'data', 'valuation');
-const PROGRESS_FILE = path.join(DATA_DIR, 'progress.json');
 
 const DELAY_MS = 3000; // TWSE 頻率限制較嚴格
 const YEARS_BACK = 5;

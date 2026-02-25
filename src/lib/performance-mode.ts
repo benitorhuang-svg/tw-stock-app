@@ -28,7 +28,7 @@ export function initPerformanceMode(): PerformanceConfig {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // 3. Device memory estimation (Bytes to GB)
-    const deviceMemoryGB = (navigator.deviceMemory || 4) / 1; // Default: 4GB
+    const deviceMemoryGB = ((navigator as any).deviceMemory || 4) / 1; // Default: 4GB
 
     // 4. GPU detection (optional, can use WebGL context)
     const hasGPU = detectGPU();
@@ -40,7 +40,7 @@ export function initPerformanceMode(): PerformanceConfig {
     document.documentElement.setAttribute('data-perf', level);
 
     // 7. Log for debugging
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
         console.log('[Performance Mode]', {
             level,
             isMobile,
@@ -116,7 +116,7 @@ export function getPerformanceConfig(): PerformanceConfig | null {
         level,
         isMobile: /iPhone|iPad|Android|Mobile/.test(navigator.userAgent),
         prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-        deviceMemoryGB: navigator.deviceMemory || 4,
+        deviceMemoryGB: (navigator as any).deviceMemory || 4,
         hasGPU: detectGPU(),
     };
 }
@@ -176,7 +176,7 @@ export function startPerformanceMonitoring(): void {
             // Monitor LCP (Largest Contentful Paint)
             const lcpObserver = new PerformanceObserver(entryList => {
                 const entries = entryList.getEntries();
-                const lastEntry = entries[entries.length - 1];
+                const lastEntry = entries[entries.length - 1] as any;
                 console.log('[LCP]', lastEntry.renderTime || lastEntry.loadTime);
             });
             lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
@@ -185,7 +185,7 @@ export function startPerformanceMonitoring(): void {
             const fidObserver = new PerformanceObserver(entryList => {
                 const entries = entryList.getEntries();
                 entries.forEach(entry => {
-                    console.log('[FID]', entry.processingDuration);
+                    console.log('[FID]', (entry as any).processingDuration);
                 });
             });
             fidObserver.observe({ entryTypes: ['first-input'] });

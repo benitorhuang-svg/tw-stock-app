@@ -8,7 +8,7 @@ import { dbService } from '../../../lib/db/sqlite-service';
  */
 export const prerender = false;
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async () => {
     try {
         const db = dbService.getRawDb();
         const rows = db.prepare(`

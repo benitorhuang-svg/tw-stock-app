@@ -1,0 +1,57 @@
+---
+/**
+ * IndicatorRsi.astro
+ */
+interface Props {
+    chartW: number;
+    gap: number;
+    rsiValues: number[];
+}
+
+const { chartW, gap, rsiValues } = Astro.props;
+---
+
+<div class="indicator-view hidden flex flex-col h-full" id="view-rsi">
+    <div class="flex items-center justify-between py-2 px-2">
+        <div class="flex items-center gap-4">
+            <span class="text-[9px] font-mono font-bold text-white/30 tracking-widest uppercase"
+                >RSI(14)</span
+            >
+            <div class="flex gap-3 text-[8px] font-mono">
+                <span class="text-white/60">Overbought: 70</span>
+                <span class="text-white/60">Oversold: 30</span>
+            </div>
+        </div>
+        <button
+            class="indicator-switch text-[8px] font-mono text-accent hover:text-white transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
+            data-to="macd"
+        >
+            Switch to MACD
+        </button>
+    </div>
+    <svg viewBox={`0 0 ${chartW} 80`} class="flex-1 w-full" preserveAspectRatio="none">
+        <line
+            x1="0"
+            y1="24"
+            x2={chartW}
+            y2="24"
+            stroke="rgba(239,68,68,0.2)"
+            stroke-width="0.5"
+            stroke-dasharray="2,2"></line>
+        <line
+            x1="0"
+            y1="56"
+            x2={chartW}
+            y2="56"
+            stroke="rgba(34,197,94,0.2)"
+            stroke-width="0.5"
+            stroke-dasharray="2,2"></line>
+        <path
+            d={rsiValues
+                .map((v, i) => `${i === 0 ? 'M' : 'L'}${i * gap + gap / 2},${80 - (v / 100) * 80}`)
+                .join(' ')}
+            fill="none"
+            stroke="rgb(var(--accent-rgb))"
+            stroke-width="1.5"></path>
+    </svg>
+</div>

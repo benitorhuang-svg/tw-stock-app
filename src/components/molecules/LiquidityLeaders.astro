@@ -4,8 +4,10 @@
  */
 import { fmtPrice } from '../../utils/format';
 
+import type { StockFullData } from '../../types/stock';
+
 interface Props {
-    topVolume: any[];
+    topVolume: StockFullData[];
 }
 
 const { topVolume } = Astro.props;

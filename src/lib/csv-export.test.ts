@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { toCSV } from './csv-export';
-import type { ScreenerResult } from './screener';
+// No imports needed for this line
 
 describe('CSV Export', () => {
     describe('toCSV', () => {
         it('應產生正確的 CSV 標題行', () => {
-            const results: ScreenerResult[] = [];
+            const results: any[] = [];
             const csv = toCSV(results);
 
             expect(csv).toContain('股票代號');
@@ -18,7 +18,7 @@ describe('CSV Export', () => {
         });
 
         it('應正確轉換結果為 CSV 格式', () => {
-            const results: ScreenerResult[] = [
+            const results: any[] = [
                 {
                     symbol: '2330',
                     name: '台積電',
@@ -44,7 +44,7 @@ describe('CSV Export', () => {
         });
 
         it('應處理空的 fundamentals', () => {
-            const results: ScreenerResult[] = [
+            const results: any[] = [
                 {
                     symbol: '1234',
                     name: '測試股',
@@ -66,7 +66,7 @@ describe('CSV Export', () => {
         });
 
         it('應正確格式化數值', () => {
-            const results: ScreenerResult[] = [
+            const results: any[] = [
                 {
                     symbol: '2330',
                     name: '台積電',
@@ -84,7 +84,7 @@ describe('CSV Export', () => {
         });
 
         it('應使用逗號分隔欄位', () => {
-            const results: ScreenerResult[] = [
+            const results: any[] = [
                 {
                     symbol: '2330',
                     name: '台積電',

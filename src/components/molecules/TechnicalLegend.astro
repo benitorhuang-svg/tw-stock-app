@@ -1,0 +1,47 @@
+---
+/**
+ * TechnicalLegend.astro
+ */
+import type { CandleData } from '../../types/stock';
+
+interface Props {
+    lastCandle: CandleData;
+    strength: number;
+    rsiValue: number;
+}
+const { lastCandle, strength, rsiValue } = Astro.props;
+---
+
+<div class="absolute top-20 left-12 z-10 flex flex-col gap-1 pointer-events-none">
+    <div class="flex items-center gap-3 text-[10px] font-mono">
+        <span class="text-white/40"
+            >MA5: <span class="text-warning">{lastCandle.c.toFixed(1)}</span></span
+        >
+        <span class="text-white/40"
+            >MA10: <span class="text-accent">{lastCandle.c.toFixed(1)}</span></span
+        >
+        <span class="text-white/40"
+            >MA20: <span class="text-purple-400">{lastCandle.c.toFixed(1)}</span></span
+        >
+        <span class="text-white/40"
+            >MA60: <span class="text-blue-500">{lastCandle.c.toFixed(1)}</span></span
+        >
+    </div>
+    <div class="flex items-center gap-2 mt-1">
+        <span
+            class:list={[
+                'px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider',
+                strength > 0
+                    ? 'bg-bullish/20 text-bullish'
+                    : strength < 0
+                      ? 'bg-bearish/20 text-bearish'
+                      : 'bg-white/10 text-white/50',
+            ]}
+        >
+            {strength > 0 ? 'Bullish Trend' : strength < 0 ? 'Bearish Pressure' : 'Neutral Market'}
+        </span>
+        <span class="text-[9px] font-mono text-white/40 uppercase"
+            >RSI(14): {rsiValue.toFixed(1)}</span
+        >
+    </div>
+</div>

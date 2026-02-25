@@ -1,0 +1,48 @@
+---
+/**
+ * MatrixSlider.astro - A premium range slider for the filtering matrix
+ */
+interface Props {
+    id: string;
+    label: string;
+    min: string | number;
+    max: string | number;
+    step: string | number;
+    value: string | number;
+    displayId: string;
+    colorClass?: string;
+    filterType: string;
+}
+
+const {
+    id,
+    label,
+    min,
+    max,
+    step,
+    value,
+    displayId,
+    colorClass = 'text-accent',
+    filterType,
+} = Astro.props;
+---
+
+<div class="space-y-2 group" data-filter-type={filterType}>
+    <div class="flex justify-between items-end">
+        <span class="text-[10px] text-white/40 group-hover:text-white/60 transition-colors">
+            {label}
+        </span>
+        <span class:list={['text-xs font-mono font-bold', colorClass]} id={displayId}>
+            {value}
+        </span>
+    </div>
+    <input
+        type="range"
+        id={id}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        class="w-full custom-range"
+    />
+</div>

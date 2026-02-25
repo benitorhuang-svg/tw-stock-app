@@ -1,7 +1,5 @@
-/**
- * 使用者帳戶管理
- * 使用 localStorage 儲存使用者設定與資料
- */
+import type { ScreenerCriteria } from '../types/stock';
+
 
 export interface UserProfile {
     id: string;
@@ -23,13 +21,22 @@ export interface UserSettings {
     };
 }
 
+export interface CustomStrategy {
+    id: string;
+    name: string;
+    description?: string;
+    criteria: ScreenerCriteria;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface UserData {
     profile: UserProfile;
     settings: UserSettings;
     watchlist: string[];
     portfolioIds: number[];
     recentViewed: string[];
-    customStrategies: any[];
+    customStrategies: CustomStrategy[];
 }
 
 const STORAGE_KEY = 'tw-stock-user';
@@ -57,7 +64,7 @@ const defaultProfile: UserProfile = {
 };
 
 function generateUserId(): string {
-    return `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `user_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /**
@@ -245,7 +252,7 @@ export async function restoreFromFile(file: File): Promise<boolean> {
 /**
  * 策略儲存與獲取
  */
-export function saveStrategy(strategy: any): void {
+export function saveStrategy(strategy: CustomStrategy): void {
     const data = getUserData();
     if (!data.customStrategies) data.customStrategies = [];
 
@@ -259,6 +266,6 @@ export function saveStrategy(strategy: any): void {
     saveUserData(data);
 }
 
-export function getStrategies(): any[] {
+export function getStrategies(): CustomStrategy[] {
     return getUserData().customStrategies || [];
 }

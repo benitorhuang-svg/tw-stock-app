@@ -29,9 +29,8 @@ export function initLazyLoad(options: LazyLoadOptions = {}): IntersectionObserve
                     }
 
                     // 處理背景圖片
-                    if (element.dataset.bg) {
-                        (element as HTMLElement).style.backgroundImage =
-                            `url(${element.dataset.bg})`;
+                    if (element instanceof HTMLElement && element.dataset.bg) {
+                        element.style.backgroundImage = `url(${element.dataset.bg})`;
                         delete element.dataset.bg;
                     }
 

@@ -6,6 +6,9 @@ import fs from 'fs';
  * M1: Sqlite Service
  * 提供全站 (SSR / Scripts) 統一的唯讀查詢介面
  */
+
+type SqlValue = string | number | boolean | null | Buffer;
+
 export class SqliteService {
     private static instance: SqliteService;
     private db: InstanceType<typeof Database>;
@@ -32,7 +35,8 @@ export class SqliteService {
 
             try {
                 const probe = new Database(candidate, { readonly: true, fileMustExist: true });
-                const integrity = (probe.prepare('PRAGMA integrity_check') as any).pluck(true).get() as string;
+                const integrityRes = probe.prepare('PRAGMA integrity_check').get() as { integrity_check: string };
+                const integrity = integrityRes.integrity_check;
                 probe.close();
 
                 if (integrity === 'ok') {
@@ -58,11 +62,11 @@ export class SqliteService {
     /**
      * 基本查詢封裝
      */
-    public queryAll<T>(sql: string, params: any[] = []): T[] {
+    public queryAll<T>(sql: string, params: SqlValue[] = []): T[] {
         return this.db.prepare(sql).all(...params) as T[];
     }
 
-    public queryOne<T>(sql: string, params: any[] = []): T | undefined {
+    public queryOne<T>(sql: string, params: SqlValue[] = []): T | undefined {
         return this.db.prepare(sql).get(...params) as T;
     }
 
@@ -81,9 +85,9 @@ export class SqliteService {
             return { sizeBytes: 0, sizeMB: '0.00', totalRecords: 0 };
         }
         const stats = fs.statSync(this.dbPath);
-        const stockCount = this.db
+        const stockCount = (this.db
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'")
-            .get()
+            .get() as { name: string } | undefined)
             ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number })
                 .count
             : 0;
@@ -142,13 +146,13 @@ export class SqliteService {
     /**
      * Get paginated table data with optional search
      */
-    public getTableData(
+    public getTableData<T = Record<string, SqlValue>>(
         table: string,
         options: { limit: number; offset: number; search?: string }
-    ): any[] {
+    ): T[] {
         const safe = this.validateTableName(table);
         let sql = `SELECT * FROM "${safe}"`;
-        const params: any[] = [];
+        const params: SqlValue[] = [];
 
         if (options.search) {
             // Optimize search to only text or integer columns, skip pure floats which kill performance
@@ -169,7 +173,7 @@ export class SqliteService {
         sql += ` LIMIT ? OFFSET ?`;
         params.push(options.limit, options.offset);
 
-        return this.db.prepare(sql).all(...params);
+        return this.db.prepare(sql).all(...params) as T[];
     }
 
     /**
@@ -184,7 +188,7 @@ export class SqliteService {
         }
 
         let sql = `SELECT count(*) as count FROM "${safe}"`;
-        const params: any[] = [];
+        const params: SqlValue[] = [];
 
         if (search) {
             const searchableColumns = this.getTableColumns(table).filter(
