@@ -12,7 +12,7 @@ const CACHE_NAME = 'tw-stock-terminal-v4';
 const DATA_CACHE = 'tw-stock-data-v1';
 
 // Critical shell assets to precache
-const SHELL_ASSETS = ['/', '/manifest.json'];
+const SHELL_ASSETS = ['./', './manifest.json'];
 
 // ── Install: Precache shell ──
 self.addEventListener('install', event => {
@@ -44,7 +44,7 @@ self.addEventListener('fetch', event => {
     if (request.method !== 'GET' || !url.origin.startsWith(self.location.origin)) return;
 
     // Skip SSE and API POST endpoints
-    if (url.pathname.startsWith('/api/sse/')) return;
+    if (url.pathname.includes('/api/sse/')) return;
 
     // 1. Navigation (HTML): Network-First with offline fallback
     if (request.mode === 'navigate') {
@@ -53,7 +53,7 @@ self.addEventListener('fetch', event => {
     }
 
     // 2. Data files (JSON): Stale-While-Revalidate
-    if (url.pathname.startsWith('/data/') || url.pathname.endsWith('.json')) {
+    if (url.pathname.includes('/data/') || url.pathname.endsWith('.json')) {
         event.respondWith(staleWhileRevalidate(request, DATA_CACHE));
         return;
     }
@@ -65,7 +65,7 @@ self.addEventListener('fetch', event => {
     }
 
     // 4. API GET: Network-First (short TTL)
-    if (url.pathname.startsWith('/api/')) {
+    if (url.pathname.includes('/api/')) {
         event.respondWith(networkFirst(request));
         return;
     }
@@ -126,5 +126,5 @@ async function staleWhileRevalidate(request, cacheName) {
 
 function isStaticAsset(pathname) {
     return /\.(js|css|woff2?|ttf|otf|png|jpg|jpeg|svg|webp|ico|avif)$/.test(pathname)
-        || pathname.startsWith('/_astro/');
+        || pathname.includes('/_astro/');
 }

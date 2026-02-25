@@ -2,15 +2,15 @@
     "name": "TW Stock App",
     "short_name": "TW Stock",
     "description": "台灣股票分析平台 - 選股、分析、追蹤",
-    "start_url": "/",
-    "scope": "/",
+    "start_url": "./",
+    "scope": ".",
     "display": "standalone",
     "background_color": "#0f0f1a",
     "theme_color": "#00d4aa",
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "/favicon.svg",
+            "src": "favicon.svg",
             "sizes": "any",
             "type": "image/svg+xml",
             "purpose": "any"

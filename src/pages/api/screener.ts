@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+export const prerender = false;
 import { dbService } from '../../lib/db/sqlite-service';
 import { getStrategy } from '../../data/strategies';
 import type { ScreenerResult } from '../../types/stock';

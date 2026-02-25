@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+export const prerender = false;
 import { spawn } from 'child_process';
 
 export const POST: APIRoute = async () => {

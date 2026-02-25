@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+export const prerender = false;
 import { dbService } from '../../../lib/db/sqlite-service';
 
 export const GET: APIRoute = async ({ params, url }) => {

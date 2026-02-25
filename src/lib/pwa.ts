@@ -8,8 +8,10 @@ export function registerServiceWorker(): void {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', async () => {
             try {
-                const registration = await navigator.serviceWorker.register('/sw.js', {
-                    scope: '/',
+                const base = import.meta.env.BASE_URL;
+                const swUrl = base.endsWith('/') ? base + 'sw.js' : base + '/sw.js';
+                const registration = await navigator.serviceWorker.register(swUrl, {
+                    scope: base,
                 });
                 console.log('[PWA] Service Worker registered:', registration.scope);
 

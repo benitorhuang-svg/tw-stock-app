@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+export const prerender = false;
 import Database from 'better-sqlite3';
 import path from 'path';
 
