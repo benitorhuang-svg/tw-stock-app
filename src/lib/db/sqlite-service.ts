@@ -16,12 +16,16 @@ export class SqliteService {
     private cachedTables: Set<string>;
     private columnCache: Map<string, { name: string, type: string }[]> = new Map();
     private rowCountCache: Map<string, number> = new Map();
+    private stmtCache: Map<string, ReturnType<InstanceType<typeof Database>['prepare']>> = new Map();
 
     private constructor() {
         this.dbPath = this.resolveHealthyDbPath();
         this.db = new Database(this.dbPath, { readonly: true, fileMustExist: true });
-        this.db.pragma('cache_size = -32000'); // 32MB cache
-        this.db.pragma('mmap_size = 3145728000'); // Memory-map up to ~3GB
+        this.db.pragma('journal_mode = WAL');     // WAL for concurrent reads
+        this.db.pragma('cache_size = -32000');     // 32MB page cache
+        this.db.pragma('mmap_size = 3145728000');  // Memory-map up to ~3GB
+        this.db.pragma('temp_store = MEMORY');      // Temp tables in RAM
+        this.db.pragma('synchronous = OFF');        // Readonly DB, no sync needed
         this.cachedTables = new Set(this.loadTableNames());
     }
 
@@ -62,12 +66,24 @@ export class SqliteService {
     /**
      * 基本查詢封裝
      */
+    /**
+     * Get or create a cached prepared statement
+     */
+    private getStmt(sql: string) {
+        let stmt = this.stmtCache.get(sql);
+        if (!stmt) {
+            stmt = this.db.prepare(sql);
+            this.stmtCache.set(sql, stmt);
+        }
+        return stmt;
+    }
+
     public queryAll<T>(sql: string, params: SqlValue[] = []): T[] {
-        return this.db.prepare(sql).all(...params) as T[];
+        return this.getStmt(sql).all(...params) as T[];
     }
 
     public queryOne<T>(sql: string, params: SqlValue[] = []): T | undefined {
-        return this.db.prepare(sql).get(...params) as T;
+        return this.getStmt(sql).get(...params) as T;
     }
 
     /**

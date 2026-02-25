@@ -177,7 +177,10 @@ export const POST: APIRoute = async ({ request }) => {
             }),
             {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'public, max-age=30, stale-while-revalidate=60',
+                },
             }
         );
     } catch (error) {
@@ -224,7 +227,10 @@ export const GET: APIRoute = async ({ url }) => {
 
         return new Response(JSON.stringify({ success: true, data: rows }), {
             status: 200,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, max-age=60, stale-while-revalidate=120',
+            },
         });
     } catch (error) {
         return new Response(JSON.stringify({ success: false, error: String(error) }), {

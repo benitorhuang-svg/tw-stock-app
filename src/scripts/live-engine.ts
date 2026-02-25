@@ -198,10 +198,15 @@ document.addEventListener('astro:page-load', () => {
         currentSortAsc = false,
         searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
+    // Debounced search for better performance
+    let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
     if (searchInput)
         searchInput.addEventListener('input', e => {
-            searchQuery = (e.target as HTMLInputElement).value;
-            renderData();
+            if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(() => {
+                searchQuery = (e.target as HTMLInputElement).value;
+                renderData();
+            }, 150);
         });
 
     const filters = [
@@ -315,7 +320,8 @@ document.addEventListener('astro:page-load', () => {
 
     function renderData() {
         if (!tbody) return;
-        let wl: string[] = JSON.parse(localStorage.getItem('watchlist') || '[]');
+        const wl: string[] = JSON.parse(localStorage.getItem('watchlist') || '[]');
+        const wlSet = new Set(wl); // O(1) lookup instead of O(n) includes
         const tsSearch = searchQuery.toLowerCase(),
             tsTrend = (document.getElementById('filter-trend') as HTMLInputElement)?.value || '0',
             tsVol = parseInt(
@@ -334,7 +340,7 @@ document.addEventListener('astro:page-load', () => {
                 !s.Name.toLowerCase().includes(tsSearch)
             )
                 return false;
-            if (tsStarred && !wl.includes(s.Code)) return false;
+            if (tsStarred && !wlSet.has(s.Code)) return false;
             if (tsPriceRange) {
                 const [min, max] = tsPriceRange.split('-').map(Number);
                 if (s._closePrice < min || s._closePrice > max) return false;
@@ -352,8 +358,8 @@ document.addEventListener('astro:page-load', () => {
         if (filteredCount) filteredCount.textContent = `${filtered.length}`;
 
         filtered.sort((a, b) => {
-            const as = wl.includes(a.Code),
-                bs = wl.includes(b.Code);
+            const as = wlSet.has(a.Code),
+                bs = wlSet.has(b.Code);
             if (as !== bs) return as ? -1 : 1;
             let va: string | number = (a as any)[`_${currentSortCol.replace('_', '')}`] ?? (a as any)[currentSortCol] ?? 0,
                 vb: string | number = (b as any)[`_${currentSortCol.replace('_', '')}`] ?? (b as any)[currentSortCol] ?? 0;
@@ -437,7 +443,7 @@ document.addEventListener('astro:page-load', () => {
                 tr.querySelector('.cell-name')!.textContent = s.Name;
             const si = tr.querySelector('.star-icon');
             if (si) {
-                const ist = wl.includes(s.Code);
+                const ist = wlSet.has(s.Code);
                 si.textContent = ist ? '★' : '☆';
                 si.className = ist
                     ? 'text-xs star-icon text-accent drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]'

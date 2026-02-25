@@ -3,10 +3,16 @@ export type { StockFullData, StockBasicInfo, LatestPriceData };
 
 // Redundant interfaces removed, using centralized ones from ../types/stock
 
+// Module-level caches to avoid redundant file reads
+let _stockListCache: StockBasicInfo[] | null = null;
+let _latestPricesCache: Record<string, LatestPriceData> | null = null;
+
 /**
- * Load all stocks from stocks.json
+ * Load all stocks from stocks.json (cached after first read)
  */
 export async function loadStockList(): Promise<StockBasicInfo[]> {
+    if (_stockListCache) return _stockListCache;
+
     const fs = await import('fs');
     const path = await import('path');
 
@@ -17,13 +23,16 @@ export async function loadStockList(): Promise<StockBasicInfo[]> {
     }
 
     const data = fs.readFileSync(stocksPath, 'utf-8');
-    return JSON.parse(data);
+    _stockListCache = JSON.parse(data);
+    return _stockListCache!;
 }
 
 /**
- * Load latest prices snapshot (OPTIMIZED - single JSON read)
+ * Load latest prices snapshot (cached after first read)
  */
 export async function loadLatestPrices(): Promise<Record<string, LatestPriceData>> {
+    if (_latestPricesCache) return _latestPricesCache;
+
     const fs = await import('fs');
     const path = await import('path');
 
@@ -34,7 +43,8 @@ export async function loadLatestPrices(): Promise<Record<string, LatestPriceData
     }
 
     const data = fs.readFileSync(snapshotPath, 'utf-8');
-    return JSON.parse(data);
+    _latestPricesCache = JSON.parse(data);
+    return _latestPricesCache!;
 }
 
 /**

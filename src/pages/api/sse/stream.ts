@@ -8,6 +8,8 @@ import type { TwseStockSnapshot } from '../../../types/stock';
  */
 export const prerender = false;
 
+const encoder = new TextEncoder(); // Reuse single instance
+
 export const GET: APIRoute = ({ request }) => {
     // 啟動 Daemon (如果是第一次連線)
     tickDaemon.start();
@@ -21,7 +23,7 @@ export const GET: APIRoute = ({ request }) => {
                 if (isClosed) return;
                 try {
                     const message = `data: ${JSON.stringify(data)}\n\n`;
-                    controller.enqueue(new TextEncoder().encode(message));
+                    controller.enqueue(encoder.encode(message));
                 } catch (err: any) {
                     // 通常是連線已關閉但監聽器尚未移除
                     isClosed = true;

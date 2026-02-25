@@ -1,20 +1,43 @@
 ---
-/**
- * index.astro — Dashboard / 總覽 (Atomic Design Edition)
- * Professional market data dashboard with Strategic HUD, Liquidity Sidebar,
- * and Movers Matrix.
- */
 import MainTerminal from '../layouts/MainTerminal.astro';
 import StrategicHUD from '../components/organisms/StrategicHUD.astro';
 import LiquidityLeaders from '../components/molecules/LiquidityLeaders.astro';
 import MoversMatrix from '../components/organisms/MoversMatrix.astro';
 import ForensicTicker from '../components/molecules/ForensicTicker.astro';
 import SentimentTrendModal from '../components/organisms/SentimentTrendModal.astro';
-import type { StockFullData } from '../utils/stockDataService';
+import { dbService } from '../lib/db/sqlite-service';
 
-let gainers: StockFullData[] = [];
-let losers: StockFullData[] = [];
-let topVolume: StockFullData[] = [];
+interface DashboardStock {
+    symbol: string;
+    name: string;
+    market: string;
+    price: number;
+    change: number;
+    changePercent: number;
+    volume: number;
+    high: number;
+    low: number;
+    open: number;
+    close: number;
+    date?: string;
+    pe: number;
+    pb: number;
+    yield: number;
+    roe: number;
+    eps: number;
+    revenueYoY: number;
+    grossMargin: number;
+    operatingMargin: number;
+    netMargin: number;
+    foreignStreak: number;
+    trustStreak: number;
+    dealerStreak: number;
+    sector: string;
+}
+
+let gainers: DashboardStock[] = [];
+let losers: DashboardStock[] = [];
+let topVolume: DashboardStock[] = [];
 let totalStocks = 0;
 let upCount = 0;
 let downCount = 0;
@@ -24,30 +47,85 @@ let totalVolume = 0;
 let avgChange = 0;
 
 try {
-    const svc = await import('../utils/stockDataService');
-    const all = await svc.getStocksWithPrices();
-    totalStocks = all.length;
-    dataDate = all.find(s => s.date)?.date || '';
+    // Use direct SQL aggregation instead of loading all stocks into JS
+    const summary = dbService.queryOne<{
+        total: number;
+        up: number;
+        down: number;
+        flat: number;
+        total_vol: number;
+        avg_chg: number;
+        latest_date: string;
+    }>(`
+        SELECT
+            COUNT(*) as total,
+            SUM(CASE WHEN change_pct > 0 THEN 1 ELSE 0 END) as up,
+            SUM(CASE WHEN change_pct < 0 THEN 1 ELSE 0 END) as down,
+            SUM(CASE WHEN change_pct = 0 AND close > 0 THEN 1 ELSE 0 END) as flat,
+            SUM(volume) as total_vol,
+            AVG(change_pct) as avg_chg,
+            MAX(date) as latest_date
+        FROM latest_prices WHERE close > 0
+    `);
 
-    const withPrice = all.filter(s => s.price > 0);
-    upCount = withPrice.filter(s => s.changePercent > 0).length;
-    downCount = withPrice.filter(s => s.changePercent < 0).length;
-    flatCount = withPrice.filter(s => s.changePercent === 0).length;
-    totalVolume = withPrice.reduce((sum, s) => sum + s.volume, 0);
-    avgChange =
-        withPrice.length > 0
-            ? withPrice.reduce((sum, s) => sum + s.changePercent, 0) / withPrice.length
-            : 0;
+    if (summary) {
+        totalStocks = summary.total;
+        upCount = summary.up;
+        downCount = summary.down;
+        flatCount = summary.flat;
+        totalVolume = summary.total_vol;
+        avgChange = summary.avg_chg;
+        dataDate = summary.latest_date || '';
+    }
 
-    gainers = withPrice
-        .filter(s => s.changePercent > 0)
-        .sort((a, b) => b.changePercent - a.changePercent)
-        .slice(0, 10);
-    losers = withPrice
-        .filter(s => s.changePercent < 0)
-        .sort((a, b) => a.changePercent - b.changePercent)
-        .slice(0, 10);
-    topVolume = withPrice.sort((a, b) => b.volume - a.volume).slice(0, 10);
+    // Top gainers/losers/volume — SQL LIMIT is O(n log k) vs JS sort O(n log n)
+    const mapRow = (r: any): DashboardStock => ({
+        symbol: r.symbol,
+        name: r.name || r.symbol,
+        market: r.market || 'TWSE',
+        price: r.close,
+        change: r.change || 0,
+        changePercent: r.change_pct,
+        volume: r.volume,
+        high: r.high || 0,
+        low: r.low || 0,
+        open: r.open || 0,
+        close: r.close,
+        date: r.date,
+        pe: r.pe || 0,
+        pb: r.pb || 0,
+        yield: r.yield || 0,
+        roe: 0,
+        eps: r.eps || 0,
+        revenueYoY: r.revenue_yoy || 0,
+        grossMargin: r.gross_margin || 0,
+        operatingMargin: r.operating_margin || 0,
+        netMargin: r.net_margin || 0,
+        foreignStreak: 0,
+        trustStreak: 0,
+        dealerStreak: 0,
+        sector: r.sector || 'other',
+    });
+
+    const selectCols = `s.symbol, s.name, s.market, s.sector, lp.close, lp.change, lp.change_pct, lp.volume, lp.high, lp.low, lp.open, lp.date, lp.pe, lp.pb, lp.yield, lp.eps, lp.revenue_yoy, lp.gross_margin, lp.operating_margin, lp.net_margin`;
+
+    gainers = dbService
+        .queryAll<any>(
+            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct > 0 ORDER BY lp.change_pct DESC LIMIT 10`
+        )
+        .map(mapRow);
+
+    losers = dbService
+        .queryAll<any>(
+            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct < 0 ORDER BY lp.change_pct ASC LIMIT 10`
+        )
+        .map(mapRow);
+
+    topVolume = dbService
+        .queryAll<any>(
+            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.volume > 0 ORDER BY lp.volume DESC LIMIT 10`
+        )
+        .map(mapRow);
 } catch (e) {
     console.error('Dashboard data load error:', e);
 }

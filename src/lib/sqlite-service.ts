@@ -88,7 +88,11 @@ async function getServerDb() {
 
         const Database = (await import('better-sqlite3')).default;
         serverDb = new Database(dbPath, { readonly: true });
-        serverDb.pragma('cache_size = 10000');
+        serverDb.pragma('journal_mode = WAL');
+        serverDb.pragma('cache_size = -32000');   // 32MB
+        serverDb.pragma('mmap_size = 268435456'); // 256MB mmap
+        serverDb.pragma('temp_store = MEMORY');
+        serverDb.pragma('synchronous = OFF');
         console.log('[SQLite] Server database loaded successfully');
 
         return serverDb;

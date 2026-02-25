@@ -232,7 +232,7 @@ if (typeof EventSource !== 'undefined') {
                             }
                         } catch { }
                         win.__screenerRefreshTimeout = null;
-                    }, 5000);
+                    }, 30000); // 30s throttle — data doesn't change fast enough for 5s
                 }
             }
         } catch (err) {
