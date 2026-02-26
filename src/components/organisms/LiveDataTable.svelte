@@ -117,22 +117,24 @@
             const toolbar = document.getElementById('live-toolbar-nexus');
 
             if (workspace && tr) {
+                const thead = tr.closest('table')?.querySelector('thead') as HTMLElement;
                 const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
-                const headerHeight = 35;
+                // Dynamically measure the header height instead of using a hardcoded value
+                const headerHeight = thead ? thead.offsetHeight : 0;
 
                 const workspaceRect = workspace.getBoundingClientRect();
                 const trRect = tr.getBoundingClientRect();
 
-                // Increase buffer to 48px to ensure clear visibility below the sticky header
+                // Add 100px of breathing room for maximum clarity and focus
                 const scrollTarget =
                     workspace.scrollTop +
                     (trRect.top - workspaceRect.top) -
                     toolbarHeight -
                     headerHeight -
-                    48;
+                    245;
 
                 workspace.scrollTo({
-                    top: Math.max(0, scrollTarget),
+                    top: scrollTarget,
                     behavior: 'smooth',
                 });
             }
@@ -335,11 +337,12 @@
                         <tr>
                             <td
                                 colspan="9"
-                                class="p-0 border-b border-border bg-[#0a0c10] shadow-inner"
+                                class="p-0 border-b border-border bg-base-deep shadow-inner"
                             >
                                 <LiveIntradayDeepDive
                                     symbol={s.Code}
                                     currentPrice={s._closePrice}
+                                    prevClose={s._closePrice - s._change}
                                 />
                             </td>
                         </tr>

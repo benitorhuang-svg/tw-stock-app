@@ -4,6 +4,7 @@
 
     export let symbol: string;
     export let currentPrice: number;
+    export let prevClose: number = 0;
 
     let history: { time: number; price: number; volume: number }[] = [];
     let meta: { prevClose: number; symbol: string } | null = null;
@@ -39,7 +40,8 @@
 
     // ─── Derived values ────
     $: prices = history.map(h => h.price);
-    $: pClose = meta?.prevClose || history[0]?.price || currentPrice;
+    // CRITICAL: Priority is passed prevClose > meta > firstTick > currentPrice
+    $: pClose = prevClose || meta?.prevClose || history[0]?.price || currentPrice;
 
     $: rawMax =
         history.length > 0
@@ -146,12 +148,12 @@
 </script>
 
 <div
-    class="chart-container relative overflow-visible flex flex-col min-h-[220px] bg-[#0a0c10] border-t-2 border-accent/10 border-b border-border/40 select-none pb-2 pt-4"
+    class="chart-container relative overflow-visible flex flex-col min-h-[220px] bg-base-deep border-t-2 border-accent/10 border-b border-border/40 select-none pb-2 pt-6"
     transition:slide={{ duration: 400 }}
 >
     <!-- Background Symbol Watermark -->
     <div
-        class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none overflow-hidden"
+        class="absolute inset-0 flex items-center justify-center opacity-[0.04] pointer-events-none overflow-hidden"
     >
         <span class="text-[180px] font-black tracking-tighter transform -rotate-12 translate-y-2">
             {meta?.symbol?.split('.')[0] || symbol}
@@ -238,8 +240,9 @@
                         x={tick.x}
                         y={H + 25}
                         text-anchor="middle"
-                        fill="white"
-                        fill-opacity="0.2"
+                        fill="currentColor"
+                        fill-opacity="0.3"
+                        class="text-text-primary"
                         font-family="var(--font-mono)"
                         font-size="10"
                         font-weight="900">{tick.label}</text
@@ -265,8 +268,9 @@
                     y1={prevCloseY}
                     x2={W}
                     y2={prevCloseY}
-                    stroke="white"
-                    stroke-opacity="0.08"
+                    stroke="currentColor"
+                    stroke-opacity="0.15"
+                    class="text-text-primary"
                     stroke-width="1.5"
                     stroke-dasharray="10,5"
                 />
@@ -288,16 +292,18 @@
                         width="120"
                         height="30"
                         rx="2"
-                        fill="#050505"
-                        stroke="white"
+                        fill="var(--color-surface)"
+                        stroke="currentColor"
                         stroke-opacity="0.1"
+                        class="text-text-primary"
                     />
                     <text
                         x="60"
                         y="20"
                         text-anchor="middle"
-                        fill="white"
-                        fill-opacity="0.4"
+                        fill="currentColor"
+                        fill-opacity="0.5"
+                        class="text-text-muted"
                         font-family="var(--font-mono)"
                         font-size="11"
                         font-weight="900">REF {pClose.toFixed(2)}</text
@@ -309,7 +315,7 @@
                     y={highY - 12}
                     text-anchor="end"
                     fill="var(--color-bullish)"
-                    fill-opacity="0.4"
+                    fill-opacity="0.6"
                     font-family="var(--font-mono)"
                     font-size="10"
                     font-weight="900">MAX_{rawMax.toFixed(2)}</text
@@ -352,10 +358,10 @@
                             width="100"
                             height="44"
                             rx="4"
-                            fill="#14161a"
-                            stroke="white"
-                            stroke-opacity="0.1"
-                            class="drop-shadow-2xl"
+                            fill="var(--color-surface)"
+                            stroke="currentColor"
+                            stroke-opacity="0.2"
+                            class="text-text-primary shadow-2xl"
                         />
                         <!-- Status Accent -->
                         <rect width="3" height="44" rx="1.5" fill={trendColor} />
@@ -363,8 +369,9 @@
                         <text
                             x="10"
                             y="16"
-                            fill="white"
-                            fill-opacity="0.4"
+                            fill="currentColor"
+                            fill-opacity="0.5"
+                            class="text-text-muted"
                             font-family="var(--font-mono)"
                             font-size="9"
                             font-weight="900"
@@ -375,7 +382,8 @@
                         <text
                             x="10"
                             y="32"
-                            fill="white"
+                            fill="currentColor"
+                            class="text-text-primary"
                             font-family="var(--font-mono)"
                             font-size="14"
                             font-weight="900"
@@ -395,12 +403,8 @@
         max-height: 240px;
         overflow: hidden;
         background:
-            radial-gradient(
-                circle at 50% -100%,
-                rgba(var(--color-accent-rgb), 0.1),
-                transparent 80%
-            ),
-            #0a0c10;
+            linear-gradient(to bottom, var(--color-accent-glow) 0%, transparent 100%),
+            var(--color-base-deep);
         --bullish-rgb: 239, 68, 68;
         --bearish-rgb: 34, 197, 94;
     }
