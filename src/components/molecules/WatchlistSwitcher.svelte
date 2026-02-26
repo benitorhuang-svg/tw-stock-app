@@ -92,7 +92,7 @@
 
 <div class="relative inline-block text-left">
     <button
-        class="h-9 px-4 bg-glass border border-border rounded-lg flex items-center gap-2 hover:bg-glass-hover transition-all group"
+        class="h-9 px-4 bg-glass border border-border rounded-lg flex items-center gap-2 transition-all group"
         on:click={() => (showDropdown = !showDropdown)}
     >
         <span class="text-[10px] font-black text-white/40 uppercase tracking-widest font-mono"
@@ -157,7 +157,7 @@
     .bg-glass {
         background: rgba(255, 255, 255, 0.03);
     }
-    .bg-glass-hover {
+    .bg-glass:hover {
         background: rgba(255, 255, 255, 0.06);
     }
     .bg-surface-elevated {

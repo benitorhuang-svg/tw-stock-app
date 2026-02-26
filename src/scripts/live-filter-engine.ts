@@ -17,8 +17,10 @@ function setupFilterUI() {
     const volUp = getEl('vol-up');
     const volDn = getEl('vol-dn');
 
-    const starredCheck = getEl('filter-starred') as HTMLInputElement | null;
-    const starIcon = document.querySelector('.star-toggle-icon') as HTMLElement | null;
+    const ma20Input = getEl('filter-ma20') as HTMLInputElement | null;
+    const ma20Display = getEl('ma20-display');
+    const ma20Up = getEl('ma20-up');
+    const ma20Dn = getEl('ma20-dn');
 
     // ─── Trend display ─────────────────────────
     function updateTrend() {
@@ -37,6 +39,16 @@ function setupFilterUI() {
         if (!volInput || !volDisplay) return;
         const val = parseInt(volInput.value, 10);
         volDisplay.textContent = val >= 10000 ? (val / 10000).toFixed(1) + '萬' : String(val);
+    }
+
+    // ─── MA20 display ────────────────────────
+    function updateMA20() {
+        if (!ma20Input || !ma20Display) return;
+        const val = parseFloat(ma20Input.value);
+        const prefix = val > 0 ? '+' : '';
+        ma20Display.textContent = prefix + val.toFixed(1);
+        ma20Display.className = `text-[9px] font-mono font-black leading-none ${val > 0 ? 'text-bullish' : val < 0 ? 'text-bearish' : 'text-accent'
+            }`;
     }
 
     // ─── Trend controls ────────────────────────
@@ -69,10 +81,20 @@ function setupFilterUI() {
     });
     volInput?.addEventListener('input', updateVol);
 
-    // ─── Star toggle ──────────────────────────
-    starredCheck?.addEventListener('change', () => {
-        if (starIcon) starIcon.textContent = starredCheck.checked ? '★' : '☆';
+    // ─── MA20 controls ───────────────────────
+    ma20Up?.addEventListener('click', () => {
+        if (!ma20Input) return;
+        ma20Input.value = String(Math.min(10, parseFloat(ma20Input.value) + 0.5));
+        updateMA20();
+        ma20Input.dispatchEvent(new Event('change'));
     });
+    ma20Dn?.addEventListener('click', () => {
+        if (!ma20Input) return;
+        ma20Input.value = String(Math.max(-10, parseFloat(ma20Input.value) - 0.5));
+        updateMA20();
+        ma20Input.dispatchEvent(new Event('change'));
+    });
+    ma20Input?.addEventListener('input', updateMA20);
 }
 
 document.addEventListener('astro:page-load', setupFilterUI);

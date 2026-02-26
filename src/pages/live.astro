@@ -37,7 +37,7 @@ import ScrollToTop from '../components/atoms/ScrollToTop.astro';
                 <!-- Toolbar: Sticky Level 1 (z-60) -->
                 <div
                     id="live-toolbar-nexus"
-                    class="sticky top-0 z-[60] flex flex-wrap lg:flex-nowrap items-center gap-3 px-6 py-4 bg-surface border-b border-border shadow-sm backdrop-blur-md rounded-t-xl"
+                    class="sticky top-0 z-[60] flex flex-wrap lg:flex-nowrap items-center gap-3 px-6 py-4 bg-surface bord"
                 >
                     <div class="min-w-0">
                         <LiveFilterPanel />
@@ -116,10 +116,5 @@ import ScrollToTop from '../components/atoms/ScrollToTop.astro';
     .custom-scrollbar::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
-    }
-
-    #main-workspace {
-        overflow-y: auto !important;
-        scroll-behavior: smooth;
     }
 </style>

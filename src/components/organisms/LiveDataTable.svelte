@@ -38,6 +38,7 @@
     let tsPriceRange = '';
     let tsVol = 0;
     let tsTrend = '0';
+    let tsMA20 = 0;
     let tsStarred = false;
     let watchlistCodes: string[] = [];
     let watchlistSet = new Set<string>();
@@ -77,12 +78,16 @@
                 const t = parseFloat(tsTrend);
                 if ((t > 0 && s._changePct < t) || (t < 0 && s._changePct > t)) return false;
             }
+            if (tsMA20 !== 0 && s._ma20) {
+                const dist = (s._closePrice / s._ma20 - 1) * 100;
+                if ((tsMA20 > 0 && dist < tsMA20) || (tsMA20 < 0 && dist > tsMA20)) return false;
+            }
             return true;
         })
         .sort((a, b) => {
             const key = sortKeyMap[currentSortCol] || (currentSortCol as keyof LiveStock);
-            const va = a[key],
-                vb = b[key];
+            const va = a[key] ?? 0;
+            const vb = b[key] ?? 0;
             if (typeof va === 'string' && typeof vb === 'string')
                 return currentSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
             return currentSortAsc
@@ -97,7 +102,7 @@
         { label: 'ENTITY', col: 'Code' },
         { label: 'QUOTATION', col: 'ClosingPrice' },
         { label: 'VARIANCE', col: 'ChangePct' },
-        { label: 'VECTORS', col: '' },
+        { label: 'MA20', col: '_ma20' },
         { label: 'DIFF', col: 'Change' },
 
         { label: 'OPEN', col: 'OpeningPrice' },
@@ -137,24 +142,26 @@
             await tick();
 
             const workspace = document.getElementById('main-workspace');
-            const toolbar = document.getElementById('live-toolbar-nexus');
+            const toolbar =
+                document.getElementById('live-toolbar-nexus') ||
+                document.getElementById('live-toolbar-nexus-svelte');
 
             if (workspace && tr) {
                 const thead = tr.closest('table')?.querySelector('thead') as HTMLElement;
                 const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
-                // Dynamically measure the header height instead of using a hardcoded value
-                const headerHeight = thead ? thead.offsetHeight : 0;
+                const headerHeight = thead ? thead.offsetHeight : 40; // Fallback to 40 if not found
 
                 const workspaceRect = workspace.getBoundingClientRect();
                 const trRect = tr.getBoundingClientRect();
 
-                // Add 100px of breathing room for maximum clarity and focus
+                // Calculate the final scroll target to bring the row exactly to the top (under the header)
+                // We calculate the delta needed to move the row from its current screen position
+                // to the target screen position (toolbarHeight + headerHeight)
                 const scrollTarget =
                     workspace.scrollTop +
                     (trRect.top - workspaceRect.top) -
                     toolbarHeight -
-                    headerHeight -
-                    245;
+                    headerHeight;
 
                 workspace.scrollTo({
                     top: scrollTarget,
@@ -178,6 +185,7 @@
                 tsPriceRange = payload.price || '';
                 tsVol = payload.volume || 0;
                 tsTrend = payload.trend || '0';
+                tsMA20 = parseFloat(payload.ma20) || 0;
                 tsStarred = payload.starred || false;
                 watchlistCodes = JSON.parse(localStorage.getItem('watchlist') || '[]');
             }
@@ -303,15 +311,30 @@
                             <div class="flex items-center gap-2">
                                 <!-- INLINED WATCHLIST BUTTON FOR EXTREME PERFORMANCE -->
                                 <button
-                                    class="star-btn text-base shrink-0 transition-all duration-300 hover:scale-125 {watchlistSet.has(
+                                    class="star-btn shrink-0 transition-all duration-300 hover:scale-125 flex items-center justify-center {watchlistSet.has(
                                         s.Code
                                     )
-                                        ? 'text-warning drop-shadow-[0_0_8px_rgba(var(--warning-rgb),0.5)]'
-                                        : 'text-text-muted/10 hover:text-text-muted/40'}"
+                                        ? 'text-warning'
+                                        : 'text-text-muted/20 hover:text-text-muted/50'}"
                                     on:click|stopPropagation={() => toggleWatchlist(s.Code)}
                                     title="Toggle Watchlist"
                                 >
-                                    ★
+                                    <svg
+                                        class="w-5 h-5 transition-all"
+                                        viewBox="0 0 24 24"
+                                        fill={watchlistSet.has(s.Code) ? 'currentColor' : 'none'}
+                                        stroke="currentColor"
+                                        stroke-width={watchlistSet.has(s.Code) ? '1' : '2'}
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        style={watchlistSet.has(s.Code)
+                                            ? 'filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3))'
+                                            : ''}
+                                    >
+                                        <polygon
+                                            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                                        ></polygon>
+                                    </svg>
                                 </button>
                                 <div class="flex flex-col min-w-0 flex-1 leading-tight text-left">
                                     <span
@@ -347,38 +370,26 @@
                             </div>
                         </td>
 
-                        <td class="px-1.5 py-2 text-center min-w-[80px]">
-                            <div class="flex flex-wrap justify-center gap-0.5">
-                                {#if s._ma20 && s._closePrice > s._ma20}
-                                    <span
-                                        class="px-1 py-0.5 bg-bullish/10 text-bullish border border-bullish/20 rounded-[2px] text-[8px] font-black tracking-tighter shadow-[0_0_8px_rgba(var(--bullish-rgb),0.1)]"
-                                        >MA20+</span
-                                    >
-                                {:else if s._ma20 && s._closePrice < s._ma20}
-                                    <span
-                                        class="px-1 py-0.5 bg-bearish/10 text-bearish border border-bearish/20 rounded-[2px] text-[8px] font-black tracking-tighter"
-                                        >MA20-</span
-                                    >
-                                {/if}
-
-                                {#if s._rsi && s._rsi > 70}
-                                    <span
-                                        class="px-1 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded-[2px] text-[8px] font-black tracking-tighter"
-                                        >RSI:OB</span
-                                    >
-                                {:else if s._rsi && s._rsi < 30}
-                                    <span
-                                        class="px-1 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded-[2px] text-[8px] font-black tracking-tighter"
-                                        >RSI:OS</span
-                                    >
-                                {/if}
-
-                                {#if s._vol && s._avgVol && s._vol > (s._avgVol / 1000) * 1.5}
-                                    <span
-                                        class="px-1 py-0.5 bg-bullish text-white rounded-[2px] text-[8px] font-black tracking-tighter animate-pulse shadow-[0_0_10px_rgba(var(--bullish-rgb),0.3)]"
-                                        >VOL!</span
-                                    >
-                                {/if}
+                        <td
+                            class="px-1.5 py-2 text-center min-w-[80px] text-[11px] font-bold"
+                            class:text-bullish={s._ma20 && s._closePrice > s._ma20}
+                            class:text-bearish={s._ma20 && s._closePrice < s._ma20}
+                        >
+                            <div class="flex flex-col items-center">
+                                <span>{s._ma20 ? s._ma20.toFixed(2) : '—'}</span>
+                                <div class="flex gap-0.5 mt-0.5 scale-75 origin-top">
+                                    {#if s._rsi && s._rsi > 70}
+                                        <span
+                                            class="px-1 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded-[2px] text-[8px] font-black tracking-tighter"
+                                            >RSI:OB</span
+                                        >
+                                    {:else if s._rsi && s._rsi < 30}
+                                        <span
+                                            class="px-1 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded-[2px] text-[8px] font-black tracking-tighter"
+                                            >RSI:OS</span
+                                        >
+                                    {/if}
+                                </div>
                             </div>
                         </td>
 

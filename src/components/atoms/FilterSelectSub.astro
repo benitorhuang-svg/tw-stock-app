@@ -1,0 +1,21 @@
+---
+/**
+ * FilterSelectSub.astro — Nested select for filter groups
+ */
+interface Props {
+    id: string;
+    options: { value: string; label: string }[];
+    placeholder?: string;
+    width?: string;
+}
+
+const { id, options, placeholder, width = 'min-w-[50px]' } = Astro.props;
+---
+
+<select
+    id={id}
+    class={`appearance-none h-7 px-2 bg-transparent text-[10px] font-black tracking-tighter text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase ${width}`}
+>
+    {placeholder && <option value="">{placeholder}</option>}
+    {options.map(opt => <option value={opt.value}>{opt.label}</option>)}
+</select>

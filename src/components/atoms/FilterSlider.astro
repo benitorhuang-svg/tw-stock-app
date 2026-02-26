@@ -1,0 +1,90 @@
+---
+/**
+ * FilterSlider.astro — Atomic Range Slider with +/- controls
+ */
+interface Props {
+    id: string;
+    displayId: string;
+    upId: string;
+    dnId: string;
+    label: string;
+    min: string;
+    max: string;
+    step: string;
+    value: string;
+    initialDisplay: string;
+    containerClass?: string;
+    sliderWidth?: string;
+}
+
+const {
+    id,
+    displayId,
+    upId,
+    dnId,
+    label,
+    min,
+    max,
+    step,
+    value,
+    initialDisplay,
+    containerClass = 'min-w-[150px]',
+    sliderWidth = 'w-12 lg:w-16',
+} = Astro.props;
+---
+
+<div
+    class={`flex items-center gap-1.5 px-2 h-8 bg-glass rounded-full border border-border ${containerClass}`}
+>
+    <div class="flex flex-col items-center justify-center shrink-0 w-8">
+        <span id={displayId} class="text-[9px] font-mono font-black text-accent leading-none"
+            >{initialDisplay}</span
+        >
+        <span
+            class="text-[6px] text-text-muted/40 font-black tracking-widest leading-none mt-0.5 uppercase"
+            >{label}</span
+        >
+    </div>
+    <button
+        id={dnId}
+        class="text-text-muted/40 hover:text-accent transition-colors text-xs font-bold px-1"
+        >－</button
+    >
+    <input
+        type="range"
+        id={id}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        class={`${sliderWidth} h-1 bg-glass-elevated rounded-full appearance-none cursor-pointer accent-accent`}
+    />
+    <button
+        id={upId}
+        class="text-text-muted/40 hover:text-accent transition-colors text-xs font-bold px-1"
+        >＋</button
+    >
+</div>
+
+<style>
+    /* Range input styling matches global but isolated if needed */
+    input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 10px;
+        height: 10px;
+        background: var(--color-accent);
+        border-radius: 50%;
+        cursor: pointer;
+        border: 1.5px solid white;
+        box-shadow: 0 0 8px var(--color-accent-glow);
+    }
+    input[type='range']::-moz-range-thumb {
+        width: 10px;
+        height: 10px;
+        background: var(--color-accent);
+        border-radius: 50%;
+        cursor: pointer;
+        border: 1.5px solid white;
+    }
+</style>
