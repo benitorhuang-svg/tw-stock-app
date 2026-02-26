@@ -102,7 +102,13 @@
         if (i > -1) wl.splice(i, 1);
         else wl.push(code);
         localStorage.setItem('watchlist', JSON.stringify(wl));
-        watchlistSet = new Set(wl);
+        watchlistCodes = wl; // Update the reactive source
+    }
+
+    $: {
+        if (watchlistCodes) {
+            watchlistSet = new Set(watchlistCodes);
+        }
     }
 
     async function toggleExpand(code: string, event: MouseEvent) {
@@ -167,8 +173,6 @@
     });
 
     import LiveIntradayDeepDive from './LiveIntradayDeepDive.svelte';
-    import PriceBadge from '../atoms/PriceBadge.svelte';
-    import WatchlistButton from '../atoms/WatchlistButton.svelte';
 
     function colorClass(chg: number) {
         return chg > 0 ? 'clr-bull' : chg < 0 ? 'clr-bear' : 'clr-flat';
@@ -264,10 +268,18 @@
                             class:border-l-accent={expandedCode === s.Code}
                         >
                             <div class="flex items-center gap-2">
-                                <WatchlistButton
-                                    active={watchlistSet.has(s.Code)}
-                                    on:toggle={() => toggleWatchlist(s.Code)}
-                                />
+                                <!-- INLINED WATCHLIST BUTTON FOR EXTREME PERFORMANCE -->
+                                <button
+                                    class="star-btn text-base shrink-0 transition-all duration-300 hover:scale-125 {watchlistSet.has(
+                                        s.Code
+                                    )
+                                        ? 'text-warning drop-shadow-[0_0_8px_rgba(var(--warning-rgb),0.5)]'
+                                        : 'text-text-muted/10 hover:text-text-muted/40'}"
+                                    on:click|stopPropagation={() => toggleWatchlist(s.Code)}
+                                    title="Toggle Watchlist"
+                                >
+                                    ★
+                                </button>
                                 <div class="flex flex-col min-w-0 flex-1 leading-tight text-left">
                                     <span
                                         class="text-sm font-black text-white group-hover:text-accent truncate tracking-tight transition-colors"
@@ -290,8 +302,21 @@
                             {s._closePrice > 0 ? s._closePrice.toFixed(2) : '—'}
                         </td>
                         <td class="px-1.5 py-2 text-center">
-                            <PriceBadge value={s._changePct} isPct={true} pClose={s._closePrice} />
+                            <!-- INLINED PRICE BADGE FOR EXTREME PERFORMANCE -->
+                            {@const val = s._changePct}
+                            {@const isUp = val > 0}
+                            {@const isDown = val < 0}
+                            <div
+                                class="inline-flex items-center justify-center min-w-[64px] h-[22px] rounded border text-[10px] font-black px-2 tracking-tighter"
+                                class:badge-bull={isUp}
+                                class:badge-bear={isDown}
+                                class:badge-flat={!isUp && !isDown}
+                            >
+                                {(isUp ? '+' : '') +
+                                    (s._closePrice > 0 ? val.toFixed(2) + '%' : '—')}
+                            </div>
                         </td>
+
                         <td
                             class="px-1.5 py-2 text-center font-bold {colorClass(
                                 s._change
@@ -400,5 +425,35 @@
         transform: rotate(180deg);
         color: var(--color-accent);
         opacity: 1 !important;
+    }
+
+    /* ─── Performance Overrides ─── */
+    .live-table-root tr {
+        content-visibility: auto;
+        contain-intrinsic-size: 1px 50px;
+    }
+
+    .star-btn {
+        -webkit-tap-highlight-color: transparent;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .badge-bull {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.3);
+        color: rgb(239, 68, 68);
+    }
+    .badge-bear {
+        background: rgba(34, 197, 94, 0.1);
+        border-color: rgba(34, 197, 94, 0.3);
+        color: rgb(34, 197, 94);
+    }
+    .badge-flat {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.4);
     }
 </style>

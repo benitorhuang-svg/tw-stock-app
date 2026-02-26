@@ -15,22 +15,32 @@
     let dSorted: InstitutionalData[] = [];
     let isLoading = true;
 
+    let seqTimeouts: ReturnType<typeof setTimeout>[] = [];
+
     onMount(() => {
         const listener = (e: any) => {
             const { type, payload } = e.detail;
             if (type === 'INST_DATA') {
                 const { foreign, invest, dealer } = payload.data;
 
+                // Clear any pending render sequence
+                seqTimeouts.forEach(clearTimeout);
+                seqTimeouts = [];
+
                 // Sequential rendering to prevent main-thread freezing
                 requestAnimationFrame(() => {
                     fSorted = foreign;
-                    setTimeout(() => {
-                        tSorted = invest;
+                    seqTimeouts.push(
                         setTimeout(() => {
-                            dSorted = dealer;
-                            isLoading = false;
-                        }, 50);
-                    }, 50);
+                            tSorted = invest;
+                            seqTimeouts.push(
+                                setTimeout(() => {
+                                    dSorted = dealer;
+                                    isLoading = false;
+                                }, 16)
+                            ); // Target 1 frame
+                        }, 16)
+                    );
                 });
             } else if (type === 'INST_LOADING') {
                 isLoading = true;
@@ -38,7 +48,10 @@
         };
 
         window.addEventListener('tw-inst-update', listener);
-        return () => window.removeEventListener('tw-inst-update', listener);
+        return () => {
+            window.removeEventListener('tw-inst-update', listener);
+            seqTimeouts.forEach(clearTimeout);
+        };
     });
 </script>
 

@@ -39,21 +39,20 @@ export const GET: APIRoute = async () => {
             date: string;
         }>(`
             WITH RankedChips AS (
-                SELECT
-                    c.symbol,
-                    s.name,
-                    c.foreign_inv,
-                    c.invest_trust,
-                    c.dealer,
-                    c.date,
-                    ROW_NUMBER() OVER (PARTITION BY c.symbol ORDER BY c.date DESC) as rn
-                FROM chips c
-                JOIN stocks s ON c.symbol = s.symbol
+                SELECT 
+                    symbol,
+                    foreign_inv,
+                    invest_trust,
+                    dealer,
+                    date,
+                    ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
+                FROM chips
             )
-            SELECT symbol, name, foreign_inv, invest_trust, dealer, date
-            FROM RankedChips
-            WHERE rn <= ?
-            ORDER BY symbol, date DESC
+            SELECT rc.symbol, s.name, rc.foreign_inv, rc.invest_trust, rc.dealer, rc.date
+            FROM RankedChips rc
+            JOIN stocks s ON rc.symbol = s.symbol
+            WHERE rc.rn <= ?
+            ORDER BY rc.symbol, rc.date DESC
         `, [CHIP_WINDOW]);
 
         if (allChips.length === 0) {

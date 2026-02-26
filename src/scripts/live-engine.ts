@@ -40,12 +40,11 @@ document.addEventListener('astro:page-load', () => {
 
     let isPolling = false;
 
-    // ─── Filter notification (debounced via rAF) ───────
-    let filterRafId = 0;
+    // ─── Filter notification (Debounced for performance) ───────
+    let filterTimeoutId: ReturnType<typeof setTimeout> | null = null;
     function notifyFilters() {
-        if (filterRafId) return; // coalesce rapid changes
-        filterRafId = requestAnimationFrame(() => {
-            filterRafId = 0;
+        if (filterTimeoutId) clearTimeout(filterTimeoutId);
+        filterTimeoutId = setTimeout(() => {
             window.dispatchEvent(new CustomEvent('tw-live-update', {
                 detail: {
                     type: 'FILTERS',
@@ -59,8 +58,9 @@ document.addEventListener('astro:page-load', () => {
                     }
                 }
             }));
-        });
+        }, 200);
     }
+
 
     // ─── Data fetch ────────────────────────────────────
     async function fetchUpdate() {
