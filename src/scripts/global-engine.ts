@@ -46,19 +46,19 @@ registerServiceWorker();
 initPerformanceMode();
 
 // Interactive Glow Tracker — follows cursor on .glow-interactive elements
-// Optimized: Uses event delegation to avoid broad DOM loops and layout thrashing
-document.addEventListener('mousemove', (e: MouseEvent) => {
+// Optimized: Binds movement logic only when hovering over target to save CPU cycles
+document.addEventListener('mouseover', (e: MouseEvent) => {
     const target = e.target as HTMLElement;
     const glowEl = target.closest('.glow-interactive') as HTMLElement;
-
-    if (!glowEl) return;
-
-    // Only update if mouse is actually moving over a glow element
-    requestAnimationFrame(() => {
-        const rect = glowEl.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        glowEl.style.setProperty('--mouse-x', `${x}px`);
-        glowEl.style.setProperty('--mouse-y', `${y}px`);
-    });
+    if (glowEl && !glowEl.dataset.glowBound) {
+        glowEl.dataset.glowBound = 'true';
+        glowEl.addEventListener('mousemove', (me: MouseEvent) => {
+            const rect = glowEl.getBoundingClientRect();
+            const x = me.clientX - rect.left;
+            const y = me.clientY - rect.top;
+            glowEl.style.setProperty('--mouse-x', `${x}px`);
+            glowEl.style.setProperty('--mouse-y', `${y}px`);
+        });
+    }
 });
+

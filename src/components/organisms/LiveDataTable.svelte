@@ -26,6 +26,7 @@
     let loadingState = 'Awaiting_Uplink...';
     let errorState = '';
     let expandedCode = '';
+    let displayLimit = 150; // DOM Optimization: Start with a smaller set
 
     // ─── Filter State ──────────────────────────────────
     let searchKeyword = '';
@@ -34,6 +35,7 @@
     let tsVol = 0;
     let tsTrend = '0';
     let tsStarred = false;
+    let watchlistCodes: string[] = [];
     let watchlistSet = new Set<string>();
 
     function toggleSort(col: string) {
@@ -84,6 +86,9 @@
                 : (vb as number) - (va as number);
         });
 
+    $: displayItems = filteredAndSorted.slice(0, displayLimit);
+    $: hasMore = filteredAndSorted.length > displayLimit;
+
     const headers = [
         { label: 'ENTITY', col: 'Code' },
         { label: 'QUOTATION', col: 'ClosingPrice' },
@@ -98,18 +103,14 @@
 
     function toggleWatchlist(code: string) {
         const wl: string[] = JSON.parse(localStorage.getItem('watchlist') || '[]');
-        const i = wl.indexOf(code);
-        if (i > -1) wl.splice(i, 1);
+        const idx = wl.indexOf(code);
+        if (idx > -1) wl.splice(idx, 1);
         else wl.push(code);
         localStorage.setItem('watchlist', JSON.stringify(wl));
-        watchlistCodes = wl; // Update the reactive source
+        watchlistCodes = [...wl];
     }
 
-    $: {
-        if (watchlistCodes) {
-            watchlistSet = new Set(watchlistCodes);
-        }
-    }
+    $: watchlistSet = new Set(watchlistCodes);
 
     async function toggleExpand(code: string, event: MouseEvent) {
         const isOpening = expandedCode !== code;
@@ -149,7 +150,7 @@
 
     let handler: ((e: Event) => void) | null = null;
     onMount(() => {
-        watchlistSet = new Set(JSON.parse(localStorage.getItem('watchlist') || '[]'));
+        watchlistCodes = JSON.parse(localStorage.getItem('watchlist') || '[]');
         handler = (e: Event) => {
             const { type, payload } = (e as CustomEvent).detail;
             if (type === 'DATA') {
@@ -162,9 +163,10 @@
                 tsVol = payload.volume || 0;
                 tsTrend = payload.trend || '0';
                 tsStarred = payload.starred || false;
-                watchlistSet = new Set(JSON.parse(localStorage.getItem('watchlist') || '[]'));
+                watchlistCodes = JSON.parse(localStorage.getItem('watchlist') || '[]');
             }
         };
+
         window.addEventListener('tw-live-update', handler);
     });
 
@@ -256,7 +258,11 @@
                     </td>
                 </tr>
             {:else}
-                {#each filteredAndSorted as s (s.Code)}
+                {#each displayItems as s (s.Code)}
+                    {@const val = s._changePct}
+                    {@const isUp = val > 0}
+                    {@const isDown = val < 0}
+                    <!-- Performance: Pre-calculate row state -->
                     <tr
                         class="group cursor-pointer transition-colors hover:bg-white/[0.02]"
                         class:active-row={expandedCode === s.Code}
@@ -302,10 +308,7 @@
                             {s._closePrice > 0 ? s._closePrice.toFixed(2) : '—'}
                         </td>
                         <td class="px-1.5 py-2 text-center">
-                            <!-- INLINED PRICE BADGE FOR EXTREME PERFORMANCE -->
-                            {@const val = s._changePct}
-                            {@const isUp = val > 0}
-                            {@const isDown = val < 0}
+                            <!-- INLINED PRICE BADGE -->
                             <div
                                 class="inline-flex items-center justify-center min-w-[64px] h-[22px] rounded border text-[10px] font-black px-2 tracking-tighter"
                                 class:badge-bull={isUp}
@@ -377,6 +380,17 @@
         </tbody>
     </table>
 </div>
+
+{#if hasMore}
+    <div class="mt-6 pb-12 flex justify-center">
+        <button
+            class="h-10 px-10 bg-glass border border-border rounded-xl text-[10px] font-black tracking-[0.2em] uppercase hover:bg-accent/15 hover:border-accent/40 hover:text-accent transition-all animate-fade-up shadow-lg"
+            on:click={() => (displayLimit += 150)}
+        >
+            擴展監測範圍 (+150 向量) — {filteredAndSorted.length - displayLimit} 剩餘
+        </button>
+    </div>
+{/if}
 
 <style>
     .custom-scrollbar::-webkit-scrollbar {

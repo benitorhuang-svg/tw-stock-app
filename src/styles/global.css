@@ -385,11 +385,13 @@
     /* ── Top Nav Bar ── */
     .top-nav-bar {
         background: var(--color-surface);
-        backdrop-filter: blur(16px) saturate(1.2);
-        -webkit-backdrop-filter: blur(16px) saturate(1.2);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         border-bottom: 1px solid var(--color-border);
         position: relative;
+        will-change: transform;
     }
+
 
     /* ── Nav Glow Line ── */
     .nav-glow-line {
@@ -484,11 +486,13 @@
         background: hsl(217 91% 60% / 0.1);
         border: 1px solid hsl(217 91% 60% / 0.15);
         border-radius: var(--radius-sm);
-        transition: all 0.35s var(--ease-expo);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease;
         opacity: 0;
         pointer-events: none;
         box-shadow: 0 0 12px hsl(217 91% 60% / 0.08);
+        will-change: transform, width;
     }
+
 
     /* ── Mobile Bottom Nav ── */
     .mobile-bottom-nav {
