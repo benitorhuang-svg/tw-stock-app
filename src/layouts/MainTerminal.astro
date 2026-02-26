@@ -37,11 +37,7 @@ const { title, description, fullWidth = false } = Astro.props;
         >
 
         <!-- ═══ Top Navigation Bar ═══ -->
-        <header
-            class="top-nav-bar flex-shrink-0 z-50"
-            id="top-header"
-            transition:persist="top-header"
-        >
+        <header class="top-nav-bar flex-shrink-0 z-50" id="top-header">
             <div
                 class="flex items-center justify-between h-16 px-4 lg:px-6 max-w-[1800px] mx-auto w-full"
             >
@@ -92,6 +88,21 @@ const { title, description, fullWidth = false } = Astro.props;
                             data-astro-prefetch
                         >
                             <span>即時開盤</span>
+                        </a>
+
+                        <!-- Market Breadth (市場漲幅) -->
+                        <a
+                            href="/"
+                            id="nav-market-btn"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group relative',
+                                Astro.url.pathname === '/'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span>市場漲幅</span>
                         </a>
                     </div>
 

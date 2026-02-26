@@ -147,7 +147,7 @@ export function initDatabaseRefreshTerminal() {
                     if (!triggeredStages.has(step) && currentText.includes(marker)) {
                         triggeredStages.add(step);
                         updateStage(step);
-                        if (eta !== undefined) forceETA(eta);
+                        if (eta !== undefined && skipConfirm) forceETA(eta);
                     }
                 };
                 checkStage('[1/4]', 1);
@@ -163,6 +163,27 @@ export function initDatabaseRefreshTerminal() {
         } finally {
             if (etaTimerId) clearInterval(etaTimerId);
             startBtn.disabled = false;
+
+            // Try to sync table counts
+            try {
+                const statsRes = await fetch('/api/db/stats');
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    stats.forEach((stat: any) => {
+                        const span = document.querySelector(
+                            `span[data-table-count="${stat.name}"]`
+                        );
+                        if (span) {
+                            span.textContent =
+                                stat.rows > 1000 ? (stat.rows / 1000).toFixed(1) + 'K' : stat.rows;
+                        }
+                    });
+                    refreshTerminal.textContent += `\n✅ 側邊欄計數已同步更新`;
+                }
+            } catch (err) {
+                console.error('Failed to update sidebar stats:', err);
+            }
+
             startBtn.innerHTML = `
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
@@ -190,11 +211,6 @@ export function initDatabaseRefreshTerminal() {
     }
 }
 
-let dbRefreshTerminalInitialized = false;
-
 document.addEventListener('astro:page-load', () => {
-    if (!document.getElementById('refresh-area')) return;
-    if (dbRefreshTerminalInitialized) return;
-    dbRefreshTerminalInitialized = true;
     initDatabaseRefreshTerminal();
 });

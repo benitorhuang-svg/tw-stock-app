@@ -2,10 +2,10 @@
     import { onMount } from 'svelte';
     import MarketBreadth from '../molecules/MarketBreadth.svelte';
 
-    let up = 0;
-    let down = 0;
-    let flat = 0;
-    let total = 0;
+    let up = $state(0);
+    let down = $state(0);
+    let flat = $state(0);
+    let total = $state(0);
 
     onMount(() => {
         const handler = (e: any) => {

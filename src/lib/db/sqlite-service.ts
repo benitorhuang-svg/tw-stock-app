@@ -213,11 +213,6 @@ export class SqliteService {
     public getTableRowCount(table: string, search?: string): number {
         const safe = this.validateTableName(table);
 
-        // Use cache for pure row count without search
-        if (!search && this.rowCountCache.has(safe)) {
-            return this.rowCountCache.get(safe)!;
-        }
-
         let sql = `SELECT count(*) as count FROM "${safe}"`;
         const params: SqlValue[] = [];
 
@@ -242,11 +237,6 @@ export class SqliteService {
         const result = this.db!.prepare(sql).get(...params) as {
             count: number;
         };
-
-        // Cache the total count
-        if (!search) {
-            this.rowCountCache.set(safe, result.count);
-        }
 
         return result.count;
     }

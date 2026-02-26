@@ -1,20 +1,29 @@
 <script lang="ts">
-    export let up = 0;
-    export let down = 0;
-    export let flat = 0;
-    export let total = 0;
+    interface Props {
+        up?: number;
+        down?: number;
+        flat?: number;
+        total?: number;
+    }
 
-    $: pctUp = total > 0 ? (up / total) * 100 : 0;
-    $: pctDown = total > 0 ? (down / total) * 100 : 0;
-    $: pctFlat = total > 0 ? (flat / total) * 100 : 0;
+    let {
+        up = 0,
+        down = 0,
+        flat = 0,
+        total = 0
+    }: Props = $props();
 
-    $: dominance = up > down ? 'BULLISH' : down > up ? 'BEARISH' : 'NEUTRAL';
-    $: domColor =
-        dominance === 'BULLISH'
+    let pctUp = $derived(total > 0 ? (up / total) * 100 : 0);
+    let pctDown = $derived(total > 0 ? (down / total) * 100 : 0);
+    let pctFlat = $derived(total > 0 ? (flat / total) * 100 : 0);
+
+    let dominance = $derived(up > down ? 'BULLISH' : down > up ? 'BEARISH' : 'NEUTRAL');
+    let domColor =
+        $derived(dominance === 'BULLISH'
             ? 'var(--color-bullish)'
             : dominance === 'BEARISH'
               ? 'var(--color-bearish)'
-              : 'var(--color-text-muted)';
+              : 'var(--color-text-muted)');
 </script>
 
 <div class="market-breadth-molecule flex flex-col gap-1.5 w-full min-w-[200px] py-1 group/breadth">

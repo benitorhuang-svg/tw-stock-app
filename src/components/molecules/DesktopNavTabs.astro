@@ -10,17 +10,20 @@ const isActive = (path: string) =>
 <nav class="hidden md:flex items-center" aria-label="主要導覽" id="desktop-nav">
     <div class="top-nav-tabs">
         {
-            NAV_ITEMS.filter(item => item.label !== '數據觀測' && item.label !== '即時開盤').map(
-                item => (
-                    <NavTab
-                        variant="desktop"
-                        path={item.path}
-                        label={item.label}
-                        icon={item.icon}
-                        isActive={isActive(item.path)}
-                    />
-                )
-            )
+            NAV_ITEMS.filter(
+                item =>
+                    item.label !== '數據觀測' &&
+                    item.label !== '即時開盤' &&
+                    item.label !== '市場漲幅'
+            ).map(item => (
+                <NavTab
+                    variant="desktop"
+                    path={item.path}
+                    label={item.label}
+                    icon={item.icon}
+                    isActive={isActive(item.path)}
+                />
+            ))
         }
         <div class="tab-indicator" id="tab-indicator"></div>
     </div>
@@ -46,7 +49,7 @@ const isActive = (path: string) =>
         document.querySelectorAll<HTMLElement>('.top-nav-tab').forEach(updateFn);
         document.querySelectorAll<HTMLElement>('.mobile-nav-item').forEach(updateFn);
 
-        ['/database', '/live'].forEach(basePath => {
+        ['/database', '/live', '/'].forEach(basePath => {
             const btn = document.querySelector(`header a[href="${basePath}"]`) as HTMLElement;
             if (btn) {
                 const isActive = currentPath === basePath || currentPath.startsWith(basePath + '/');

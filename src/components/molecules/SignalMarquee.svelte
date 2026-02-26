@@ -10,9 +10,9 @@
         timestamp: number;
     }
 
-    let signals: Signal[] = [];
+    let signals: Signal[] = $state([]);
     const MAX_SIGNALS = 8;
-    let dismissed = false;
+    let dismissed = $state(false);
 
     onMount(() => {
         const handler = (e: any) => {

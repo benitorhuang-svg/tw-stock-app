@@ -7,20 +7,20 @@
     import MarketBreadth from '../molecules/MarketBreadth.svelte';
 
     // --- State Management ---
-    let search = '';
-    let market = '';
-    let sector = '';
-    let price = '';
-    let trend = 0;
-    let volume = 0;
-    let ma20 = 0;
+    let search = $state('');
+    let market = $state('');
+    let sector = $state('');
+    let price = $state('');
+    let trend = $state(0);
+    let volume = $state(0);
+    let ma20 = $state(0);
 
-    let up = 0,
-        down = 0,
-        flat = 0,
-        total = 0;
-    let isPolling = false;
-    let updateTime = '--:--:--';
+    let up = $state(0),
+        down = $state(0),
+        flat = $state(0),
+        total = $state(0);
+    let isPolling = $state(false);
+    let updateTime = $state('--:--:--');
 
     const markets = [
         { value: 'tse', label: '上市' },
@@ -158,7 +158,7 @@
             />
         </div>
         <button
-            on:click={reset}
+            onclick={reset}
             class="flex items-center justify-center w-8 h-8 text-text-muted/30 hover:text-accent hover:bg-accent/5 rounded-full transition-all active:scale-90"
             title="Reset Filters"
         >

@@ -1,6 +1,10 @@
 <script lang="ts">
-    export let active = false;
-    export let id = 'toggle-polling-btn';
+    interface Props {
+        active?: boolean;
+        id?: string;
+    }
+
+    let { active = false, id = 'toggle-polling-btn' }: Props = $props();
 </script>
 
 <button

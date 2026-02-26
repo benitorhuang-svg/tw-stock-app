@@ -25,6 +25,32 @@ async function main() {
 
     const importers = [
         {
+            name: 'Shareholder Distribution (New JSON Array)',
+            path: path.join(
+                ROOT_DIR,
+                'public',
+                'data',
+                'forensic',
+                'shareholder_distribution.json'
+            ),
+            sql: `INSERT OR REPLACE INTO shareholder_distribution (symbol, date, total_shareholders, large_holder_400_ratio, large_holder_1000_ratio) VALUES (?, ?, ?, ?, ?)`,
+            mapper: i => [
+                i.symbol,
+                i.date,
+                i.total_shareholders,
+                i.large_holder_400_ratio,
+                i.large_holder_1000_ratio,
+            ],
+            isArray: true,
+        },
+        {
+            name: 'Margin Short (New JSON Array)',
+            path: path.join(ROOT_DIR, 'public', 'data', 'forensic', 'margin_short.json'),
+            sql: `INSERT OR REPLACE INTO margin_short (symbol, date, margin_bal, margin_net, short_bal, short_net) VALUES (?, ?, ?, ?, ?, ?)`,
+            mapper: i => [i.symbol, i.date, i.margin_bal, i.margin_net, i.short_bal, i.short_net],
+            isArray: true,
+        },
+        {
             name: 'Shareholder Distribution',
             path: path.join(DATA_DIR, 'distribution', `${dateStr}.json`),
             sql: `INSERT OR REPLACE INTO shareholder_distribution (symbol, date, total_shareholders, large_holder_400_ratio, large_holder_1000_ratio, small_holder_under_10_ratio, avg_shares_per_holder) VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -83,12 +109,21 @@ async function main() {
             const data = JSON.parse(fs.readFileSync(importer.path, 'utf8'));
             const stmt = db.prepare(importer.sql);
             const batch = db.transaction(items => {
-                for (const item of items) {
-                    stmt.run(...importer.mapper(item));
+                const targetArray = importer.isArray
+                    ? items
+                    : Array.isArray(items)
+                      ? items
+                      : [items];
+                for (const item of targetArray) {
+                    try {
+                        // Skip if mapper throws (e.g. data structure changed)
+                        const args = importer.mapper(item);
+                        stmt.run(...args);
+                    } catch (e) {}
                 }
             });
             batch(data);
-            console.log(`✅ ${data.length} records imported.`);
+            console.log(`✅ ${Array.isArray(data) ? data.length : 1} records processed.`);
         } else {
             console.warn(`⚠️ Skipped ${importer.name}: File not found.`);
         }
@@ -99,6 +134,6 @@ async function main() {
 }
 
 main().catch(err => {
-    console.error('❌ Import failed:', err);
+    console.error('❌ Import failed: ', err.message);
     process.exit(1);
 });

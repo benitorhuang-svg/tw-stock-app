@@ -2,19 +2,23 @@
     import { onMount } from 'svelte';
     import { slide } from 'svelte/transition';
 
-    export let symbol: string;
-    export let currentPrice: number;
-    export let prevClose: number = 0;
+    interface Props {
+        symbol: string;
+        currentPrice: number;
+        prevClose?: number;
+    }
 
-    let history: { time: number; price: number; volume: number }[] = [];
-    let meta: { prevClose: number; symbol: string } | null = null;
-    let isLoading = true;
-    let error = '';
+    let { symbol, currentPrice, prevClose = 0 }: Props = $props();
+
+    let history: { time: number; price: number; volume: number }[] = $state([]);
+    let meta: { prevClose: number; symbol: string } | null = $state(null);
+    let isLoading = $state(true);
+    let error = $state('');
 
     // Tooltip state
-    let mouseX = -1;
-    let tooltipData: { time: number; price: number; volume: number } | null = null;
-    let svgElement: SVGSVGElement;
+    let mouseX = $state(-1);
+    let tooltipData: { time: number; price: number; volume: number } | null = $state(null);
+    let svgElement: SVGSVGElement = $state();
 
     async function fetchData() {
         try {
@@ -38,113 +42,21 @@
     const W = 1000;
     const H = 140; // Compact height for mini-chart format
 
-    // ─── Derived values ────
-    $: prices = history.map(h => h.price);
-    // CRITICAL: Priority is passed prevClose > meta > firstTick > currentPrice
-    $: pClose = prevClose || meta?.prevClose || history[0]?.price || currentPrice;
 
-    $: rawMax =
-        history.length > 0
-            ? prices.reduce((mx, p) => (p > mx ? p : mx), Math.max(prices[0], currentPrice))
-            : currentPrice;
-    $: rawMin =
-        history.length > 0
-            ? prices.reduce((mn, p) => (p < mn ? p : mn), Math.min(prices[0], currentPrice))
-            : currentPrice;
 
-    $: maxVolume = history.reduce((max, h) => (h.volume > max ? h.volume : max), 1);
 
-    $: minDev = pClose * 0.005;
-    $: maxDev = Math.max(Math.abs(rawMax - pClose), Math.abs(pClose - rawMin), minDev);
-    $: chartMax = pClose + maxDev;
-    $: chartMin = pClose - maxDev;
-    $: range = chartMax - chartMin || 1;
 
     const PAD_T = 20;
     const PAD_B = 15;
     const DRAW_H = H - PAD_T - PAD_B;
 
-    $: sessionBounds = (() => {
-        if (history.length === 0) return null;
-        const d = new Date(history[0].time);
-        const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 9, 0, 0, 0);
-        const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 13, 30, 0, 0);
-        return { start: start.getTime(), end: end.getTime() };
-    })();
 
-    $: pointCoords = sessionBounds
-        ? history.map(h => ({
-              x: ((h.time - sessionBounds.start) / (sessionBounds.end - sessionBounds.start)) * W,
-              y: PAD_T + (DRAW_H - ((h.price - chartMin) / range) * DRAW_H),
-          }))
-        : [];
 
-    $: ma5Data = history.map((_, i) => {
-        if (i < 4) return null;
-        const slice = history.slice(i - 4, i + 1);
-        return slice.reduce((sum, h) => sum + h.price, 0) / 5;
-    });
-    $: ma20Data = history.map((_, i) => {
-        if (i < 19) return null;
-        const slice = history.slice(i - 19, i + 1);
-        return slice.reduce((sum, h) => sum + h.price, 0) / 20;
-    });
 
-    $: ma5Points = ma5Data
-        .map((p, i) =>
-            p
-                ? `${pointCoords[i].x.toFixed(1)},${(PAD_T + (DRAW_H - ((p - chartMin) / range) * DRAW_H)).toFixed(1)}`
-                : ''
-        )
-        .filter(p => p)
-        .join(' ');
-    $: ma20Points = ma20Data
-        .map((p, i) =>
-            p
-                ? `${pointCoords[i].x.toFixed(1)},${(PAD_T + (DRAW_H - ((p - chartMin) / range) * DRAW_H)).toFixed(1)}`
-                : ''
-        )
-        .filter(p => p)
-        .join(' ');
 
-    $: points = pointCoords.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
-    $: areaPoints =
-        pointCoords.length > 0
-            ? `${points} ${lastPt.x.toFixed(1)},${H} ${pointCoords[0].x.toFixed(1)},${H}`
-            : '';
 
-    $: prevCloseY = PAD_T + (DRAW_H - ((pClose - chartMin) / range) * DRAW_H);
-    $: lastPt = pointCoords.length > 0 ? pointCoords[pointCoords.length - 1] : { x: 0, y: 0 };
-    $: isUp = currentPrice >= pClose;
-    $: trendColor = isUp ? 'var(--color-bullish)' : 'var(--color-bearish)';
-    $: highY = PAD_T + (DRAW_H - ((rawMax - chartMin) / range) * DRAW_H);
-    $: tooltipPriceY = tooltipData
-        ? PAD_T + (DRAW_H - ((tooltipData.price - chartMin) / range) * DRAW_H)
-        : 0;
 
-    $: timeTicks = (() => {
-        if (!sessionBounds) return [];
-        const baseDate = new Date(sessionBounds.start);
-        const Y = baseDate.getFullYear(),
-            M = baseDate.getMonth(),
-            D = baseDate.getDate();
-        const marks = [
-            { h: 9, m: 0 },
-            { h: 10, m: 0 },
-            { h: 11, m: 0 },
-            { h: 12, m: 0 },
-            { h: 13, m: 0 },
-            { h: 13, m: 30 },
-        ];
-        return marks.map(m => {
-            const time = new Date(Y, M, D, m.h, m.m, 0, 0).getTime();
-            return {
-                x: ((time - sessionBounds.start) / (sessionBounds.end - sessionBounds.start)) * W,
-                label: `${m.h.toString().padStart(2, '0')}:${m.m.toString().padStart(2, '0')}`,
-            };
-        });
-    })();
 
     function formatTime(ms: number | string) {
         const d = new Date(ms);
@@ -174,6 +86,98 @@
         mouseX = -1;
         tooltipData = null;
     }
+    // ─── Derived values ────
+    let prices = $derived(history.map(h => h.price));
+    // CRITICAL: Priority is passed prevClose > meta > firstTick > currentPrice
+    let pClose = $derived(prevClose || meta?.prevClose || history[0]?.price || currentPrice);
+    let rawMax =
+        $derived(history.length > 0
+            ? prices.reduce((mx, p) => (p > mx ? p : mx), Math.max(prices[0], currentPrice))
+            : currentPrice);
+    let rawMin =
+        $derived(history.length > 0
+            ? prices.reduce((mn, p) => (p < mn ? p : mn), Math.min(prices[0], currentPrice))
+            : currentPrice);
+    let maxVolume = $derived(history.reduce((max, h) => (h.volume > max ? h.volume : max), 1));
+    let minDev = $derived(pClose * 0.005);
+    let maxDev = $derived(Math.max(Math.abs(rawMax - pClose), Math.abs(pClose - rawMin), minDev));
+    let chartMax = $derived(pClose + maxDev);
+    let chartMin = $derived(pClose - maxDev);
+    let range = $derived(chartMax - chartMin || 1);
+    let sessionBounds = $derived((() => {
+        if (history.length === 0) return null;
+        const d = new Date(history[0].time);
+        const start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 9, 0, 0, 0);
+        const end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 13, 30, 0, 0);
+        return { start: start.getTime(), end: end.getTime() };
+    })());
+    let pointCoords = $derived(sessionBounds
+        ? history.map(h => ({
+              x: ((h.time - sessionBounds.start) / (sessionBounds.end - sessionBounds.start)) * W,
+              y: PAD_T + (DRAW_H - ((h.price - chartMin) / range) * DRAW_H),
+          }))
+        : []);
+    let ma5Data = $derived(history.map((_, i) => {
+        if (i < 4) return null;
+        const slice = history.slice(i - 4, i + 1);
+        return slice.reduce((sum, h) => sum + h.price, 0) / 5;
+    }));
+    let ma20Data = $derived(history.map((_, i) => {
+        if (i < 19) return null;
+        const slice = history.slice(i - 19, i + 1);
+        return slice.reduce((sum, h) => sum + h.price, 0) / 20;
+    }));
+    let ma5Points = $derived(ma5Data
+        .map((p, i) =>
+            p
+                ? `${pointCoords[i].x.toFixed(1)},${(PAD_T + (DRAW_H - ((p - chartMin) / range) * DRAW_H)).toFixed(1)}`
+                : ''
+        )
+        .filter(p => p)
+        .join(' '));
+    let ma20Points = $derived(ma20Data
+        .map((p, i) =>
+            p
+                ? `${pointCoords[i].x.toFixed(1)},${(PAD_T + (DRAW_H - ((p - chartMin) / range) * DRAW_H)).toFixed(1)}`
+                : ''
+        )
+        .filter(p => p)
+        .join(' '));
+    let points = $derived(pointCoords.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' '));
+    let lastPt = $derived(pointCoords.length > 0 ? pointCoords[pointCoords.length - 1] : { x: 0, y: 0 });
+    let areaPoints =
+        $derived(pointCoords.length > 0
+            ? `${points} ${lastPt.x.toFixed(1)},${H} ${pointCoords[0].x.toFixed(1)},${H}`
+            : '');
+    let prevCloseY = $derived(PAD_T + (DRAW_H - ((pClose - chartMin) / range) * DRAW_H));
+    let isUp = $derived(currentPrice >= pClose);
+    let trendColor = $derived(isUp ? 'var(--color-bullish)' : 'var(--color-bearish)');
+    let highY = $derived(PAD_T + (DRAW_H - ((rawMax - chartMin) / range) * DRAW_H));
+    let tooltipPriceY = $derived(tooltipData
+        ? PAD_T + (DRAW_H - ((tooltipData.price - chartMin) / range) * DRAW_H)
+        : 0);
+    let timeTicks = $derived((() => {
+        if (!sessionBounds) return [];
+        const baseDate = new Date(sessionBounds.start);
+        const Y = baseDate.getFullYear(),
+            M = baseDate.getMonth(),
+            D = baseDate.getDate();
+        const marks = [
+            { h: 9, m: 0 },
+            { h: 10, m: 0 },
+            { h: 11, m: 0 },
+            { h: 12, m: 0 },
+            { h: 13, m: 0 },
+            { h: 13, m: 30 },
+        ];
+        return marks.map(m => {
+            const time = new Date(Y, M, D, m.h, m.m, 0, 0).getTime();
+            return {
+                x: ((time - sessionBounds.start) / (sessionBounds.end - sessionBounds.start)) * W,
+                label: `${m.h.toString().padStart(2, '0')}:${m.m.toString().padStart(2, '0')}`,
+            };
+        });
+    })());
 </script>
 
 <div
@@ -192,8 +196,8 @@
     <div
         class="flex-1 relative px-4 mt-6 mb-8"
         role="presentation"
-        on:mousemove={handleMouseMove}
-        on:mouseleave={handleMouseLeave}
+        onmousemove={handleMouseMove}
+        onmouseleave={handleMouseLeave}
     >
         {#if isLoading}
             <div class="absolute inset-0 flex items-center justify-center z-40">

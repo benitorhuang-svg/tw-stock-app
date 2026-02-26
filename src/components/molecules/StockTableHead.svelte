@@ -4,10 +4,19 @@
 
     const dispatch = createEventDispatcher();
 
-    export let headers: Array<{ label: string; col: string }>;
-    export let currentSortCol: string;
-    export let currentSortAsc: boolean;
-    export let stickyTop = '0px';
+    interface Props {
+        headers: Array<{ label: string; col: string }>;
+        currentSortCol: string;
+        currentSortAsc: boolean;
+        stickyTop?: string;
+    }
+
+    let {
+        headers,
+        currentSortCol,
+        currentSortAsc,
+        stickyTop = '0px'
+    }: Props = $props();
 
     function handleSort(col: string) {
         dispatch('sort', col);

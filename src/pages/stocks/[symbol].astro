@@ -76,67 +76,95 @@ const stockData = stock;
 const isNotFound = stockData.price === 0 && stockData.name === symbol;
 ---
 
-<MainTerminal title={`${stockData.name} Intelligence Terminal`}>
+<MainTerminal title={`${stockData.name} 個股分析`}>
     <div class="space-y-8 relative pb-20 p-4 lg:p-10">
-        {isNotFound ? (
-            <div class="glass-card p-12 text-center animate-fade-up border border-bearish/20">
-                <div class="text-6xl mb-6 opacity-20">📡</div>
-                <h2 class="text-xl font-black text-white/90 mb-4 tracking-tighter uppercase">Entity Not Found</h2>
-                <p class="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em] mb-8">Unable to establish uplink with target: {symbol}</p>
-                <a href="/screener" class="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-[9px] font-black font-mono text-white/40 hover:text-white hover:border-white/20 transition-all uppercase tracking-[0.3em] no-underline">返回選股中心</a>
-            </div>
-        ) : (
-            <>
-                <!-- Analysis Hero (Molecule) -->
-                <StockAnalysisHero 
-                    symbol={stockData.symbol}
-                    name={stockData.name}
-                    price={stockData.price}
-                    change={stockData.change}
-                    changePercent={stockData.changePercent}
-                    sector={stockData.sector || ''}
-                />
-
-                <!-- Chart & Matrix Sections (Organism) -->
-                <StockChartSection stock={stockData} />
-
-                <!-- Deep Analysis Tabs -->
-                <div class="space-y-6">
-                    <TabBar symbol={symbol} />
-                    
-                    <div id="tab-content" class="min-h-[400px]">
-                        <div id="tab-overview"><TabOverview {...stockData} /></div>
-                        <div id="tab-technical" class="hidden"><TabTechnical symbol={symbol} price={stockData.price} change={stockData.change} priceData={priceHistory} /></div>
-                        <div id="tab-chips" class="hidden"><TabChips symbol={symbol} price={stockData.price} /></div>
-                        <div id="tab-fundamentals" class="hidden"><TabFundamentals 
-                            symbol={symbol} 
-                            pe={stockData.pe} 
-                            pb={stockData.pb} 
-                            yield_={stockData.yield} 
-                            roe={stockData.roe} 
-                            eps={stockData.eps} 
-                            priceData={priceHistory} 
-                        /></div>
-                        <div id="tab-alerts" class="hidden"><TabAlerts 
-                            symbol={symbol} 
-                            name={stockData.name} 
-                            price={stockData.price} 
-                            change={stockData.change} 
-                            changePercent={stockData.changePercent} 
-                        /></div>
-                    </div>
+        {
+            isNotFound ? (
+                <div class="glass-card p-12 text-center animate-fade-up border border-bearish/20">
+                    <div class="text-6xl mb-6 opacity-20">📡</div>
+                    <h2 class="text-xl font-black text-white/90 mb-4 tracking-tighter uppercase">
+                        Entity Not Found
+                    </h2>
+                    <p class="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em] mb-8">
+                        Unable to establish uplink with target: {symbol}
+                    </p>
+                    <a
+                        href="/screener"
+                        class="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-[9px] font-black font-mono text-white/40 hover:text-white hover:border-white/20 transition-all uppercase tracking-[0.3em] no-underline"
+                    >
+                        返回選股中心
+                    </a>
                 </div>
+            ) : (
+                <>
+                    {/* Analysis Hero (Molecule) */}
+                    <StockAnalysisHero
+                        symbol={stockData.symbol}
+                        name={stockData.name}
+                        price={stockData.price}
+                        change={stockData.change}
+                        changePercent={stockData.changePercent}
+                        sector={stockData.sector || ''}
+                    />
 
-                <!-- Footer Signal Stream -->
-                <div class="pt-10 mt-10 border-t border-white/5 flex items-center justify-between">
-                    <ForensicTicker />
-                    <div class="flex items-center gap-4">
-                        <span class="text-[9px] font-mono text-white/20 uppercase tracking-widest">Entity_Status: MONITORED</span>
-                        <div class="w-2 h-2 rounded-full bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
+                    {/* Chart & Matrix Sections (Organism) */}
+                    <StockChartSection stock={stockData} />
+
+                    {/* Deep Analysis Tabs */}
+                    <div class="space-y-6">
+                        <TabBar symbol={symbol} />
+
+                        <div id="tab-content" class="min-h-[400px]">
+                            <div id="tab-overview">
+                                <TabOverview {...stockData} />
+                            </div>
+                            <div id="tab-technical" class="hidden">
+                                <TabTechnical
+                                    symbol={symbol}
+                                    price={stockData.price}
+                                    change={stockData.change}
+                                    priceData={priceHistory}
+                                />
+                            </div>
+                            <div id="tab-chips" class="hidden">
+                                <TabChips symbol={symbol} price={stockData.price} />
+                            </div>
+                            <div id="tab-fundamentals" class="hidden">
+                                <TabFundamentals
+                                    symbol={symbol}
+                                    pe={stockData.pe}
+                                    pb={stockData.pb}
+                                    yield_={stockData.yield}
+                                    roe={stockData.roe}
+                                    eps={stockData.eps}
+                                    priceData={priceHistory}
+                                />
+                            </div>
+                            <div id="tab-alerts" class="hidden">
+                                <TabAlerts
+                                    symbol={symbol}
+                                    name={stockData.name}
+                                    price={stockData.price}
+                                    change={stockData.change}
+                                    changePercent={stockData.changePercent}
+                                />
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </>
-        )}
+
+                    {/* Footer Signal Stream */}
+                    <div class="pt-10 mt-10 border-t border-white/5 flex items-center justify-between">
+                        <ForensicTicker />
+                        <div class="flex items-center gap-4">
+                            <span class="text-[9px] font-mono text-white/20 uppercase tracking-widest">
+                                Entity_Status: MONITORED
+                            </span>
+                            <div class="w-2 h-2 rounded-full bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                        </div>
+                    </div>
+                </>
+            )
+        }
     </div>
 
     <script src="../../scripts/stocks-symbol-engine.ts"></script>

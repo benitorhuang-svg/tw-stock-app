@@ -6,6 +6,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { SMA, RSI, MACD, Stochastic } from 'technicalindicators';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, '..', '..', 'public', 'data', 'stocks.db');
@@ -62,7 +63,7 @@ async function generate() {
     // 3. Populate Valuation Features (Copy from latest_prices)
     db.exec(`
         INSERT OR REPLACE INTO valuation_features (symbol, date, pe_ratio, pb_ratio, dividend_yield)
-        SELECT symbol, date, pe as pe_ratio, pb as pb_ratio, yield as dividend_yield
+        SELECT symbol, date, ROUND(pe, 2) as pe_ratio, ROUND(pb, 2) as pb_ratio, ROUND(yield, 2) as dividend_yield
         FROM latest_prices;
     `);
     console.log('   ✅ Valuation features synced.');
@@ -116,12 +117,68 @@ async function generate() {
     calcChipTx();
     console.log('   ✅ Chip concentration (5D) calculated.');
 
-    // 5. Tech Features (Simplified MA)
-    // 5. Tech Features (Simplified MA)
-    db.exec(`
-        INSERT OR REPLACE INTO tech_features (symbol, date, ma5, ma20)
-        SELECT symbol, date, ma5, ma20 FROM latest_prices;
+    // 5. Tech Features (RSI, MACD, KD, MA)
+    const insertTechFeature = db.prepare(`
+        INSERT OR REPLACE INTO tech_features (symbol, date, ma5, ma20, rsi_14, macd_diff, macd_dea, kd_k, kd_d)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
+
+    const calcTechTx = db.transaction(() => {
+        let count = 0;
+        const round2 = num => (num != null ? Math.round(num * 100) / 100 : null);
+
+        for (const { symbol } of symbols) {
+            const history = db
+                .prepare(
+                    'SELECT date, close, high, low FROM price_history WHERE symbol = ? ORDER BY date ASC'
+                )
+                .all(symbol);
+
+            if (history.length === 0) continue;
+
+            const latestDate = history[history.length - 1].date;
+            const closes = history.map(h => h.close);
+            const highs = history.map(h => h.high);
+            const lows = history.map(h => h.low);
+
+            const ma5 = SMA.calculate({ period: 5, values: closes });
+            const ma20 = SMA.calculate({ period: 20, values: closes });
+            const rsi = RSI.calculate({ period: 14, values: closes });
+
+            const macdVars = MACD.calculate({
+                values: closes,
+                fastPeriod: 12,
+                slowPeriod: 26,
+                signalPeriod: 9,
+                SimpleMAOscillator: false,
+                SimpleMASignal: false,
+            });
+
+            const kd = Stochastic.calculate({
+                high: highs,
+                low: lows,
+                close: closes,
+                period: 9,
+                signalPeriod: 3,
+            });
+
+            insertTechFeature.run(
+                symbol,
+                latestDate,
+                ma5.length > 0 ? round2(ma5[ma5.length - 1]) : null,
+                ma20.length > 0 ? round2(ma20[ma20.length - 1]) : null,
+                rsi.length > 0 ? round2(rsi[rsi.length - 1]) : null,
+                macdVars.length > 0 ? round2(macdVars[macdVars.length - 1].histogram) : null,
+                macdVars.length > 0 ? round2(macdVars[macdVars.length - 1].signal) : null,
+                kd.length > 0 ? round2(kd[kd.length - 1].k) : null,
+                kd.length > 0 ? round2(kd[kd.length - 1].d) : null
+            );
+            count++;
+        }
+        console.log(`      (Processed ${count} stocks with tech features)`);
+    });
+
+    calcTechTx();
     console.log('   ✅ Technical features updated.');
 
     // 6. Mock AI Report (Sample 2330)

@@ -2,16 +2,29 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    export let id: string;
-    export let label: string;
-    export let min = -10;
-    export let max = 10;
-    export let step = 0.5;
-    export let value: number | string = 0;
-    export let unit = '%';
-    export let isMA20 = false;
+    interface Props {
+        id: string;
+        label: string;
+        min?: any;
+        max?: number;
+        step?: number;
+        value?: number | string;
+        unit?: string;
+        isMA20?: boolean;
+    }
 
-    $: num = typeof value === 'string' ? parseFloat(value) : value;
+    let {
+        id,
+        label,
+        min = -10,
+        max = 10,
+        step = 0.5,
+        value = $bindable(0),
+        unit = '%',
+        isMA20 = false
+    }: Props = $props();
+
+    let num = $derived(typeof value === 'string' ? parseFloat(value) : value);
 
     function emit() {
         dispatch('change', num);
@@ -22,15 +35,15 @@
         emit();
     }
 
-    $: displayValue = isMA20 && num === 0 ? 'ALL' : (num > 0 ? '+' : '') + num.toFixed(1) + unit;
-    $: colorClass =
-        isMA20 && num === 0
+    let displayValue = $derived(isMA20 && num === 0 ? 'ALL' : (num > 0 ? '+' : '') + num.toFixed(1) + unit);
+    let colorClass =
+        $derived(isMA20 && num === 0
             ? 'text-accent'
             : num > 0
               ? 'text-bullish'
               : num < 0
                 ? 'text-bearish'
-                : 'text-accent';
+                : 'text-accent');
 </script>
 
 <div
@@ -49,7 +62,7 @@
     </div>
 
     <button
-        on:click={() => adjust(-step)}
+        onclick={() => adjust(-step)}
         class="text-text-muted/40 hover:text-accent transition-colors text-[10px] font-bold px-1"
         >－</button
     >
@@ -62,14 +75,14 @@
             {max}
             {step}
             bind:value
-            on:input={emit}
-            on:change={emit}
+            oninput={emit}
+            onchange={emit}
             class="w-full h-1 bg-glass-elevated rounded-full appearance-none cursor-pointer accent-accent"
         />
     </div>
 
     <button
-        on:click={() => adjust(step)}
+        onclick={() => adjust(step)}
         class="text-text-muted/40 hover:text-accent transition-colors text-[10px] font-bold px-1"
         >＋</button
     >

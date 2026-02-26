@@ -13,7 +13,7 @@
         severity: 'info' | 'warning' | 'success';
     }
 
-    let signals: Signal[] = [];
+    let signals: Signal[] = $state([]);
     const MAX_SIGNALS = 5;
 
     onMount(() => {

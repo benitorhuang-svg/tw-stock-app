@@ -6,12 +6,12 @@
         lists: Record<string, string[]>;
     }
 
-    let store: WatchlistStore = {
+    let store: WatchlistStore = $state({
         active: '默認清單',
         lists: { 默認清單: [] },
-    };
+    });
 
-    let showDropdown = false;
+    let showDropdown = $state(false);
 
     onMount(() => {
         const saved = localStorage.getItem('tw_watchlists');
@@ -93,7 +93,7 @@
 <div class="relative inline-block text-left">
     <button
         class="h-9 px-4 bg-glass border border-border rounded-lg flex items-center gap-2 transition-all group"
-        on:click={() => (showDropdown = !showDropdown)}
+        onclick={() => (showDropdown = !showDropdown)}
     >
         <span class="text-[10px] font-black text-white/40 uppercase tracking-widest font-mono"
             >Watchlist:</span
@@ -103,9 +103,9 @@
     </button>
 
     {#if showDropdown}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <!-- svelte-ignore a11y-no-static-element-interactions -->
-        <div class="fixed inset-0 z-40" on:click={() => (showDropdown = false)}></div>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class="fixed inset-0 z-40" onclick={() => (showDropdown = false)}></div>
 
         <div
             class="absolute right-0 mt-2 w-56 bg-surface-elevated border border-border shadow-2xl rounded-xl z-50 p-2 overflow-hidden animate-fade-in"
@@ -124,7 +124,7 @@
                             name
                                 ? 'text-accent bg-accent/5'
                                 : 'text-text-muted hover:text-white'}"
-                            on:click={() => selectList(name)}
+                            onclick={() => selectList(name)}
                         >
                             {name}
                             <span class="float-right text-[10px] opacity-30"
@@ -134,7 +134,7 @@
                         {#if Object.keys(store.lists).length > 1}
                             <button
                                 class="p-2 opacity-0 group-hover:opacity-40 hover:!opacity-100 text-bearish transition-all"
-                                on:click={() => deleteList(name)}
+                                onclick={() => deleteList(name)}
                             >
                                 ✕
                             </button>
@@ -145,7 +145,7 @@
 
             <button
                 class="w-full mt-2 py-2 px-3 border border-dashed border-border rounded-lg text-[10px] font-black text-text-muted hover:text-accent hover:border-accent/40 transition-all uppercase tracking-widest"
-                on:click={createList}
+                onclick={createList}
             >
                 + 新增清單
             </button>

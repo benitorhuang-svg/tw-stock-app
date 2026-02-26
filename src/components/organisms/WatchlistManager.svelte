@@ -14,9 +14,9 @@
 
     let watchlistSymbols: string[] = [];
     let allStocks: WatchlistStock[] = [];
-    let stocks: WatchlistStock[] = [];
-    let highYield: WatchlistStock[] = [];
-    let isLoading = true;
+    let stocks: WatchlistStock[] = $state([]);
+    let highYield: WatchlistStock[] = $state([]);
+    let isLoading = $state(true);
 
     onMount(async () => {
         watchlistSymbols = getWatchlist();
@@ -154,7 +154,7 @@
                         {#each highYield as s}
                             <tr
                                 class="hover:bg-warning/[0.02] transition-colors cursor-pointer group"
-                                on:click={() => (window.location.href = '/stocks/' + s.symbol)}
+                                onclick={() => (window.location.href = '/stocks/' + s.symbol)}
                             >
                                 <td class="py-5 px-8">
                                     <div class="flex flex-col">

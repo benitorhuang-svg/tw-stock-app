@@ -15,9 +15,9 @@
         };
     }
 
-    let results: ScreenerApiResult[] = [];
-    let isLoading = false;
-    let hasSearched = false;
+    let results: ScreenerApiResult[] = $state([]);
+    let isLoading = $state(false);
+    let hasSearched = $state(false);
 
     onMount(() => {
         const listener = (e: any) => {
@@ -90,11 +90,11 @@
                 </tr>
             {:else}
                 {#each results as s}
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <tr
                         class="hover:bg-accent/[0.04] transition-all group cursor-pointer border-b border-white/[0.02]"
-                        on:click={() => navigateToStock(s.symbol)}
+                        onclick={() => navigateToStock(s.symbol)}
                     >
                         <td class="py-5 px-8">
                             <div class="flex flex-col truncate">

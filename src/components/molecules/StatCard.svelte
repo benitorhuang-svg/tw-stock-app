@@ -1,24 +1,34 @@
 <script lang="ts">
-    export let label: string;
-    export let value: string | number;
-    export let trend: number = 0; // -1, 0, 1
-    export let status: 'normal' | 'low' | 'high' | 'warning' = 'normal';
-    export let icon: string = '';
+    interface Props {
+        label: string;
+        value: string | number;
+        trend?: number; // -1, 0, 1
+        status?: 'normal' | 'low' | 'high' | 'warning';
+        icon?: string;
+    }
 
-    $: trendColor = trend > 0 ? 'text-bullish' : trend < 0 ? 'text-bearish' : 'text-white/40';
-    $: statusColor = {
+    let {
+        label,
+        value,
+        trend = 0,
+        status = 'normal',
+        icon = ''
+    }: Props = $props();
+
+    let trendColor = $derived(trend > 0 ? 'text-bullish' : trend < 0 ? 'text-bearish' : 'text-white/40');
+    let statusColor = $derived({
         normal: 'text-text-muted',
         low: 'text-accent',
         high: 'text-yellow-400',
         warning: 'text-bearish',
-    }[status];
+    }[status]);
 
-    $: glowColor = {
+    let glowColor = $derived({
         normal: 'shadow-white/5',
         low: 'shadow-accent/10',
         high: 'shadow-yellow-400/10',
         warning: 'shadow-bearish/10',
-    }[status];
+    }[status]);
 </script>
 
 <div

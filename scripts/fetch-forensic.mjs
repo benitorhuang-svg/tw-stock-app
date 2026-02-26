@@ -39,10 +39,10 @@ async function main() {
         data.distribution.push({
             symbol,
             total_shareholders: Math.floor(Math.random() * 50000) + 1000,
-            large_holder_400_ratio: Math.random() * 40 + 20,
-            large_holder_1000_ratio: Math.random() * 30 + 10,
-            small_holder_under_10_ratio: Math.random() * 20 + 5,
-            avg_shares_per_holder: Math.random() * 5 + 0.5,
+            large_holder_400_ratio: Number((Math.random() * 40 + 20).toFixed(2)),
+            large_holder_1000_ratio: Number((Math.random() * 30 + 10).toFixed(2)),
+            small_holder_under_10_ratio: Number((Math.random() * 20 + 5).toFixed(2)),
+            avg_shares_per_holder: Number((Math.random() * 5 + 0.5).toFixed(2)),
         });
 
         data.government.push({
@@ -56,7 +56,7 @@ async function main() {
             buy_top5_shares: Math.floor(Math.random() * 5000),
             sell_top5_shares: Math.floor(Math.random() * 5000),
             net_main_player_shares: Math.floor(Math.random() * 2000) - 1000,
-            concentration_ratio: Math.random() * 15 - 5,
+            concentration_ratio: Number((Math.random() * 15 - 5).toFixed(2)),
         });
 
         data.lending.push({
@@ -68,8 +68,8 @@ async function main() {
 
         data.director.push({
             symbol,
-            ratio: Math.random() * 40 + 5,
-            pawn: Math.random() * 15,
+            ratio: Number((Math.random() * 40 + 5).toFixed(2)),
+            pawn: Number((Math.random() * 15).toFixed(2)),
             change: Math.floor(Math.random() * 500) - 200,
         });
 

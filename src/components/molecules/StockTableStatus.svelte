@@ -1,6 +1,10 @@
 <script lang="ts">
-    export let type: 'loading' | 'error' | 'empty' = 'loading';
-    export let message = '';
+    interface Props {
+        type?: 'loading' | 'error' | 'empty';
+        message?: string;
+    }
+
+    let { type = 'loading', message = '' }: Props = $props();
 </script>
 
 <tr>

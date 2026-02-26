@@ -93,7 +93,7 @@ export const POST: APIRoute = async ({ request }) => {
 
             const startProcess = async () => {
                 try {
-                    broadcast('>> [1/4] 正在解析並更新上市櫃股票最新代碼清單...\n');
+                    broadcast('>> [1/4] [清單更新] 正在解析並更新上市櫃股票最新代碼清單...\n');
                     const listCode = await runScript('scripts/fetch-stock-list.mjs');
                     if (listCode !== 0) {
                         broadcast(`\n\n[失敗] 股票清單下載異常，代碼: ${listCode}\n`);
@@ -101,7 +101,7 @@ export const POST: APIRoute = async ({ request }) => {
                     }
 
                     broadcast(
-                        '\n>> [2/4] 正在執行多維度行情同步 (歷史行情、法人籌碼、季度財報、每月營收)...\n'
+                        '\n>> [2/4] [數據與鑑識同步] 正在執行多維度行情同步 (歷史行情、法人籌碼、季度財報、每月營收)...\n'
                     );
 
                     await runScript('scripts/fetch-yahoo.mjs');
@@ -111,27 +111,32 @@ export const POST: APIRoute = async ({ request }) => {
                     await runScript('scripts/fetch-revenue.mjs');
 
                     broadcast(
-                        '\n>> [2.5/4] 正在同步深層鑑識數據 (法人細項、股權分散、官股動態、融資融券)...\n'
+                        '\n>> └─ 正在同步深層鑑識數據 (法人細項、股權分散、官股動態、融資融券)...\n'
                     );
                     await runScript('scripts/crawlers/twse-chips.mjs');
                     await runScript('scripts/crawlers/tdcc-shareholders.mjs');
                     await runScript('scripts/crawlers/twse-margin.mjs');
 
                     broadcast(
-                        '\n>> [3/4] 正在匯總異質資料並建置全系統高速快照系統 (Snapshot)...\n'
+                        '\n>> [3/4] [快照建置] 正在匯總異質資料並建置全系統高速快照系統 (Snapshot)...\n'
                     );
                     const snapCode = await runScript('scripts/build-price-snapshot.js');
                     if (snapCode !== 0) {
                         broadcast(`\n\n[警告] 快照建置程序未正常結束，代碼: ${snapCode}\n`);
                     }
 
-                    broadcast('\n>> [4/4] 正在優化離線 SQLite 資料庫結構並重構全域索引系統...\n');
+                    broadcast(
+                        '\n>> [4/4] [索引優化] 正在優化離線 SQLite 資料庫結構並重構全域索引系統...\n'
+                    );
                     const dbCode = await runScript('scripts/build-sqlite-db.js');
                     if (dbCode === 0) {
+                        broadcast('\n>> [4.5/4] 正在匯入深層鑑識資料 (Forensic Data)...\n');
+                        await runScript('scripts/import-forensic.mjs');
+
                         broadcast('\n>> [最後步驟] 正在提取並運算關鍵籌碼特徵與量化技術指標...\n');
                         await runScript('scripts/etl/generate-all-features.mjs');
                         broadcast(
-                            '\n\n[完成] 全系統數據同步全面完成！系統目前運作於極速離線模式。\n'
+                            '\n\n[完成] [同步完成] 全系統數據同步全面完成！系統目前運作於極速離線模式。\n'
                         );
                     } else {
                         broadcast(`\n\n[錯誤] 資料庫系統建置失敗，代碼: ${dbCode}\n`);

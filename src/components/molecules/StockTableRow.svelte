@@ -1,13 +1,20 @@
 <script lang="ts">
+    import { createBubbler, stopPropagation } from 'svelte/legacy';
+
+    const bubble = createBubbler();
     import PriceBadge from '../atoms/PriceBadge.svelte';
     import WatchlistButton from '../atoms/WatchlistButton.svelte';
     import { createEventDispatcher } from 'svelte';
 
     const dispatch = createEventDispatcher();
 
-    export let stock: any;
-    export let expanded = false;
-    export let isFavorite = false;
+    interface Props {
+        stock: any;
+        expanded?: boolean;
+        isFavorite?: boolean;
+    }
+
+    let { stock, expanded = false, isFavorite = false }: Props = $props();
 
     function colorClass(chg: number) {
         return chg > 0 ? 'clr-bull' : chg < 0 ? 'clr-bear' : 'clr-flat';
@@ -25,7 +32,7 @@
 <tr
     class="group cursor-pointer transition-colors hover:bg-white/[0.02]"
     class:active-row={expanded}
-    on:click={handleClick}
+    onclick={handleClick}
 >
     <td
         class="px-3 py-3 border-r border-border/30"
@@ -71,7 +78,7 @@
         <a
             href={`/stocks/${stock.Code}`}
             class="analysis-link opacity-0 group-hover:opacity-100"
-            on:click|stopPropagation
+            onclick={stopPropagation(bubble('click'))}
         >
             Analysis ↗
         </a>

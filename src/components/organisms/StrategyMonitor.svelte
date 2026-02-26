@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from 'svelte';
 
-    let data: any[] = [];
-    let stats = { winRate: 0, avgReturn: 0, samples: 0 };
-    let isLoading = true;
+    let data: any[] = $state([]);
+    let stats = $state({ winRate: 0, avgReturn: 0, samples: 0 });
+    let isLoading = $state(true);
 
     async function runBacktest() {
         isLoading = true;

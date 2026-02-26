@@ -12,11 +12,11 @@
     }
 
     let allStocks: StockSnapshot[] = [];
-    let searchQuery = '';
-    let matches: StockSnapshot[] = [];
-    let recentStocks: StockSnapshot[] = [];
-    let dividendStocks: StockSnapshot[] = [];
-    let isLoading = true;
+    let searchQuery = $state('');
+    let matches: StockSnapshot[] = $state([]);
+    let recentStocks: StockSnapshot[] = $state([]);
+    let dividendStocks: StockSnapshot[] = $state([]);
+    let isLoading = $state(true);
 
     onMount(async () => {
         try {
@@ -74,7 +74,7 @@
             <input
                 type="text"
                 bind:value={searchQuery}
-                on:input={handleSearch}
+                oninput={handleSearch}
                 placeholder="INPUT_ENTITY_IDENTITY_OR_SYMBOL..."
                 class="flex-1 bg-transparent border-none outline-none text-white font-black font-mono tracking-widest placeholder:text-white/10 uppercase"
             />
@@ -91,7 +91,7 @@
                 <div class="p-2">
                     {#each matches as s}
                         <button
-                            on:click={() => selectStock(s.symbol)}
+                            onclick={() => selectStock(s.symbol)}
                             class="w-full search-result-item flex items-center justify-between p-4 rounded-xl hover:bg-white/[0.04] transition-all group"
                         >
                             <div class="flex items-center gap-4">
@@ -205,7 +205,7 @@
                         {#each dividendStocks as s}
                             <tr
                                 class="hover:bg-warning/[0.02] transition-colors cursor-pointer group"
-                                on:click={() => (window.location.href = '/stocks/' + s.symbol)}
+                                onclick={() => (window.location.href = '/stocks/' + s.symbol)}
                             >
                                 <td class="py-4 px-8">
                                     <div class="flex flex-col">

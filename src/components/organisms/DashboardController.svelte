@@ -1,20 +1,35 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
 
-    // Initial data from SSR
-    export let upCount = 0;
-    export let downCount = 0;
-    export let flatCount = 0;
-    export let totalVolume = 0;
-    export let avgChange = 0;
-    export let dataDate = '';
-    export let gainers: any[] = [];
-    export let losers: any[] = [];
-    export let topVolume: any[] = [];
+    
+    interface Props {
+        // Initial data from SSR
+        upCount?: number;
+        downCount?: number;
+        flatCount?: number;
+        totalVolume?: number;
+        avgChange?: number;
+        dataDate?: string;
+        gainers?: any[];
+        losers?: any[];
+        topVolume?: any[];
+    }
+
+    let {
+        upCount = $bindable(0),
+        downCount = $bindable(0),
+        flatCount = $bindable(0),
+        totalVolume = $bindable(0),
+        avgChange = $bindable(0),
+        dataDate = $bindable(''),
+        gainers = $bindable([]),
+        losers = $bindable([]),
+        topVolume = $bindable([])
+    }: Props = $props();
 
     // Local state
     let activeSSE: EventSource | null = null;
-    let isLive = false;
+    let isLive = $state(false);
 
     // Formatting helpers
     function fmtVol(v: number): string {
@@ -98,11 +113,11 @@
         }
     }
 
-    $: ratio = downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX';
-    $: total = upCount + downCount + flatCount;
-    $: barUp = total > 0 ? (upCount / total) * 100 : 0;
-    $: barDown = total > 0 ? (downCount / total) * 100 : 0;
-    $: barFlat = total > 0 ? (flatCount / total) * 100 : 0;
+    let ratio = $derived(downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX');
+    let total = $derived(upCount + downCount + flatCount);
+    let barUp = $derived(total > 0 ? (upCount / total) * 100 : 0);
+    let barDown = $derived(total > 0 ? (downCount / total) * 100 : 0);
+    let barFlat = $derived(total > 0 ? (flatCount / total) * 100 : 0);
 </script>
 
 <div class="space-y-8 animate-fade-up">
@@ -230,7 +245,7 @@
                 <div class="relative group/input">
                     <input
                         type="date"
-                        on:change={syncHistoricalData}
+                        onchange={syncHistoricalData}
                         class="bg-white/5 border border-white/10 rounded px-2 py-1 text-[9px] font-mono text-white/40 outline-none focus:border-accent/50 transition-colors uppercase"
                     />
                 </div>

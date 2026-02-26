@@ -3,10 +3,19 @@
     (Standardizing the sticky behavior) */
     import StockHeaderCell from './StockHeaderCell.svelte';
 
-    export let headers: any[];
-    export let currentSortCol: string;
-    export let currentSortAsc: boolean;
-    export let onSort: (col: string) => void;
+    interface Props {
+        headers: any[];
+        currentSortCol: string;
+        currentSortAsc: boolean;
+        onSort: (col: string) => void;
+    }
+
+    let {
+        headers,
+        currentSortCol,
+        currentSortAsc,
+        onSort
+    }: Props = $props();
 </script>
 
 <thead class="z-30">

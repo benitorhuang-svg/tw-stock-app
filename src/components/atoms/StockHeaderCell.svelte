@@ -2,11 +2,21 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    export let label: string;
-    export let col: string;
-    export let currentSortCol: string;
-    export let currentSortAsc: boolean;
-    export let stickyTop = '0px';
+    interface Props {
+        label: string;
+        col: string;
+        currentSortCol: string;
+        currentSortAsc: boolean;
+        stickyTop?: string;
+    }
+
+    let {
+        label,
+        col,
+        currentSortCol,
+        currentSortAsc,
+        stickyTop = '0px'
+    }: Props = $props();
 
     function handleClick() {
         if (col) dispatch('sort', col);
@@ -18,7 +28,7 @@
     class:cursor-pointer={!!col}
     class:hover:text-accent={!!col}
     style="top: {stickyTop};"
-    on:click={handleClick}
+    onclick={handleClick}
 >
     {#if label}
         <span class="inline-flex items-center gap-1 justify-center">

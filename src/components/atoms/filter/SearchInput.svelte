@@ -2,9 +2,13 @@
     import { createEventDispatcher } from 'svelte';
     const dispatch = createEventDispatcher();
 
-    export let id: string;
-    export let placeholder = '搜尋...';
-    export let value = '';
+    interface Props {
+        id: string;
+        placeholder?: string;
+        value?: string;
+    }
+
+    let { id, placeholder = '搜尋...', value = $bindable('') }: Props = $props();
 
     function handleInput(e: Event) {
         dispatch('input', value);
@@ -30,7 +34,7 @@
         type="text"
         {id}
         bind:value
-        on:input={handleInput}
+        oninput={handleInput}
         {placeholder}
         class="w-[100px] h-8 pl-9 pr-2 bg-glass border border-border focus:border-accent/30 focus:bg-glass-hover rounded-full text-[10px] font-bold placeholder:text-text-muted/50 transition-all outline-none"
     />

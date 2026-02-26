@@ -1,17 +1,22 @@
 <script lang="ts">
-    /**
+    
+    interface Props {
+        /**
      * PriceBadge.svelte - Atomic Badge for change/variance
      * Part of Atomic Design: Atoms
      */
-    export let value: number;
-    export let isPct = false;
-    export let pClose = 0; // Reference price for null check
+        value: number;
+        isPct?: boolean;
+        pClose?: number; // Reference price for null check
+    }
 
-    $: isUp = value > 0;
-    $: isDown = value < 0;
-    $: displayValue =
-        (isUp ? '+' : '') +
-        (pClose > 0 ? (isPct ? value.toFixed(2) + '%' : value.toFixed(2)) : '—');
+    let { value, isPct = false, pClose = 0 }: Props = $props();
+
+    let isUp = $derived(value > 0);
+    let isDown = $derived(value < 0);
+    let displayValue =
+        $derived((isUp ? '+' : '') +
+        (pClose > 0 ? (isPct ? value.toFixed(2) + '%' : value.toFixed(2)) : '—'));
 </script>
 
 <div

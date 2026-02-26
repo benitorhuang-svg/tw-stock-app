@@ -100,7 +100,10 @@ const { tables, tableStats } = Astro.props;
                                     {t.name}
                                 </span>
                             </div>
-                            <span class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors">
+                            <span
+                                class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors"
+                                data-table-count={t.name}
+                            >
                                 {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
                             </span>
                         </button>

@@ -214,6 +214,7 @@ try {
         large_holder_400_ratio REAL,
         large_holder_1000_ratio REAL,
         small_holder_under_10_ratio REAL,
+        avg_shares_per_holder REAL,
         PRIMARY KEY (symbol, date)
     );
 
@@ -230,6 +231,8 @@ try {
     CREATE TABLE major_broker_chips (
         symbol TEXT NOT NULL,
         date TEXT NOT NULL,
+        buy_top5_shares INTEGER,
+        sell_top5_shares INTEGER,
         net_main_player_shares INTEGER,
         concentration_ratio REAL,
         PRIMARY KEY (symbol, date)
@@ -603,98 +606,7 @@ if (fs.existsSync(CHIPS_DIR)) {
     console.log(`✅ 已載入 ${files.length} 個日期的籌碼數據\n`);
 }
 
-// 載入深層鑑識數據 (Forensic Data)
-const FORENSIC_DIR = path.join(DATA_DIR, 'forensic');
-if (fs.existsSync(FORENSIC_DIR)) {
-    console.log('🔍 正在匯入深層鑑識資料庫...');
-
-    // 1. 股權分散
-    const distPath = path.join(FORENSIC_DIR, 'shareholder_distribution.json');
-    if (fs.existsSync(distPath)) {
-        const data = JSON.parse(fs.readFileSync(distPath, 'utf-8'));
-        const stmt = db.prepare(
-            'INSERT OR REPLACE INTO shareholder_distribution VALUES (?, ?, ?, ?, ?, ?)'
-        );
-        const tx = db.transaction(rows => {
-            for (const r of rows)
-                stmt.run(
-                    r.symbol,
-                    r.date,
-                    r.total_shareholders,
-                    r.large_holder_400_ratio,
-                    r.large_holder_1000_ratio,
-                    r.small_holder_under_10_ratio || 0
-                );
-        });
-        tx(data);
-        console.log('   ✅ 股權分散數據匯入完成');
-    }
-
-    // 2. 官股動態
-    const govPath = path.join(FORENSIC_DIR, 'government_chips.json');
-    if (fs.existsSync(govPath)) {
-        const data = JSON.parse(fs.readFileSync(govPath, 'utf-8'));
-        const stmt = db.prepare('INSERT OR REPLACE INTO government_chips VALUES (?, ?, ?, ?)');
-        const tx = db.transaction(rows => {
-            for (const r of rows) stmt.run(r.symbol, r.date, r.net_buy_shares, r.net_buy_amount);
-        });
-        tx(data);
-        console.log('   ✅ 官股買賣數據匯入完成');
-    }
-
-    // 3. 借券數據
-    const lendPath = path.join(FORENSIC_DIR, 'security_lending.json');
-    if (fs.existsSync(lendPath)) {
-        const data = JSON.parse(fs.readFileSync(lendPath, 'utf-8'));
-        const stmt = db.prepare('INSERT OR REPLACE INTO security_lending VALUES (?, ?, ?, ?, ?)');
-        const tx = db.transaction(rows => {
-            for (const r of rows)
-                stmt.run(
-                    r.symbol,
-                    r.date,
-                    r.lending_balance,
-                    r.short_selling_balance,
-                    r.shorting_limit || 0
-                );
-        });
-        tx(data);
-        console.log('   ✅ 借券賣出數據匯入完成');
-    }
-
-    // 4. 董監持股
-    const dirPath = path.join(FORENSIC_DIR, 'director_holdings.json');
-    if (fs.existsSync(dirPath)) {
-        const data = JSON.parse(fs.readFileSync(dirPath, 'utf-8'));
-        const stmt = db.prepare('INSERT OR REPLACE INTO director_holdings VALUES (?, ?, ?, ?, ?)');
-        const tx = db.transaction(rows => {
-            for (const r of rows)
-                stmt.run(
-                    r.symbol,
-                    r.date,
-                    r.director_holding_ratio,
-                    r.pawn_ratio,
-                    r.insider_net_change
-                );
-        });
-        tx(data);
-        console.log('   ✅ 董監持股數據匯入完成');
-    }
-
-    // 5. 融資融券
-    const marginPath = path.join(FORENSIC_DIR, 'margin_short.json');
-    if (fs.existsSync(marginPath)) {
-        const data = JSON.parse(fs.readFileSync(marginPath, 'utf8'));
-        const stmt = db.prepare('INSERT OR REPLACE INTO margin_short VALUES (?, ?, ?, ?, ?, ?)');
-        const tx = db.transaction(rows => {
-            for (const r of rows)
-                stmt.run(r.symbol, r.date, r.margin_bal, r.margin_net, r.short_bal, r.short_net);
-        });
-        tx(data);
-        console.log('   ✅ 融資融券數據匯入完成');
-    }
-
-    console.log('');
-}
+// Schema generation and data initialization complete
 
 // 處理 CSV 歷史價格
 console.log('📈 正在掃描 CSV 歷史價格檔案...');
