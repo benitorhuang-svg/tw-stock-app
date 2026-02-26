@@ -3,14 +3,14 @@
     "symbol": "1101",
     "name": "台泥",
     "peRatio": 0,
-    "dividendYield": 3.77,
+    "dividendYield": 3.79,
     "pbRatio": 0.91
   },
   {
     "symbol": "1102",
     "name": "亞泥",
-    "peRatio": 10.69,
-    "dividendYield": 6.15,
+    "peRatio": 10.7,
+    "dividendYield": 6.14,
     "pbRatio": 0.73
   },
   {
@@ -23,16 +23,16 @@
   {
     "symbol": "1104",
     "name": "環泥",
-    "peRatio": 12.83,
-    "dividendYield": 5.64,
+    "peRatio": 12.79,
+    "dividendYield": 5.66,
     "pbRatio": 0.89
   },
   {
     "symbol": "1108",
     "name": "幸福",
-    "peRatio": 6.52,
-    "dividendYield": 4.92,
-    "pbRatio": 1.08
+    "peRatio": 6.54,
+    "dividendYield": 4.9,
+    "pbRatio": 1.09
   },
   {
     "symbol": "1109",
@@ -44,114 +44,114 @@
   {
     "symbol": "1110",
     "name": "東泥",
-    "peRatio": 42.18,
-    "dividendYield": 1.82,
-    "pbRatio": 0.99
+    "peRatio": 42.82,
+    "dividendYield": 1.8,
+    "pbRatio": 1.01
   },
   {
     "symbol": "1201",
     "name": "味全",
-    "peRatio": 25.98,
-    "dividendYield": 3.44,
-    "pbRatio": 0.98
+    "peRatio": 26.07,
+    "dividendYield": 3.42,
+    "pbRatio": 0.99
   },
   {
     "symbol": "1203",
     "name": "味王",
-    "peRatio": 19.9,
-    "dividendYield": 2.93,
-    "pbRatio": 1.6
+    "peRatio": 20.02,
+    "dividendYield": 2.91,
+    "pbRatio": 1.61
   },
   {
     "symbol": "1210",
     "name": "大成",
-    "peRatio": 13,
-    "dividendYield": 5.54,
-    "pbRatio": 1.73
+    "peRatio": 12.95,
+    "dividendYield": 5.56,
+    "pbRatio": 1.72
   },
   {
     "symbol": "1213",
     "name": "大飲",
-    "peRatio": 1.11,
-    "dividendYield": 3.59,
-    "pbRatio": 0.83
+    "peRatio": 1.12,
+    "dividendYield": 3.54,
+    "pbRatio": 0.84
   },
   {
     "symbol": "1215",
     "name": "卜蜂",
-    "peRatio": 14.77,
-    "dividendYield": 2.98,
-    "pbRatio": 3.83
+    "peRatio": 14.92,
+    "dividendYield": 4.59,
+    "pbRatio": 3.87
   },
   {
     "symbol": "1216",
     "name": "統一",
-    "peRatio": 21.47,
-    "dividendYield": 4.02,
-    "pbRatio": 3.32
+    "peRatio": 20.83,
+    "dividendYield": 4.14,
+    "pbRatio": 3.23
   },
   {
     "symbol": "1217",
     "name": "愛之味",
-    "peRatio": 39.07,
-    "dividendYield": 3.51,
+    "peRatio": 38.89,
+    "dividendYield": 3.52,
     "pbRatio": 0.69
   },
   {
     "symbol": "1218",
     "name": "泰山",
-    "peRatio": 13.93,
-    "dividendYield": 7.4,
+    "peRatio": 13.97,
+    "dividendYield": 7.38,
     "pbRatio": 0.7
   },
   {
     "symbol": "1219",
     "name": "福壽",
-    "peRatio": 31.63,
-    "dividendYield": 3.68,
+    "peRatio": 31.74,
+    "dividendYield": 3.66,
     "pbRatio": 1.03
   },
   {
     "symbol": "1220",
     "name": "台榮",
-    "peRatio": 52.4,
-    "dividendYield": 5.34,
+    "peRatio": 52.8,
+    "dividendYield": 5.3,
     "pbRatio": 0.99
   },
   {
     "symbol": "1225",
     "name": "福懋油",
-    "peRatio": 21,
-    "dividendYield": 2.35,
-    "pbRatio": 1.88
+    "peRatio": 21.21,
+    "dividendYield": 2.32,
+    "pbRatio": 1.9
   },
   {
     "symbol": "1227",
     "name": "佳格",
-    "peRatio": 20.68,
-    "dividendYield": 4.64,
-    "pbRatio": 1.54
+    "peRatio": 20.55,
+    "dividendYield": 4.67,
+    "pbRatio": 1.53
   },
   {
     "symbol": "1229",
     "name": "聯華",
-    "peRatio": 17.44,
-    "dividendYield": 4.03,
+    "peRatio": 17.52,
+    "dividendYield": 4.01,
     "pbRatio": 1.4
   },
   {
     "symbol": "1231",
     "name": "聯華食",
-    "peRatio": 24.35,
-    "dividendYield": 2.96,
-    "pbRatio": 3.88
+    "peRatio": 23.96,
+    "dividendYield": 3.01,
+    "pbRatio": 3.82
   },
   {
     "symbol": "1232",
     "name": "大統益",
-    "peRatio": 18.82,
+    "peRatio": 18.34,
     "dividendYield": 4.62,
-    "pbRatio": 4.4
+    "pbRatio": 4.1
   },
   {
     "symbol": "1233",
@@ -163,100 +163,100 @@
   {
     "symbol": "1234",
     "name": "黑松",
-    "peRatio": 19.01,
-    "dividendYield": 5.1,
+    "peRatio": 19.03,
+    "dividendYield": 5.09,
     "pbRatio": 0.8
   },
   {
     "symbol": "1235",
     "name": "興泰",
     "peRatio": 0,
-    "dividendYield": 5.68,
-    "pbRatio": 0.6
+    "dividendYield": 5.46,
+    "pbRatio": 0.62
   },
   {
     "symbol": "1236",
     "name": "宏亞",
     "peRatio": 0,
-    "dividendYield": 2.28,
-    "pbRatio": 0.91
+    "dividendYield": 6.19,
+    "pbRatio": 0.92
   },
   {
     "symbol": "1256",
     "name": "鮮活果汁-KY",
-    "peRatio": 16.08,
-    "dividendYield": 3.02,
+    "peRatio": 16.13,
+    "dividendYield": 3.01,
     "pbRatio": 1.54
   },
   {
     "symbol": "1301",
     "name": "台塑",
     "peRatio": 0,
-    "dividendYield": 0.94,
-    "pbRatio": 1.16
+    "dividendYield": 0.97,
+    "pbRatio": 1.13
   },
   {
     "symbol": "1303",
     "name": "南亞",
     "peRatio": 0,
-    "dividendYield": 0.74,
-    "pbRatio": 2.29
+    "dividendYield": 0.76,
+    "pbRatio": 2.21
   },
   {
     "symbol": "1304",
     "name": "台聚",
     "peRatio": 0,
-    "dividendYield": 1.57,
-    "pbRatio": 0.76
+    "dividendYield": 1.63,
+    "pbRatio": 0.73
   },
   {
     "symbol": "1305",
     "name": "華夏",
     "peRatio": 0,
-    "dividendYield": 1.17,
-    "pbRatio": 0.95
+    "dividendYield": 1.21,
+    "pbRatio": 0.92
   },
   {
     "symbol": "1307",
     "name": "三芳",
-    "peRatio": 12.21,
-    "dividendYield": 7.47,
-    "pbRatio": 1.52
+    "peRatio": 11.91,
+    "dividendYield": 7.66,
+    "pbRatio": 1.49
   },
   {
     "symbol": "1308",
     "name": "亞聚",
     "peRatio": 0,
-    "dividendYield": 1.74,
-    "pbRatio": 0.81
+    "dividendYield": 1.79,
+    "pbRatio": 0.79
   },
   {
     "symbol": "1309",
     "name": "台達化",
     "peRatio": 0,
-    "dividendYield": 1.57,
-    "pbRatio": 0.89
+    "dividendYield": 1.61,
+    "pbRatio": 0.87
   },
   {
     "symbol": "1310",
     "name": "台苯",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.73
+    "pbRatio": 0.72
   },
   {
     "symbol": "1312",
     "name": "國喬",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.55
+    "pbRatio": 0.53
   },
   {
     "symbol": "1313",
     "name": "聯成",
     "peRatio": 0,
-    "dividendYield": 1.33,
-    "pbRatio": 0.51
+    "dividendYield": 1.35,
+    "pbRatio": 0.5
   },
   {
     "symbol": "1314",
@@ -268,22 +268,22 @@
   {
     "symbol": "1315",
     "name": "達新",
-    "peRatio": 40,
-    "dividendYield": 7.62,
-    "pbRatio": 0.67
+    "peRatio": 39.82,
+    "dividendYield": 7.66,
+    "pbRatio": 0.66
   },
   {
     "symbol": "1316",
     "name": "上曜",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.14
+    "pbRatio": 1.12
   },
   {
     "symbol": "1319",
     "name": "東陽",
-    "peRatio": 15.27,
-    "dividendYield": 5.32,
+    "peRatio": 15.28,
+    "dividendYield": 5.31,
     "pbRatio": 2.21
   },
   {
@@ -296,86 +296,86 @@
   {
     "symbol": "1323",
     "name": "永裕",
-    "peRatio": 186.5,
-    "dividendYield": 4.83,
+    "peRatio": 187,
+    "dividendYield": 4.81,
     "pbRatio": 0.69
   },
   {
     "symbol": "1324",
     "name": "地球",
     "peRatio": 0,
-    "dividendYield": 1.87,
-    "pbRatio": 0.9
+    "dividendYield": 1.88,
+    "pbRatio": 0.89
   },
   {
     "symbol": "1325",
     "name": "恆大",
     "peRatio": 0,
     "dividendYield": 1.03,
-    "pbRatio": 0.97
+    "pbRatio": 0.96
   },
   {
     "symbol": "1326",
     "name": "台化",
     "peRatio": 0,
-    "dividendYield": 1.02,
-    "pbRatio": 1.03
+    "dividendYield": 0.98,
+    "pbRatio": 1.06
   },
   {
     "symbol": "1337",
     "name": "再生-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.41
+    "pbRatio": 0.4
   },
   {
     "symbol": "1338",
     "name": "廣華-KY",
     "peRatio": 0,
-    "dividendYield": 4.2,
+    "dividendYield": 4.22,
     "pbRatio": 0.27
   },
   {
     "symbol": "1339",
     "name": "昭輝",
-    "peRatio": 21.06,
-    "dividendYield": 6.88,
-    "pbRatio": 0.82
+    "peRatio": 21.35,
+    "dividendYield": 6.79,
+    "pbRatio": 0.84
   },
   {
     "symbol": "1340",
     "name": "勝悅-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.41
+    "pbRatio": 0.4
   },
   {
     "symbol": "1341",
     "name": "富林-KY",
-    "peRatio": 15.61,
-    "dividendYield": 8.31,
-    "pbRatio": 2.81
+    "peRatio": 15.46,
+    "dividendYield": 8.39,
+    "pbRatio": 2.78
   },
   {
     "symbol": "1342",
     "name": "八貫",
-    "peRatio": 18.13,
-    "dividendYield": 5.83,
-    "pbRatio": 3.35
+    "peRatio": 17.87,
+    "dividendYield": 5.91,
+    "pbRatio": 3.3
   },
   {
     "symbol": "1402",
     "name": "遠東新",
-    "peRatio": 18.01,
-    "dividendYield": 5.62,
-    "pbRatio": 0.68
+    "peRatio": 18.23,
+    "dividendYield": 5.56,
+    "pbRatio": 0.69
   },
   {
     "symbol": "1409",
     "name": "新纖",
-    "peRatio": 13.15,
-    "dividendYield": 3.83,
-    "pbRatio": 0.64
+    "peRatio": 13.07,
+    "dividendYield": 3.86,
+    "pbRatio": 0.63
   },
   {
     "symbol": "1410",
@@ -387,22 +387,22 @@
   {
     "symbol": "1413",
     "name": "宏洲",
-    "peRatio": 23.07,
+    "peRatio": 22.73,
     "dividendYield": 0,
-    "pbRatio": 1.19
+    "pbRatio": 1.17
   },
   {
     "symbol": "1414",
     "name": "東和",
-    "peRatio": 166.67,
-    "dividendYield": 1.15,
-    "pbRatio": 1.42
+    "peRatio": 165.42,
+    "dividendYield": 1.16,
+    "pbRatio": 1.41
   },
   {
     "symbol": "1416",
     "name": "廣豐",
-    "peRatio": 15.06,
-    "dividendYield": 4.77,
+    "peRatio": 15.13,
+    "dividendYield": 4.75,
     "pbRatio": 0.52
   },
   {
@@ -417,68 +417,68 @@
     "name": "東華",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.9
+    "pbRatio": 0.92
   },
   {
     "symbol": "1419",
     "name": "新紡",
-    "peRatio": 14.98,
-    "dividendYield": 2.25,
-    "pbRatio": 1.16
+    "peRatio": 15.2,
+    "dividendYield": 2.21,
+    "pbRatio": 1.17
   },
   {
     "symbol": "1423",
     "name": "利華",
-    "peRatio": 8.95,
-    "dividendYield": 2.09,
-    "pbRatio": 0.97
+    "peRatio": 8.92,
+    "dividendYield": 2.1,
+    "pbRatio": 0.96
   },
   {
     "symbol": "1432",
     "name": "大魯閣",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2
+    "pbRatio": 1.99
   },
   {
     "symbol": "1434",
     "name": "福懋",
-    "peRatio": 52.71,
-    "dividendYield": 4.34,
-    "pbRatio": 0.83
+    "peRatio": 52.29,
+    "dividendYield": 4.37,
+    "pbRatio": 0.82
   },
   {
     "symbol": "1435",
     "name": "中福",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.96
+    "pbRatio": 2.97
   },
   {
     "symbol": "1436",
     "name": "華友聯",
-    "peRatio": 8.81,
-    "dividendYield": 21.68,
-    "pbRatio": 1.74
+    "peRatio": 11.34,
+    "dividendYield": 22.55,
+    "pbRatio": 1.7
   },
   {
     "symbol": "1437",
     "name": "勤益控",
-    "peRatio": 15.81,
-    "dividendYield": 4.07,
-    "pbRatio": 0.81
+    "peRatio": 15.86,
+    "dividendYield": 4.05,
+    "pbRatio": 0.82
   },
   {
     "symbol": "1438",
     "name": "三地開發",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.38
+    "pbRatio": 1.35
   },
   {
     "symbol": "1439",
     "name": "雋揚",
-    "peRatio": 10.5,
+    "peRatio": 10.54,
     "dividendYield": 1.02,
     "pbRatio": 0.95
   },
@@ -486,7 +486,7 @@
     "symbol": "1440",
     "name": "南紡",
     "peRatio": 0,
-    "dividendYield": 2.24,
+    "dividendYield": 2.23,
     "pbRatio": 0.81
   },
   {
@@ -494,21 +494,21 @@
     "name": "大東",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.55
+    "pbRatio": 1.54
   },
   {
     "symbol": "1442",
     "name": "名軒",
-    "peRatio": 7.63,
-    "dividendYield": 15.57,
-    "pbRatio": 1.36
+    "peRatio": 7.59,
+    "dividendYield": 15.65,
+    "pbRatio": 1.35
   },
   {
     "symbol": "1443",
     "name": "立益物流",
-    "peRatio": 35.51,
+    "peRatio": 34.36,
     "dividendYield": 0,
-    "pbRatio": 1.64
+    "pbRatio": 1.58
   },
   {
     "symbol": "1444",
@@ -521,8 +521,8 @@
     "symbol": "1445",
     "name": "大宇",
     "peRatio": 0,
-    "dividendYield": 3.29,
-    "pbRatio": 0.87
+    "dividendYield": 3.34,
+    "pbRatio": 0.86
   },
   {
     "symbol": "1446",
@@ -548,15 +548,15 @@
   {
     "symbol": "1451",
     "name": "年興",
-    "peRatio": 10.51,
-    "dividendYield": 5.41,
-    "pbRatio": 0.51
+    "peRatio": 10.45,
+    "dividendYield": 5.43,
+    "pbRatio": 0.5
   },
   {
     "symbol": "1452",
     "name": "宏益",
     "peRatio": 0,
-    "dividendYield": 4.31,
+    "dividendYield": 4.33,
     "pbRatio": 0.57
   },
   {
@@ -570,50 +570,50 @@
     "symbol": "1454",
     "name": "台富",
     "peRatio": 0,
-    "dividendYield": 1.77,
-    "pbRatio": 1.2
+    "dividendYield": 1.75,
+    "pbRatio": 1.21
   },
   {
     "symbol": "1455",
     "name": "集盛",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.75
+    "pbRatio": 0.74
   },
   {
     "symbol": "1456",
     "name": "怡華",
-    "peRatio": 10.51,
+    "peRatio": 10.28,
     "dividendYield": 0,
-    "pbRatio": 0.82
+    "pbRatio": 0.8
   },
   {
     "symbol": "1457",
     "name": "宜進",
-    "peRatio": 39.27,
-    "dividendYield": 6.21,
-    "pbRatio": 0.73
+    "peRatio": 39.02,
+    "dividendYield": 6.25,
+    "pbRatio": 0.72
   },
   {
     "symbol": "1459",
     "name": "聯發",
-    "peRatio": 15.43,
-    "dividendYield": 1.6,
-    "pbRatio": 1.13
+    "peRatio": 15.31,
+    "dividendYield": 1.61,
+    "pbRatio": 1.12
   },
   {
     "symbol": "1460",
     "name": "宏遠",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.83
+    "pbRatio": 0.84
   },
   {
     "symbol": "1463",
     "name": "強盛新",
-    "peRatio": 5.01,
-    "dividendYield": 11.41,
-    "pbRatio": 1.17
+    "peRatio": 5.03,
+    "dividendYield": 11.38,
+    "pbRatio": 1.18
   },
   {
     "symbol": "1464",
@@ -634,19 +634,19 @@
     "name": "聚隆",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.3
+    "pbRatio": 1.42
   },
   {
     "symbol": "1467",
     "name": "南緯",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.64
+    "pbRatio": 0.65
   },
   {
     "symbol": "1468",
     "name": "昶和",
-    "peRatio": 134.5,
+    "peRatio": 135,
     "dividendYield": 0,
     "pbRatio": 1.61
   },
@@ -662,21 +662,21 @@
     "name": "首利",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.31
+    "pbRatio": 1.43
   },
   {
     "symbol": "1472",
     "name": "三洋實業",
-    "peRatio": 14.04,
-    "dividendYield": 3.32,
-    "pbRatio": 2.14
+    "peRatio": 14.13,
+    "dividendYield": 3.3,
+    "pbRatio": 2.15
   },
   {
     "symbol": "1473",
     "name": "台南",
-    "peRatio": 20.4,
-    "dividendYield": 7.91,
-    "pbRatio": 0.99
+    "peRatio": 20.32,
+    "dividendYield": 7.94,
+    "pbRatio": 0.98
   },
   {
     "symbol": "1474",
@@ -695,9 +695,9 @@
   {
     "symbol": "1476",
     "name": "儒鴻",
-    "peRatio": 20.62,
-    "dividendYield": 4.01,
-    "pbRatio": 4.19
+    "peRatio": 20.57,
+    "dividendYield": 4.02,
+    "pbRatio": 4.18
   },
   {
     "symbol": "1477",
@@ -709,16 +709,16 @@
   {
     "symbol": "1503",
     "name": "士電",
-    "peRatio": 36.11,
-    "dividendYield": 1.98,
-    "pbRatio": 3.26
+    "peRatio": 37.46,
+    "dividendYield": 1.91,
+    "pbRatio": 3.38
   },
   {
     "symbol": "1504",
     "name": "東元",
-    "peRatio": 35.91,
-    "dividendYield": 2.66,
-    "pbRatio": 2.21
+    "peRatio": 36.04,
+    "dividendYield": 2.65,
+    "pbRatio": 2.22
   },
   {
     "symbol": "1506",
@@ -732,49 +732,49 @@
     "name": "瑞利",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.25
+    "pbRatio": 1.24
   },
   {
     "symbol": "1513",
     "name": "中興電",
-    "peRatio": 22.11,
-    "dividendYield": 2.7,
-    "pbRatio": 4.29
+    "peRatio": 22.76,
+    "dividendYield": 2.62,
+    "pbRatio": 4.41
   },
   {
     "symbol": "1514",
     "name": "亞力",
-    "peRatio": 43.21,
-    "dividendYield": 1.46,
-    "pbRatio": 5.89
+    "peRatio": 42.38,
+    "dividendYield": 1.48,
+    "pbRatio": 5.77
   },
   {
     "symbol": "1515",
     "name": "力山",
     "peRatio": 0,
-    "dividendYield": 3.7,
-    "pbRatio": 1.31
+    "dividendYield": 3.78,
+    "pbRatio": 1.29
   },
   {
     "symbol": "1516",
     "name": "川飛",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.03
+    "pbRatio": 4.22
   },
   {
     "symbol": "1517",
     "name": "利奇",
     "peRatio": 0,
-    "dividendYield": 1.65,
-    "pbRatio": 0.79
+    "dividendYield": 1.61,
+    "pbRatio": 0.81
   },
   {
     "symbol": "1519",
     "name": "華城",
-    "peRatio": 77.04,
-    "dividendYield": 0.95,
-    "pbRatio": 37.85
+    "peRatio": 78.5,
+    "dividendYield": 0.93,
+    "pbRatio": 38.57
   },
   {
     "symbol": "1521",
@@ -786,86 +786,86 @@
   {
     "symbol": "1522",
     "name": "堤維西",
-    "peRatio": 41.08,
-    "dividendYield": 6.89,
-    "pbRatio": 1.55
+    "peRatio": 41.51,
+    "dividendYield": 6.82,
+    "pbRatio": 1.56
   },
   {
     "symbol": "1524",
     "name": "耿鼎",
-    "peRatio": 12.06,
-    "dividendYield": 7.48,
-    "pbRatio": 1.76
+    "peRatio": 12.12,
+    "dividendYield": 7.44,
+    "pbRatio": 1.77
   },
   {
     "symbol": "1525",
     "name": "江申",
-    "peRatio": 16.54,
-    "dividendYield": 4.84,
-    "pbRatio": 0.99
+    "peRatio": 16.49,
+    "dividendYield": 4.86,
+    "pbRatio": 0.98
   },
   {
     "symbol": "1526",
     "name": "日馳",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.88
+    "pbRatio": 0.87
   },
   {
     "symbol": "1527",
     "name": "鑽全",
-    "peRatio": 24.53,
-    "dividendYield": 6.5,
+    "peRatio": 24.49,
+    "dividendYield": 6.51,
     "pbRatio": 0.99
   },
   {
     "symbol": "1528",
     "name": "恩德",
     "peRatio": 0,
-    "dividendYield": 0.43,
-    "pbRatio": 2.09
+    "dividendYield": 0.42,
+    "pbRatio": 2.1
   },
   {
     "symbol": "1529",
     "name": "樂事綠能",
-    "peRatio": 35.88,
-    "dividendYield": 0.75,
-    "pbRatio": 2.27
+    "peRatio": 34.73,
+    "dividendYield": 0.78,
+    "pbRatio": 2.2
   },
   {
     "symbol": "1530",
     "name": "亞崴",
-    "peRatio": 44.09,
-    "dividendYield": 5.26,
-    "pbRatio": 0.88
+    "peRatio": 43.48,
+    "dividendYield": 5.33,
+    "pbRatio": 0.87
   },
   {
     "symbol": "1531",
     "name": "高林股",
     "peRatio": 0,
-    "dividendYield": 3.21,
+    "dividendYield": 3.23,
     "pbRatio": 0.64
   },
   {
     "symbol": "1532",
     "name": "勤美",
-    "peRatio": 80.67,
-    "dividendYield": 7.15,
-    "pbRatio": 0.69
+    "peRatio": 81.17,
+    "dividendYield": 7.1,
+    "pbRatio": 0.7
   },
   {
     "symbol": "1533",
     "name": "車王電",
-    "peRatio": 53.19,
+    "peRatio": 53.28,
     "dividendYield": 0,
     "pbRatio": 1.41
   },
   {
     "symbol": "1535",
     "name": "中宇",
-    "peRatio": 12.78,
-    "dividendYield": 5.87,
-    "pbRatio": 1.65
+    "peRatio": 12.88,
+    "dividendYield": 5.83,
+    "pbRatio": 1.67
   },
   {
     "symbol": "1536",
@@ -877,16 +877,16 @@
   {
     "symbol": "1537",
     "name": "廣隆",
-    "peRatio": 15.1,
-    "dividendYield": 8.4,
-    "pbRatio": 2.48
+    "peRatio": 15.16,
+    "dividendYield": 8.37,
+    "pbRatio": 2.49
   },
   {
     "symbol": "1538",
     "name": "正峰",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 5.21
+    "pbRatio": 5.07
   },
   {
     "symbol": "1539",
@@ -898,86 +898,86 @@
   {
     "symbol": "1540",
     "name": "喬福",
-    "peRatio": 22.93,
-    "dividendYield": 6.71,
-    "pbRatio": 1.43
+    "peRatio": 22.88,
+    "dividendYield": 6.72,
+    "pbRatio": 1.42
   },
   {
     "symbol": "1541",
     "name": "錩泰",
-    "peRatio": 17.24,
-    "dividendYield": 2,
-    "pbRatio": 0.97
+    "peRatio": 17.45,
+    "dividendYield": 1.98,
+    "pbRatio": 0.99
   },
   {
     "symbol": "1558",
     "name": "伸興",
-    "peRatio": 17.79,
-    "dividendYield": 6.07,
-    "pbRatio": 1.28
+    "peRatio": 17.75,
+    "dividendYield": 6.08,
+    "pbRatio": 1.27
   },
   {
     "symbol": "1560",
     "name": "中砂",
-    "peRatio": 64.9,
-    "dividendYield": 0.81,
-    "pbRatio": 9.61
+    "peRatio": 68.77,
+    "dividendYield": 0.76,
+    "pbRatio": 10.18
   },
   {
     "symbol": "1563",
     "name": "巧新",
-    "peRatio": 20.11,
-    "dividendYield": 5.18,
+    "peRatio": 20.05,
+    "dividendYield": 5.19,
     "pbRatio": 1.11
   },
   {
     "symbol": "1568",
     "name": "倉佑",
-    "peRatio": 19.7,
-    "dividendYield": 5.3,
-    "pbRatio": 1.27
+    "peRatio": 19.78,
+    "dividendYield": 5.27,
+    "pbRatio": 1.28
   },
   {
     "symbol": "1582",
     "name": "信錦",
-    "peRatio": 15.38,
-    "dividendYield": 7.86,
-    "pbRatio": 1.48
+    "peRatio": 15.98,
+    "dividendYield": 7.57,
+    "pbRatio": 1.53
   },
   {
     "symbol": "1583",
     "name": "程泰",
-    "peRatio": 21.76,
-    "dividendYield": 6.13,
+    "peRatio": 21.89,
+    "dividendYield": 6.1,
     "pbRatio": 0.99
   },
   {
     "symbol": "1587",
     "name": "吉茂",
-    "peRatio": 210.24,
-    "dividendYield": 1.13,
-    "pbRatio": 2.37
+    "peRatio": 206.19,
+    "dividendYield": 1.15,
+    "pbRatio": 2.32
   },
   {
     "symbol": "1589",
     "name": "永冠-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.24
+    "pbRatio": 0.21
   },
   {
     "symbol": "1590",
     "name": "亞德客-KY",
-    "peRatio": 30.23,
-    "dividendYield": 2.4,
-    "pbRatio": 4.97
+    "peRatio": 30.61,
+    "dividendYield": 2.37,
+    "pbRatio": 5.03
   },
   {
     "symbol": "1597",
     "name": "直得",
-    "peRatio": 97.5,
-    "dividendYield": 0.9,
-    "pbRatio": 2.89
+    "peRatio": 86.04,
+    "dividendYield": 0.89,
+    "pbRatio": 2.84
   },
   {
     "symbol": "1598",
@@ -989,93 +989,93 @@
   {
     "symbol": "1603",
     "name": "華電",
-    "peRatio": 10.49,
-    "dividendYield": 3.9,
+    "peRatio": 10.54,
+    "dividendYield": 3.88,
     "pbRatio": 0.83
   },
   {
     "symbol": "1604",
     "name": "聲寶",
-    "peRatio": 14.73,
-    "dividendYield": 6.17,
+    "peRatio": 14.76,
+    "dividendYield": 6.16,
     "pbRatio": 1.07
   },
   {
     "symbol": "1605",
     "name": "華新",
-    "peRatio": 100.28,
-    "dividendYield": 1.39,
-    "pbRatio": 1.03
+    "peRatio": 51.04,
+    "dividendYield": 1.36,
+    "pbRatio": 0.98
   },
   {
     "symbol": "1608",
     "name": "華榮",
-    "peRatio": 7.37,
-    "dividendYield": 2.77,
-    "pbRatio": 1.65
+    "peRatio": 7.41,
+    "dividendYield": 2.75,
+    "pbRatio": 1.66
   },
   {
     "symbol": "1609",
     "name": "大亞",
-    "peRatio": 21.87,
-    "dividendYield": 2.2,
+    "peRatio": 21.82,
+    "dividendYield": 2.21,
     "pbRatio": 1.92
   },
   {
     "symbol": "1611",
     "name": "中電",
-    "peRatio": 77.35,
-    "dividendYield": 6.08,
-    "pbRatio": 1
+    "peRatio": 78.24,
+    "dividendYield": 6.02,
+    "pbRatio": 1.01
   },
   {
     "symbol": "1612",
     "name": "宏泰",
-    "peRatio": 13.36,
-    "dividendYield": 5.91,
-    "pbRatio": 1.42
+    "peRatio": 13.57,
+    "dividendYield": 5.82,
+    "pbRatio": 1.44
   },
   {
     "symbol": "1614",
     "name": "三洋電",
-    "peRatio": 33.74,
+    "peRatio": 33.69,
     "dividendYield": 1.67,
-    "pbRatio": 1.61
+    "pbRatio": 1.6
   },
   {
     "symbol": "1615",
     "name": "大山",
-    "peRatio": 11.39,
-    "dividendYield": 5.14,
-    "pbRatio": 2.46
+    "peRatio": 11.46,
+    "dividendYield": 5.11,
+    "pbRatio": 2.47
   },
   {
     "symbol": "1616",
     "name": "億泰",
-    "peRatio": 7.78,
-    "dividendYield": 6.15,
-    "pbRatio": 2.46
+    "peRatio": 7.75,
+    "dividendYield": 6.17,
+    "pbRatio": 2.45
   },
   {
     "symbol": "1617",
     "name": "榮星",
     "peRatio": 0,
-    "dividendYield": 3.13,
+    "dividendYield": 3.14,
     "pbRatio": 1.3
   },
   {
     "symbol": "1618",
     "name": "合機",
-    "peRatio": 10.68,
-    "dividendYield": 3.3,
-    "pbRatio": 1.4
+    "peRatio": 10.96,
+    "dividendYield": 3.21,
+    "pbRatio": 1.44
   },
   {
     "symbol": "1623",
     "name": "大東電",
-    "peRatio": 20.26,
-    "dividendYield": 2.7,
-    "pbRatio": 5.35
+    "peRatio": 19.63,
+    "dividendYield": 2.79,
+    "pbRatio": 5.18
   },
   {
     "symbol": "1626",
@@ -1087,310 +1087,310 @@
   {
     "symbol": "1702",
     "name": "南僑",
-    "peRatio": 21.19,
-    "dividendYield": 6.55,
+    "peRatio": 21.22,
+    "dividendYield": 6.54,
     "pbRatio": 0.89
   },
   {
     "symbol": "1707",
     "name": "葡萄王",
-    "peRatio": 14.99,
-    "dividendYield": 5.59,
-    "pbRatio": 1.8
+    "peRatio": 15.05,
+    "dividendYield": 5.56,
+    "pbRatio": 1.81
   },
   {
     "symbol": "1708",
     "name": "東鹼",
-    "peRatio": 12.12,
-    "dividendYield": 5.56,
-    "pbRatio": 1.29
+    "peRatio": 12.24,
+    "dividendYield": 5.5,
+    "pbRatio": 1.31
   },
   {
     "symbol": "1709",
     "name": "和益",
-    "peRatio": 16.31,
-    "dividendYield": 4.76,
-    "pbRatio": 0.91
+    "peRatio": 16.21,
+    "dividendYield": 4.79,
+    "pbRatio": 0.9
   },
   {
     "symbol": "1710",
     "name": "東聯",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.19
+    "pbRatio": 1.16
   },
   {
     "symbol": "1711",
     "name": "永光",
     "peRatio": 0,
-    "dividendYield": 1.12,
-    "pbRatio": 1.8
+    "dividendYield": 1.1,
+    "pbRatio": 1.83
   },
   {
     "symbol": "1712",
     "name": "興農",
-    "peRatio": 17.4,
-    "dividendYield": 5.48,
-    "pbRatio": 2.32
+    "peRatio": 17.27,
+    "dividendYield": 5.52,
+    "pbRatio": 2.3
   },
   {
     "symbol": "1713",
     "name": "國化",
-    "peRatio": 4.8,
-    "dividendYield": 15.79,
-    "pbRatio": 1.99
+    "peRatio": 4.97,
+    "dividendYield": 15.24,
+    "pbRatio": 2.06
   },
   {
     "symbol": "1714",
     "name": "和桐",
-    "peRatio": 23.09,
-    "dividendYield": 2.11,
+    "peRatio": 23.26,
+    "dividendYield": 2.1,
     "pbRatio": 0.84
   },
   {
     "symbol": "1717",
     "name": "長興",
-    "peRatio": 41.59,
-    "dividendYield": 1.91,
-    "pbRatio": 2.8
+    "peRatio": 45.7,
+    "dividendYield": 1.74,
+    "pbRatio": 3.08
   },
   {
     "symbol": "1718",
     "name": "中纖",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.44
+    "pbRatio": 0.43
   },
   {
     "symbol": "1720",
     "name": "生達",
-    "peRatio": 12.47,
-    "dividendYield": 4.64,
-    "pbRatio": 1.89
+    "peRatio": 12.64,
+    "dividendYield": 4.57,
+    "pbRatio": 1.91
   },
   {
     "symbol": "1721",
     "name": "三晃",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.96
+    "pbRatio": 1.97
   },
   {
     "symbol": "1722",
     "name": "台肥",
-    "peRatio": 29.84,
-    "dividendYield": 4.24,
+    "peRatio": 29.65,
+    "dividendYield": 4.27,
     "pbRatio": 0.85
   },
   {
     "symbol": "1723",
     "name": "中碳",
-    "peRatio": 27.36,
-    "dividendYield": 2.55,
-    "pbRatio": 2.15
+    "peRatio": 27.17,
+    "dividendYield": 2.57,
+    "pbRatio": 2.14
   },
   {
     "symbol": "1725",
     "name": "元禎",
-    "peRatio": 17.39,
-    "dividendYield": 4.46,
-    "pbRatio": 0.82
+    "peRatio": 17.55,
+    "dividendYield": 4.42,
+    "pbRatio": 0.83
   },
   {
     "symbol": "1726",
     "name": "永記",
-    "peRatio": 13.48,
-    "dividendYield": 4.65,
+    "peRatio": 13.55,
+    "dividendYield": 4.63,
     "pbRatio": 1.25
   },
   {
     "symbol": "1727",
     "name": "中華化",
-    "peRatio": 477.5,
+    "peRatio": 477,
     "dividendYield": 1.05,
     "pbRatio": 2.86
   },
   {
     "symbol": "1730",
     "name": "花仙子",
-    "peRatio": 11.89,
-    "dividendYield": 5.61,
+    "peRatio": 11.91,
+    "dividendYield": 5.6,
     "pbRatio": 1.65
   },
   {
     "symbol": "1731",
     "name": "美吾華",
-    "peRatio": 16.79,
-    "dividendYield": 5.45,
-    "pbRatio": 1.4
+    "peRatio": 16.29,
+    "dividendYield": 5.42,
+    "pbRatio": 1.36
   },
   {
     "symbol": "1732",
     "name": "毛寶",
-    "peRatio": 76.94,
+    "peRatio": 76.67,
     "dividendYield": 1.81,
-    "pbRatio": 2.41
+    "pbRatio": 2.4
   },
   {
     "symbol": "1733",
     "name": "五鼎",
-    "peRatio": 20.13,
-    "dividendYield": 3.95,
+    "peRatio": 20.03,
+    "dividendYield": 3.97,
     "pbRatio": 1.67
   },
   {
     "symbol": "1734",
     "name": "杏輝",
-    "peRatio": 16.87,
-    "dividendYield": 4.89,
+    "peRatio": 16.9,
+    "dividendYield": 4.88,
     "pbRatio": 1.77
   },
   {
     "symbol": "1735",
     "name": "日勝化",
-    "peRatio": 38.11,
-    "dividendYield": 4.66,
-    "pbRatio": 1.16
+    "peRatio": 41.89,
+    "dividendYield": 4.24,
+    "pbRatio": 1.28
   },
   {
     "symbol": "1736",
     "name": "喬山",
-    "peRatio": 14.97,
-    "dividendYield": 2.86,
-    "pbRatio": 3.76
+    "peRatio": 14.55,
+    "dividendYield": 2.94,
+    "pbRatio": 3.65
   },
   {
     "symbol": "1737",
     "name": "臺鹽",
-    "peRatio": 19.01,
+    "peRatio": 19.04,
     "dividendYield": 4.09,
     "pbRatio": 0.96
   },
   {
     "symbol": "1752",
     "name": "南光",
-    "peRatio": 14.49,
-    "dividendYield": 4.33,
-    "pbRatio": 1.54
+    "peRatio": 15.33,
+    "dividendYield": 4.31,
+    "pbRatio": 1.51
   },
   {
     "symbol": "1760",
     "name": "寶齡富錦",
-    "peRatio": 31.08,
-    "dividendYield": 2.85,
-    "pbRatio": 2.84
+    "peRatio": 30.79,
+    "dividendYield": 2.88,
+    "pbRatio": 2.82
   },
   {
     "symbol": "1762",
     "name": "中化生",
     "peRatio": 0,
-    "dividendYield": 0.69,
-    "pbRatio": 0.66
+    "dividendYield": 0.7,
+    "pbRatio": 0.65
   },
   {
     "symbol": "1773",
     "name": "勝一",
-    "peRatio": 23.66,
-    "dividendYield": 2.9,
-    "pbRatio": 4.39
+    "peRatio": 24.27,
+    "dividendYield": 2.83,
+    "pbRatio": 4.51
   },
   {
     "symbol": "1776",
     "name": "展宇",
-    "peRatio": 85.28,
-    "dividendYield": 5.21,
+    "peRatio": 85,
+    "dividendYield": 5.23,
     "pbRatio": 1.11
   },
   {
     "symbol": "1783",
     "name": "和康生",
-    "peRatio": 17.15,
-    "dividendYield": 1.85,
-    "pbRatio": 2.72
+    "peRatio": 17.09,
+    "dividendYield": 1.86,
+    "pbRatio": 2.71
   },
   {
     "symbol": "1786",
     "name": "科妍",
-    "peRatio": 32.5,
-    "dividendYield": 4.37,
-    "pbRatio": 2.79
+    "peRatio": 32.72,
+    "dividendYield": 4.34,
+    "pbRatio": 2.8
   },
   {
     "symbol": "1789",
     "name": "神隆",
-    "peRatio": 91.46,
-    "dividendYield": 1.59,
-    "pbRatio": 1.58
+    "peRatio": 89.17,
+    "dividendYield": 1.64,
+    "pbRatio": 1.54
   },
   {
     "symbol": "1795",
     "name": "美時",
-    "peRatio": 15.81,
-    "dividendYield": 2.03,
-    "pbRatio": 3.37
+    "peRatio": 15.47,
+    "dividendYield": 2.08,
+    "pbRatio": 3.3
   },
   {
     "symbol": "1802",
     "name": "台玻",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.98
+    "pbRatio": 3.97
   },
   {
     "symbol": "1805",
     "name": "寶徠",
-    "peRatio": 6.82,
+    "peRatio": 6.85,
     "dividendYield": 0,
-    "pbRatio": 0.97
+    "pbRatio": 0.98
   },
   {
     "symbol": "1806",
     "name": "冠軍",
-    "peRatio": 28.03,
-    "dividendYield": 11.15,
+    "peRatio": 27.97,
+    "dividendYield": 11.17,
     "pbRatio": 0.67
   },
   {
     "symbol": "1808",
     "name": "潤隆",
     "peRatio": 0,
-    "dividendYield": 6.53,
-    "pbRatio": 2.45
+    "dividendYield": 6.64,
+    "pbRatio": 2.4
   },
   {
     "symbol": "1809",
     "name": "中釉",
-    "peRatio": 142.65,
-    "dividendYield": 1.03,
-    "pbRatio": 1.41
+    "peRatio": 150.88,
+    "dividendYield": 0.97,
+    "pbRatio": 1.49
   },
   {
     "symbol": "1810",
     "name": "和成",
-    "peRatio": 481.25,
-    "dividendYield": 0.99,
-    "pbRatio": 0.86
+    "peRatio": 475,
+    "dividendYield": 1,
+    "pbRatio": 0.85
   },
   {
     "symbol": "1817",
     "name": "凱撒衛",
-    "peRatio": 9.59,
-    "dividendYield": 6.16,
+    "peRatio": 9.61,
+    "dividendYield": 6.15,
     "pbRatio": 1.31
   },
   {
     "symbol": "1903",
     "name": "士紙",
-    "peRatio": 119.33,
+    "peRatio": 120,
     "dividendYield": 0,
-    "pbRatio": 2.71
+    "pbRatio": 2.72
   },
   {
     "symbol": "1904",
     "name": "正隆",
-    "peRatio": 67.14,
-    "dividendYield": 2.39,
-    "pbRatio": 0.74
+    "peRatio": 65.71,
+    "dividendYield": 2.45,
+    "pbRatio": 0.72
   },
   {
     "symbol": "1905",
@@ -1409,23 +1409,23 @@
   {
     "symbol": "1907",
     "name": "永豐餘",
-    "peRatio": 21.88,
-    "dividendYield": 3.05,
-    "pbRatio": 0.64
+    "peRatio": 21.54,
+    "dividendYield": 3.09,
+    "pbRatio": 0.63
   },
   {
     "symbol": "1909",
     "name": "榮成",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.67
+    "pbRatio": 0.66
   },
   {
     "symbol": "2002",
     "name": "中鋼",
     "peRatio": 0,
-    "dividendYield": 1.55,
-    "pbRatio": 1.12
+    "dividendYield": 1.59,
+    "pbRatio": 1.07
   },
   {
     "symbol": "2006",
@@ -1439,7 +1439,7 @@
     "name": "燁興",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1
+    "pbRatio": 1.01
   },
   {
     "symbol": "2008",
@@ -1451,7 +1451,7 @@
   {
     "symbol": "2009",
     "name": "第一銅",
-    "peRatio": 144.84,
+    "peRatio": 145.31,
     "dividendYield": 1.08,
     "pbRatio": 1.99
   },
@@ -1472,22 +1472,22 @@
   {
     "symbol": "2013",
     "name": "中鋼構",
-    "peRatio": 13.5,
-    "dividendYield": 5.57,
-    "pbRatio": 1.52
+    "peRatio": 13.62,
+    "dividendYield": 5.52,
+    "pbRatio": 1.53
   },
   {
     "symbol": "2014",
     "name": "中鴻",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.23
+    "pbRatio": 2.15
   },
   {
     "symbol": "2015",
     "name": "豐興",
     "peRatio": 17.45,
-    "dividendYield": 5.17,
+    "dividendYield": 4.87,
     "pbRatio": 1.74
   },
   {
@@ -1495,49 +1495,49 @@
     "name": "官田鋼",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.77
+    "pbRatio": 0.83
   },
   {
     "symbol": "2020",
     "name": "美亞",
-    "peRatio": 12.85,
-    "dividendYield": 8.96,
-    "pbRatio": 1.51
+    "peRatio": 12.88,
+    "dividendYield": 8.94,
+    "pbRatio": 1.52
   },
   {
     "symbol": "2022",
     "name": "聚亨",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.91
+    "pbRatio": 0.92
   },
   {
     "symbol": "2023",
     "name": "燁輝",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.83
+    "pbRatio": 0.82
   },
   {
     "symbol": "2024",
     "name": "志聯",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.44
+    "pbRatio": 1.47
   },
   {
     "symbol": "2025",
     "name": "千興",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.5
+    "pbRatio": 1.49
   },
   {
     "symbol": "2027",
     "name": "大成鋼",
-    "peRatio": 14.53,
-    "dividendYield": 2.93,
-    "pbRatio": 1.24
+    "peRatio": 14.36,
+    "dividendYield": 2.97,
+    "pbRatio": 1.23
   },
   {
     "symbol": "2028",
@@ -1549,114 +1549,114 @@
   {
     "symbol": "2029",
     "name": "盛餘",
-    "peRatio": 20.76,
-    "dividendYield": 5.73,
-    "pbRatio": 0.7
+    "peRatio": 20.81,
+    "dividendYield": 5.72,
+    "pbRatio": 0.71
   },
   {
     "symbol": "2030",
     "name": "彰源",
-    "peRatio": 53.71,
-    "dividendYield": 4.26,
-    "pbRatio": 0.98
+    "peRatio": 53.23,
+    "dividendYield": 4.3,
+    "pbRatio": 0.97
   },
   {
     "symbol": "2031",
     "name": "新光鋼",
-    "peRatio": 16.53,
-    "dividendYield": 6.25,
-    "pbRatio": 1.1
+    "peRatio": 16.22,
+    "dividendYield": 6.37,
+    "pbRatio": 1.08
   },
   {
     "symbol": "2032",
     "name": "新鋼",
-    "peRatio": 33.1,
-    "dividendYield": 2.3,
-    "pbRatio": 1.25
+    "peRatio": 32.8,
+    "dividendYield": 2.32,
+    "pbRatio": 1.24
   },
   {
     "symbol": "2033",
     "name": "佳大",
-    "peRatio": 55.33,
-    "dividendYield": 1.2,
-    "pbRatio": 1.28
+    "peRatio": 54.83,
+    "dividendYield": 1.22,
+    "pbRatio": 1.27
   },
   {
     "symbol": "2034",
     "name": "允強",
     "peRatio": 0,
-    "dividendYield": 4.76,
-    "pbRatio": 1.16
+    "dividendYield": 4.8,
+    "pbRatio": 1.15
   },
   {
     "symbol": "2038",
     "name": "海光",
     "peRatio": 0,
-    "dividendYield": 1.3,
-    "pbRatio": 0.76
+    "dividendYield": 1.33,
+    "pbRatio": 0.74
   },
   {
     "symbol": "2049",
     "name": "上銀",
-    "peRatio": 57.11,
-    "dividendYield": 1.07,
-    "pbRatio": 2.16
+    "peRatio": 53.36,
+    "dividendYield": 1.04,
+    "pbRatio": 2.18
   },
   {
     "symbol": "2059",
     "name": "川湖",
-    "peRatio": 32.55,
-    "dividendYield": 1.52,
-    "pbRatio": 11.43
+    "peRatio": 33.37,
+    "dividendYield": 1.48,
+    "pbRatio": 11.71
   },
   {
     "symbol": "2062",
     "name": "橋椿",
-    "peRatio": 28.99,
-    "dividendYield": 8.39,
+    "peRatio": 56.92,
+    "dividendYield": 4.5,
     "pbRatio": 0.58
   },
   {
     "symbol": "2069",
     "name": "運錩",
-    "peRatio": 11.95,
-    "dividendYield": 4.74,
-    "pbRatio": 0.81
+    "peRatio": 11.92,
+    "dividendYield": 4.75,
+    "pbRatio": 0.8
   },
   {
     "symbol": "2101",
     "name": "南港",
     "peRatio": 0,
-    "dividendYield": 1.39,
-    "pbRatio": 2.31
+    "dividendYield": 1.41,
+    "pbRatio": 2.28
   },
   {
     "symbol": "2102",
     "name": "泰豐",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.67
+    "pbRatio": 1.68
   },
   {
     "symbol": "2103",
     "name": "台橡",
-    "peRatio": 173.33,
-    "dividendYield": 3.03,
-    "pbRatio": 0.9
+    "peRatio": 170.83,
+    "dividendYield": 3.07,
+    "pbRatio": 0.88
   },
   {
     "symbol": "2104",
     "name": "國際中橡",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.54
+    "pbRatio": 0.52
   },
   {
     "symbol": "2105",
     "name": "正新",
-    "peRatio": 19.27,
-    "dividendYield": 7.88,
-    "pbRatio": 1.2
+    "peRatio": 19.81,
+    "dividendYield": 7.67,
+    "pbRatio": 1.24
   },
   {
     "symbol": "2106",
@@ -1668,16 +1668,16 @@
   {
     "symbol": "2107",
     "name": "厚生",
-    "peRatio": 15.86,
-    "dividendYield": 5.45,
+    "peRatio": 15.96,
+    "dividendYield": 5.42,
     "pbRatio": 0.6
   },
   {
     "symbol": "2108",
     "name": "南帝",
-    "peRatio": 29.73,
-    "dividendYield": 3.66,
-    "pbRatio": 0.97
+    "peRatio": 29.62,
+    "dividendYield": 3.67,
+    "pbRatio": 0.96
   },
   {
     "symbol": "2109",
@@ -1689,86 +1689,86 @@
   {
     "symbol": "2114",
     "name": "鑫永銓",
-    "peRatio": 16.36,
-    "dividendYield": 5.59,
-    "pbRatio": 2.29
+    "peRatio": 16.45,
+    "dividendYield": 5.56,
+    "pbRatio": 2.31
   },
   {
     "symbol": "2115",
     "name": "六暉-KY",
-    "peRatio": 12.05,
-    "dividendYield": 6.16,
+    "peRatio": 12.08,
+    "dividendYield": 6.15,
     "pbRatio": 0.83
   },
   {
     "symbol": "2201",
     "name": "裕隆",
-    "peRatio": 23.33,
-    "dividendYield": 4.22,
+    "peRatio": 23.3,
+    "dividendYield": 4.23,
     "pbRatio": 0.53
   },
   {
     "symbol": "2204",
     "name": "中華",
-    "peRatio": 11.41,
-    "dividendYield": 7.09,
-    "pbRatio": 0.9
+    "peRatio": 11.52,
+    "dividendYield": 7.02,
+    "pbRatio": 0.91
   },
   {
     "symbol": "2206",
     "name": "三陽工業",
-    "peRatio": 10.12,
-    "dividendYield": 4.99,
-    "pbRatio": 1.91
+    "peRatio": 9.97,
+    "dividendYield": 5.07,
+    "pbRatio": 1.88
   },
   {
     "symbol": "2207",
     "name": "和泰車",
-    "peRatio": 16.98,
-    "dividendYield": 3.59,
-    "pbRatio": 3.92
+    "peRatio": 17.83,
+    "dividendYield": 3.42,
+    "pbRatio": 4.12
   },
   {
     "symbol": "2208",
     "name": "台船",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.56
+    "pbRatio": 4.6
   },
   {
     "symbol": "2211",
     "name": "長榮鋼",
-    "peRatio": 12.1,
-    "dividendYield": 4.88,
+    "peRatio": 12.16,
+    "dividendYield": 4.85,
     "pbRatio": 1.59
   },
   {
     "symbol": "2227",
     "name": "裕日車",
-    "peRatio": 32.28,
-    "dividendYield": 7.07,
-    "pbRatio": 0.98
+    "peRatio": 32.75,
+    "dividendYield": 6.96,
+    "pbRatio": 1
   },
   {
     "symbol": "2228",
     "name": "劍麟",
-    "peRatio": 14.06,
-    "dividendYield": 9.44,
-    "pbRatio": 1.61
+    "peRatio": 14.23,
+    "dividendYield": 9.33,
+    "pbRatio": 1.63
   },
   {
     "symbol": "2231",
     "name": "為升",
-    "peRatio": 57.27,
-    "dividendYield": 2.1,
-    "pbRatio": 3.78
+    "peRatio": 55.47,
+    "dividendYield": 2.17,
+    "pbRatio": 3.66
   },
   {
     "symbol": "2233",
     "name": "宇隆",
-    "peRatio": 31.03,
-    "dividendYield": 3.06,
-    "pbRatio": 3.68
+    "peRatio": 31.64,
+    "dividendYield": 3,
+    "pbRatio": 3.76
   },
   {
     "symbol": "2236",
@@ -1789,34 +1789,34 @@
     "name": "艾姆勒",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.3
+    "pbRatio": 2.27
   },
   {
     "symbol": "2243",
     "name": "宏旭-KY",
-    "peRatio": 38.87,
+    "peRatio": 39.35,
     "dividendYield": 0,
-    "pbRatio": 1.22
+    "pbRatio": 1.24
   },
   {
     "symbol": "2247",
     "name": "汎德永業",
-    "peRatio": 13.08,
-    "dividendYield": 6.88,
+    "peRatio": 13.05,
+    "dividendYield": 6.89,
     "pbRatio": 1.66
   },
   {
     "symbol": "2248",
     "name": "華勝-KY",
-    "peRatio": 10.24,
-    "dividendYield": 5.55,
-    "pbRatio": 1.57
+    "peRatio": 10.1,
+    "dividendYield": 5.63,
+    "pbRatio": 1.55
   },
   {
     "symbol": "2250",
     "name": "IKKA-KY",
-    "peRatio": 18.22,
-    "dividendYield": 5.4,
+    "peRatio": 18.2,
+    "dividendYield": 5.41,
     "pbRatio": 1.24
   },
   {
@@ -1824,133 +1824,133 @@
     "name": "巨鎧精密-創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.42
+    "pbRatio": 3.76
   },
   {
     "symbol": "2258",
     "name": "鴻華先進-創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.62
+    "pbRatio": 4.66
   },
   {
     "symbol": "2301",
     "name": "光寶科",
-    "peRatio": 30.48,
-    "dividendYield": 2.35,
-    "pbRatio": 5.21
+    "peRatio": 25.98,
+    "dividendYield": 2.89,
+    "pbRatio": 4.37
   },
   {
     "symbol": "2302",
     "name": "麗正",
-    "peRatio": 24.22,
-    "dividendYield": 3.11,
-    "pbRatio": 1.73
+    "peRatio": 24.74,
+    "dividendYield": 3.04,
+    "pbRatio": 1.77
   },
   {
     "symbol": "2303",
     "name": "聯電",
-    "peRatio": 20.47,
-    "dividendYield": 4.35,
-    "pbRatio": 2.28
+    "peRatio": 19.76,
+    "dividendYield": 3.98,
+    "pbRatio": 2.17
   },
   {
     "symbol": "2305",
     "name": "全友",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.23
+    "pbRatio": 1.26
   },
   {
     "symbol": "2308",
     "name": "台達電",
-    "peRatio": 74.62,
-    "dividendYield": 0.49,
-    "pbRatio": 15.48
+    "peRatio": 61.8,
+    "dividendYield": 0.81,
+    "pbRatio": 13.86
   },
   {
     "symbol": "2312",
     "name": "金寶",
-    "peRatio": 25.25,
-    "dividendYield": 2.38,
-    "pbRatio": 1.73
+    "peRatio": 25.75,
+    "dividendYield": 2.33,
+    "pbRatio": 1.76
   },
   {
     "symbol": "2313",
     "name": "華通",
-    "peRatio": 41.9,
-    "dividendYield": 1.15,
-    "pbRatio": 5.64
+    "peRatio": 40.9,
+    "dividendYield": 1.17,
+    "pbRatio": 5.5
   },
   {
     "symbol": "2314",
     "name": "台揚",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 9.59
+    "pbRatio": 9.4
   },
   {
     "symbol": "2316",
     "name": "楠梓電",
-    "peRatio": 8.48,
-    "dividendYield": 0.49,
-    "pbRatio": 1.6
+    "peRatio": 9.31,
+    "dividendYield": 0.44,
+    "pbRatio": 1.75
   },
   {
     "symbol": "2317",
     "name": "鴻海",
-    "peRatio": 18.07,
-    "dividendYield": 2.35,
-    "pbRatio": 2.1
+    "peRatio": 17.82,
+    "dividendYield": 2.39,
+    "pbRatio": 2.07
   },
   {
     "symbol": "2321",
     "name": "東訊",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.34
+    "pbRatio": 2.48
   },
   {
     "symbol": "2323",
     "name": "中環",
     "peRatio": 0,
-    "dividendYield": 2.7,
-    "pbRatio": 0.68
+    "dividendYield": 2.67,
+    "pbRatio": 0.69
   },
   {
     "symbol": "2324",
     "name": "仁寶",
-    "peRatio": 19.93,
-    "dividendYield": 4.65,
-    "pbRatio": 1.03
+    "peRatio": 20.96,
+    "dividendYield": 4.42,
+    "pbRatio": 1.09
   },
   {
     "symbol": "2327",
     "name": "國巨*",
-    "peRatio": 30.06,
-    "dividendYield": 1.67,
-    "pbRatio": 3.92
+    "peRatio": 29.86,
+    "dividendYield": 2.01,
+    "pbRatio": 3.9
   },
   {
     "symbol": "2328",
     "name": "廣宇",
-    "peRatio": 28.67,
-    "dividendYield": 2.13,
-    "pbRatio": 1.92
+    "peRatio": 28.44,
+    "dividendYield": 2.15,
+    "pbRatio": 1.91
   },
   {
     "symbol": "2329",
     "name": "華泰",
-    "peRatio": 34.11,
-    "dividendYield": 1.8,
-    "pbRatio": 3.53
+    "peRatio": 27.06,
+    "dividendYield": 1.73,
+    "pbRatio": 3.42
   },
   {
     "symbol": "2330",
     "name": "台積電",
-    "peRatio": 32.93,
-    "dividendYield": 1.09,
-    "pbRatio": 10.45
+    "peRatio": 30.12,
+    "dividendYield": 1.1,
+    "pbRatio": 9.55
   },
   {
     "symbol": "2331",
@@ -1971,55 +1971,55 @@
     "name": "旺宏",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.72
+    "pbRatio": 4.81
   },
   {
     "symbol": "2338",
     "name": "光罩",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.72
+    "pbRatio": 2.99
   },
   {
     "symbol": "2340",
     "name": "台亞",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.72
+    "pbRatio": 1.77
   },
   {
     "symbol": "2342",
     "name": "茂矽",
     "peRatio": 1,
-    "dividendYield": 0.95,
-    "pbRatio": 2.1
+    "dividendYield": 0.9,
+    "pbRatio": 2.23
   },
   {
     "symbol": "2344",
     "name": "華邦電",
-    "peRatio": 134.09,
-    "dividendYield": 0.42,
-    "pbRatio": 4.92
+    "peRatio": 139.2,
+    "dividendYield": 0.41,
+    "pbRatio": 5.11
   },
   {
     "symbol": "2345",
     "name": "智邦",
-    "peRatio": 36,
-    "dividendYield": 0.76,
-    "pbRatio": 16.34
+    "peRatio": 34.76,
+    "dividendYield": 0.79,
+    "pbRatio": 15.78
   },
   {
     "symbol": "2347",
     "name": "聯強",
-    "peRatio": 13.67,
-    "dividendYield": 5.65,
-    "pbRatio": 1.59
+    "peRatio": 13.88,
+    "dividendYield": 5.56,
+    "pbRatio": 1.62
   },
   {
     "symbol": "2348",
     "name": "海悅",
-    "peRatio": 17.17,
-    "dividendYield": 12.24,
+    "peRatio": 17.15,
+    "dividendYield": 12.26,
     "pbRatio": 1.7
   },
   {
@@ -2027,238 +2027,238 @@
     "name": "錸德",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.03
+    "pbRatio": 1.93
   },
   {
     "symbol": "2351",
     "name": "順德",
-    "peRatio": 54.35,
-    "dividendYield": 2.86,
-    "pbRatio": 2.36
+    "peRatio": 53.54,
+    "dividendYield": 2.9,
+    "pbRatio": 2.32
   },
   {
     "symbol": "2352",
     "name": "佳世達",
-    "peRatio": 32.41,
-    "dividendYield": 4.23,
-    "pbRatio": 1.5
+    "peRatio": 32.1,
+    "dividendYield": 4.27,
+    "pbRatio": 1.48
   },
   {
     "symbol": "2353",
     "name": "宏碁",
-    "peRatio": 19.82,
-    "dividendYield": 6.22,
+    "peRatio": 19.86,
+    "dividendYield": 6.2,
     "pbRatio": 1.12
   },
   {
     "symbol": "2354",
     "name": "鴻準",
-    "peRatio": 25.97,
-    "dividendYield": 2.33,
-    "pbRatio": 0.83
+    "peRatio": 25.76,
+    "dividendYield": 2.35,
+    "pbRatio": 0.82
   },
   {
     "symbol": "2355",
     "name": "敬鵬",
-    "peRatio": 27.74,
-    "dividendYield": 4.51,
-    "pbRatio": 0.99
+    "peRatio": 28.31,
+    "dividendYield": 4.42,
+    "pbRatio": 1.02
   },
   {
     "symbol": "2356",
     "name": "英業達",
-    "peRatio": 18.49,
-    "dividendYield": 3.66,
-    "pbRatio": 2.37
+    "peRatio": 18.43,
+    "dividendYield": 3.68,
+    "pbRatio": 2.36
   },
   {
     "symbol": "2357",
     "name": "華碩",
-    "peRatio": 11.21,
-    "dividendYield": 6.48,
-    "pbRatio": 1.51
+    "peRatio": 11.36,
+    "dividendYield": 6.39,
+    "pbRatio": 1.53
   },
   {
     "symbol": "2359",
     "name": "所羅門",
-    "peRatio": 141.85,
-    "dividendYield": 0.77,
-    "pbRatio": 4.03
+    "peRatio": 144.02,
+    "dividendYield": 0.75,
+    "pbRatio": 4.09
   },
   {
     "symbol": "2360",
     "name": "致茂",
-    "peRatio": 50.08,
-    "dividendYield": 0.72,
-    "pbRatio": 18.03
+    "peRatio": 55.07,
+    "dividendYield": 1.41,
+    "pbRatio": 19.83
   },
   {
     "symbol": "2362",
     "name": "藍天",
-    "peRatio": 16.69,
-    "dividendYield": 6.32,
-    "pbRatio": 0.57
+    "peRatio": 16.48,
+    "dividendYield": 6.4,
+    "pbRatio": 0.56
   },
   {
     "symbol": "2363",
     "name": "矽統",
-    "peRatio": 38.18,
-    "dividendYield": 1.1,
-    "pbRatio": 1.63
+    "peRatio": 38.32,
+    "dividendYield": 1.09,
+    "pbRatio": 1.64
   },
   {
     "symbol": "2364",
     "name": "倫飛",
-    "peRatio": 16.83,
-    "dividendYield": 4.75,
-    "pbRatio": 4.22
+    "peRatio": 16.99,
+    "dividendYield": 4.71,
+    "pbRatio": 4.26
   },
   {
     "symbol": "2365",
     "name": "昆盈",
-    "peRatio": 115.63,
-    "dividendYield": 1.62,
-    "pbRatio": 2.75
+    "peRatio": 115.16,
+    "dividendYield": 1.63,
+    "pbRatio": 2.74
   },
   {
     "symbol": "2367",
     "name": "燿華",
-    "peRatio": 45.86,
-    "dividendYield": 1.19,
-    "pbRatio": 3.4
+    "peRatio": 50.39,
+    "dividendYield": 1.09,
+    "pbRatio": 3.73
   },
   {
     "symbol": "2368",
     "name": "金像電",
-    "peRatio": 53.08,
-    "dividendYield": 0.71,
-    "pbRatio": 15.69
+    "peRatio": 51.88,
+    "dividendYield": 0.73,
+    "pbRatio": 15.34
   },
   {
     "symbol": "2369",
     "name": "菱生",
     "peRatio": 0,
-    "dividendYield": 1.09,
-    "pbRatio": 2.16
+    "dividendYield": 1.05,
+    "pbRatio": 2.24
   },
   {
     "symbol": "2371",
     "name": "大同",
-    "peRatio": 8.3,
-    "dividendYield": 8.41,
-    "pbRatio": 1.3
+    "peRatio": 8.43,
+    "dividendYield": 8.27,
+    "pbRatio": 1.32
   },
   {
     "symbol": "2373",
     "name": "震旦行",
-    "peRatio": 14.63,
-    "dividendYield": 6.54,
-    "pbRatio": 1.85
+    "peRatio": 14.68,
+    "dividendYield": 6.51,
+    "pbRatio": 1.86
   },
   {
     "symbol": "2374",
     "name": "佳能",
-    "peRatio": 43.46,
-    "dividendYield": 2.24,
-    "pbRatio": 3.37
+    "peRatio": 43.78,
+    "dividendYield": 2.22,
+    "pbRatio": 3.4
   },
   {
     "symbol": "2375",
     "name": "凱美",
-    "peRatio": 24.86,
-    "dividendYield": 1.57,
-    "pbRatio": 1.1
+    "peRatio": 24.65,
+    "dividendYield": 1.58,
+    "pbRatio": 1.09
   },
   {
     "symbol": "2376",
     "name": "技嘉",
-    "peRatio": 13.01,
-    "dividendYield": 4.26,
-    "pbRatio": 2.84
+    "peRatio": 13.26,
+    "dividendYield": 4.18,
+    "pbRatio": 2.89
   },
   {
     "symbol": "2377",
     "name": "微星",
-    "peRatio": 17.01,
-    "dividendYield": 5.42,
-    "pbRatio": 1.49
+    "peRatio": 17.4,
+    "dividendYield": 5.3,
+    "pbRatio": 1.53
   },
   {
     "symbol": "2379",
     "name": "瑞昱",
-    "peRatio": 15.7,
-    "dividendYield": 5.37,
-    "pbRatio": 5.13
+    "peRatio": 15.93,
+    "dividendYield": 5.3,
+    "pbRatio": 5.21
   },
   {
     "symbol": "2380",
     "name": "虹光",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.49
+    "pbRatio": 2.51
   },
   {
     "symbol": "2382",
     "name": "廣達",
-    "peRatio": 16.7,
-    "dividendYield": 4.37,
-    "pbRatio": 5.37
+    "peRatio": 16.37,
+    "dividendYield": 4.46,
+    "pbRatio": 5.26
   },
   {
     "symbol": "2383",
     "name": "台光電",
-    "peRatio": 63.8,
-    "dividendYield": 0.69,
-    "pbRatio": 19.49
+    "peRatio": 64.33,
+    "dividendYield": 0.68,
+    "pbRatio": 19.65
   },
   {
     "symbol": "2385",
     "name": "群光",
-    "peRatio": 10.9,
-    "dividendYield": 8.1,
-    "pbRatio": 2.18
+    "peRatio": 11.03,
+    "dividendYield": 8,
+    "pbRatio": 2.2
   },
   {
     "symbol": "2387",
     "name": "精元",
-    "peRatio": 8.44,
-    "dividendYield": 9.24,
-    "pbRatio": 0.84
+    "peRatio": 8.52,
+    "dividendYield": 9.15,
+    "pbRatio": 0.85
   },
   {
     "symbol": "2388",
     "name": "威盛",
     "peRatio": 1,
     "dividendYield": 0.4,
-    "pbRatio": 1.37
+    "pbRatio": 1.39
   },
   {
     "symbol": "2390",
     "name": "云辰",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.84
+    "pbRatio": 0.85
   },
   {
     "symbol": "2392",
     "name": "正崴",
     "peRatio": 0,
-    "dividendYield": 6.18,
-    "pbRatio": 0.87
+    "dividendYield": 6.3,
+    "pbRatio": 0.86
   },
   {
     "symbol": "2393",
     "name": "億光",
-    "peRatio": 11.31,
-    "dividendYield": 9.03,
+    "peRatio": 11.29,
+    "dividendYield": 9.05,
     "pbRatio": 1.37
   },
   {
     "symbol": "2395",
     "name": "研華",
-    "peRatio": 28.44,
-    "dividendYield": 2.52,
-    "pbRatio": 5.61
+    "peRatio": 27.51,
+    "dividendYield": 2.49,
+    "pbRatio": 5.3
   },
   {
     "symbol": "2397",
@@ -2272,118 +2272,118 @@
     "name": "映泰",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.89
+    "pbRatio": 1.96
   },
   {
     "symbol": "2401",
     "name": "凌陽",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.63
+    "pbRatio": 1.67
   },
   {
     "symbol": "2402",
     "name": "毅嘉",
-    "peRatio": 21.79,
-    "dividendYield": 3.59,
-    "pbRatio": 2.53
+    "peRatio": 22.62,
+    "dividendYield": 3.46,
+    "pbRatio": 2.62
   },
   {
     "symbol": "2404",
     "name": "漢唐",
-    "peRatio": 23.24,
-    "dividendYield": 2.71,
-    "pbRatio": 12.46
+    "peRatio": 25.38,
+    "dividendYield": 2.48,
+    "pbRatio": 13.61
   },
   {
     "symbol": "2405",
     "name": "輔信",
     "peRatio": 0,
-    "dividendYield": 1.06,
-    "pbRatio": 1.58
+    "dividendYield": 1.05,
+    "pbRatio": 1.59
   },
   {
     "symbol": "2406",
     "name": "國碩",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.93
+    "pbRatio": 3.22
   },
   {
     "symbol": "2408",
     "name": "南亞科",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 5.67
+    "pbRatio": 5.62
   },
   {
     "symbol": "2409",
     "name": "友達",
-    "peRatio": 21.76,
-    "dividendYield": 2.48,
-    "pbRatio": 0.82
+    "peRatio": 22.43,
+    "dividendYield": 2.41,
+    "pbRatio": 0.85
   },
   {
     "symbol": "2412",
     "name": "中華電",
-    "peRatio": 27.47,
-    "dividendYield": 3.68,
-    "pbRatio": 2.8
+    "peRatio": 27.07,
+    "dividendYield": 3.73,
+    "pbRatio": 2.76
   },
   {
     "symbol": "2413",
     "name": "環科",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.76
+    "pbRatio": 3.87
   },
   {
     "symbol": "2414",
     "name": "精技",
-    "peRatio": 13.77,
-    "dividendYield": 5.85,
-    "pbRatio": 2.23
+    "peRatio": 13.9,
+    "dividendYield": 5.8,
+    "pbRatio": 2.25
   },
   {
     "symbol": "2415",
     "name": "錩新",
-    "peRatio": 16.93,
-    "dividendYield": 4.35,
+    "peRatio": 16.99,
+    "dividendYield": 4.33,
     "pbRatio": 1.58
   },
   {
     "symbol": "2417",
     "name": "圓剛",
     "peRatio": 0,
-    "dividendYield": 0.55,
-    "pbRatio": 1.77
+    "dividendYield": 0.54,
+    "pbRatio": 1.8
   },
   {
     "symbol": "2419",
     "name": "仲琦",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.01
+    "pbRatio": 2.02
   },
   {
     "symbol": "2420",
     "name": "新巨",
-    "peRatio": 14.09,
-    "dividendYield": 6.77,
-    "pbRatio": 2.1
+    "peRatio": 14.28,
+    "dividendYield": 6.68,
+    "pbRatio": 2.13
   },
   {
     "symbol": "2421",
     "name": "建準",
-    "peRatio": 20.87,
-    "dividendYield": 2.45,
-    "pbRatio": 5.09
+    "peRatio": 21.01,
+    "dividendYield": 2.43,
+    "pbRatio": 5.13
   },
   {
     "symbol": "2423",
     "name": "固緯",
-    "peRatio": 16.9,
-    "dividendYield": 5.07,
+    "peRatio": 16.92,
+    "dividendYield": 5.06,
     "pbRatio": 2.42
   },
   {
@@ -2391,14 +2391,14 @@
     "name": "隴華",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 6.64
+    "pbRatio": 6.55
   },
   {
     "symbol": "2425",
     "name": "承啟",
     "peRatio": 0,
     "dividendYield": 0.53,
-    "pbRatio": 1.17
+    "pbRatio": 1.18
   },
   {
     "symbol": "2426",
@@ -2410,9 +2410,9 @@
   {
     "symbol": "2427",
     "name": "三商電",
-    "peRatio": 17.5,
-    "dividendYield": 2.63,
-    "pbRatio": 1.64
+    "peRatio": 17.6,
+    "dividendYield": 2.62,
+    "pbRatio": 1.65
   },
   {
     "symbol": "2428",
@@ -2426,13 +2426,13 @@
     "name": "銘旺科",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 6.11
+    "pbRatio": 6.24
   },
   {
     "symbol": "2430",
     "name": "燦坤",
-    "peRatio": 23.33,
-    "dividendYield": 6.49,
+    "peRatio": 23.48,
+    "dividendYield": 6.45,
     "pbRatio": 0.62
   },
   {
@@ -2440,21 +2440,21 @@
     "name": "聯昌",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.45
+    "pbRatio": 1.39
   },
   {
     "symbol": "2432",
     "name": "倚天酷碁-創",
-    "peRatio": 14.18,
-    "dividendYield": 7.05,
-    "pbRatio": 1.3
+    "peRatio": 14.03,
+    "dividendYield": 7.13,
+    "pbRatio": 1.28
   },
   {
     "symbol": "2433",
     "name": "互盛電",
-    "peRatio": 15.39,
-    "dividendYield": 6.35,
-    "pbRatio": 2.13
+    "peRatio": 15.37,
+    "dividendYield": 6.36,
+    "pbRatio": 2.12
   },
   {
     "symbol": "2434",
@@ -2466,113 +2466,113 @@
   {
     "symbol": "2436",
     "name": "偉詮電",
-    "peRatio": 35.03,
-    "dividendYield": 2.5,
-    "pbRatio": 3.05
+    "peRatio": 36.37,
+    "dividendYield": 2.41,
+    "pbRatio": 3.16
   },
   {
     "symbol": "2438",
     "name": "翔耀",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.11
+    "pbRatio": 4.12
   },
   {
     "symbol": "2439",
     "name": "美律",
-    "peRatio": 15.62,
-    "dividendYield": 7.41,
-    "pbRatio": 1.51
+    "peRatio": 17.95,
+    "dividendYield": 4.23,
+    "pbRatio": 1.37
   },
   {
     "symbol": "2440",
     "name": "太空梭",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.9
+    "pbRatio": 1.87
   },
   {
     "symbol": "2441",
     "name": "超豐",
-    "peRatio": 22.19,
-    "dividendYield": 3.22,
-    "pbRatio": 2.31
+    "peRatio": 22.83,
+    "dividendYield": 3.13,
+    "pbRatio": 2.38
   },
   {
     "symbol": "2442",
     "name": "新美齊",
-    "peRatio": 21.43,
-    "dividendYield": 1.23,
-    "pbRatio": 1.07
+    "peRatio": 21.92,
+    "dividendYield": 1.2,
+    "pbRatio": 1.1
   },
   {
     "symbol": "2444",
     "name": "兆勁",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.54
+    "pbRatio": 1.69
   },
   {
     "symbol": "2449",
     "name": "京元電子",
-    "peRatio": 36.24,
-    "dividendYield": 1.25,
-    "pbRatio": 8.31
+    "peRatio": 37.03,
+    "dividendYield": 1.22,
+    "pbRatio": 8.49
   },
   {
     "symbol": "2450",
     "name": "神腦",
-    "peRatio": 17.38,
-    "dividendYield": 5.18,
-    "pbRatio": 1.2
+    "peRatio": 17.67,
+    "dividendYield": 5.1,
+    "pbRatio": 1.22
   },
   {
     "symbol": "2451",
     "name": "創見",
-    "peRatio": 33.7,
-    "dividendYield": 2.83,
-    "pbRatio": 4.72
+    "peRatio": 32.92,
+    "dividendYield": 2.9,
+    "pbRatio": 4.61
   },
   {
     "symbol": "2453",
     "name": "凌群",
-    "peRatio": 16.54,
-    "dividendYield": 4.94,
-    "pbRatio": 2.47
+    "peRatio": 16.82,
+    "dividendYield": 4.86,
+    "pbRatio": 2.51
   },
   {
     "symbol": "2454",
     "name": "聯發科",
-    "peRatio": 28.11,
-    "dividendYield": 2.89,
-    "pbRatio": 7.1
+    "peRatio": 29.48,
+    "dividendYield": 2.78,
+    "pbRatio": 7.75
   },
   {
     "symbol": "2455",
     "name": "全新",
-    "peRatio": 75.29,
-    "dividendYield": 1.63,
-    "pbRatio": 11.79
+    "peRatio": 73.48,
+    "dividendYield": 1.48,
+    "pbRatio": 12.21
   },
   {
     "symbol": "2457",
     "name": "飛宏",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.43
+    "pbRatio": 1.46
   },
   {
     "symbol": "2458",
     "name": "義隆",
-    "peRatio": 14.81,
-    "dividendYield": 6.55,
-    "pbRatio": 3.57
+    "peRatio": 15.12,
+    "dividendYield": 6.42,
+    "pbRatio": 3.65
   },
   {
     "symbol": "2459",
     "name": "敦吉",
-    "peRatio": 12.22,
-    "dividendYield": 5.95,
+    "peRatio": 12.25,
+    "dividendYield": 5.93,
     "pbRatio": 1.32
   },
   {
@@ -2580,168 +2580,168 @@
     "name": "建通",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.26
+    "pbRatio": 3.21
   },
   {
     "symbol": "2461",
     "name": "光群雷",
     "peRatio": 0,
-    "dividendYield": 6.01,
-    "pbRatio": 1
+    "dividendYield": 6.08,
+    "pbRatio": 0.99
   },
   {
     "symbol": "2462",
     "name": "良得電",
-    "peRatio": 66.71,
-    "dividendYield": 3.2,
-    "pbRatio": 1.28
+    "peRatio": 67.76,
+    "dividendYield": 3.15,
+    "pbRatio": 1.31
   },
   {
     "symbol": "2464",
     "name": "盟立",
     "peRatio": 0,
-    "dividendYield": 0.49,
-    "pbRatio": 3.01
+    "dividendYield": 0.47,
+    "pbRatio": 3.15
   },
   {
     "symbol": "2465",
     "name": "麗臺",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 7.67
+    "pbRatio": 7.75
   },
   {
     "symbol": "2466",
     "name": "冠西電",
-    "peRatio": 33.1,
+    "peRatio": 33.61,
     "dividendYield": 0,
-    "pbRatio": 4.36
+    "pbRatio": 4.43
   },
   {
     "symbol": "2467",
     "name": "志聖",
-    "peRatio": 57.82,
+    "peRatio": 63.56,
     "dividendYield": 1.71,
-    "pbRatio": 8.31
+    "pbRatio": 9.14
   },
   {
     "symbol": "2468",
     "name": "華經",
-    "peRatio": 30.87,
-    "dividendYield": 2.54,
-    "pbRatio": 2
+    "peRatio": 31.52,
+    "dividendYield": 2.48,
+    "pbRatio": 2.04
   },
   {
     "symbol": "2471",
     "name": "資通",
-    "peRatio": 15.39,
-    "dividendYield": 6.16,
-    "pbRatio": 2.76
+    "peRatio": 15.91,
+    "dividendYield": 5.95,
+    "pbRatio": 2.85
   },
   {
     "symbol": "2472",
     "name": "立隆電",
-    "peRatio": 16.9,
-    "dividendYield": 2.53,
-    "pbRatio": 2.51
+    "peRatio": 17.52,
+    "dividendYield": 2.44,
+    "pbRatio": 2.6
   },
   {
     "symbol": "2474",
     "name": "可成",
-    "peRatio": 14.08,
-    "dividendYield": 8.22,
+    "peRatio": 14.01,
+    "dividendYield": 8.27,
     "pbRatio": 0.82
   },
   {
     "symbol": "2476",
     "name": "鉅祥",
-    "peRatio": 21.8,
-    "dividendYield": 4.13,
-    "pbRatio": 2.23
+    "peRatio": 21.75,
+    "dividendYield": 4.14,
+    "pbRatio": 2.22
   },
   {
     "symbol": "2477",
     "name": "美隆電",
-    "peRatio": 14.3,
-    "dividendYield": 5.32,
-    "pbRatio": 0.97
+    "peRatio": 14.27,
+    "dividendYield": 5.33,
+    "pbRatio": 0.96
   },
   {
     "symbol": "2478",
     "name": "大毅",
-    "peRatio": 20.75,
-    "dividendYield": 2.52,
-    "pbRatio": 1.53
+    "peRatio": 20.92,
+    "dividendYield": 2.5,
+    "pbRatio": 1.54
   },
   {
     "symbol": "2480",
     "name": "敦陽科",
-    "peRatio": 18.33,
-    "dividendYield": 5.12,
-    "pbRatio": 4.7
+    "peRatio": 18.58,
+    "dividendYield": 5.05,
+    "pbRatio": 4.77
   },
   {
     "symbol": "2481",
     "name": "強茂",
-    "peRatio": 32.36,
-    "dividendYield": 1.6,
-    "pbRatio": 2.42
+    "peRatio": 33.43,
+    "dividendYield": 1.55,
+    "pbRatio": 2.5
   },
   {
     "symbol": "2482",
     "name": "連宇",
     "peRatio": 0,
-    "dividendYield": 3.39,
-    "pbRatio": 1.27
+    "dividendYield": 3.41,
+    "pbRatio": 1.26
   },
   {
     "symbol": "2483",
     "name": "百容",
-    "peRatio": 39.46,
+    "peRatio": 39.29,
     "dividendYield": 1.36,
     "pbRatio": 0.94
   },
   {
     "symbol": "2484",
     "name": "希華",
-    "peRatio": 55,
-    "dividendYield": 2.27,
-    "pbRatio": 1.32
+    "peRatio": 53.66,
+    "dividendYield": 2.33,
+    "pbRatio": 1.29
   },
   {
     "symbol": "2485",
     "name": "兆赫",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.7
+    "pbRatio": 2.89
   },
   {
     "symbol": "2486",
     "name": "一詮",
-    "peRatio": 697.5,
+    "peRatio": 700,
     "dividendYield": 0.36,
-    "pbRatio": 6.4
+    "pbRatio": 6.43
   },
   {
     "symbol": "2488",
     "name": "漢平",
-    "peRatio": 10.66,
-    "dividendYield": 6.58,
-    "pbRatio": 1.38
+    "peRatio": 10.47,
+    "dividendYield": 6.28,
+    "pbRatio": 1.36
   },
   {
     "symbol": "2489",
     "name": "瑞軒",
-    "peRatio": 25.35,
-    "dividendYield": 1.39,
-    "pbRatio": 1.71
+    "peRatio": 27.89,
+    "dividendYield": 1.26,
+    "pbRatio": 1.88
   },
   {
     "symbol": "2491",
     "name": "吉祥全",
-    "peRatio": 24.15,
+    "peRatio": 24.3,
     "dividendYield": 0,
-    "pbRatio": 1.65
+    "pbRatio": 1.66
   },
   {
     "symbol": "2492",
@@ -2753,56 +2753,56 @@
   {
     "symbol": "2493",
     "name": "揚博",
-    "peRatio": 26.64,
-    "dividendYield": 4.31,
-    "pbRatio": 4.86
+    "peRatio": 28.1,
+    "dividendYield": 4.08,
+    "pbRatio": 5.13
   },
   {
     "symbol": "2495",
     "name": "普安",
-    "peRatio": 32.84,
-    "dividendYield": 4.08,
-    "pbRatio": 1.98
+    "peRatio": 33.3,
+    "dividendYield": 4.02,
+    "pbRatio": 2.01
   },
   {
     "symbol": "2496",
     "name": "卓越",
-    "peRatio": 10.63,
-    "dividendYield": 8.23,
+    "peRatio": 10.66,
+    "dividendYield": 8.21,
     "pbRatio": 1.55
   },
   {
     "symbol": "2497",
     "name": "怡利電",
-    "peRatio": 17.8,
-    "dividendYield": 4.41,
-    "pbRatio": 2.42
+    "peRatio": 17.69,
+    "dividendYield": 4.43,
+    "pbRatio": 2.41
   },
   {
     "symbol": "2498",
     "name": "宏達電",
-    "peRatio": 6.54,
+    "peRatio": 6.58,
     "dividendYield": 0,
-    "pbRatio": 1.41
+    "pbRatio": 1.42
   },
   {
     "symbol": "2501",
     "name": "國建",
-    "peRatio": 9.36,
-    "dividendYield": 4.4,
-    "pbRatio": 0.91
+    "peRatio": 9.32,
+    "dividendYield": 4.42,
+    "pbRatio": 0.9
   },
   {
     "symbol": "2504",
     "name": "國產",
-    "peRatio": 11.29,
-    "dividendYield": 7.61,
-    "pbRatio": 1.67
+    "peRatio": 11.38,
+    "dividendYield": 7.55,
+    "pbRatio": 1.68
   },
   {
     "symbol": "2505",
     "name": "國揚",
-    "peRatio": 11.22,
+    "peRatio": 11.28,
     "dividendYield": 0,
     "pbRatio": 0.68
   },
@@ -2818,7 +2818,7 @@
     "name": "全坤建",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.85
+    "pbRatio": 0.84
   },
   {
     "symbol": "2511",
@@ -2830,72 +2830,72 @@
   {
     "symbol": "2514",
     "name": "龍邦",
-    "peRatio": 8.98,
+    "peRatio": 9.04,
     "dividendYield": 0,
-    "pbRatio": 0.42
+    "pbRatio": 0.43
   },
   {
     "symbol": "2515",
     "name": "中工",
-    "peRatio": 40.61,
-    "dividendYield": 3,
-    "pbRatio": 1.15
+    "peRatio": 42.44,
+    "dividendYield": 2.87,
+    "pbRatio": 1.2
   },
   {
     "symbol": "2516",
     "name": "新建",
-    "peRatio": 15.64,
+    "peRatio": 15.96,
     "dividendYield": 0,
-    "pbRatio": 1.76
+    "pbRatio": 1.8
   },
   {
     "symbol": "2520",
     "name": "冠德",
-    "peRatio": 9.03,
-    "dividendYield": 12.97,
-    "pbRatio": 0.79
+    "peRatio": 8.96,
+    "dividendYield": 13.08,
+    "pbRatio": 0.78
   },
   {
     "symbol": "2524",
     "name": "京城",
-    "peRatio": 6.2,
+    "peRatio": 6.26,
     "dividendYield": 0,
     "pbRatio": 0.75
   },
   {
     "symbol": "2527",
     "name": "宏璟",
-    "peRatio": 7.55,
-    "dividendYield": 6.43,
-    "pbRatio": 0.62
+    "peRatio": 7.85,
+    "dividendYield": 6.18,
+    "pbRatio": 0.64
   },
   {
     "symbol": "2528",
     "name": "皇普",
-    "peRatio": 4.12,
-    "dividendYield": 8.73,
+    "peRatio": 4.11,
+    "dividendYield": 8.76,
     "pbRatio": 1.6
   },
   {
     "symbol": "2530",
     "name": "華建",
-    "peRatio": 10.65,
-    "dividendYield": 8.01,
-    "pbRatio": 2.11
+    "peRatio": 10.55,
+    "dividendYield": 8.09,
+    "pbRatio": 2.09
   },
   {
     "symbol": "2534",
     "name": "宏盛",
-    "peRatio": 8.05,
-    "dividendYield": 4.99,
+    "peRatio": 8.01,
+    "dividendYield": 5.01,
     "pbRatio": 0.63
   },
   {
     "symbol": "2535",
     "name": "達欣工",
-    "peRatio": 12.17,
-    "dividendYield": 5.07,
-    "pbRatio": 1.96
+    "peRatio": 12.09,
+    "dividendYield": 5.1,
+    "pbRatio": 1.95
   },
   {
     "symbol": "2536",
@@ -2907,37 +2907,37 @@
   {
     "symbol": "2537",
     "name": "聯上發",
-    "peRatio": 18.84,
+    "peRatio": 18.66,
     "dividendYield": 0,
-    "pbRatio": 0.72
+    "pbRatio": 0.71
   },
   {
     "symbol": "2538",
     "name": "基泰",
-    "peRatio": 12.3,
-    "dividendYield": 6.54,
+    "peRatio": 12.36,
+    "dividendYield": 6.51,
     "pbRatio": 0.82
   },
   {
     "symbol": "2539",
     "name": "櫻花建",
-    "peRatio": 11.12,
-    "dividendYield": 5.08,
-    "pbRatio": 3.55
+    "peRatio": 11.06,
+    "dividendYield": 5.1,
+    "pbRatio": 3.53
   },
   {
     "symbol": "2540",
     "name": "愛山林",
-    "peRatio": 47.19,
-    "dividendYield": 8.65,
-    "pbRatio": 2.66
+    "peRatio": 47.45,
+    "dividendYield": 8.6,
+    "pbRatio": 2.68
   },
   {
     "symbol": "2542",
     "name": "興富發",
-    "peRatio": 14.41,
-    "dividendYield": 6.65,
-    "pbRatio": 1.5
+    "peRatio": 14.5,
+    "dividendYield": 6.61,
+    "pbRatio": 1.51
   },
   {
     "symbol": "2543",
@@ -2949,37 +2949,37 @@
   {
     "symbol": "2545",
     "name": "皇翔",
-    "peRatio": 10.37,
-    "dividendYield": 11.98,
-    "pbRatio": 0.94
+    "peRatio": 10.41,
+    "dividendYield": 11.94,
+    "pbRatio": 0.95
   },
   {
     "symbol": "2546",
     "name": "根基",
-    "peRatio": 9.1,
-    "dividendYield": 4.36,
-    "pbRatio": 2
+    "peRatio": 9.15,
+    "dividendYield": 4.34,
+    "pbRatio": 2.01
   },
   {
     "symbol": "2547",
     "name": "日勝生",
-    "peRatio": 3.79,
-    "dividendYield": 5.3,
+    "peRatio": 3.81,
+    "dividendYield": 5.27,
     "pbRatio": 0.8
   },
   {
     "symbol": "2548",
     "name": "華固",
-    "peRatio": 80.14,
-    "dividendYield": 5.31,
-    "pbRatio": 1.83
+    "peRatio": 10.65,
+    "dividendYield": 5.56,
+    "pbRatio": 1.54
   },
   {
     "symbol": "2597",
     "name": "潤弘",
-    "peRatio": 16.51,
-    "dividendYield": 5.56,
-    "pbRatio": 6.91
+    "peRatio": 16.46,
+    "dividendYield": 5.57,
+    "pbRatio": 6.89
   },
   {
     "symbol": "2601",
@@ -2991,78 +2991,78 @@
   {
     "symbol": "2603",
     "name": "長榮",
-    "peRatio": 4.58,
-    "dividendYield": 16.93,
-    "pbRatio": 0.77
+    "peRatio": 4.7,
+    "dividendYield": 16.5,
+    "pbRatio": 0.79
   },
   {
     "symbol": "2605",
     "name": "新興",
-    "peRatio": 39.64,
-    "dividendYield": 3.95,
-    "pbRatio": 1.19
+    "peRatio": 40.66,
+    "dividendYield": 3.85,
+    "pbRatio": 1.22
   },
   {
     "symbol": "2606",
     "name": "裕民",
-    "peRatio": 16.86,
-    "dividendYield": 4.93,
-    "pbRatio": 1.55
+    "peRatio": 17.27,
+    "dividendYield": 4.81,
+    "pbRatio": 1.59
   },
   {
     "symbol": "2607",
     "name": "榮運",
-    "peRatio": 9.38,
-    "dividendYield": 2.32,
+    "peRatio": 9.36,
+    "dividendYield": 2.33,
     "pbRatio": 1.01
   },
   {
     "symbol": "2608",
     "name": "嘉里大榮",
-    "peRatio": 15.12,
-    "dividendYield": 5.2,
-    "pbRatio": 1.21
+    "peRatio": 15.02,
+    "dividendYield": 5.23,
+    "pbRatio": 1.2
   },
   {
     "symbol": "2609",
     "name": "陽明",
-    "peRatio": 7.19,
-    "dividendYield": 13.32,
-    "pbRatio": 0.61
+    "peRatio": 7.33,
+    "dividendYield": 13.07,
+    "pbRatio": 0.63
   },
   {
     "symbol": "2610",
     "name": "華航",
-    "peRatio": 8.54,
-    "dividendYield": 3.79,
-    "pbRatio": 1.36
+    "peRatio": 8.5,
+    "dividendYield": 3.81,
+    "pbRatio": 1.35
   },
   {
     "symbol": "2611",
     "name": "志信",
-    "peRatio": 76.32,
-    "dividendYield": 11.31,
-    "pbRatio": 1.02
+    "peRatio": 76.84,
+    "dividendYield": 11.23,
+    "pbRatio": 1.03
   },
   {
     "symbol": "2612",
     "name": "中航",
-    "peRatio": 8.98,
-    "dividendYield": 3.26,
-    "pbRatio": 0.99
+    "peRatio": 9.23,
+    "dividendYield": 3.17,
+    "pbRatio": 1.02
   },
   {
     "symbol": "2613",
     "name": "中櫃",
-    "peRatio": 29.35,
-    "dividendYield": 4.06,
-    "pbRatio": 1.04
+    "peRatio": 29.64,
+    "dividendYield": 4.02,
+    "pbRatio": 1.05
   },
   {
     "symbol": "2614",
     "name": "東森",
-    "peRatio": 10.51,
-    "dividendYield": 5.58,
+    "peRatio": 10.48,
+    "dividendYield": 5.6,
     "pbRatio": 1.66
   },
   {
@@ -3076,84 +3076,84 @@
     "symbol": "2616",
     "name": "山隆",
     "peRatio": 0,
-    "dividendYield": 2.22,
-    "pbRatio": 0.62
+    "dividendYield": 2.21,
+    "pbRatio": 0.63
   },
   {
     "symbol": "2617",
     "name": "台航",
-    "peRatio": 9.95,
-    "dividendYield": 4.88,
-    "pbRatio": 0.76
+    "peRatio": 10.1,
+    "dividendYield": 4.81,
+    "pbRatio": 0.77
   },
   {
     "symbol": "2618",
     "name": "長榮航",
-    "peRatio": 7.87,
+    "peRatio": 7.88,
     "dividendYield": 6.32,
     "pbRatio": 1.56
   },
   {
     "symbol": "2630",
     "name": "亞航",
-    "peRatio": 51.96,
+    "peRatio": 51.86,
     "dividendYield": 1.17,
     "pbRatio": 3.15
   },
   {
     "symbol": "2633",
     "name": "台灣高鐵",
-    "peRatio": 23.98,
-    "dividendYield": 3.87,
-    "pbRatio": 2.14
+    "peRatio": 23.12,
+    "dividendYield": 3.88,
+    "pbRatio": 2.09
   },
   {
     "symbol": "2634",
     "name": "漢翔",
-    "peRatio": 69.38,
-    "dividendYield": 2.49,
-    "pbRatio": 3.07
+    "peRatio": 68.75,
+    "dividendYield": 2.51,
+    "pbRatio": 3.05
   },
   {
     "symbol": "2636",
     "name": "台驊控股",
-    "peRatio": 7.85,
-    "dividendYield": 9.35,
+    "peRatio": 7.86,
+    "dividendYield": 9.33,
     "pbRatio": 0.98
   },
   {
     "symbol": "2637",
     "name": "慧洋-KY",
-    "peRatio": 17.4,
-    "dividendYield": 6.93,
-    "pbRatio": 1.19
+    "peRatio": 17.54,
+    "dividendYield": 6.87,
+    "pbRatio": 1.2
   },
   {
     "symbol": "2642",
     "name": "宅配通",
     "peRatio": 0,
-    "dividendYield": 2.02,
+    "dividendYield": 2.01,
     "pbRatio": 1.09
   },
   {
     "symbol": "2645",
     "name": "長榮航太",
-    "peRatio": 32.89,
-    "dividendYield": 2.59,
-    "pbRatio": 4.97
+    "peRatio": 33.55,
+    "dividendYield": 2.54,
+    "pbRatio": 5.07
   },
   {
     "symbol": "2646",
     "name": "星宇航空",
-    "peRatio": 256.67,
+    "peRatio": 254.44,
     "dividendYield": 0,
-    "pbRatio": 2.15
+    "pbRatio": 2.13
   },
   {
     "symbol": "2701",
     "name": "萬企",
-    "peRatio": 22.3,
-    "dividendYield": 2.51,
+    "peRatio": 22.2,
+    "dividendYield": 2.52,
     "pbRatio": 0.61
   },
   {
@@ -3166,37 +3166,37 @@
   {
     "symbol": "2704",
     "name": "國賓",
-    "peRatio": 114.47,
-    "dividendYield": 1.15,
-    "pbRatio": 0.6
+    "peRatio": 115.92,
+    "dividendYield": 1.14,
+    "pbRatio": 0.61
   },
   {
     "symbol": "2705",
     "name": "六福",
-    "peRatio": 135,
+    "peRatio": 135.42,
     "dividendYield": 0,
     "pbRatio": 0.65
   },
   {
     "symbol": "2706",
     "name": "第一店",
-    "peRatio": 22.16,
-    "dividendYield": 2.72,
+    "peRatio": 22.24,
+    "dividendYield": 2.71,
     "pbRatio": 0.66
   },
   {
     "symbol": "2707",
     "name": "晶華",
-    "peRatio": 16.94,
-    "dividendYield": 7.64,
-    "pbRatio": 6.58
+    "peRatio": 16.98,
+    "dividendYield": 7.62,
+    "pbRatio": 6.6
   },
   {
     "symbol": "2712",
     "name": "遠雄來",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.73
+    "pbRatio": 1.72
   },
   {
     "symbol": "2722",
@@ -3209,113 +3209,113 @@
     "symbol": "2723",
     "name": "美食-KY",
     "peRatio": 0,
-    "dividendYield": 4.17,
+    "dividendYield": 4.19,
     "pbRatio": 1.36
   },
   {
     "symbol": "2727",
     "name": "王品",
-    "peRatio": 14.26,
-    "dividendYield": 6.71,
-    "pbRatio": 4.19
+    "peRatio": 14.36,
+    "dividendYield": 6.66,
+    "pbRatio": 4.22
   },
   {
     "symbol": "2731",
     "name": "雄獅",
-    "peRatio": 11.1,
-    "dividendYield": 4.34,
-    "pbRatio": 3.51
+    "peRatio": 11.26,
+    "dividendYield": 4.27,
+    "pbRatio": 3.56
   },
   {
     "symbol": "2739",
     "name": "寒舍",
-    "peRatio": 19.71,
+    "peRatio": 19.68,
     "dividendYield": 2.97,
     "pbRatio": 2.05
   },
   {
     "symbol": "2748",
     "name": "雲品",
-    "peRatio": 17.98,
-    "dividendYield": 4.84,
-    "pbRatio": 1.51
+    "peRatio": 17.83,
+    "dividendYield": 4.88,
+    "pbRatio": 1.5
   },
   {
     "symbol": "2753",
     "name": "八方雲集",
-    "peRatio": 15.74,
-    "dividendYield": 4.32,
-    "pbRatio": 3.56
+    "peRatio": 15.7,
+    "dividendYield": 4.34,
+    "pbRatio": 3.55
   },
   {
     "symbol": "2762",
     "name": "世界健身-KY",
-    "peRatio": 20.51,
-    "dividendYield": 7.76,
-    "pbRatio": 2.9
+    "peRatio": 20.72,
+    "dividendYield": 7.68,
+    "pbRatio": 2.93
   },
   {
     "symbol": "2801",
     "name": "彰銀",
-    "peRatio": 14.24,
-    "dividendYield": 4.62,
-    "pbRatio": 1.2
+    "peRatio": 14.3,
+    "dividendYield": 4.63,
+    "pbRatio": 1.15
   },
   {
     "symbol": "2812",
     "name": "台中銀",
-    "peRatio": 14.38,
-    "dividendYield": 5.33,
+    "peRatio": 14.45,
+    "dividendYield": 5.31,
     "pbRatio": 1.42
   },
   {
     "symbol": "2816",
     "name": "旺旺保",
-    "peRatio": 7,
-    "dividendYield": 4.93,
-    "pbRatio": 0.9
+    "peRatio": 7.11,
+    "dividendYield": 4.85,
+    "pbRatio": 0.91
   },
   {
     "symbol": "2820",
     "name": "華票",
-    "peRatio": 13.65,
-    "dividendYield": 4.53,
+    "peRatio": 13.61,
+    "dividendYield": 4.55,
     "pbRatio": 0.85
   },
   {
     "symbol": "2832",
     "name": "台產",
-    "peRatio": 11.34,
-    "dividendYield": 4.04,
+    "peRatio": 11.35,
+    "dividendYield": 4.03,
     "pbRatio": 1.09
   },
   {
     "symbol": "2834",
     "name": "臺企銀",
-    "peRatio": 12.92,
-    "dividendYield": 4.95,
-    "pbRatio": 1.1
+    "peRatio": 13.12,
+    "dividendYield": 4.88,
+    "pbRatio": 1.11
   },
   {
     "symbol": "2836",
     "name": "高雄銀",
-    "peRatio": 20.16,
-    "dividendYield": 4.72,
-    "pbRatio": 0.91
+    "peRatio": 20.48,
+    "dividendYield": 4.65,
+    "pbRatio": 0.92
   },
   {
     "symbol": "2838",
     "name": "聯邦銀",
-    "peRatio": 16.81,
-    "dividendYield": 5.25,
-    "pbRatio": 1.1
+    "peRatio": 17.02,
+    "dividendYield": 5.19,
+    "pbRatio": 1.12
   },
   {
     "symbol": "2845",
     "name": "遠東銀",
-    "peRatio": 16.14,
-    "dividendYield": 5.88,
-    "pbRatio": 0.91
+    "peRatio": 16.39,
+    "dividendYield": 5.79,
+    "pbRatio": 0.92
   },
   {
     "symbol": "2849",
@@ -3327,79 +3327,79 @@
   {
     "symbol": "2850",
     "name": "新產",
-    "peRatio": 10.53,
-    "dividendYield": 6.16,
-    "pbRatio": 1.87
+    "peRatio": 10.48,
+    "dividendYield": 6.19,
+    "pbRatio": 1.86
   },
   {
     "symbol": "2851",
     "name": "中再保",
-    "peRatio": 11,
-    "dividendYield": 6.88,
+    "peRatio": 11.02,
+    "dividendYield": 6.87,
     "pbRatio": 1.07
   },
   {
     "symbol": "2852",
     "name": "第一保",
-    "peRatio": 9.67,
-    "dividendYield": 7.65,
+    "peRatio": 9.65,
+    "dividendYield": 7.66,
     "pbRatio": 0.93
   },
   {
     "symbol": "2855",
     "name": "統一證",
-    "peRatio": 14.72,
-    "dividendYield": 6.67,
-    "pbRatio": 1.37
+    "peRatio": 15.07,
+    "dividendYield": 6.51,
+    "pbRatio": 1.41
   },
   {
     "symbol": "2867",
     "name": "三商壽",
-    "peRatio": 117.29,
+    "peRatio": 118,
     "dividendYield": 0,
     "pbRatio": 1.19
   },
   {
     "symbol": "2880",
     "name": "華南金",
-    "peRatio": 20.55,
-    "dividendYield": 3.63,
-    "pbRatio": 2.27
+    "peRatio": 21.05,
+    "dividendYield": 3.54,
+    "pbRatio": 2.33
   },
   {
     "symbol": "2881",
     "name": "富邦金",
-    "peRatio": 11.77,
-    "dividendYield": 4.57,
-    "pbRatio": 1.5
+    "peRatio": 11.94,
+    "dividendYield": 4.51,
+    "pbRatio": 1.52
   },
   {
     "symbol": "2882",
     "name": "國泰金",
-    "peRatio": 15.17,
-    "dividendYield": 4.55,
-    "pbRatio": 1.4
+    "peRatio": 15.72,
+    "dividendYield": 4.39,
+    "pbRatio": 1.45
   },
   {
     "symbol": "2883",
     "name": "凱基金",
-    "peRatio": 16.59,
-    "dividendYield": 4.55,
-    "pbRatio": 1.25
+    "peRatio": 17.42,
+    "dividendYield": 4.33,
+    "pbRatio": 1.31
   },
   {
     "symbol": "2884",
     "name": "玉山金",
-    "peRatio": 18.02,
-    "dividendYield": 3.72,
-    "pbRatio": 2.17
+    "peRatio": 18.09,
+    "dividendYield": 3.7,
+    "pbRatio": 2.18
   },
   {
     "symbol": "2885",
     "name": "元大金",
-    "peRatio": 17.76,
-    "dividendYield": 3.92,
-    "pbRatio": 1.91
+    "peRatio": 18.48,
+    "dividendYield": 3.76,
+    "pbRatio": 1.99
   },
   {
     "symbol": "2886",
@@ -3411,30 +3411,30 @@
   {
     "symbol": "2887",
     "name": "台新新光金",
-    "peRatio": 25.15,
-    "dividendYield": 3.61,
-    "pbRatio": 1.39
+    "peRatio": 25.86,
+    "dividendYield": 3.52,
+    "pbRatio": 1.43
   },
   {
     "symbol": "2889",
     "name": "國票金",
-    "peRatio": 27.67,
-    "dividendYield": 3.55,
-    "pbRatio": 1.35
+    "peRatio": 28.25,
+    "dividendYield": 3.48,
+    "pbRatio": 1.38
   },
   {
     "symbol": "2890",
     "name": "永豐金",
-    "peRatio": 17.7,
-    "dividendYield": 3.82,
-    "pbRatio": 1.98
+    "peRatio": 17.95,
+    "dividendYield": 3.77,
+    "pbRatio": 2.01
   },
   {
     "symbol": "2891",
     "name": "中信金",
-    "peRatio": 14.54,
-    "dividendYield": 4.3,
-    "pbRatio": 2.19
+    "peRatio": 15.19,
+    "dividendYield": 4.11,
+    "pbRatio": 2.29
   },
   {
     "symbol": "2892",
@@ -3446,72 +3446,72 @@
   {
     "symbol": "2897",
     "name": "王道銀行",
-    "peRatio": 13.5,
-    "dividendYield": 5.14,
+    "peRatio": 13.61,
+    "dividendYield": 5.1,
     "pbRatio": 0.68
   },
   {
     "symbol": "2901",
     "name": "欣欣",
-    "peRatio": 71.62,
-    "dividendYield": 1.52,
-    "pbRatio": 2.03
+    "peRatio": 70.44,
+    "dividendYield": 1.54,
+    "pbRatio": 2
   },
   {
     "symbol": "2903",
     "name": "遠百",
-    "peRatio": 13.74,
-    "dividendYield": 5.88,
-    "pbRatio": 1.06
+    "peRatio": 13.65,
+    "dividendYield": 5.92,
+    "pbRatio": 1.05
   },
   {
     "symbol": "2904",
     "name": "匯僑",
-    "peRatio": 11.91,
-    "dividendYield": 5.83,
+    "peRatio": 11.98,
+    "dividendYield": 5.8,
     "pbRatio": 1.05
   },
   {
     "symbol": "2905",
     "name": "三商",
-    "peRatio": 42.37,
-    "dividendYield": 1.86,
-    "pbRatio": 1.07
+    "peRatio": 43.42,
+    "dividendYield": 1.82,
+    "pbRatio": 1.1
   },
   {
     "symbol": "2906",
     "name": "高林",
-    "peRatio": 33.16,
-    "dividendYield": 4.76,
+    "peRatio": 33.42,
+    "dividendYield": 4.72,
     "pbRatio": 0.79
   },
   {
     "symbol": "2908",
     "name": "特力",
-    "peRatio": 158.85,
-    "dividendYield": 4.36,
-    "pbRatio": 1.56
+    "peRatio": 159.23,
+    "dividendYield": 4.35,
+    "pbRatio": 1.57
   },
   {
     "symbol": "2910",
     "name": "統領",
-    "peRatio": 18.96,
-    "dividendYield": 4.18,
-    "pbRatio": 1.47
+    "peRatio": 19.29,
+    "dividendYield": 4.1,
+    "pbRatio": 1.5
   },
   {
     "symbol": "2911",
     "name": "麗嬰房",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.47
+    "pbRatio": 3.45
   },
   {
     "symbol": "2912",
     "name": "統一超",
-    "peRatio": 20.74,
+    "peRatio": 20.69,
     "dividendYield": 4.04,
-    "pbRatio": 5.87
+    "pbRatio": 5.45
   },
   {
     "symbol": "2913",
@@ -3523,21 +3523,21 @@
   {
     "symbol": "2915",
     "name": "潤泰全",
-    "peRatio": 6.35,
-    "dividendYield": 4.69,
-    "pbRatio": 0.58
+    "peRatio": 6.34,
+    "dividendYield": 4.7,
+    "pbRatio": 0.57
   },
   {
     "symbol": "2923",
     "name": "鼎固-KY",
     "peRatio": 0,
-    "dividendYield": 0.91,
-    "pbRatio": 0.97
+    "dividendYield": 0.86,
+    "pbRatio": 1.03
   },
   {
     "symbol": "2929",
     "name": "淘帝-KY",
-    "peRatio": 58.38,
+    "peRatio": 57.62,
     "dividendYield": 0,
     "pbRatio": 0.3
   },
@@ -3546,70 +3546,70 @@
     "name": "永邑-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.91
+    "pbRatio": 1.88
   },
   {
     "symbol": "2945",
     "name": "三商家購",
-    "peRatio": 21.45,
-    "dividendYield": 3.5,
-    "pbRatio": 1.53
+    "peRatio": 21.35,
+    "dividendYield": 3.51,
+    "pbRatio": 1.52
   },
   {
     "symbol": "3002",
     "name": "歐格",
-    "peRatio": 48.52,
-    "dividendYield": 3.28,
-    "pbRatio": 1.77
+    "peRatio": 50.68,
+    "dividendYield": 3.14,
+    "pbRatio": 1.85
   },
   {
     "symbol": "3003",
     "name": "健和興",
-    "peRatio": 34.83,
-    "dividendYield": 3.96,
+    "peRatio": 34.9,
+    "dividendYield": 3.95,
     "pbRatio": 1.24
   },
   {
     "symbol": "3004",
     "name": "豐達科",
-    "peRatio": 18.55,
-    "dividendYield": 2.58,
-    "pbRatio": 2.32
+    "peRatio": 21.65,
+    "dividendYield": 2.29,
+    "pbRatio": 1.97
   },
   {
     "symbol": "3005",
     "name": "神基",
-    "peRatio": 14.16,
-    "dividendYield": 5.25,
-    "pbRatio": 2.94
+    "peRatio": 14.04,
+    "dividendYield": 5.3,
+    "pbRatio": 2.91
   },
   {
     "symbol": "3006",
     "name": "晶豪科",
-    "peRatio": 0,
-    "dividendYield": 0.63,
-    "pbRatio": 4.67
+    "peRatio": 173.89,
+    "dividendYield": 0.64,
+    "pbRatio": 4.14
   },
   {
     "symbol": "3008",
     "name": "大立光",
-    "peRatio": 13.87,
-    "dividendYield": 3.31,
+    "peRatio": 15.73,
+    "dividendYield": 3.17,
     "pbRatio": 1.77
   },
   {
     "symbol": "3010",
     "name": "華立",
-    "peRatio": 15.4,
-    "dividendYield": 4.14,
-    "pbRatio": 1.48
+    "peRatio": 15.58,
+    "dividendYield": 4.09,
+    "pbRatio": 1.5
   },
   {
     "symbol": "3011",
     "name": "今皓",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.14
+    "pbRatio": 1.11
   },
   {
     "symbol": "3013",
@@ -3621,51 +3621,51 @@
   {
     "symbol": "3014",
     "name": "聯陽",
-    "peRatio": 13.15,
-    "dividendYield": 7.29,
-    "pbRatio": 3.09
+    "peRatio": 13.1,
+    "dividendYield": 7.32,
+    "pbRatio": 3.08
   },
   {
     "symbol": "3015",
     "name": "全漢",
-    "peRatio": 31.62,
-    "dividendYield": 5.48,
-    "pbRatio": 0.82
+    "peRatio": 32.02,
+    "dividendYield": 5.42,
+    "pbRatio": 0.83
   },
   {
     "symbol": "3016",
     "name": "嘉晶",
-    "peRatio": 5,
-    "dividendYield": 0.85,
-    "pbRatio": 3.46
+    "peRatio": 6,
+    "dividendYield": 0.79,
+    "pbRatio": 3.72
   },
   {
     "symbol": "3017",
     "name": "奇鋐",
-    "peRatio": 43.95,
-    "dividendYield": 0.59,
-    "pbRatio": 17.95
+    "peRatio": 46.31,
+    "dividendYield": 0.56,
+    "pbRatio": 18.91
   },
   {
     "symbol": "3018",
     "name": "隆銘綠能",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.74
+    "pbRatio": 1.75
   },
   {
     "symbol": "3019",
     "name": "亞光",
-    "peRatio": 21.97,
-    "dividendYield": 2.66,
-    "pbRatio": 3.01
+    "peRatio": 22.19,
+    "dividendYield": 2.63,
+    "pbRatio": 3.04
   },
   {
     "symbol": "3021",
     "name": "鴻名",
-    "peRatio": 44.62,
-    "dividendYield": 1.72,
-    "pbRatio": 1.08
+    "peRatio": 45,
+    "dividendYield": 1.71,
+    "pbRatio": 1.09
   },
   {
     "symbol": "3022",
@@ -3691,100 +3691,100 @@
   {
     "symbol": "3025",
     "name": "星通",
-    "peRatio": 26.52,
-    "dividendYield": 6.01,
-    "pbRatio": 4.13
+    "peRatio": 28.26,
+    "dividendYield": 5.64,
+    "pbRatio": 4.4
   },
   {
     "symbol": "3026",
     "name": "禾伸堂",
-    "peRatio": 19.58,
-    "dividendYield": 4.58,
-    "pbRatio": 2.03
+    "peRatio": 19.41,
+    "dividendYield": 4.62,
+    "pbRatio": 2.02
   },
   {
     "symbol": "3027",
     "name": "盛達",
-    "peRatio": 53.86,
+    "peRatio": 53.64,
     "dividendYield": 0,
-    "pbRatio": 1.28
+    "pbRatio": 1.27
   },
   {
     "symbol": "3028",
     "name": "增你強",
-    "peRatio": 19.03,
-    "dividendYield": 3.83,
-    "pbRatio": 2.21
+    "peRatio": 19.27,
+    "dividendYield": 3.78,
+    "pbRatio": 2.24
   },
   {
     "symbol": "3029",
     "name": "零壹",
-    "peRatio": 18,
-    "dividendYield": 4.44,
-    "pbRatio": 3.44
+    "peRatio": 18.63,
+    "dividendYield": 4.53,
+    "pbRatio": 3.53
   },
   {
     "symbol": "3030",
     "name": "德律",
-    "peRatio": 20.72,
-    "dividendYield": 2.46,
-    "pbRatio": 5.43
+    "peRatio": 21.31,
+    "dividendYield": 3.13,
+    "pbRatio": 5.5
   },
   {
     "symbol": "3031",
     "name": "佰鴻",
-    "peRatio": 19.85,
-    "dividendYield": 4.99,
-    "pbRatio": 1.22
+    "peRatio": 20.05,
+    "dividendYield": 4.94,
+    "pbRatio": 1.24
   },
   {
     "symbol": "3032",
     "name": "偉訓",
     "peRatio": 0,
-    "dividendYield": 3.77,
-    "pbRatio": 3.11
+    "dividendYield": 3.78,
+    "pbRatio": 3.1
   },
   {
     "symbol": "3033",
     "name": "威健",
-    "peRatio": 20.22,
-    "dividendYield": 6.55,
-    "pbRatio": 1.5
+    "peRatio": 20.29,
+    "dividendYield": 6.53,
+    "pbRatio": 1.51
   },
   {
     "symbol": "3034",
     "name": "聯詠",
-    "peRatio": 13.49,
-    "dividendYield": 7.24,
-    "pbRatio": 3.7
+    "peRatio": 13.7,
+    "dividendYield": 7.12,
+    "pbRatio": 3.76
   },
   {
     "symbol": "3035",
     "name": "智原",
-    "peRatio": 59.61,
+    "peRatio": 59.79,
     "dividendYield": 1.07,
-    "pbRatio": 3.34
+    "pbRatio": 3.35
   },
   {
     "symbol": "3036",
     "name": "文曄",
-    "peRatio": 19.34,
-    "dividendYield": 3.28,
-    "pbRatio": 2.55
+    "peRatio": 19.45,
+    "dividendYield": 3.26,
+    "pbRatio": 2.57
   },
   {
     "symbol": "3037",
     "name": "欣興",
-    "peRatio": 106.13,
-    "dividendYield": 0.44,
-    "pbRatio": 7.04
+    "peRatio": 111.46,
+    "dividendYield": 0.42,
+    "pbRatio": 7.39
   },
   {
     "symbol": "3038",
     "name": "全台",
-    "peRatio": 19.79,
-    "dividendYield": 6.48,
-    "pbRatio": 1.35
+    "peRatio": 19.87,
+    "dividendYield": 6.45,
+    "pbRatio": 1.36
   },
   {
     "symbol": "3040",
@@ -3798,13 +3798,13 @@
     "name": "揚智",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.18
+    "pbRatio": 2.17
   },
   {
     "symbol": "3042",
     "name": "晶技",
-    "peRatio": 16.3,
-    "dividendYield": 5.65,
+    "peRatio": 16.25,
+    "dividendYield": 5.66,
     "pbRatio": 2.08
   },
   {
@@ -3817,44 +3817,44 @@
   {
     "symbol": "3044",
     "name": "健鼎",
-    "peRatio": 20.91,
-    "dividendYield": 2.59,
-    "pbRatio": 4.21
+    "peRatio": 20.51,
+    "dividendYield": 2.64,
+    "pbRatio": 4.13
   },
   {
     "symbol": "3045",
     "name": "台灣大",
-    "peRatio": 23.43,
-    "dividendYield": 4.15,
-    "pbRatio": 3.99
+    "peRatio": 23.22,
+    "dividendYield": 4.19,
+    "pbRatio": 3.95
   },
   {
     "symbol": "3046",
     "name": "建碁",
-    "peRatio": 12.39,
-    "dividendYield": 5.56,
-    "pbRatio": 2.37
+    "peRatio": 12.53,
+    "dividendYield": 5.5,
+    "pbRatio": 2.4
   },
   {
     "symbol": "3047",
     "name": "訊舟",
     "peRatio": 0,
-    "dividendYield": 1.71,
-    "pbRatio": 1.53
+    "dividendYield": 1.69,
+    "pbRatio": 1.56
   },
   {
     "symbol": "3048",
     "name": "益登",
-    "peRatio": 33.19,
+    "peRatio": 33.91,
     "dividendYield": 0,
-    "pbRatio": 2.32
+    "pbRatio": 2.37
   },
   {
     "symbol": "3049",
     "name": "精金",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.08
+    "pbRatio": 1.18
   },
   {
     "symbol": "3050",
@@ -3866,36 +3866,36 @@
   {
     "symbol": "3051",
     "name": "力特",
-    "peRatio": 20.09,
-    "dividendYield": 6.52,
-    "pbRatio": 1.63
+    "peRatio": 19.96,
+    "dividendYield": 6.57,
+    "pbRatio": 1.62
   },
   {
     "symbol": "3052",
     "name": "夆典",
-    "peRatio": 9.75,
-    "dividendYield": 4.27,
+    "peRatio": 9.67,
+    "dividendYield": 4.31,
     "pbRatio": 0.68
   },
   {
     "symbol": "3054",
     "name": "立萬利",
-    "peRatio": 55.65,
+    "peRatio": 19.36,
     "dividendYield": 0,
-    "pbRatio": 3.15
+    "pbRatio": 2.9
   },
   {
     "symbol": "3055",
     "name": "蔚華科",
     "peRatio": 0,
-    "dividendYield": 1.49,
-    "pbRatio": 4.31
+    "dividendYield": 1.45,
+    "pbRatio": 4.44
   },
   {
     "symbol": "3056",
     "name": "富華新",
-    "peRatio": 2.91,
-    "dividendYield": 32.07,
+    "peRatio": 2.89,
+    "dividendYield": 32.26,
     "pbRatio": 0.94
   },
   {
@@ -3903,7 +3903,7 @@
     "name": "喬鼎",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.7
+    "pbRatio": 1.71
   },
   {
     "symbol": "3058",
@@ -3923,127 +3923,127 @@
     "symbol": "3060",
     "name": "銘異",
     "peRatio": 0,
-    "dividendYield": 1.06,
-    "pbRatio": 1.8
+    "dividendYield": 1.03,
+    "pbRatio": 1.84
   },
   {
     "symbol": "3062",
     "name": "建漢",
-    "peRatio": 18.78,
+    "peRatio": 19.1,
     "dividendYield": 0,
-    "pbRatio": 1.89
+    "pbRatio": 1.92
   },
   {
     "symbol": "3090",
     "name": "日電貿",
-    "peRatio": 20.3,
-    "dividendYield": 4.1,
-    "pbRatio": 3.19
+    "peRatio": 19.74,
+    "dividendYield": 4.21,
+    "pbRatio": 3.1
   },
   {
     "symbol": "3092",
     "name": "鴻碩",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.12
+    "pbRatio": 2.33
   },
   {
     "symbol": "3094",
     "name": "聯傑",
-    "peRatio": 92.59,
-    "dividendYield": 0.68,
-    "pbRatio": 2.05
+    "peRatio": 94.81,
+    "dividendYield": 0.66,
+    "pbRatio": 2.1
   },
   {
     "symbol": "3130",
     "name": "一零四",
-    "peRatio": 15.64,
-    "dividendYield": 6.3,
-    "pbRatio": 4.61
+    "peRatio": 15.68,
+    "dividendYield": 6.28,
+    "pbRatio": 4.62
   },
   {
     "symbol": "3135",
     "name": "凌航",
-    "peRatio": 193.94,
-    "dividendYield": 1.03,
-    "pbRatio": 5.73
+    "peRatio": 189.39,
+    "dividendYield": 1.06,
+    "pbRatio": 5.6
   },
   {
     "symbol": "3138",
     "name": "耀登",
-    "peRatio": 146.34,
-    "dividendYield": 1.42,
-    "pbRatio": 4.52
+    "peRatio": 160.98,
+    "dividendYield": 1.29,
+    "pbRatio": 4.98
   },
   {
     "symbol": "3149",
     "name": "正達",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.49
+    "pbRatio": 4.44
   },
   {
     "symbol": "3150",
     "name": "鈺寶-創",
-    "peRatio": 111.25,
-    "dividendYield": 5.62,
-    "pbRatio": 1.18
+    "peRatio": 109.06,
+    "dividendYield": 5.73,
+    "pbRatio": 1.16
   },
   {
     "symbol": "3164",
     "name": "景岳",
-    "peRatio": 44.75,
-    "dividendYield": 4.47,
+    "peRatio": 44.5,
+    "dividendYield": 4.49,
     "pbRatio": 1.2
   },
   {
     "symbol": "3167",
     "name": "大量",
-    "peRatio": 47.28,
+    "peRatio": 47.6,
     "dividendYield": 0.34,
-    "pbRatio": 8.47
+    "pbRatio": 8.53
   },
   {
     "symbol": "3168",
     "name": "眾福科",
-    "peRatio": 15.53,
-    "dividendYield": 7.47,
-    "pbRatio": 1.8
+    "peRatio": 15.46,
+    "dividendYield": 7.51,
+    "pbRatio": 1.79
   },
   {
     "symbol": "3189",
     "name": "景碩",
-    "peRatio": 93.27,
-    "dividendYield": 0.54,
-    "pbRatio": 4.54
+    "peRatio": 90.11,
+    "dividendYield": 0.56,
+    "pbRatio": 4.39
   },
   {
     "symbol": "3209",
     "name": "全科",
-    "peRatio": 16.76,
-    "dividendYield": 6.69,
-    "pbRatio": 1.8
+    "peRatio": 16.61,
+    "dividendYield": 6.76,
+    "pbRatio": 1.78
   },
   {
     "symbol": "3229",
     "name": "晟鈦",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.42
+    "pbRatio": 2.41
   },
   {
     "symbol": "3231",
     "name": "緯創",
-    "peRatio": 17.88,
-    "dividendYield": 2.75,
-    "pbRatio": 2.73
+    "peRatio": 17.62,
+    "dividendYield": 2.79,
+    "pbRatio": 2.69
   },
   {
     "symbol": "3257",
     "name": "虹冠電",
-    "peRatio": 20,
-    "dividendYield": 3.32,
-    "pbRatio": 2.86
+    "peRatio": 20.33,
+    "dividendYield": 3.27,
+    "pbRatio": 2.91
   },
   {
     "symbol": "3266",
@@ -4055,36 +4055,36 @@
   {
     "symbol": "3296",
     "name": "勝德",
-    "peRatio": 20.38,
+    "peRatio": 20.42,
     "dividendYield": 0,
     "pbRatio": 1.95
   },
   {
     "symbol": "3305",
     "name": "昇貿",
-    "peRatio": 40,
-    "dividendYield": 1.94,
-    "pbRatio": 3.01
+    "peRatio": 41.38,
+    "dividendYield": 1.88,
+    "pbRatio": 3.11
   },
   {
     "symbol": "3308",
     "name": "聯德",
-    "peRatio": 51.4,
+    "peRatio": 50.3,
     "dividendYield": 0,
-    "pbRatio": 1.43
+    "pbRatio": 1.4
   },
   {
     "symbol": "3311",
     "name": "閎暉",
-    "peRatio": 24.25,
-    "dividendYield": 0.92,
-    "pbRatio": 0.89
+    "peRatio": 25.34,
+    "dividendYield": 0.88,
+    "pbRatio": 0.93
   },
   {
     "symbol": "3312",
     "name": "弘憶股",
-    "peRatio": 28.79,
-    "dividendYield": 3.68,
+    "peRatio": 28.9,
+    "dividendYield": 3.67,
     "pbRatio": 2.18
   },
   {
@@ -4092,132 +4092,132 @@
     "name": "同泰",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.23
+    "pbRatio": 2.21
   },
   {
     "symbol": "3338",
     "name": "泰碩",
-    "peRatio": 23.92,
-    "dividendYield": 3.54,
-    "pbRatio": 2.62
+    "peRatio": 24.47,
+    "dividendYield": 3.47,
+    "pbRatio": 2.68
   },
   {
     "symbol": "3346",
     "name": "麗清",
-    "peRatio": 260,
-    "dividendYield": 5.82,
-    "pbRatio": 0.75
+    "peRatio": 265.63,
+    "dividendYield": 5.69,
+    "pbRatio": 0.77
   },
   {
     "symbol": "3356",
     "name": "奇偶",
-    "peRatio": 8.9,
-    "dividendYield": 8.42,
-    "pbRatio": 1.71
+    "peRatio": 8.87,
+    "dividendYield": 8.45,
+    "pbRatio": 1.7
   },
   {
     "symbol": "3376",
     "name": "新日興",
-    "peRatio": 73.01,
-    "dividendYield": 2.98,
-    "pbRatio": 2.34
+    "peRatio": 75,
+    "dividendYield": 2.9,
+    "pbRatio": 2.4
   },
   {
     "symbol": "3380",
     "name": "明泰",
     "peRatio": 0,
-    "dividendYield": 3.09,
-    "pbRatio": 1.97
+    "dividendYield": 1.6,
+    "pbRatio": 1.86
   },
   {
     "symbol": "3406",
     "name": "玉晶光",
-    "peRatio": 14.61,
-    "dividendYield": 4.1,
-    "pbRatio": 2.05
+    "peRatio": 14.72,
+    "dividendYield": 4.07,
+    "pbRatio": 2.07
   },
   {
     "symbol": "3413",
     "name": "京鼎",
-    "peRatio": 13.43,
-    "dividendYield": 4.59,
-    "pbRatio": 2.24
+    "peRatio": 13.52,
+    "dividendYield": 4.56,
+    "pbRatio": 2.26
   },
   {
     "symbol": "3416",
     "name": "融程電",
-    "peRatio": 20.78,
-    "dividendYield": 3.34,
-    "pbRatio": 3.48
+    "peRatio": 20.57,
+    "dividendYield": 3.38,
+    "pbRatio": 3.44
   },
   {
     "symbol": "3419",
     "name": "譁裕",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.93
+    "pbRatio": 1.9
   },
   {
     "symbol": "3432",
     "name": "台端",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.32
+    "pbRatio": 2.31
   },
   {
     "symbol": "3437",
     "name": "榮創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.06
+    "pbRatio": 1.07
   },
   {
     "symbol": "3443",
     "name": "創意",
-    "peRatio": 91.54,
-    "dividendYield": 0.78,
-    "pbRatio": 26.72
+    "peRatio": 98.47,
+    "dividendYield": 0.72,
+    "pbRatio": 28.75
   },
   {
     "symbol": "3447",
     "name": "展達",
-    "peRatio": 21.99,
-    "dividendYield": 1.96,
-    "pbRatio": 2.57
+    "peRatio": 22.26,
+    "dividendYield": 1.93,
+    "pbRatio": 2.6
   },
   {
     "symbol": "3450",
     "name": "聯鈞",
-    "peRatio": 51.37,
-    "dividendYield": 0.18,
-    "pbRatio": 8.57
+    "peRatio": 56.48,
+    "dividendYield": 0.16,
+    "pbRatio": 9.42
   },
   {
     "symbol": "3454",
     "name": "晶睿",
     "peRatio": 0,
-    "dividendYield": 2.32,
-    "pbRatio": 2.59
+    "dividendYield": 2.31,
+    "pbRatio": 2.6
   },
   {
     "symbol": "3481",
     "name": "群創",
-    "peRatio": 21.21,
-    "dividendYield": 4.07,
-    "pbRatio": 0.9
+    "peRatio": 23.1,
+    "dividendYield": 3.73,
+    "pbRatio": 0.98
   },
   {
     "symbol": "3494",
     "name": "誠研",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.24
+    "pbRatio": 1.28
   },
   {
     "symbol": "3501",
     "name": "維熹",
-    "peRatio": 11.4,
-    "dividendYield": 7.68,
+    "peRatio": 11.36,
+    "dividendYield": 7.71,
     "pbRatio": 0.93
   },
   {
@@ -4225,28 +4225,28 @@
     "name": "揚明光",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.49
+    "pbRatio": 2.63
   },
   {
     "symbol": "3515",
     "name": "華擎",
-    "peRatio": 15.67,
+    "peRatio": 14.95,
     "dividendYield": 2.32,
-    "pbRatio": 2.88
+    "pbRatio": 2.35
   },
   {
     "symbol": "3518",
     "name": "柏騰",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.54
+    "pbRatio": 1.56
   },
   {
     "symbol": "3528",
     "name": "安馳",
-    "peRatio": 64.86,
-    "dividendYield": 4.17,
-    "pbRatio": 2.67
+    "peRatio": 63.96,
+    "dividendYield": 4.23,
+    "pbRatio": 2.63
   },
   {
     "symbol": "3530",
@@ -4265,23 +4265,23 @@
   {
     "symbol": "3533",
     "name": "嘉澤",
-    "peRatio": 24.35,
-    "dividendYield": 2.32,
-    "pbRatio": 5.84
+    "peRatio": 24.08,
+    "dividendYield": 2.35,
+    "pbRatio": 5.78
   },
   {
     "symbol": "3535",
     "name": "晶彩科",
     "peRatio": 0,
-    "dividendYield": 0.43,
-    "pbRatio": 9.35
+    "dividendYield": 0.39,
+    "pbRatio": 10.28
   },
   {
     "symbol": "3543",
     "name": "州巧",
     "peRatio": 0,
-    "dividendYield": 0.91,
-    "pbRatio": 2.09
+    "dividendYield": 0.93,
+    "pbRatio": 2.03
   },
   {
     "symbol": "3545",
@@ -4295,231 +4295,231 @@
     "name": "聯穎",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.31
+    "pbRatio": 1.3
   },
   {
     "symbol": "3557",
     "name": "嘉威",
-    "peRatio": 41.65,
-    "dividendYield": 8.78,
+    "peRatio": 41.83,
+    "dividendYield": 8.75,
     "pbRatio": 1.2
   },
   {
     "symbol": "3563",
     "name": "牧德",
-    "peRatio": 32.85,
-    "dividendYield": 2.7,
-    "pbRatio": 5.85
+    "peRatio": 36.08,
+    "dividendYield": 2.46,
+    "pbRatio": 6.42
   },
   {
     "symbol": "3576",
     "name": "聯合再生",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.14
+    "pbRatio": 3.45
   },
   {
     "symbol": "3583",
     "name": "辛耘",
-    "peRatio": 28.08,
-    "dividendYield": 1.25,
-    "pbRatio": 5.07
+    "peRatio": 28.94,
+    "dividendYield": 1.21,
+    "pbRatio": 5.23
   },
   {
     "symbol": "3588",
     "name": "通嘉",
-    "peRatio": 96.3,
-    "dividendYield": 2.69,
-    "pbRatio": 1.86
+    "peRatio": 96.85,
+    "dividendYield": 2.68,
+    "pbRatio": 1.88
   },
   {
     "symbol": "3591",
     "name": "艾笛森",
-    "peRatio": 275,
-    "dividendYield": 3.84,
-    "pbRatio": 0.99
+    "peRatio": 269.29,
+    "dividendYield": 3.93,
+    "pbRatio": 0.97
   },
   {
     "symbol": "3592",
     "name": "瑞鼎",
-    "peRatio": 12.99,
-    "dividendYield": 6.16,
-    "pbRatio": 1.56
+    "peRatio": 12.77,
+    "dividendYield": 6.27,
+    "pbRatio": 1.53
   },
   {
     "symbol": "3593",
     "name": "力銘",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 6.42
+    "pbRatio": 6.59
   },
   {
     "symbol": "3596",
     "name": "智易",
-    "peRatio": 15.11,
-    "dividendYield": 4.02,
-    "pbRatio": 2.55
+    "peRatio": 15.63,
+    "dividendYield": 4.57,
+    "pbRatio": 2.56
   },
   {
     "symbol": "3605",
     "name": "宏致",
-    "peRatio": 15.4,
-    "dividendYield": 1.11,
+    "peRatio": 15.36,
+    "dividendYield": 1.12,
     "pbRatio": 1.4
   },
   {
     "symbol": "3607",
     "name": "谷崧",
-    "peRatio": 28.96,
-    "dividendYield": 5.04,
-    "pbRatio": 1.01
+    "peRatio": 29.69,
+    "dividendYield": 4.91,
+    "pbRatio": 1.03
   },
   {
     "symbol": "3617",
     "name": "碩天",
-    "peRatio": 10.38,
-    "dividendYield": 7.71,
+    "peRatio": 10.41,
+    "dividendYield": 7.69,
     "pbRatio": 2.02
   },
   {
     "symbol": "3622",
     "name": "洋華",
-    "peRatio": 10.68,
-    "dividendYield": 5,
-    "pbRatio": 1.18
+    "peRatio": 10.87,
+    "dividendYield": 4.91,
+    "pbRatio": 1.2
   },
   {
     "symbol": "3645",
     "name": "達邁",
-    "peRatio": 53.51,
-    "dividendYield": 2,
-    "pbRatio": 2.53
+    "peRatio": 57.84,
+    "dividendYield": 1.85,
+    "pbRatio": 2.73
   },
   {
     "symbol": "3652",
     "name": "精聯",
-    "peRatio": 21.19,
-    "dividendYield": 2.11,
+    "peRatio": 21.04,
+    "dividendYield": 2.13,
     "pbRatio": 1.12
   },
   {
     "symbol": "3653",
     "name": "健策",
-    "peRatio": 91.74,
+    "peRatio": 91.44,
     "dividendYield": 0.46,
-    "pbRatio": 23.75
+    "pbRatio": 23.67
   },
   {
     "symbol": "3661",
     "name": "世芯-KY",
-    "peRatio": 47.38,
+    "peRatio": 47.52,
     "dividendYield": 1.05,
-    "pbRatio": 7.43
+    "pbRatio": 7.46
   },
   {
     "symbol": "3665",
     "name": "貿聯-KY",
-    "peRatio": 33.52,
-    "dividendYield": 0.79,
-    "pbRatio": 6.24
+    "peRatio": 35.14,
+    "dividendYield": 0.75,
+    "pbRatio": 6.54
   },
   {
     "symbol": "3669",
     "name": "圓展",
-    "peRatio": 66.47,
-    "dividendYield": 5.01,
-    "pbRatio": 0.96
+    "peRatio": 67.35,
+    "dividendYield": 4.95,
+    "pbRatio": 0.97
   },
   {
     "symbol": "3673",
     "name": "TPK-KY",
-    "peRatio": 20.17,
-    "dividendYield": 1.91,
-    "pbRatio": 0.45
+    "peRatio": 20.63,
+    "dividendYield": 1.86,
+    "pbRatio": 0.46
   },
   {
     "symbol": "3679",
     "name": "新至陞",
-    "peRatio": 10.62,
-    "dividendYield": 8.4,
-    "pbRatio": 1.64
+    "peRatio": 12.24,
+    "dividendYield": 8.37,
+    "pbRatio": 1.51
   },
   {
     "symbol": "3686",
     "name": "達能",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.19
+    "pbRatio": 2.24
   },
   {
     "symbol": "3694",
     "name": "海華",
-    "peRatio": 16.26,
-    "dividendYield": 2.38,
+    "peRatio": 16.2,
+    "dividendYield": 2.39,
     "pbRatio": 2.78
   },
   {
     "symbol": "3701",
     "name": "大眾控",
-    "peRatio": 58.33,
+    "peRatio": 57.75,
     "dividendYield": 0.34,
-    "pbRatio": 2.9
+    "pbRatio": 2.87
   },
   {
     "symbol": "3702",
     "name": "大聯大",
-    "peRatio": 12.95,
-    "dividendYield": 4.67,
-    "pbRatio": 1.53
+    "peRatio": 13.23,
+    "dividendYield": 4.57,
+    "pbRatio": 1.56
   },
   {
     "symbol": "3703",
     "name": "欣陸",
-    "peRatio": 30.07,
-    "dividendYield": 4.66,
-    "pbRatio": 0.69
+    "peRatio": 29.73,
+    "dividendYield": 4.71,
+    "pbRatio": 0.68
   },
   {
     "symbol": "3704",
     "name": "合勤控",
-    "peRatio": 14.37,
-    "dividendYield": 0.88,
-    "pbRatio": 1.24
+    "peRatio": 14.54,
+    "dividendYield": 0.87,
+    "pbRatio": 1.25
   },
   {
     "symbol": "3705",
     "name": "永信",
-    "peRatio": 15.19,
-    "dividendYield": 5.45,
-    "pbRatio": 1.88
+    "peRatio": 15.08,
+    "dividendYield": 5.49,
+    "pbRatio": 1.87
   },
   {
     "symbol": "3706",
     "name": "神達",
-    "peRatio": 18.31,
-    "dividendYield": 2.45,
-    "pbRatio": 1.58
+    "peRatio": 17.98,
+    "dividendYield": 2.5,
+    "pbRatio": 1.55
   },
   {
     "symbol": "3708",
     "name": "上緯投控",
-    "peRatio": 92.91,
-    "dividendYield": 1.99,
-    "pbRatio": 1.32
+    "peRatio": 95.67,
+    "dividendYield": 4.94,
+    "pbRatio": 1.36
   },
   {
     "symbol": "3711",
     "name": "日月光投控",
-    "peRatio": 48.08,
-    "dividendYield": 1.36,
-    "pbRatio": 5.35
+    "peRatio": 47.9,
+    "dividendYield": 1.37,
+    "pbRatio": 5.33
   },
   {
     "symbol": "3712",
     "name": "永崴投控",
     "peRatio": 0,
-    "dividendYield": 11.79,
-    "pbRatio": 1.47
+    "dividendYield": 11.98,
+    "pbRatio": 1.45
   },
   {
     "symbol": "3714",
@@ -4531,16 +4531,16 @@
   {
     "symbol": "3715",
     "name": "定穎投控",
-    "peRatio": 50.83,
-    "dividendYield": 0.98,
-    "pbRatio": 5.5
+    "peRatio": 52.49,
+    "dividendYield": 0.95,
+    "pbRatio": 5.68
   },
   {
     "symbol": "3716",
     "name": "中化控股",
-    "peRatio": 17.09,
-    "dividendYield": 2.97,
-    "pbRatio": 0.68
+    "peRatio": 17.01,
+    "dividendYield": 2.98,
+    "pbRatio": 0.67
   },
   {
     "symbol": "3717",
@@ -4552,85 +4552,85 @@
   {
     "symbol": "4104",
     "name": "佳醫",
-    "peRatio": 16.74,
-    "dividendYield": 5.48,
-    "pbRatio": 1.52
+    "peRatio": 16.65,
+    "dividendYield": 5.51,
+    "pbRatio": 1.51
   },
   {
     "symbol": "4106",
     "name": "雃博",
-    "peRatio": 16.68,
-    "dividendYield": 3.5,
-    "pbRatio": 0.94
+    "peRatio": 16.75,
+    "dividendYield": 3.49,
+    "pbRatio": 0.95
   },
   {
     "symbol": "4108",
     "name": "懷特",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.53
+    "pbRatio": 1.52
   },
   {
     "symbol": "4119",
     "name": "旭富",
-    "peRatio": 54.74,
-    "dividendYield": 2.82,
-    "pbRatio": 1.18
+    "peRatio": 55.26,
+    "dividendYield": 2.8,
+    "pbRatio": 1.19
   },
   {
     "symbol": "4133",
     "name": "亞諾法",
     "peRatio": 0,
-    "dividendYield": 3.57,
-    "pbRatio": 1.21
+    "dividendYield": 0.43,
+    "pbRatio": 1.22
   },
   {
     "symbol": "4137",
     "name": "麗豐-KY",
-    "peRatio": 18.39,
-    "dividendYield": 9.05,
-    "pbRatio": 1.89
+    "peRatio": 18.22,
+    "dividendYield": 9.13,
+    "pbRatio": 1.87
   },
   {
     "symbol": "4142",
     "name": "國光生",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.6
+    "pbRatio": 1.61
   },
   {
     "symbol": "4148",
     "name": "全宇生技-KY",
-    "peRatio": 18.02,
-    "dividendYield": 2.71,
-    "pbRatio": 0.97
+    "peRatio": 18.05,
+    "dividendYield": 2.7,
+    "pbRatio": 0.98
   },
   {
     "symbol": "4155",
     "name": "訊映",
-    "peRatio": 30.43,
-    "dividendYield": 2.1,
+    "peRatio": 30.74,
+    "dividendYield": 2.08,
     "pbRatio": 0.85
   },
   {
     "symbol": "4164",
     "name": "承業醫",
-    "peRatio": 39.7,
-    "dividendYield": 4.13,
+    "peRatio": 39.88,
+    "dividendYield": 4.11,
     "pbRatio": 0.85
   },
   {
     "symbol": "4190",
     "name": "佐登-KY",
     "peRatio": 0,
-    "dividendYield": 1.72,
+    "dividendYield": 1.73,
     "pbRatio": 1.11
   },
   {
     "symbol": "4306",
     "name": "炎洲",
-    "peRatio": 54.8,
-    "dividendYield": 8.76,
+    "peRatio": 54.6,
+    "dividendYield": 8.79,
     "pbRatio": 0.72
   },
   {
@@ -4650,184 +4650,184 @@
   {
     "symbol": "4438",
     "name": "廣越",
-    "peRatio": 29.19,
-    "dividendYield": 4.67,
-    "pbRatio": 0.94
+    "peRatio": 28.98,
+    "dividendYield": 4.71,
+    "pbRatio": 0.93
   },
   {
     "symbol": "4439",
     "name": "冠星-KY",
-    "peRatio": 17.61,
-    "dividendYield": 1.95,
-    "pbRatio": 1.21
+    "peRatio": 17.7,
+    "dividendYield": 1.94,
+    "pbRatio": 1.22
   },
   {
     "symbol": "4440",
     "name": "宜新實業",
-    "peRatio": 19.23,
-    "dividendYield": 9.14,
+    "peRatio": 19.29,
+    "dividendYield": 9.12,
     "pbRatio": 0.92
   },
   {
     "symbol": "4441",
     "name": "振大環球",
-    "peRatio": 21.39,
-    "dividendYield": 3.67,
-    "pbRatio": 2.53
+    "peRatio": 21.09,
+    "dividendYield": 3.73,
+    "pbRatio": 2.49
   },
   {
     "symbol": "4526",
     "name": "東台",
-    "peRatio": 61.93,
+    "peRatio": 58.95,
     "dividendYield": 0,
-    "pbRatio": 1.81
+    "pbRatio": 1.73
   },
   {
     "symbol": "4532",
     "name": "瑞智",
-    "peRatio": 12.49,
-    "dividendYield": 5.8,
-    "pbRatio": 1.3
+    "peRatio": 12.54,
+    "dividendYield": 5.78,
+    "pbRatio": 1.31
   },
   {
     "symbol": "4536",
     "name": "拓凱",
-    "peRatio": 8.67,
-    "dividendYield": 6.75,
-    "pbRatio": 1.64
+    "peRatio": 9.02,
+    "dividendYield": 6.49,
+    "pbRatio": 1.71
   },
   {
     "symbol": "4540",
     "name": "全球傳動",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.72
+    "pbRatio": 1.76
   },
   {
     "symbol": "4545",
     "name": "銘鈺",
-    "peRatio": 357,
-    "dividendYield": 4.62,
-    "pbRatio": 1.48
+    "peRatio": 354.5,
+    "dividendYield": 4.65,
+    "pbRatio": 1.47
   },
   {
     "symbol": "4551",
     "name": "智伸科",
-    "peRatio": 17.15,
-    "dividendYield": 3.4,
-    "pbRatio": 1.68
+    "peRatio": 17.36,
+    "dividendYield": 3.36,
+    "pbRatio": 1.7
   },
   {
     "symbol": "4552",
     "name": "力達-KY",
-    "peRatio": 11.97,
-    "dividendYield": 4.22,
+    "peRatio": 11.94,
+    "dividendYield": 4.23,
     "pbRatio": 0.46
   },
   {
     "symbol": "4555",
     "name": "氣立",
     "peRatio": 0,
-    "dividendYield": 1.34,
-    "pbRatio": 0.95
+    "dividendYield": 1.32,
+    "pbRatio": 0.97
   },
   {
     "symbol": "4557",
     "name": "永新-KY",
-    "peRatio": 222,
-    "dividendYield": 9.76,
-    "pbRatio": 1.34
+    "peRatio": 225,
+    "dividendYield": 2.96,
+    "pbRatio": 1.35
   },
   {
     "symbol": "4560",
     "name": "強信-KY",
-    "peRatio": 11.77,
-    "dividendYield": 3.58,
-    "pbRatio": 1.24
+    "peRatio": 11.72,
+    "dividendYield": 3.59,
+    "pbRatio": 1.23
   },
   {
     "symbol": "4562",
     "name": "穎漢",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.52
+    "pbRatio": 3.49
   },
   {
     "symbol": "4564",
     "name": "元翎",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.06
+    "pbRatio": 1.09
   },
   {
     "symbol": "4566",
     "name": "時碩工業",
-    "peRatio": 104.74,
-    "dividendYield": 2.51,
-    "pbRatio": 1.39
+    "peRatio": 104.21,
+    "dividendYield": 2.53,
+    "pbRatio": 1.38
   },
   {
     "symbol": "4569",
     "name": "六方科-KY",
-    "peRatio": 33.33,
-    "dividendYield": 3.76,
-    "pbRatio": 1.76
+    "peRatio": 33.55,
+    "dividendYield": 3.73,
+    "pbRatio": 1.77
   },
   {
     "symbol": "4571",
     "name": "鈞興-KY",
-    "peRatio": 18.09,
-    "dividendYield": 2.95,
-    "pbRatio": 3.15
+    "peRatio": 18.87,
+    "dividendYield": 2.83,
+    "pbRatio": 3.29
   },
   {
     "symbol": "4572",
     "name": "駐龍",
-    "peRatio": 40.51,
-    "dividendYield": 3.34,
-    "pbRatio": 3.01
+    "peRatio": 40.11,
+    "dividendYield": 3.38,
+    "pbRatio": 2.98
   },
   {
     "symbol": "4576",
     "name": "大銀微系統",
-    "peRatio": 75,
+    "peRatio": 58.96,
     "dividendYield": 0.17,
-    "pbRatio": 3.47
+    "pbRatio": 3.46
   },
   {
     "symbol": "4581",
     "name": "光隆精密-KY",
-    "peRatio": 9.6,
-    "dividendYield": 6.27,
+    "peRatio": 9.59,
+    "dividendYield": 6.29,
     "pbRatio": 1.5
   },
   {
     "symbol": "4583",
     "name": "台灣精銳",
-    "peRatio": 62.79,
-    "dividendYield": 1.71,
-    "pbRatio": 5.69
+    "peRatio": 58,
+    "dividendYield": 1.72,
+    "pbRatio": 5.48
   },
   {
     "symbol": "4585",
     "name": "達明",
-    "peRatio": 412.05,
+    "peRatio": 430.12,
     "dividendYield": 0,
-    "pbRatio": 5.24
+    "pbRatio": 5.47
   },
   {
     "symbol": "4588",
     "name": "玖鼎電力",
-    "peRatio": 19.94,
-    "dividendYield": 4.52,
-    "pbRatio": 3.27
+    "peRatio": 20.12,
+    "dividendYield": 4.48,
+    "pbRatio": 3.3
   },
   {
     "symbol": "4590",
     "name": "富田-創",
-    "peRatio": 7,
-    "dividendYield": 3.8,
-    "pbRatio": 1.26
+    "peRatio": 8,
+    "dividendYield": 3.7,
+    "pbRatio": 1.3
   },
   {
     "symbol": "4720",
@@ -4839,15 +4839,15 @@
   {
     "symbol": "4722",
     "name": "國精化",
-    "peRatio": 119.65,
-    "dividendYield": 0.68,
-    "pbRatio": 6.92
+    "peRatio": 125.43,
+    "dividendYield": 0.65,
+    "pbRatio": 7.26
   },
   {
     "symbol": "4736",
     "name": "泰博",
-    "peRatio": 8.14,
-    "dividendYield": 8.06,
+    "peRatio": 8.17,
+    "dividendYield": 8.03,
     "pbRatio": 1.26
   },
   {
@@ -4855,35 +4855,35 @@
     "name": "華廣",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.97
+    "pbRatio": 1.98
   },
   {
     "symbol": "4739",
     "name": "康普",
-    "peRatio": 107.61,
-    "dividendYield": 1.24,
-    "pbRatio": 1.64
+    "peRatio": 109.15,
+    "dividendYield": 1.23,
+    "pbRatio": 1.67
   },
   {
     "symbol": "4746",
     "name": "台耀",
-    "peRatio": 28.65,
-    "dividendYield": 5.24,
-    "pbRatio": 0.9
+    "peRatio": 28.35,
+    "dividendYield": 5.29,
+    "pbRatio": 0.89
   },
   {
     "symbol": "4755",
     "name": "三福化",
-    "peRatio": 44.63,
-    "dividendYield": 2.34,
-    "pbRatio": 2.92
+    "peRatio": 44.18,
+    "dividendYield": 2.5,
+    "pbRatio": 2.89
   },
   {
     "symbol": "4763",
     "name": "材料*-KY",
-    "peRatio": 6.2,
-    "dividendYield": 10.05,
-    "pbRatio": 2.63
+    "peRatio": 6.18,
+    "dividendYield": 10.08,
+    "pbRatio": 2.62
   },
   {
     "symbol": "4764",
@@ -4895,9 +4895,9 @@
   {
     "symbol": "4766",
     "name": "南寶",
-    "peRatio": 15.49,
-    "dividendYield": 5.86,
-    "pbRatio": 3.07
+    "peRatio": 15.68,
+    "dividendYield": 5.78,
+    "pbRatio": 3.11
   },
   {
     "symbol": "4770",
@@ -4909,71 +4909,71 @@
   {
     "symbol": "4771",
     "name": "望隼",
-    "peRatio": 14.95,
-    "dividendYield": 3.07,
-    "pbRatio": 2.83
+    "peRatio": 15.03,
+    "dividendYield": 3.05,
+    "pbRatio": 2.85
   },
   {
     "symbol": "4807",
     "name": "日成-KY",
-    "peRatio": 446.25,
+    "peRatio": 443.75,
     "dividendYield": 0,
     "pbRatio": 0.96
   },
   {
     "symbol": "4904",
     "name": "遠傳",
-    "peRatio": 24.82,
-    "dividendYield": 3.78,
-    "pbRatio": 3.85
+    "peRatio": 24.21,
+    "dividendYield": 3.87,
+    "pbRatio": 3.75
   },
   {
     "symbol": "4906",
     "name": "正文",
     "peRatio": 0,
-    "dividendYield": 5.57,
-    "pbRatio": 1.01
+    "dividendYield": 5.52,
+    "pbRatio": 1.02
   },
   {
     "symbol": "4912",
     "name": "聯德控股-KY",
-    "peRatio": 24.27,
-    "dividendYield": 2.21,
-    "pbRatio": 1.73
+    "peRatio": 23.91,
+    "dividendYield": 2.24,
+    "pbRatio": 1.71
   },
   {
     "symbol": "4915",
     "name": "致伸",
-    "peRatio": 14.55,
-    "dividendYield": 5.11,
-    "pbRatio": 2.02
+    "peRatio": 14.66,
+    "dividendYield": 5.59,
+    "pbRatio": 1.88
   },
   {
     "symbol": "4916",
     "name": "事欣科",
-    "peRatio": 41.03,
+    "peRatio": 41.16,
     "dividendYield": 0.6,
-    "pbRatio": 2.67
+    "pbRatio": 2.68
   },
   {
     "symbol": "4919",
     "name": "新唐",
     "peRatio": 0,
-    "dividendYield": 0.57,
-    "pbRatio": 2.26
+    "dividendYield": 0.55,
+    "pbRatio": 2.33
   },
   {
     "symbol": "4927",
     "name": "泰鼎-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.82
+    "pbRatio": 1.94
   },
   {
     "symbol": "4930",
     "name": "燦星網",
-    "peRatio": 17.62,
-    "dividendYield": 7.32,
+    "peRatio": 17.58,
+    "dividendYield": 7.34,
     "pbRatio": 0.56
   },
   {
@@ -4981,26 +4981,26 @@
     "name": "太極",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.76
+    "pbRatio": 2.74
   },
   {
     "symbol": "4935",
     "name": "茂林-KY",
-    "peRatio": 18.74,
-    "dividendYield": 5.59,
-    "pbRatio": 0.66
+    "peRatio": 18.57,
+    "dividendYield": 5.64,
+    "pbRatio": 0.65
   },
   {
     "symbol": "4938",
     "name": "和碩",
-    "peRatio": 15.23,
-    "dividendYield": 6.16,
+    "peRatio": 15.31,
+    "dividendYield": 6.12,
     "pbRatio": 1.02
   },
   {
     "symbol": "4942",
     "name": "嘉彰",
-    "peRatio": 12.92,
+    "peRatio": 12.94,
     "dividendYield": 5.19,
     "pbRatio": 0.64
   },
@@ -5009,21 +5009,21 @@
     "name": "康控-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 7.37
+    "pbRatio": 7.5
   },
   {
     "symbol": "4949",
     "name": "有成精密",
-    "peRatio": 24.21,
-    "dividendYield": 2.33,
-    "pbRatio": 2
+    "peRatio": 24.9,
+    "dividendYield": 2.27,
+    "pbRatio": 2.06
   },
   {
     "symbol": "4952",
     "name": "凌通",
-    "peRatio": 39.35,
-    "dividendYield": 5.34,
-    "pbRatio": 2.2
+    "peRatio": 40.83,
+    "dividendYield": 2.38,
+    "pbRatio": 2.17
   },
   {
     "symbol": "4956",
@@ -5035,16 +5035,16 @@
   {
     "symbol": "4958",
     "name": "臻鼎-KY",
-    "peRatio": 26.76,
-    "dividendYield": 2.34,
-    "pbRatio": 1.89
+    "peRatio": 27.21,
+    "dividendYield": 2.3,
+    "pbRatio": 1.92
   },
   {
     "symbol": "4960",
     "name": "誠美材",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.05
+    "pbRatio": 1.06
   },
   {
     "symbol": "4961",
@@ -5056,113 +5056,113 @@
   {
     "symbol": "4967",
     "name": "十銓",
-    "peRatio": 72.04,
-    "dividendYield": 1.37,
-    "pbRatio": 4.61
+    "peRatio": 67.27,
+    "dividendYield": 4.89,
+    "pbRatio": 4.31
   },
   {
     "symbol": "4968",
     "name": "立積",
-    "peRatio": 57.51,
-    "dividendYield": 0.9,
-    "pbRatio": 4.3
+    "peRatio": 57.98,
+    "dividendYield": 0.89,
+    "pbRatio": 4.34
   },
   {
     "symbol": "4976",
     "name": "佳凌",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.91
+    "pbRatio": 1.93
   },
   {
     "symbol": "4977",
     "name": "眾達-KY",
-    "peRatio": 28.02,
-    "dividendYield": 1.43,
-    "pbRatio": 3.36
+    "peRatio": 30.78,
+    "dividendYield": 1.3,
+    "pbRatio": 3.69
   },
   {
     "symbol": "4989",
     "name": "榮科",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 5.76
+    "pbRatio": 5.94
   },
   {
     "symbol": "4994",
     "name": "傳奇",
-    "peRatio": 36.87,
-    "dividendYield": 4.88,
-    "pbRatio": 6.77
+    "peRatio": 37.23,
+    "dividendYield": 4.83,
+    "pbRatio": 6.83
   },
   {
     "symbol": "4999",
     "name": "鑫禾",
     "peRatio": 0,
-    "dividendYield": 4.33,
-    "pbRatio": 0.53
+    "dividendYield": 4.29,
+    "pbRatio": 0.54
   },
   {
     "symbol": "5007",
     "name": "三星",
-    "peRatio": 22.42,
-    "dividendYield": 4.9,
-    "pbRatio": 2.62
+    "peRatio": 22.27,
+    "dividendYield": 4.93,
+    "pbRatio": 2.61
   },
   {
     "symbol": "5203",
     "name": "訊連",
-    "peRatio": 21.12,
-    "dividendYield": 5.03,
-    "pbRatio": 1.37
+    "peRatio": 19.5,
+    "dividendYield": 5.52,
+    "pbRatio": 1.21
   },
   {
     "symbol": "5215",
     "name": "科嘉-KY",
-    "peRatio": 17.26,
-    "dividendYield": 6.24,
-    "pbRatio": 0.76
+    "peRatio": 17.24,
+    "dividendYield": 6.25,
+    "pbRatio": 0.75
   },
   {
     "symbol": "5222",
     "name": "全訊",
-    "peRatio": 51.41,
-    "dividendYield": 2.75,
-    "pbRatio": 5.76
+    "peRatio": 50.88,
+    "dividendYield": 2.78,
+    "pbRatio": 5.7
   },
   {
     "symbol": "5225",
     "name": "東科-KY",
-    "peRatio": 9.78,
+    "peRatio": 9.77,
     "dividendYield": 7.25,
     "pbRatio": 2.23
   },
   {
     "symbol": "5234",
     "name": "達興材料",
-    "peRatio": 61.06,
-    "dividendYield": 1.44,
-    "pbRatio": 13.1
+    "peRatio": 57.6,
+    "dividendYield": 1.53,
+    "pbRatio": 12.36
   },
   {
     "symbol": "5243",
     "name": "乙盛-KY",
-    "peRatio": 20.09,
-    "dividendYield": 1.71,
-    "pbRatio": 1.91
+    "peRatio": 19.61,
+    "dividendYield": 1.75,
+    "pbRatio": 1.86
   },
   {
     "symbol": "5244",
     "name": "弘凱",
-    "peRatio": 28.13,
-    "dividendYield": 3.84,
-    "pbRatio": 1.55
+    "peRatio": 27.84,
+    "dividendYield": 3.88,
+    "pbRatio": 1.53
   },
   {
     "symbol": "5258",
     "name": "虹堡",
-    "peRatio": 15.77,
-    "dividendYield": 4.8,
+    "peRatio": 15.74,
+    "dividendYield": 4.81,
     "pbRatio": 1.36
   },
   {
@@ -5175,23 +5175,23 @@
   {
     "symbol": "5283",
     "name": "禾聯碩",
-    "peRatio": 9.95,
-    "dividendYield": 4.15,
+    "peRatio": 9.92,
+    "dividendYield": 4.17,
     "pbRatio": 0.93
   },
   {
     "symbol": "5284",
     "name": "jpp-KY",
-    "peRatio": 25.95,
+    "peRatio": 26.04,
     "dividendYield": 0.55,
-    "pbRatio": 4.26
+    "pbRatio": 4.27
   },
   {
     "symbol": "5285",
     "name": "界霖",
-    "peRatio": 27.51,
-    "dividendYield": 3.93,
-    "pbRatio": 1.85
+    "peRatio": 27.35,
+    "dividendYield": 3.95,
+    "pbRatio": 1.84
   },
   {
     "symbol": "5288",
@@ -5203,85 +5203,85 @@
   {
     "symbol": "5292",
     "name": "華懋",
-    "peRatio": 18.84,
-    "dividendYield": 3,
-    "pbRatio": 4.33
+    "peRatio": 18.53,
+    "dividendYield": 3.05,
+    "pbRatio": 4.26
   },
   {
     "symbol": "5306",
     "name": "桂盟",
-    "peRatio": 12.11,
-    "dividendYield": 4.66,
-    "pbRatio": 1.41
+    "peRatio": 12.07,
+    "dividendYield": 4.68,
+    "pbRatio": 1.4
   },
   {
     "symbol": "5388",
     "name": "中磊",
-    "peRatio": 17.23,
-    "dividendYield": 5.55,
+    "peRatio": 17.28,
+    "dividendYield": 5.54,
     "pbRatio": 1.62
   },
   {
     "symbol": "5434",
     "name": "崇越",
-    "peRatio": 17.24,
-    "dividendYield": 3.45,
+    "peRatio": 17.26,
+    "dividendYield": 3.44,
     "pbRatio": 3.57
   },
   {
     "symbol": "5469",
     "name": "瀚宇博",
-    "peRatio": 14.49,
-    "dividendYield": 2.67,
-    "pbRatio": 1.4
+    "peRatio": 14.39,
+    "dividendYield": 2.69,
+    "pbRatio": 1.39
   },
   {
     "symbol": "5471",
     "name": "松翰",
-    "peRatio": 59.72,
-    "dividendYield": 2.36,
-    "pbRatio": 2.07
+    "peRatio": 61.9,
+    "dividendYield": 2.28,
+    "pbRatio": 2.15
   },
   {
     "symbol": "5484",
     "name": "慧友",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 5.27
+    "pbRatio": 5.36
   },
   {
     "symbol": "5515",
     "name": "建國",
-    "peRatio": 8.58,
-    "dividendYield": 6.46,
-    "pbRatio": 1.39
+    "peRatio": 8.53,
+    "dividendYield": 6.5,
+    "pbRatio": 1.38
   },
   {
     "symbol": "5519",
     "name": "隆大",
-    "peRatio": 5.06,
-    "dividendYield": 9.36,
-    "pbRatio": 1.16
+    "peRatio": 5.1,
+    "dividendYield": 9.27,
+    "pbRatio": 1.17
   },
   {
     "symbol": "5521",
     "name": "工信",
-    "peRatio": 62.63,
+    "peRatio": 68.68,
     "dividendYield": 0,
-    "pbRatio": 2.11
+    "pbRatio": 2.32
   },
   {
     "symbol": "5522",
     "name": "遠雄",
-    "peRatio": 25.82,
+    "peRatio": 25.78,
     "dividendYield": 4.57,
     "pbRatio": 1.15
   },
   {
     "symbol": "5525",
     "name": "順天",
-    "peRatio": 43.92,
-    "dividendYield": 5.69,
+    "peRatio": 44,
+    "dividendYield": 5.68,
     "pbRatio": 1.6
   },
   {
@@ -5294,37 +5294,37 @@
   {
     "symbol": "5533",
     "name": "皇鼎",
-    "peRatio": 19.27,
-    "dividendYield": 6.92,
-    "pbRatio": 0.43
+    "peRatio": 19.4,
+    "dividendYield": 6.87,
+    "pbRatio": 0.44
   },
   {
     "symbol": "5534",
     "name": "長虹",
-    "peRatio": 10.37,
-    "dividendYield": 7.2,
-    "pbRatio": 1.13
+    "peRatio": 10.24,
+    "dividendYield": 7.28,
+    "pbRatio": 1.11
   },
   {
     "symbol": "5538",
     "name": "東明-KY",
-    "peRatio": 12.35,
-    "dividendYield": 4.5,
+    "peRatio": 12.37,
+    "dividendYield": 4.49,
     "pbRatio": 0.97
   },
   {
     "symbol": "5546",
     "name": "永固-KY",
     "peRatio": 0,
-    "dividendYield": 9.24,
-    "pbRatio": 0.97
+    "dividendYield": 9.2,
+    "pbRatio": 0.98
   },
   {
     "symbol": "5607",
     "name": "遠雄港",
-    "peRatio": 20.74,
-    "dividendYield": 2.43,
-    "pbRatio": 1.83
+    "peRatio": 21.59,
+    "dividendYield": 2.33,
+    "pbRatio": 1.91
   },
   {
     "symbol": "5608",
@@ -5336,114 +5336,114 @@
   {
     "symbol": "5706",
     "name": "鳳凰",
-    "peRatio": 15.16,
-    "dividendYield": 6.4,
-    "pbRatio": 2.32
+    "peRatio": 14.93,
+    "dividendYield": 6.5,
+    "pbRatio": 2.28
   },
   {
     "symbol": "5871",
     "name": "中租-KY",
-    "peRatio": 10.22,
-    "dividendYield": 5.97,
-    "pbRatio": 1.14
+    "peRatio": 10.08,
+    "dividendYield": 6.06,
+    "pbRatio": 1.12
   },
   {
     "symbol": "5876",
     "name": "上海商銀",
-    "peRatio": 12.8,
-    "dividendYield": 4.45,
+    "peRatio": 12.71,
+    "dividendYield": 4.48,
     "pbRatio": 0.99
   },
   {
     "symbol": "5880",
     "name": "合庫金",
-    "peRatio": 19.16,
-    "dividendYield": 4.18,
+    "peRatio": 19.2,
+    "dividendYield": 4.17,
     "pbRatio": 1.4
   },
   {
     "symbol": "5906",
     "name": "台南-KY",
-    "peRatio": 45.26,
-    "dividendYield": 1.9,
-    "pbRatio": 3.15
+    "peRatio": 44.83,
+    "dividendYield": 1.92,
+    "pbRatio": 3.12
   },
   {
     "symbol": "5907",
     "name": "大洋-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.29
+    "pbRatio": 0.3
   },
   {
     "symbol": "6005",
     "name": "群益證",
-    "peRatio": 13.35,
-    "dividendYield": 4.8,
-    "pbRatio": 1.56
+    "peRatio": 13.72,
+    "dividendYield": 4.67,
+    "pbRatio": 1.6
   },
   {
     "symbol": "6024",
     "name": "群益期",
-    "peRatio": 11,
-    "dividendYield": 5.37,
-    "pbRatio": 1.32
+    "peRatio": 11.09,
+    "dividendYield": 5.33,
+    "pbRatio": 1.33
   },
   {
     "symbol": "6108",
     "name": "競國",
     "peRatio": 0,
-    "dividendYield": 6.76,
-    "pbRatio": 0.73
+    "dividendYield": 6.41,
+    "pbRatio": 0.77
   },
   {
     "symbol": "6112",
     "name": "邁達特",
-    "peRatio": 77.28,
-    "dividendYield": 1.36,
-    "pbRatio": 1.99
+    "peRatio": 85,
+    "dividendYield": 1.24,
+    "pbRatio": 2.18
   },
   {
     "symbol": "6115",
     "name": "鎰勝",
-    "peRatio": 15.72,
-    "dividendYield": 6.65,
-    "pbRatio": 1.84
+    "peRatio": 15.75,
+    "dividendYield": 6.64,
+    "pbRatio": 1.85
   },
   {
     "symbol": "6116",
     "name": "彩晶",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.77
+    "pbRatio": 0.8
   },
   {
     "symbol": "6117",
     "name": "迎廣",
-    "peRatio": 23.18,
-    "dividendYield": 2.86,
-    "pbRatio": 3.45
+    "peRatio": 23.27,
+    "dividendYield": 2.85,
+    "pbRatio": 3.47
   },
   {
     "symbol": "6120",
     "name": "達運",
     "peRatio": 0,
-    "dividendYield": 1.87,
-    "pbRatio": 0.91
+    "dividendYield": 1.81,
+    "pbRatio": 0.94
   },
   {
     "symbol": "6128",
     "name": "上福",
     "peRatio": 0,
-    "dividendYield": 9.54,
-    "pbRatio": 1.25
+    "dividendYield": 9.38,
+    "pbRatio": 1.27
   },
   {
     "symbol": "6133",
     "name": "金橋",
-    "peRatio": 42,
-    "dividendYield": 1.3,
-    "pbRatio": 1.85
+    "peRatio": 44.82,
+    "dividendYield": 1.22,
+    "pbRatio": 1.98
   },
   {
     "symbol": "6136",
@@ -5455,16 +5455,16 @@
   {
     "symbol": "6139",
     "name": "亞翔",
-    "peRatio": 24.21,
-    "dividendYield": 2.49,
-    "pbRatio": 8.2
+    "peRatio": 25.42,
+    "dividendYield": 2.37,
+    "pbRatio": 8.61
   },
   {
     "symbol": "6141",
     "name": "柏承",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.27
+    "pbRatio": 1.39
   },
   {
     "symbol": "6142",
@@ -5478,35 +5478,35 @@
     "name": "百一",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.22
+    "pbRatio": 2.43
   },
   {
     "symbol": "6153",
     "name": "嘉聯益",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.02
+    "pbRatio": 1.05
   },
   {
     "symbol": "6155",
     "name": "鈞寶",
-    "peRatio": 68.24,
-    "dividendYield": 1.58,
-    "pbRatio": 2.8
+    "peRatio": 72.03,
+    "dividendYield": 1.5,
+    "pbRatio": 2.95
   },
   {
     "symbol": "6164",
     "name": "華興",
-    "peRatio": 112.27,
-    "dividendYield": 4.05,
+    "peRatio": 112.73,
+    "dividendYield": 4.03,
     "pbRatio": 1.12
   },
   {
     "symbol": "6165",
     "name": "浪凡",
-    "peRatio": 12.62,
+    "peRatio": 12.65,
     "dividendYield": 1.37,
-    "pbRatio": 2.06
+    "pbRatio": 2.07
   },
   {
     "symbol": "6166",
@@ -5520,126 +5520,126 @@
     "name": "宏齊",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.4
+    "pbRatio": 1.43
   },
   {
     "symbol": "6176",
     "name": "瑞儀",
-    "peRatio": 11.87,
-    "dividendYield": 7.83,
-    "pbRatio": 1.86
+    "peRatio": 10.68,
+    "dividendYield": 2.87,
+    "pbRatio": 1.67
   },
   {
     "symbol": "6177",
     "name": "達麗",
-    "peRatio": 13.56,
-    "dividendYield": 8.33,
-    "pbRatio": 2.51
+    "peRatio": 13.38,
+    "dividendYield": 8.45,
+    "pbRatio": 2.48
   },
   {
     "symbol": "6183",
     "name": "關貿",
-    "peRatio": 24.51,
-    "dividendYield": 3.35,
-    "pbRatio": 5.07
+    "peRatio": 24.56,
+    "dividendYield": 3.71,
+    "pbRatio": 5.08
   },
   {
     "symbol": "6184",
     "name": "大豐電",
-    "peRatio": 14.37,
-    "dividendYield": 6.63,
+    "peRatio": 14.39,
+    "dividendYield": 6.62,
     "pbRatio": 1.54
   },
   {
     "symbol": "6189",
     "name": "豐藝",
-    "peRatio": 16.84,
-    "dividendYield": 12.46,
-    "pbRatio": 2.05
+    "peRatio": 16.96,
+    "dividendYield": 12.37,
+    "pbRatio": 2.07
   },
   {
     "symbol": "6191",
     "name": "精成科",
-    "peRatio": 18.58,
-    "dividendYield": 2.81,
-    "pbRatio": 2.22
+    "peRatio": 18.92,
+    "dividendYield": 2.76,
+    "pbRatio": 2.26
   },
   {
     "symbol": "6192",
     "name": "巨路",
-    "peRatio": 11.69,
-    "dividendYield": 4.28,
-    "pbRatio": 1.71
+    "peRatio": 12.01,
+    "dividendYield": 4.17,
+    "pbRatio": 1.76
   },
   {
     "symbol": "6196",
     "name": "帆宣",
-    "peRatio": 22.17,
-    "dividendYield": 2.02,
-    "pbRatio": 4.21
+    "peRatio": 23.16,
+    "dividendYield": 1.93,
+    "pbRatio": 4.4
   },
   {
     "symbol": "6197",
     "name": "佳必琪",
-    "peRatio": 18.77,
-    "dividendYield": 4.65,
-    "pbRatio": 4.22
+    "peRatio": 19.26,
+    "dividendYield": 4.53,
+    "pbRatio": 4.33
   },
   {
     "symbol": "6201",
     "name": "亞弘電",
-    "peRatio": 11.92,
-    "dividendYield": 7.41,
-    "pbRatio": 1.77
+    "peRatio": 11.9,
+    "dividendYield": 7.42,
+    "pbRatio": 1.76
   },
   {
     "symbol": "6202",
     "name": "盛群",
-    "peRatio": 82.67,
+    "peRatio": 83.6,
     "dividendYield": 0,
-    "pbRatio": 3.64
+    "pbRatio": 3.69
   },
   {
     "symbol": "6205",
     "name": "詮欣",
-    "peRatio": 25.15,
-    "dividendYield": 3.29,
-    "pbRatio": 1.58
+    "peRatio": 25.63,
+    "dividendYield": 3.23,
+    "pbRatio": 1.61
   },
   {
     "symbol": "6206",
     "name": "飛捷",
-    "peRatio": 12.54,
-    "dividendYield": 6.37,
+    "peRatio": 12.5,
+    "dividendYield": 6.39,
     "pbRatio": 2.73
   },
   {
     "symbol": "6209",
     "name": "今國光",
-    "peRatio": 241.48,
+    "peRatio": 234.81,
     "dividendYield": 0,
-    "pbRatio": 3.91
+    "pbRatio": 3.81
   },
   {
     "symbol": "6213",
     "name": "聯茂",
-    "peRatio": 40.92,
-    "dividendYield": 1.23,
-    "pbRatio": 2.7
+    "peRatio": 39.53,
+    "dividendYield": 1.27,
+    "pbRatio": 2.6
   },
   {
     "symbol": "6214",
     "name": "精誠",
-    "peRatio": 16.18,
-    "dividendYield": 4.73,
-    "pbRatio": 1.71
+    "peRatio": 16.91,
+    "dividendYield": 4.52,
+    "pbRatio": 1.79
   },
   {
     "symbol": "6215",
     "name": "和椿",
-    "peRatio": 60.7,
-    "dividendYield": 1.32,
-    "pbRatio": 6.3
+    "peRatio": 62.03,
+    "dividendYield": 1.29,
+    "pbRatio": 6.44
   },
   {
     "symbol": "6216",
@@ -5651,37 +5651,37 @@
   {
     "symbol": "6224",
     "name": "聚鼎",
-    "peRatio": 28.2,
-    "dividendYield": 4.06,
-    "pbRatio": 1.7
+    "peRatio": 28.69,
+    "dividendYield": 3.99,
+    "pbRatio": 1.73
   },
   {
     "symbol": "6225",
     "name": "天瀚",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 6.13
+    "pbRatio": 6.25
   },
   {
     "symbol": "6226",
     "name": "光鼎",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.97
+    "pbRatio": 1.01
   },
   {
     "symbol": "6230",
     "name": "尼得科超眾",
     "peRatio": 0,
-    "dividendYield": 0.15,
-    "pbRatio": 2.21
+    "dividendYield": 0.14,
+    "pbRatio": 2.42
   },
   {
     "symbol": "6235",
     "name": "華孚",
-    "peRatio": 21.99,
-    "dividendYield": 2.09,
-    "pbRatio": 2.5
+    "peRatio": 21.8,
+    "dividendYield": 2.1,
+    "pbRatio": 2.48
   },
   {
     "symbol": "6239",
@@ -5693,51 +5693,51 @@
   {
     "symbol": "6243",
     "name": "迅杰",
-    "peRatio": 312.73,
-    "dividendYield": 3.49,
+    "peRatio": 313.64,
+    "dividendYield": 3.48,
     "pbRatio": 2.01
   },
   {
     "symbol": "6257",
     "name": "矽格",
-    "peRatio": 24.42,
-    "dividendYield": 2.95,
-    "pbRatio": 3.24
+    "peRatio": 26.83,
+    "dividendYield": 2.68,
+    "pbRatio": 3.56
   },
   {
     "symbol": "6269",
     "name": "台郡",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.98
+    "pbRatio": 0.96
   },
   {
     "symbol": "6271",
     "name": "同欣電",
-    "peRatio": 26.18,
-    "dividendYield": 1.59,
-    "pbRatio": 1.51
+    "peRatio": 24.52,
+    "dividendYield": 1.69,
+    "pbRatio": 1.41
   },
   {
     "symbol": "6272",
     "name": "驊陞",
-    "peRatio": 14.64,
-    "dividendYield": 2,
-    "pbRatio": 2.01
+    "peRatio": 14.45,
+    "dividendYield": 2.02,
+    "pbRatio": 1.99
   },
   {
     "symbol": "6277",
     "name": "宏正",
-    "peRatio": 16.2,
-    "dividendYield": 6.32,
-    "pbRatio": 1.53
+    "peRatio": 16.33,
+    "dividendYield": 6.27,
+    "pbRatio": 1.54
   },
   {
     "symbol": "6278",
     "name": "台表科",
-    "peRatio": 10.85,
-    "dividendYield": 5.45,
-    "pbRatio": 1.38
+    "peRatio": 10.9,
+    "dividendYield": 5.42,
+    "pbRatio": 1.39
   },
   {
     "symbol": "6281",
@@ -5750,43 +5750,43 @@
     "symbol": "6282",
     "name": "康舒",
     "peRatio": 0,
-    "dividendYield": 0.97,
-    "pbRatio": 2.03
+    "dividendYield": 0.96,
+    "pbRatio": 2.05
   },
   {
     "symbol": "6283",
     "name": "淳安",
-    "peRatio": 23.82,
+    "peRatio": 23.76,
     "dividendYield": 0,
-    "pbRatio": 2
+    "pbRatio": 1.99
   },
   {
     "symbol": "6285",
     "name": "啟碁",
-    "peRatio": 29.73,
-    "dividendYield": 2.53,
-    "pbRatio": 2.82
+    "peRatio": 29.26,
+    "dividendYield": 2.57,
+    "pbRatio": 2.78
   },
   {
     "symbol": "6405",
     "name": "悅城",
     "peRatio": 0,
-    "dividendYield": 0.29,
-    "pbRatio": 0.91
+    "dividendYield": 0.28,
+    "pbRatio": 0.93
   },
   {
     "symbol": "6409",
     "name": "旭隼",
-    "peRatio": 20.35,
-    "dividendYield": 4.67,
-    "pbRatio": 9.44
+    "peRatio": 20.49,
+    "dividendYield": 4.64,
+    "pbRatio": 9.5
   },
   {
     "symbol": "6412",
     "name": "群電",
-    "peRatio": 14.91,
-    "dividendYield": 6.52,
-    "pbRatio": 2.61
+    "peRatio": 14.73,
+    "dividendYield": 6.6,
+    "pbRatio": 2.58
   },
   {
     "symbol": "6414",
@@ -5798,163 +5798,163 @@
   {
     "symbol": "6415",
     "name": "矽力*-KY",
-    "peRatio": 42.21,
-    "dividendYield": 0.86,
-    "pbRatio": 3.09
+    "peRatio": 42.51,
+    "dividendYield": 0.85,
+    "pbRatio": 3.11
   },
   {
     "symbol": "6416",
     "name": "瑞祺電通",
-    "peRatio": 20.25,
-    "dividendYield": 3.57,
-    "pbRatio": 1.71
+    "peRatio": 20.42,
+    "dividendYield": 3.54,
+    "pbRatio": 1.72
   },
   {
     "symbol": "6426",
     "name": "統新",
     "peRatio": 0,
-    "dividendYield": 0.28,
-    "pbRatio": 7.62
+    "dividendYield": 0.26,
+    "pbRatio": 8.24
   },
   {
     "symbol": "6431",
     "name": "光麗-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.07
+    "pbRatio": 4.04
   },
   {
     "symbol": "6438",
     "name": "迅得",
-    "peRatio": 19.88,
-    "dividendYield": 3.13,
-    "pbRatio": 2.39
+    "peRatio": 19.75,
+    "dividendYield": 3.16,
+    "pbRatio": 2.37
   },
   {
     "symbol": "6442",
     "name": "光聖",
-    "peRatio": 106.56,
-    "dividendYield": 0.41,
-    "pbRatio": 38.48
+    "peRatio": 109.89,
+    "dividendYield": 0.4,
+    "pbRatio": 39.68
   },
   {
     "symbol": "6443",
     "name": "元晶",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.59
+    "pbRatio": 3.95
   },
   {
     "symbol": "6446",
     "name": "藥華藥",
-    "peRatio": 51.8,
-    "dividendYield": 0.29,
-    "pbRatio": 8.37
+    "peRatio": 50.21,
+    "dividendYield": 0.3,
+    "pbRatio": 8.11
   },
   {
     "symbol": "6449",
     "name": "鈺邦",
-    "peRatio": 27.41,
-    "dividendYield": 1.94,
-    "pbRatio": 3.73
+    "peRatio": 28.87,
+    "dividendYield": 1.85,
+    "pbRatio": 3.93
   },
   {
     "symbol": "6451",
     "name": "訊芯-KY",
     "peRatio": 0,
     "dividendYield": 0.17,
-    "pbRatio": 3.83
+    "pbRatio": 3.8
   },
   {
     "symbol": "6456",
     "name": "GIS-KY",
-    "peRatio": 140.16,
+    "peRatio": 154.03,
     "dividendYield": 0,
-    "pbRatio": 0.51
+    "pbRatio": 0.56
   },
   {
     "symbol": "6464",
     "name": "台數科",
-    "peRatio": 13.96,
-    "dividendYield": 4.53,
+    "peRatio": 13.91,
+    "dividendYield": 4.54,
     "pbRatio": 1.23
   },
   {
     "symbol": "6472",
     "name": "保瑞",
-    "peRatio": 19.61,
-    "dividendYield": 3.14,
-    "pbRatio": 4.68
+    "peRatio": 19.49,
+    "dividendYield": 3.16,
+    "pbRatio": 4.65
   },
   {
     "symbol": "6477",
     "name": "安集",
     "peRatio": 0,
-    "dividendYield": 0.83,
-    "pbRatio": 1.42
+    "dividendYield": 0.81,
+    "pbRatio": 1.45
   },
   {
     "symbol": "6491",
     "name": "晶碩",
-    "peRatio": 14.29,
-    "dividendYield": 3.4,
-    "pbRatio": 2.05
+    "peRatio": 14.36,
+    "dividendYield": 3.38,
+    "pbRatio": 2.06
   },
   {
     "symbol": "6504",
     "name": "南六",
     "peRatio": 0,
-    "dividendYield": 2.38,
-    "pbRatio": 0.94
+    "dividendYield": 2.4,
+    "pbRatio": 0.93
   },
   {
     "symbol": "6505",
     "name": "台塑化",
-    "peRatio": 87.5,
-    "dividendYield": 1.43,
-    "pbRatio": 1.74
+    "peRatio": 85.16,
+    "dividendYield": 1.47,
+    "pbRatio": 1.69
   },
   {
     "symbol": "6515",
     "name": "穎崴",
-    "peRatio": 116.47,
-    "dividendYield": 0.5,
-    "pbRatio": 30.53
+    "peRatio": 119.15,
+    "dividendYield": 0.98,
+    "pbRatio": 31.24
   },
   {
     "symbol": "6525",
     "name": "捷敏-KY",
-    "peRatio": 13.75,
-    "dividendYield": 5.16,
-    "pbRatio": 2.41
+    "peRatio": 14.09,
+    "dividendYield": 5.04,
+    "pbRatio": 2.47
   },
   {
     "symbol": "6526",
     "name": "達發",
-    "peRatio": 26.46,
-    "dividendYield": 2.87,
-    "pbRatio": 4.21
+    "peRatio": 29.11,
+    "dividendYield": 2.61,
+    "pbRatio": 4.64
   },
   {
     "symbol": "6531",
     "name": "愛普*",
-    "peRatio": 69.97,
-    "dividendYield": 1.64,
-    "pbRatio": 6.09
+    "peRatio": 70.95,
+    "dividendYield": 1.61,
+    "pbRatio": 6.18
   },
   {
     "symbol": "6533",
     "name": "晶心科",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.42
+    "pbRatio": 2.43
   },
   {
     "symbol": "6534",
     "name": "正瀚-創",
-    "peRatio": 19.25,
-    "dividendYield": 4.99,
-    "pbRatio": 3.22
+    "peRatio": 18.92,
+    "dividendYield": 5.07,
+    "pbRatio": 3.17
   },
   {
     "symbol": "6541",
@@ -5968,7 +5968,7 @@
     "name": "北極星藥業-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 6.07
+    "pbRatio": 6.12
   },
   {
     "symbol": "6552",
@@ -5981,63 +5981,63 @@
     "symbol": "6558",
     "name": "興能高",
     "peRatio": 0,
-    "dividendYield": 0.9,
-    "pbRatio": 2.27
+    "dividendYield": 0.88,
+    "pbRatio": 2.31
   },
   {
     "symbol": "6573",
     "name": "虹揚-KY",
-    "peRatio": 15.76,
+    "peRatio": 15.92,
     "dividendYield": 0,
-    "pbRatio": 1.78
+    "pbRatio": 1.8
   },
   {
     "symbol": "6579",
     "name": "研揚",
-    "peRatio": 26.57,
-    "dividendYield": 4.52,
-    "pbRatio": 2
+    "peRatio": 27.82,
+    "dividendYield": 3.23,
+    "pbRatio": 1.97
   },
   {
     "symbol": "6581",
     "name": "鋼聯",
-    "peRatio": 16.2,
-    "dividendYield": 5.45,
-    "pbRatio": 2.85
+    "peRatio": 16.35,
+    "dividendYield": 4.77,
+    "pbRatio": 2.88
   },
   {
     "symbol": "6582",
     "name": "申豐",
     "peRatio": 0,
-    "dividendYield": 2.99,
+    "dividendYield": 2.98,
     "pbRatio": 0.58
   },
   {
     "symbol": "6585",
     "name": "鼎基",
-    "peRatio": 14.78,
-    "dividendYield": 8.87,
-    "pbRatio": 1.72
+    "peRatio": 15.07,
+    "dividendYield": 8.7,
+    "pbRatio": 1.75
   },
   {
     "symbol": "6589",
     "name": "台康生技",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.18
+    "pbRatio": 2.17
   },
   {
     "symbol": "6591",
     "name": "動力-KY",
-    "peRatio": 13.35,
-    "dividendYield": 3.55,
-    "pbRatio": 1.27
+    "peRatio": 13.65,
+    "dividendYield": 3.47,
+    "pbRatio": 1.3
   },
   {
     "symbol": "6592",
     "name": "和潤企業",
-    "peRatio": 15.09,
-    "dividendYield": 5.01,
+    "peRatio": 15.01,
+    "dividendYield": 5.03,
     "pbRatio": 1.16
   },
   {
@@ -6045,7 +6045,7 @@
     "name": "ABC-KY",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.67
+    "pbRatio": 3.78
   },
   {
     "symbol": "6605",
@@ -6057,29 +6057,29 @@
   {
     "symbol": "6606",
     "name": "建德工業",
-    "peRatio": 26.63,
-    "dividendYield": 11.86,
-    "pbRatio": 1.82
+    "peRatio": 26.68,
+    "dividendYield": 11.83,
+    "pbRatio": 1.83
   },
   {
     "symbol": "6614",
     "name": "資拓宏宇",
-    "peRatio": 26.82,
+    "peRatio": 26.79,
     "dividendYield": 3.62,
     "pbRatio": 2.85
   },
   {
     "symbol": "6625",
     "name": "必應",
-    "peRatio": 10.1,
-    "dividendYield": 4.94,
-    "pbRatio": 2.73
+    "peRatio": 10.17,
+    "dividendYield": 4.91,
+    "pbRatio": 2.75
   },
   {
     "symbol": "6641",
     "name": "基士德-KY",
-    "peRatio": 168.08,
-    "dividendYield": 4.58,
+    "peRatio": 168.85,
+    "dividendYield": 4.56,
     "pbRatio": 0.57
   },
   {
@@ -6087,35 +6087,35 @@
     "name": "金萬林-創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.07
+    "pbRatio": 2.04
   },
   {
     "symbol": "6655",
     "name": "科定",
-    "peRatio": 36.69,
-    "dividendYield": 9.16,
-    "pbRatio": 4.09
+    "peRatio": 36.97,
+    "dividendYield": 9.09,
+    "pbRatio": 4.12
   },
   {
     "symbol": "6657",
     "name": "華安",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.3
+    "pbRatio": 4.26
   },
   {
     "symbol": "6658",
     "name": "聯策",
-    "peRatio": 41.91,
-    "dividendYield": 2.11,
-    "pbRatio": 1.58
+    "peRatio": 42.79,
+    "dividendYield": 2.06,
+    "pbRatio": 1.61
   },
   {
     "symbol": "6666",
     "name": "羅麗芬-KY",
-    "peRatio": 18.56,
-    "dividendYield": 4.51,
-    "pbRatio": 1.29
+    "peRatio": 18.45,
+    "dividendYield": 4.54,
+    "pbRatio": 1.28
   },
   {
     "symbol": "6668",
@@ -6127,9 +6127,9 @@
   {
     "symbol": "6669",
     "name": "緯穎",
-    "peRatio": 17,
-    "dividendYield": 1.82,
-    "pbRatio": 6.98
+    "peRatio": 16.75,
+    "dividendYield": 1.85,
+    "pbRatio": 6.88
   },
   {
     "symbol": "6670",
@@ -6141,16 +6141,16 @@
   {
     "symbol": "6671",
     "name": "三能-KY",
-    "peRatio": 13.94,
-    "dividendYield": 7.04,
-    "pbRatio": 1.35
+    "peRatio": 14,
+    "dividendYield": 7.01,
+    "pbRatio": 1.36
   },
   {
     "symbol": "6672",
     "name": "騰輝電子-KY",
-    "peRatio": 21.86,
-    "dividendYield": 3.32,
-    "pbRatio": 2.16
+    "peRatio": 22.08,
+    "dividendYield": 3.28,
+    "pbRatio": 2.19
   },
   {
     "symbol": "6674",
@@ -6162,44 +6162,44 @@
   {
     "symbol": "6689",
     "name": "伊雲谷",
-    "peRatio": 36.33,
-    "dividendYield": 3.32,
-    "pbRatio": 1.45
+    "peRatio": 39.94,
+    "dividendYield": 3.02,
+    "pbRatio": 1.59
   },
   {
     "symbol": "6691",
     "name": "洋基工程",
-    "peRatio": 28.02,
-    "dividendYield": 2.82,
-    "pbRatio": 11.42
+    "peRatio": 30.82,
+    "dividendYield": 2.56,
+    "pbRatio": 12.56
   },
   {
     "symbol": "6695",
     "name": "芯鼎",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.65
+    "pbRatio": 2.68
   },
   {
     "symbol": "6698",
     "name": "旭暉應材",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.13
+    "pbRatio": 2.11
   },
   {
     "symbol": "6706",
     "name": "惠特",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.49
+    "pbRatio": 2.74
   },
   {
     "symbol": "6715",
     "name": "嘉基",
-    "peRatio": 90,
-    "dividendYield": 2.23,
-    "pbRatio": 3.44
+    "peRatio": 89.49,
+    "dividendYield": 2.25,
+    "pbRatio": 3.42
   },
   {
     "symbol": "6719",
@@ -6211,9 +6211,9 @@
   {
     "symbol": "6722",
     "name": "輝創",
-    "peRatio": 17.13,
-    "dividendYield": 3.52,
-    "pbRatio": 1.62
+    "peRatio": 16.95,
+    "dividendYield": 3.55,
+    "pbRatio": 1.61
   },
   {
     "symbol": "6742",
@@ -6225,135 +6225,135 @@
   {
     "symbol": "6743",
     "name": "安普新",
-    "peRatio": 111.67,
-    "dividendYield": 5.6,
-    "pbRatio": 1.53
+    "peRatio": 110.42,
+    "dividendYield": 5.66,
+    "pbRatio": 1.51
   },
   {
     "symbol": "6753",
     "name": "龍德造船",
-    "peRatio": 31.47,
+    "peRatio": 31.68,
     "dividendYield": 0.82,
-    "pbRatio": 4.02
+    "pbRatio": 4.05
   },
   {
     "symbol": "6754",
     "name": "匯僑設計",
-    "peRatio": 11.92,
-    "dividendYield": 9.09,
-    "pbRatio": 1.31
+    "peRatio": 12.02,
+    "dividendYield": 9.02,
+    "pbRatio": 1.32
   },
   {
     "symbol": "6756",
     "name": "威鋒電子",
-    "peRatio": 76.04,
-    "dividendYield": 2.23,
-    "pbRatio": 2.03
+    "peRatio": 76.51,
+    "dividendYield": 2.22,
+    "pbRatio": 2.04
   },
   {
     "symbol": "6757",
     "name": "台灣虎航",
-    "peRatio": 12.92,
-    "dividendYield": 9.5,
-    "pbRatio": 4.29
+    "peRatio": 12.98,
+    "dividendYield": 9.45,
+    "pbRatio": 4.31
   },
   {
     "symbol": "6768",
     "name": "志強-KY",
-    "peRatio": 13.24,
-    "dividendYield": 6.12,
-    "pbRatio": 1.41
+    "peRatio": 13.17,
+    "dividendYield": 6.15,
+    "pbRatio": 1.4
   },
   {
     "symbol": "6770",
     "name": "力積電",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.93
+    "pbRatio": 3.95
   },
   {
     "symbol": "6771",
     "name": "平和環保-創",
-    "peRatio": 10.84,
-    "dividendYield": 7.86,
-    "pbRatio": 1.6
+    "peRatio": 10.79,
+    "dividendYield": 7.89,
+    "pbRatio": 1.59
   },
   {
     "symbol": "6776",
     "name": "展碁國際",
-    "peRatio": 13.86,
-    "dividendYield": 5.15,
-    "pbRatio": 2.21
+    "peRatio": 13.98,
+    "dividendYield": 5.11,
+    "pbRatio": 2.23
   },
   {
     "symbol": "6781",
     "name": "AES-KY",
-    "peRatio": 32.12,
-    "dividendYield": 1.05,
-    "pbRatio": 6.69
+    "peRatio": 32.39,
+    "dividendYield": 1.04,
+    "pbRatio": 6.75
   },
   {
     "symbol": "6782",
     "name": "視陽",
-    "peRatio": 15.01,
-    "dividendYield": 4.64,
-    "pbRatio": 2.88
+    "peRatio": 13.46,
+    "dividendYield": 4.43,
+    "pbRatio": 2.7
   },
   {
     "symbol": "6789",
     "name": "采鈺",
-    "peRatio": 77.75,
-    "dividendYield": 0.96,
-    "pbRatio": 5.37
+    "peRatio": 85.5,
+    "dividendYield": 0.88,
+    "pbRatio": 5.91
   },
   {
     "symbol": "6790",
     "name": "永豐實",
-    "peRatio": 13.17,
-    "dividendYield": 6.64,
-    "pbRatio": 1.85
+    "peRatio": 13.25,
+    "dividendYield": 6.6,
+    "pbRatio": 1.86
   },
   {
     "symbol": "6792",
     "name": "詠業",
-    "peRatio": 22.49,
-    "dividendYield": 4.19,
-    "pbRatio": 1.82
+    "peRatio": 23.02,
+    "dividendYield": 4.1,
+    "pbRatio": 1.86
   },
   {
     "symbol": "6794",
     "name": "向榮生技",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 7.69
+    "pbRatio": 7.19
   },
   {
     "symbol": "6796",
     "name": "晉弘",
-    "peRatio": 321.15,
-    "dividendYield": 0.6,
-    "pbRatio": 4.57
+    "peRatio": 316.92,
+    "dividendYield": 0.61,
+    "pbRatio": 4.51
   },
   {
     "symbol": "6799",
     "name": "來頡",
-    "peRatio": 28.08,
-    "dividendYield": 2.39,
-    "pbRatio": 2.26
+    "peRatio": 22.6,
+    "dividendYield": 3.06,
+    "pbRatio": 2.15
   },
   {
     "symbol": "6805",
     "name": "富世達",
-    "peRatio": 59.67,
-    "dividendYield": 0.51,
-    "pbRatio": 17.22
+    "peRatio": 65.62,
+    "dividendYield": 0.47,
+    "pbRatio": 18.94
   },
   {
     "symbol": "6806",
     "name": "森崴能源",
     "peRatio": 0,
-    "dividendYield": 2.65,
-    "pbRatio": 2.62
+    "dividendYield": 2.77,
+    "pbRatio": 2.51
   },
   {
     "symbol": "6807",
@@ -6366,134 +6366,134 @@
     "symbol": "6830",
     "name": "汎銓",
     "peRatio": 0,
-    "dividendYield": 0.39,
-    "pbRatio": 4.5
+    "dividendYield": 0.35,
+    "pbRatio": 4.94
   },
   {
     "symbol": "6831",
     "name": "邁科",
-    "peRatio": 223.11,
-    "dividendYield": 0.42,
-    "pbRatio": 10.59
+    "peRatio": 220.08,
+    "dividendYield": 0.43,
+    "pbRatio": 10.45
   },
   {
     "symbol": "6834",
     "name": "天二科技",
-    "peRatio": 102.58,
-    "dividendYield": 1.57,
-    "pbRatio": 1.97
+    "peRatio": 101.45,
+    "dividendYield": 1.59,
+    "pbRatio": 1.95
   },
   {
     "symbol": "6835",
     "name": "圓裕",
-    "peRatio": 14.98,
-    "dividendYield": 5.1,
-    "pbRatio": 1.46
+    "peRatio": 15.84,
+    "dividendYield": 4.82,
+    "pbRatio": 1.54
   },
   {
     "symbol": "6838",
     "name": "台新藥",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.83
+    "pbRatio": 2.82
   },
   {
     "symbol": "6854",
     "name": "錼創科技-KY創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 4.68
+    "pbRatio": 4.89
   },
   {
     "symbol": "6861",
     "name": "睿生光電",
-    "peRatio": 29.8,
-    "dividendYield": 1.73,
-    "pbRatio": 3.09
+    "peRatio": 32.66,
+    "dividendYield": 1.58,
+    "pbRatio": 3.39
   },
   {
     "symbol": "6862",
     "name": "三集瑞-KY",
-    "peRatio": 23.16,
-    "dividendYield": 2.93,
-    "pbRatio": 3.63
+    "peRatio": 24.86,
+    "dividendYield": 2.73,
+    "pbRatio": 3.9
   },
   {
     "symbol": "6863",
     "name": "永道-KY",
-    "peRatio": 18.32,
-    "dividendYield": 4.66,
-    "pbRatio": 1.55
+    "peRatio": 16.69,
+    "dividendYield": 1.4,
+    "pbRatio": 1.41
   },
   {
     "symbol": "6869",
     "name": "雲豹能源",
-    "peRatio": 12.8,
-    "dividendYield": 4.41,
-    "pbRatio": 2.61
+    "peRatio": 12.34,
+    "dividendYield": 4.58,
+    "pbRatio": 2.52
   },
   {
     "symbol": "6873",
     "name": "泓德能源",
-    "peRatio": 19.03,
-    "dividendYield": 6.07,
-    "pbRatio": 1.55
+    "peRatio": 18.86,
+    "dividendYield": 6.13,
+    "pbRatio": 1.54
   },
   {
     "symbol": "6885",
     "name": "全福生技",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.08
+    "pbRatio": 2.05
   },
   {
     "symbol": "6887",
     "name": "寶綠特-KY",
-    "peRatio": 7.1,
-    "dividendYield": 8.08,
-    "pbRatio": 1.36
+    "peRatio": 6.84,
+    "dividendYield": 8.39,
+    "pbRatio": 1.31
   },
   {
     "symbol": "6890",
     "name": "來億-KY",
-    "peRatio": 14.11,
-    "dividendYield": 4.56,
-    "pbRatio": 2.22
+    "peRatio": 14.5,
+    "dividendYield": 4.43,
+    "pbRatio": 2.28
   },
   {
     "symbol": "6901",
     "name": "鑽石投資",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.6
+    "pbRatio": 1.61
   },
   {
     "symbol": "6902",
     "name": "GOGOLOOK",
-    "peRatio": 640,
+    "peRatio": 629.17,
     "dividendYield": 0,
-    "pbRatio": 4.17
+    "pbRatio": 4.1
   },
   {
     "symbol": "6906",
     "name": "現觀科",
-    "peRatio": 29.68,
-    "dividendYield": 4.45,
-    "pbRatio": 3.54
+    "peRatio": 29.92,
+    "dividendYield": 4.42,
+    "pbRatio": 3.57
   },
   {
     "symbol": "6909",
     "name": "創控",
-    "peRatio": 45.67,
-    "dividendYield": 2.43,
-    "pbRatio": 2.74
+    "peRatio": 45.94,
+    "dividendYield": 2.42,
+    "pbRatio": 2.75
   },
   {
     "symbol": "6914",
     "name": "阜爾運通",
-    "peRatio": 15.3,
-    "dividendYield": 4.23,
-    "pbRatio": 2.65
+    "peRatio": 15.36,
+    "dividendYield": 4.21,
+    "pbRatio": 2.66
   },
   {
     "symbol": "6916",
@@ -6505,107 +6505,107 @@
   {
     "symbol": "6918",
     "name": "愛派司",
-    "peRatio": 17.18,
-    "dividendYield": 4.69,
-    "pbRatio": 2.35
+    "peRatio": 16.96,
+    "dividendYield": 4.76,
+    "pbRatio": 2.32
   },
   {
     "symbol": "6919",
     "name": "康霈*",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 26.78
+    "pbRatio": 27.28
   },
   {
     "symbol": "6921",
     "name": "嘉雨思-創",
-    "peRatio": 71.7,
+    "peRatio": 71.96,
     "dividendYield": 0,
-    "pbRatio": 10.75
+    "pbRatio": 10.79
   },
   {
     "symbol": "6923",
     "name": "中台",
-    "peRatio": 31.67,
-    "dividendYield": 4.33,
-    "pbRatio": 3.37
+    "peRatio": 31.5,
+    "dividendYield": 4.36,
+    "pbRatio": 3.35
   },
   {
     "symbol": "6924",
     "name": "榮惠-KY創",
-    "peRatio": 15.12,
-    "dividendYield": 8.58,
-    "pbRatio": 2.55
+    "peRatio": 15.19,
+    "dividendYield": 8.54,
+    "pbRatio": 2.57
   },
   {
     "symbol": "6928",
     "name": "攸泰科技",
     "peRatio": 0,
-    "dividendYield": 0.94,
-    "pbRatio": 2.21
+    "dividendYield": 0.95,
+    "pbRatio": 2.18
   },
   {
     "symbol": "6931",
     "name": "青松健康",
-    "peRatio": 55.15,
+    "peRatio": 55.05,
     "dividendYield": 0.88,
-    "pbRatio": 3.25
+    "pbRatio": 3.24
   },
   {
     "symbol": "6933",
     "name": "AMAX-KY",
-    "peRatio": 26.25,
-    "dividendYield": 1.36,
-    "pbRatio": 2.89
+    "peRatio": 25.8,
+    "dividendYield": 1.38,
+    "pbRatio": 2.84
   },
   {
     "symbol": "6934",
     "name": "心誠鎂",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 15.03
+    "pbRatio": 15.95
   },
   {
     "symbol": "6936",
     "name": "永鴻生技",
-    "peRatio": 21.98,
-    "dividendYield": 4.69,
+    "peRatio": 22.01,
+    "dividendYield": 4.68,
     "pbRatio": 2.01
   },
   {
     "symbol": "6937",
     "name": "天虹",
-    "peRatio": 54.65,
-    "dividendYield": 0.94,
-    "pbRatio": 4.49
+    "peRatio": 56.72,
+    "dividendYield": 0.91,
+    "pbRatio": 4.66
   },
   {
     "symbol": "6944",
     "name": "兆聯實業",
-    "peRatio": 26.49,
-    "dividendYield": 1.92,
-    "pbRatio": 7.76
+    "peRatio": 27.87,
+    "dividendYield": 1.83,
+    "pbRatio": 8.16
   },
   {
     "symbol": "6949",
     "name": "沛爾生醫-創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 42.36
+    "pbRatio": 42.66
   },
   {
     "symbol": "6951",
     "name": "青新-創",
-    "peRatio": 13.29,
-    "dividendYield": 5.03,
-    "pbRatio": 3.17
+    "peRatio": 13.22,
+    "dividendYield": 5.05,
+    "pbRatio": 3.15
   },
   {
     "symbol": "6952",
     "name": "大武山",
     "peRatio": 0,
-    "dividendYield": 4.57,
-    "pbRatio": 2.13
+    "dividendYield": 4.58,
+    "pbRatio": 2.12
   },
   {
     "symbol": "6955",
@@ -6617,29 +6617,29 @@
   {
     "symbol": "6957",
     "name": "裕慶-KY",
-    "peRatio": 15.41,
-    "dividendYield": 7.48,
-    "pbRatio": 4.33
+    "peRatio": 15.85,
+    "dividendYield": 7.27,
+    "pbRatio": 4.46
   },
   {
     "symbol": "6958",
     "name": "日盛台駿",
     "peRatio": 0,
-    "dividendYield": 5.54,
-    "pbRatio": 0.79
+    "dividendYield": 5.63,
+    "pbRatio": 0.77
   },
   {
     "symbol": "6962",
     "name": "奕力-KY",
-    "peRatio": 10.36,
-    "dividendYield": 5.53,
-    "pbRatio": 0.9
+    "peRatio": 13.01,
+    "dividendYield": 2.77,
+    "pbRatio": 0.89
   },
   {
     "symbol": "6965",
     "name": "中傑-KY",
-    "peRatio": 14.89,
-    "dividendYield": 7.27,
+    "peRatio": 14.93,
+    "dividendYield": 7.26,
     "pbRatio": 1.12
   },
   {
@@ -6647,63 +6647,63 @@
     "name": "成信實業*-創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.71
+    "pbRatio": 3.73
   },
   {
     "symbol": "6988",
     "name": "威力暘-創",
     "peRatio": 0,
-    "dividendYield": 2.56,
-    "pbRatio": 1.11
+    "dividendYield": 2.5,
+    "pbRatio": 1.13
   },
   {
     "symbol": "6994",
     "name": "富威電力",
-    "peRatio": 49.34,
-    "dividendYield": 1.15,
-    "pbRatio": 2.73
+    "peRatio": 53.05,
+    "dividendYield": 1.07,
+    "pbRatio": 2.94
   },
   {
     "symbol": "7610",
     "name": "聯友金屬-創",
-    "peRatio": 432.86,
-    "dividendYield": 0.52,
-    "pbRatio": 10.3
+    "peRatio": 467.14,
+    "dividendYield": 0.48,
+    "pbRatio": 11.11
   },
   {
     "symbol": "7631",
     "name": "聚賢研發-創",
-    "peRatio": 25.86,
-    "dividendYield": 2.33,
-    "pbRatio": 3.1
+    "peRatio": 26.08,
+    "dividendYield": 2.31,
+    "pbRatio": 3.13
   },
   {
     "symbol": "7705",
     "name": "三商餐飲",
-    "peRatio": 29.47,
-    "dividendYield": 4.15,
-    "pbRatio": 1.69
+    "peRatio": 29.62,
+    "dividendYield": 4.12,
+    "pbRatio": 1.7
   },
   {
     "symbol": "7711",
     "name": "永擎",
-    "peRatio": 20.13,
-    "dividendYield": 1.67,
-    "pbRatio": 8.96
+    "peRatio": 21.7,
+    "dividendYield": 3.7,
+    "pbRatio": 3.59
   },
   {
     "symbol": "7721",
     "name": "微程式",
-    "peRatio": 47.32,
-    "dividendYield": 3.77,
-    "pbRatio": 2.29
+    "peRatio": 49.11,
+    "dividendYield": 3.64,
+    "pbRatio": 2.37
   },
   {
     "symbol": "7722",
     "name": "LINEPAY",
-    "peRatio": 48.71,
+    "peRatio": 49.36,
     "dividendYield": 0.36,
-    "pbRatio": 2.66
+    "pbRatio": 2.69
   },
   {
     "symbol": "7730",
@@ -6715,352 +6715,352 @@
   {
     "symbol": "7732",
     "name": "金興精密",
-    "peRatio": 20.7,
-    "dividendYield": 5.01,
+    "peRatio": 20.65,
+    "dividendYield": 5.02,
     "pbRatio": 1.43
   },
   {
     "symbol": "7736",
     "name": "虎山",
-    "peRatio": 16.74,
-    "dividendYield": 3.92,
-    "pbRatio": 1.94
+    "peRatio": 16.57,
+    "dividendYield": 3.96,
+    "pbRatio": 1.92
   },
   {
     "symbol": "7740",
     "name": "熙特爾-創",
-    "peRatio": 57.14,
+    "peRatio": 58.73,
     "dividendYield": 0,
-    "pbRatio": 8.07
+    "pbRatio": 8.3
   },
   {
     "symbol": "7749",
     "name": "意騰-KY",
-    "peRatio": 74.17,
-    "dividendYield": 1.24,
-    "pbRatio": 5.5
+    "peRatio": 80.04,
+    "dividendYield": 1.15,
+    "pbRatio": 5.94
   },
   {
     "symbol": "7750",
     "name": "新代",
-    "peRatio": 53.85,
-    "dividendYield": 0.85,
-    "pbRatio": 9.07
+    "peRatio": 55.72,
+    "dividendYield": 0.82,
+    "pbRatio": 9.38
   },
   {
     "symbol": "7765",
     "name": "中華資安",
-    "peRatio": 24.02,
-    "dividendYield": 3.75,
-    "pbRatio": 5.11
+    "peRatio": 24.44,
+    "dividendYield": 3.68,
+    "pbRatio": 5.2
   },
   {
     "symbol": "7769",
     "name": "鴻勁",
-    "peRatio": 95.12,
-    "dividendYield": 0.47,
-    "pbRatio": 41.42
+    "peRatio": 96.01,
+    "dividendYield": 0.46,
+    "pbRatio": 41.8
   },
   {
     "symbol": "7780",
     "name": "大研生醫*",
-    "peRatio": 75.45,
-    "dividendYield": 1.65,
-    "pbRatio": 3.77
+    "peRatio": 74.39,
+    "dividendYield": 1.67,
+    "pbRatio": 3.72
   },
   {
     "symbol": "7786",
     "name": "東方風能",
-    "peRatio": 17.55,
-    "dividendYield": 1.23,
-    "pbRatio": 4.02
+    "peRatio": 17.33,
+    "dividendYield": 1.25,
+    "pbRatio": 3.97
   },
   {
     "symbol": "7788",
     "name": "松川精密",
-    "peRatio": 47.12,
-    "dividendYield": 1.33,
-    "pbRatio": 2.79
+    "peRatio": 47.37,
+    "dividendYield": 1.32,
+    "pbRatio": 2.8
   },
   {
     "symbol": "7791",
     "name": "皇家可口",
-    "peRatio": 11.28,
-    "dividendYield": 4.8,
-    "pbRatio": 1.7
+    "peRatio": 11.23,
+    "dividendYield": 4.82,
+    "pbRatio": 1.69
   },
   {
     "symbol": "7795",
     "name": "長廣",
-    "peRatio": 122.06,
-    "dividendYield": 0.72,
-    "pbRatio": 19.29
+    "peRatio": 121.32,
+    "dividendYield": 0.73,
+    "pbRatio": 19.18
   },
   {
     "symbol": "7799",
     "name": "禾榮科",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 6.96
+    "pbRatio": 7.23
   },
   {
     "symbol": "7823",
     "name": "奧義賽博-KY創",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 9.7
+    "pbRatio": 9.85
   },
   {
     "symbol": "8011",
     "name": "台通",
-    "peRatio": 7.93,
-    "dividendYield": 6.64,
+    "peRatio": 7.97,
+    "dividendYield": 6.6,
     "pbRatio": 1.1
   },
   {
     "symbol": "8016",
     "name": "矽創",
-    "peRatio": 14.15,
-    "dividendYield": 6.12,
-    "pbRatio": 2.01
+    "peRatio": 14.37,
+    "dividendYield": 6.03,
+    "pbRatio": 2.04
   },
   {
     "symbol": "8021",
     "name": "尖點",
-    "peRatio": 129.66,
-    "dividendYield": 0.46,
-    "pbRatio": 8.31
+    "peRatio": 125.49,
+    "dividendYield": 0.47,
+    "pbRatio": 8.05
   },
   {
     "symbol": "8028",
     "name": "昇陽半導體",
-    "peRatio": 42.36,
-    "dividendYield": 1.53,
-    "pbRatio": 6.28
+    "peRatio": 43.52,
+    "dividendYield": 1.49,
+    "pbRatio": 6.45
   },
   {
     "symbol": "8033",
     "name": "雷虎",
-    "peRatio": 170.97,
+    "peRatio": 173.12,
     "dividendYield": 0,
-    "pbRatio": 12.9
+    "pbRatio": 13.06
   },
   {
     "symbol": "8039",
     "name": "台虹",
-    "peRatio": 63.91,
-    "dividendYield": 2.83,
-    "pbRatio": 2.19
+    "peRatio": 70.29,
+    "dividendYield": 2.58,
+    "pbRatio": 2.41
   },
   {
     "symbol": "8045",
     "name": "達運光電",
-    "peRatio": 103.8,
-    "dividendYield": 2.4,
-    "pbRatio": 3.94
+    "peRatio": 102.53,
+    "dividendYield": 2.43,
+    "pbRatio": 3.89
   },
   {
     "symbol": "8046",
     "name": "南電",
-    "peRatio": 183.72,
+    "peRatio": 184.39,
     "dividendYield": 0.36,
-    "pbRatio": 7.75
+    "pbRatio": 7.78
   },
   {
     "symbol": "8070",
     "name": "長華*",
-    "peRatio": 21.85,
-    "dividendYield": 6.27,
-    "pbRatio": 1.68
+    "peRatio": 22.03,
+    "dividendYield": 6.22,
+    "pbRatio": 1.7
   },
   {
     "symbol": "8072",
     "name": "陞泰",
-    "peRatio": 31.84,
-    "dividendYield": 3.21,
-    "pbRatio": 1.11
+    "peRatio": 32.09,
+    "dividendYield": 3.18,
+    "pbRatio": 1.12
   },
   {
     "symbol": "8081",
     "name": "致新",
-    "peRatio": 14.11,
-    "dividendYield": 6.5,
-    "pbRatio": 2.76
+    "peRatio": 14.25,
+    "dividendYield": 6.44,
+    "pbRatio": 2.79
   },
   {
     "symbol": "8101",
     "name": "華冠",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 2.94
+    "pbRatio": 2.92
   },
   {
     "symbol": "8103",
     "name": "瀚荃",
-    "peRatio": 28.36,
-    "dividendYield": 2.96,
-    "pbRatio": 2.53
+    "peRatio": 29.3,
+    "dividendYield": 2.86,
+    "pbRatio": 2.61
   },
   {
     "symbol": "8104",
     "name": "錸寶",
     "peRatio": 0,
-    "dividendYield": 0.53,
-    "pbRatio": 1.36
+    "dividendYield": 0.51,
+    "pbRatio": 1.4
   },
   {
     "symbol": "8105",
     "name": "凌巨",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.73
+    "pbRatio": 0.76
   },
   {
     "symbol": "8110",
     "name": "華東",
-    "peRatio": 52.92,
+    "peRatio": 54.17,
     "dividendYield": 0.31,
-    "pbRatio": 2.9
+    "pbRatio": 2.97
   },
   {
     "symbol": "8112",
     "name": "至上",
-    "peRatio": 43.22,
-    "dividendYield": 4.53,
-    "pbRatio": 2.41
+    "peRatio": 42.75,
+    "dividendYield": 4.58,
+    "pbRatio": 2.38
   },
   {
     "symbol": "8114",
     "name": "振樺電",
-    "peRatio": 9,
-    "dividendYield": 4.42,
-    "pbRatio": 1.9
+    "peRatio": 9.08,
+    "dividendYield": 4.38,
+    "pbRatio": 1.92
   },
   {
     "symbol": "8131",
     "name": "福懋科",
-    "peRatio": 89.24,
-    "dividendYield": 2.06,
-    "pbRatio": 2.87
+    "peRatio": 90.38,
+    "dividendYield": 2.03,
+    "pbRatio": 2.91
   },
   {
     "symbol": "8150",
     "name": "南茂",
-    "peRatio": 91.55,
-    "dividendYield": 1.89,
-    "pbRatio": 1.9
+    "peRatio": 100.7,
+    "dividendYield": 1.72,
+    "pbRatio": 2.08
   },
   {
     "symbol": "8162",
     "name": "微矽電子-創",
-    "peRatio": 18.86,
-    "dividendYield": 2.62,
-    "pbRatio": 1.77
+    "peRatio": 19.78,
+    "dividendYield": 2.5,
+    "pbRatio": 1.85
   },
   {
     "symbol": "8163",
     "name": "達方",
-    "peRatio": 35.17,
-    "dividendYield": 6.46,
-    "pbRatio": 0.84
+    "peRatio": 35.45,
+    "dividendYield": 6.41,
+    "pbRatio": 0.85
   },
   {
     "symbol": "8201",
     "name": "無敵",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.93
+    "pbRatio": 1.95
   },
   {
     "symbol": "8210",
     "name": "勤誠",
-    "peRatio": 37.33,
+    "peRatio": 37.7,
     "dividendYield": 0.82,
-    "pbRatio": 11.57
+    "pbRatio": 11.69
   },
   {
     "symbol": "8213",
     "name": "志超",
-    "peRatio": 14.71,
-    "dividendYield": 3.62,
-    "pbRatio": 0.69
+    "peRatio": 14.94,
+    "dividendYield": 3.57,
+    "pbRatio": 0.7
   },
   {
     "symbol": "8215",
     "name": "明基材",
     "peRatio": 0,
-    "dividendYield": 1.44,
-    "pbRatio": 1.3
+    "dividendYield": 1.46,
+    "pbRatio": 1.29
   },
   {
     "symbol": "8222",
     "name": "寶一",
-    "peRatio": 64.68,
+    "peRatio": 64.6,
     "dividendYield": 1.75,
     "pbRatio": 3.14
   },
   {
     "symbol": "8249",
     "name": "菱光",
-    "peRatio": 17.47,
-    "dividendYield": 3.36,
+    "peRatio": 17.56,
+    "dividendYield": 3.34,
     "pbRatio": 0.99
   },
   {
     "symbol": "8261",
     "name": "富鼎",
-    "peRatio": 16.73,
-    "dividendYield": 3.34,
-    "pbRatio": 1.91
+    "peRatio": 17.23,
+    "dividendYield": 5.08,
+    "pbRatio": 1.97
   },
   {
     "symbol": "8271",
     "name": "宇瞻",
-    "peRatio": 17.81,
-    "dividendYield": 1.85,
-    "pbRatio": 3.04
+    "peRatio": 18.11,
+    "dividendYield": 3.7,
+    "pbRatio": 3.09
   },
   {
     "symbol": "8341",
     "name": "日友",
-    "peRatio": 16.96,
-    "dividendYield": 4.86,
-    "pbRatio": 2.03
+    "peRatio": 17.11,
+    "dividendYield": 4.82,
+    "pbRatio": 2.05
   },
   {
     "symbol": "8367",
     "name": "建新國際",
-    "peRatio": 13.18,
-    "dividendYield": 6.32,
+    "peRatio": 13.24,
+    "dividendYield": 6.29,
     "pbRatio": 1.23
   },
   {
     "symbol": "8374",
     "name": "羅昇",
-    "peRatio": 77.66,
+    "peRatio": 78.47,
     "dividendYield": 0.52,
-    "pbRatio": 4.62
+    "pbRatio": 4.67
   },
   {
     "symbol": "8404",
     "name": "百和興業-KY",
-    "peRatio": 18.44,
-    "dividendYield": 2.75,
-    "pbRatio": 1.48
+    "peRatio": 18.13,
+    "dividendYield": 2.8,
+    "pbRatio": 1.45
   },
   {
     "symbol": "8411",
     "name": "福貞-KY",
     "peRatio": 0,
     "dividendYield": 0.4,
-    "pbRatio": 0.49
+    "pbRatio": 0.5
   },
   {
     "symbol": "8422",
     "name": "可寧衛*",
-    "peRatio": 24.96,
-    "dividendYield": 2.87,
-    "pbRatio": 5.34
+    "peRatio": 25.33,
+    "dividendYield": 2.83,
+    "pbRatio": 5.42
   },
   {
     "symbol": "8429",
@@ -7072,106 +7072,106 @@
   {
     "symbol": "8438",
     "name": "昶昕",
-    "peRatio": 38.24,
-    "dividendYield": 2.06,
-    "pbRatio": 2.41
+    "peRatio": 42.06,
+    "dividendYield": 1.87,
+    "pbRatio": 2.65
   },
   {
     "symbol": "8442",
     "name": "威宏-KY",
-    "peRatio": 11.42,
-    "dividendYield": 9.51,
-    "pbRatio": 1.33
+    "peRatio": 11.32,
+    "dividendYield": 9.6,
+    "pbRatio": 1.32
   },
   {
     "symbol": "8443",
     "name": "阿瘦",
     "peRatio": 0,
-    "dividendYield": 1.7,
-    "pbRatio": 1.14
+    "dividendYield": 1.69,
+    "pbRatio": 1.15
   },
   {
     "symbol": "8454",
     "name": "富邦媒",
-    "peRatio": 15.9,
-    "dividendYield": 6.7,
-    "pbRatio": 5.76
+    "peRatio": 16.03,
+    "dividendYield": 6.65,
+    "pbRatio": 5.81
   },
   {
     "symbol": "8462",
     "name": "柏文",
-    "peRatio": 19.52,
-    "dividendYield": 2.93,
-    "pbRatio": 5.31
+    "peRatio": 19.46,
+    "dividendYield": 2.94,
+    "pbRatio": 5.29
   },
   {
     "symbol": "8463",
     "name": "潤泰材",
-    "peRatio": 12.78,
-    "dividendYield": 4.02,
+    "peRatio": 12.76,
+    "dividendYield": 4.03,
     "pbRatio": 1.67
   },
   {
     "symbol": "8464",
     "name": "億豐",
-    "peRatio": 18.7,
-    "dividendYield": 3.46,
-    "pbRatio": 4.5
+    "peRatio": 17.99,
+    "dividendYield": 3.59,
+    "pbRatio": 4.33
   },
   {
     "symbol": "8466",
     "name": "美吉吉-KY",
-    "peRatio": 44.9,
-    "dividendYield": 5.35,
-    "pbRatio": 0.59
+    "peRatio": 45,
+    "dividendYield": 5.33,
+    "pbRatio": 0.6
   },
   {
     "symbol": "8467",
     "name": "波力-KY",
-    "peRatio": 13.32,
+    "peRatio": 13.05,
     "dividendYield": 0,
-    "pbRatio": 3.1
+    "pbRatio": 3.04
   },
   {
     "symbol": "8473",
     "name": "山林水",
-    "peRatio": 18.23,
-    "dividendYield": 1.92,
-    "pbRatio": 1.02
+    "peRatio": 18.56,
+    "dividendYield": 1.88,
+    "pbRatio": 1.04
   },
   {
     "symbol": "8476",
     "name": "台境*",
-    "peRatio": 215,
-    "dividendYield": 5.27,
-    "pbRatio": 1.74
+    "peRatio": 221.67,
+    "dividendYield": 5.11,
+    "pbRatio": 1.79
   },
   {
     "symbol": "8478",
     "name": "東哥遊艇",
-    "peRatio": 22.08,
-    "dividendYield": 2.91,
-    "pbRatio": 1.89
+    "peRatio": 21.95,
+    "dividendYield": 2.92,
+    "pbRatio": 1.88
   },
   {
     "symbol": "8481",
     "name": "政伸",
-    "peRatio": 12.78,
-    "dividendYield": 6.1,
+    "peRatio": 12.8,
+    "dividendYield": 6.09,
     "pbRatio": 1.7
   },
   {
     "symbol": "8482",
     "name": "商億-KY",
-    "peRatio": 18.22,
-    "dividendYield": 8.06,
-    "pbRatio": 1.95
+    "peRatio": 18.69,
+    "dividendYield": 7.86,
+    "pbRatio": 2
   },
   {
     "symbol": "8487",
     "name": "愛爾達-創",
-    "peRatio": 17.55,
-    "dividendYield": 6.32,
+    "peRatio": 17.57,
+    "dividendYield": 6.31,
     "pbRatio": 3.4
   },
   {
@@ -7184,107 +7184,107 @@
   {
     "symbol": "8499",
     "name": "鼎炫-KY",
-    "peRatio": 26.13,
-    "dividendYield": 2.85,
-    "pbRatio": 1.51
+    "peRatio": 26.59,
+    "dividendYield": 2.8,
+    "pbRatio": 1.54
   },
   {
     "symbol": "8926",
     "name": "台汽電",
-    "peRatio": 19.67,
+    "peRatio": 19.64,
     "dividendYield": 4.47,
     "pbRatio": 2.23
   },
   {
     "symbol": "8940",
     "name": "新天地",
-    "peRatio": 36,
+    "peRatio": 35.45,
     "dividendYield": 0,
-    "pbRatio": 1.75
+    "pbRatio": 1.73
   },
   {
     "symbol": "8996",
     "name": "高力",
-    "peRatio": 138.03,
-    "dividendYield": 0.44,
-    "pbRatio": 22.16
+    "peRatio": 133.18,
+    "dividendYield": 0.46,
+    "pbRatio": 21.38
   },
   {
     "symbol": "9802",
     "name": "鈺齊-KY",
-    "peRatio": 15.7,
-    "dividendYield": 5.38,
-    "pbRatio": 1.38
+    "peRatio": 15.6,
+    "dividendYield": 5.41,
+    "pbRatio": 1.37
   },
   {
     "symbol": "9902",
     "name": "台火",
-    "peRatio": 413.75,
-    "dividendYield": 1.81,
-    "pbRatio": 1.29
+    "peRatio": 417.5,
+    "dividendYield": 1.8,
+    "pbRatio": 1.3
   },
   {
     "symbol": "9904",
     "name": "寶成",
-    "peRatio": 8.13,
-    "dividendYield": 5.52,
-    "pbRatio": 0.67
+    "peRatio": 8.19,
+    "dividendYield": 5.48,
+    "pbRatio": 0.68
   },
   {
     "symbol": "9905",
     "name": "大華",
-    "peRatio": 15.97,
-    "dividendYield": 5.34,
+    "peRatio": 16.09,
+    "dividendYield": 5.3,
     "pbRatio": 0.81
   },
   {
     "symbol": "9906",
     "name": "欣巴巴",
-    "peRatio": 55.61,
-    "dividendYield": 0.19,
-    "pbRatio": 3.21
+    "peRatio": 55.2,
+    "dividendYield": 0.2,
+    "pbRatio": 3.19
   },
   {
     "symbol": "9907",
     "name": "統一實",
-    "peRatio": 14.13,
-    "dividendYield": 4.97,
-    "pbRatio": 1.53
+    "peRatio": 13.73,
+    "dividendYield": 5.12,
+    "pbRatio": 1.49
   },
   {
     "symbol": "9908",
     "name": "大台北",
-    "peRatio": 17.54,
-    "dividendYield": 4,
+    "peRatio": 17.57,
+    "dividendYield": 3.99,
     "pbRatio": 1.1
   },
   {
     "symbol": "9910",
     "name": "豐泰",
-    "peRatio": 18.06,
-    "dividendYield": 5.37,
-    "pbRatio": 4.01
+    "peRatio": 17.83,
+    "dividendYield": 5.44,
+    "pbRatio": 3.96
   },
   {
     "symbol": "9911",
     "name": "櫻花",
-    "peRatio": 14.55,
-    "dividendYield": 5.47,
-    "pbRatio": 2.94
+    "peRatio": 14.62,
+    "dividendYield": 5.44,
+    "pbRatio": 2.96
   },
   {
     "symbol": "9912",
     "name": "偉聯",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.74
+    "pbRatio": 1.75
   },
   {
     "symbol": "9914",
     "name": "美利達",
     "peRatio": 0,
-    "dividendYield": 5.25,
-    "pbRatio": 1.2
+    "dividendYield": 5.32,
+    "pbRatio": 1.18
   },
   {
     "symbol": "9917",
@@ -7296,8 +7296,8 @@
   {
     "symbol": "9918",
     "name": "欣天然",
-    "peRatio": 23.64,
-    "dividendYield": 3.91,
+    "peRatio": 23.7,
+    "dividendYield": 3.9,
     "pbRatio": 2.24
   },
   {
@@ -7311,35 +7311,35 @@
     "symbol": "9921",
     "name": "巨大",
     "peRatio": 0,
-    "dividendYield": 2.66,
-    "pbRatio": 0.97
+    "dividendYield": 2.69,
+    "pbRatio": 0.96
   },
   {
     "symbol": "9924",
     "name": "福興",
-    "peRatio": 12.09,
-    "dividendYield": 6.44,
+    "peRatio": 12.07,
+    "dividendYield": 6.45,
     "pbRatio": 1.07
   },
   {
     "symbol": "9925",
     "name": "新保",
-    "peRatio": 16.51,
-    "dividendYield": 4.88,
-    "pbRatio": 1.3
+    "peRatio": 16.47,
+    "dividendYield": 4.9,
+    "pbRatio": 1.29
   },
   {
     "symbol": "9926",
     "name": "新海",
-    "peRatio": 18.92,
-    "dividendYield": 4,
+    "peRatio": 18.98,
+    "dividendYield": 3.99,
     "pbRatio": 2.15
   },
   {
     "symbol": "9927",
     "name": "泰銘",
-    "peRatio": 12.71,
-    "dividendYield": 8.58,
+    "peRatio": 12.73,
+    "dividendYield": 8.57,
     "pbRatio": 1.57
   },
   {
@@ -7347,104 +7347,104 @@
     "name": "中視",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 0.59
+    "pbRatio": 0.6
   },
   {
     "symbol": "9929",
     "name": "秋雨",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 1.38
+    "pbRatio": 1.32
   },
   {
     "symbol": "9930",
     "name": "中聯資源",
-    "peRatio": 14.1,
-    "dividendYield": 5.64,
-    "pbRatio": 2.8
+    "peRatio": 14.52,
+    "dividendYield": 5.56,
+    "pbRatio": 2.71
   },
   {
     "symbol": "9931",
     "name": "欣高",
-    "peRatio": 12.88,
-    "dividendYield": 5.12,
+    "peRatio": 12.89,
+    "dividendYield": 5.11,
     "pbRatio": 1.36
   },
   {
     "symbol": "9933",
     "name": "中鼎",
-    "peRatio": 97.66,
-    "dividendYield": 6.4,
+    "peRatio": 97.81,
+    "dividendYield": 6.39,
     "pbRatio": 1.58
   },
   {
     "symbol": "9934",
     "name": "成霖",
-    "peRatio": 58.35,
-    "dividendYield": 3.53,
+    "peRatio": 58.41,
+    "dividendYield": 3.52,
     "pbRatio": 0.71
   },
   {
     "symbol": "9935",
     "name": "慶豐富",
-    "peRatio": 11.18,
-    "dividendYield": 9.47,
-    "pbRatio": 1.39
+    "peRatio": 11.24,
+    "dividendYield": 9.42,
+    "pbRatio": 1.4
   },
   {
     "symbol": "9937",
     "name": "全國",
-    "peRatio": 24.71,
+    "peRatio": 24.75,
     "dividendYield": 3.57,
-    "pbRatio": 3.21
+    "pbRatio": 3.22
   },
   {
     "symbol": "9938",
     "name": "百和",
-    "peRatio": 12.07,
-    "dividendYield": 5.78,
-    "pbRatio": 1.22
+    "peRatio": 11.98,
+    "dividendYield": 5.83,
+    "pbRatio": 1.21
   },
   {
     "symbol": "9939",
     "name": "宏全",
-    "peRatio": 14.03,
-    "dividendYield": 5.02,
-    "pbRatio": 2.01
+    "peRatio": 13.86,
+    "dividendYield": 5.08,
+    "pbRatio": 1.99
   },
   {
     "symbol": "9940",
     "name": "信義",
-    "peRatio": 55,
-    "dividendYield": 8.18,
+    "peRatio": 55.13,
+    "dividendYield": 8.16,
     "pbRatio": 1.34
   },
   {
     "symbol": "9941",
     "name": "裕融",
-    "peRatio": 11.33,
-    "dividendYield": 6.65,
-    "pbRatio": 1.27
+    "peRatio": 11.4,
+    "dividendYield": 6.6,
+    "pbRatio": 1.28
   },
   {
     "symbol": "9942",
     "name": "茂順",
-    "peRatio": 13.96,
-    "dividendYield": 5.98,
-    "pbRatio": 2.42
+    "peRatio": 14.2,
+    "dividendYield": 5.88,
+    "pbRatio": 2.46
   },
   {
     "symbol": "9943",
     "name": "好樂迪",
-    "peRatio": 17.73,
-    "dividendYield": 8.08,
+    "peRatio": 17.67,
+    "dividendYield": 8.11,
     "pbRatio": 1.99
   },
   {
     "symbol": "9944",
     "name": "新麗",
     "peRatio": 0,
-    "dividendYield": 1.77,
+    "dividendYield": 1.79,
     "pbRatio": 0.54
   },
   {
@@ -7457,8 +7457,8 @@
   {
     "symbol": "9946",
     "name": "三發地產",
-    "peRatio": 92.5,
-    "dividendYield": 6.25,
+    "peRatio": 93.33,
+    "dividendYield": 6.19,
     "pbRatio": 0.88
   },
   {
@@ -7466,13 +7466,13 @@
     "name": "佳龍",
     "peRatio": 0,
     "dividendYield": 0,
-    "pbRatio": 3.1
+    "pbRatio": 3.09
   },
   {
     "symbol": "9958",
     "name": "世紀鋼",
-    "peRatio": 24.53,
-    "dividendYield": 3.19,
-    "pbRatio": 3.01
+    "peRatio": 23.97,
+    "dividendYield": 3.26,
+    "pbRatio": 2.94
   }
 ]
