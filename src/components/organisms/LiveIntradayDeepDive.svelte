@@ -177,7 +177,7 @@
 </script>
 
 <div
-    class="chart-container relative overflow-visible flex flex-col min-h-[220px] bg-base-deep border-t-2 border-accent/10 border-b border-border/40 select-none pb-2 pt-6"
+    class="chart-container relative overflow-visible flex flex-col min-h-[220px] bg-base-deep border-t-2 border-accent/10 border-b border-border/40 select-none pb-2 pt-4"
     transition:slide={{ duration: 400 }}
 >
     <!-- Background Symbol Watermark -->
@@ -330,15 +330,15 @@
                 />
 
                 <!-- Legend -->
-                <g transform="translate(20, 30)" class="text-[9px] font-black font-mono">
-                    <rect x="0" y="0" width="8" height="2" fill={trendColor} rx="1" />
-                    <text x="12" y="3" fill="white" fill-opacity="0.5">PRICE</text>
+                <g transform="translate(15, 10)" class="text-[10px] font-black font-mono">
+                    <rect x="0" y="-3" width="10" height="2" fill={trendColor} rx="1" />
+                    <text x="14" y="0" fill="white" fill-opacity="0.4">PRICE</text>
 
-                    <rect x="50" y="0" width="8" height="2" fill="#f59e0b" rx="1" />
-                    <text x="62" y="3" fill="#f59e0b" fill-opacity="0.8">MA5</text>
+                    <rect x="60" y="-3" width="10" height="2" fill="#f59e0b" rx="1" />
+                    <text x="74" y="0" fill="#f59e0b" fill-opacity="0.7">MA5</text>
 
-                    <rect x="90" y="0" width="8" height="2" fill="#a855f7" rx="1" />
-                    <text x="102" y="3" fill="#a855f7" fill-opacity="0.8">MA20</text>
+                    <rect x="110" y="-3" width="10" height="2" fill="#a855f7" rx="1" />
+                    <text x="124" y="0" fill="#a855f7" fill-opacity="0.7">MA20</text>
                 </g>
 
                 <!-- Labels -->

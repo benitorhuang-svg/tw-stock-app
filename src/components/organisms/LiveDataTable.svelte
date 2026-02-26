@@ -98,6 +98,13 @@
     $: displayItems = filteredAndSorted.slice(0, displayLimit);
     $: hasMore = filteredAndSorted.length > displayLimit;
 
+    // Auto-expand the first stock trend chart on initial load
+    let hasAutoExpanded = false;
+    $: if (!hasAutoExpanded && filteredAndSorted.length > 0) {
+        expandedCode = filteredAndSorted[0].Code;
+        hasAutoExpanded = true;
+    }
+
     const headers = [
         { label: 'ENTITY', col: 'Code' },
         { label: 'QUOTATION', col: 'ClosingPrice' },
@@ -161,7 +168,8 @@
                     workspace.scrollTop +
                     (trRect.top - workspaceRect.top) -
                     toolbarHeight -
-                    headerHeight;
+                    headerHeight -
+                    245; // Restored safety buffer: ensures the row is visible below sticky headers and provides context
 
                 workspace.scrollTo({
                     top: scrollTarget,
@@ -342,11 +350,22 @@
                                     >
                                         {s.Name}
                                     </span>
-                                    <span
-                                        class="text-[10px] text-text-muted/60 font-mono tracking-widest"
-                                    >
-                                        {s.Code}
-                                    </span>
+                                    <div class="flex items-center gap-2">
+                                        <span
+                                            class="text-[10px] text-text-muted/60 font-mono tracking-widest"
+                                        >
+                                            {s.Code}
+                                        </span>
+                                        {#if expandedCode === s.Code}
+                                            <a
+                                                href={`/stocks/${s.Code}`}
+                                                class="analysis-link opacity-100 text-[9px] py-0.5 px-2"
+                                                on:click|stopPropagation
+                                            >
+                                                分析 ↗
+                                            </a>
+                                        {/if}
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -417,14 +436,7 @@
                             {s._vol > 0 ? s._vol.toLocaleString() : '—'}
                         </td>
                         <td class="px-1.5 py-2 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <a
-                                    href={`/stocks/${s.Code}`}
-                                    class="analysis-link opacity-0 group-hover:opacity-100"
-                                    on:click|stopPropagation
-                                >
-                                    Analysis ↗
-                                </a>
+                            <div class="flex items-center justify-center">
                                 <span
                                     class="chevron opacity-20 group-hover:opacity-100 transition-all duration-300"
                                     class:rotated={expandedCode === s.Code}
@@ -505,8 +517,10 @@
     }
 
     .chevron {
-        font-size: 8px;
+        font-size: 11px;
         display: inline-block;
+        font-weight: 900;
+        margin-left: auto; /* Help center when analysis link is hidden */
     }
     .chevron.rotated {
         transform: rotate(180deg);
