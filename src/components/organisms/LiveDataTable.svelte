@@ -1,47 +1,13 @@
 <script lang="ts">
-    import { onMount, onDestroy, tick } from 'svelte';
+    import { onMount, tick } from 'svelte';
+    import { marketStore } from '../../stores/market.svelte';
+    import LiveIntradayDeepDive from './LiveIntradayDeepDive.svelte';
 
-    interface LiveStock {
-        Code: string;
-        Name: string;
-        ClosingPrice: string;
-        Change: string;
-        TradeVolume: string;
-        OpeningPrice: string;
-        HighestPrice: string;
-        LowestPrice: string;
-        _closePrice: number;
-        _change: number;
-        _changePct: number;
-        _vol: number;
-        _open: number;
-        _high: number;
-        _low: number;
-        _ma5?: number;
-        _ma20?: number;
-        _rsi?: number;
-        _avgVol?: number;
-    }
-
-    // ─── State ─────────────────────────────────────────
-    let stocks: LiveStock[] = [];
-    let currentSortCol = 'TradeVolume';
-    let currentSortAsc = false;
-    let loadingState = 'Awaiting_Uplink...';
-    let errorState = '';
-    let expandedCode = '';
-    let displayLimit = 150; // DOM Optimization: Start with a smaller set
-
-    // ─── Filter State ──────────────────────────────────
-    let searchKeyword = '';
-    let tsMarket = '';
-    let tsPriceRange = '';
-    let tsVol = 0;
-    let tsTrend = '0';
-    let tsMA20 = 0;
-    let tsStarred = false;
-    let watchlistCodes: string[] = [];
-    let watchlistSet = new Set<string>();
+    // ─── Local UI State ────────────────────────────────
+    let currentSortCol = $state('vol');
+    let currentSortAsc = $state(false);
+    let expandedCode = $state('');
+    let displayLimit = $state(150);
 
     function toggleSort(col: string) {
         if (!col) return;
@@ -52,93 +18,84 @@
         }
     }
 
-    const sortKeyMap: Record<string, keyof LiveStock> = {
-        ClosingPrice: '_closePrice',
-        ChangePct: '_changePct',
-        Change: '_change',
-        TradeVolume: '_vol',
-    };
+    // ─── Reactive Filtering & Sorting (Runes) ──────────
+    const filteredAndSorted = $derived.by(() => {
+        const {
+            searchKeyword,
+            filterMarket,
+            filterPriceRange,
+            filterMinVol,
+            filterTrend,
+            filterMA20,
+            filterStarred,
+            watchlist,
+        } = marketStore;
+        const { stocks } = marketStore.state;
 
-    $: filteredAndSorted = stocks
-        .filter(s => {
-            if (tsMarket && (s as any)._market !== tsMarket.toUpperCase()) return false;
-            if (
-                searchKeyword &&
-                !s.Code.toLowerCase().includes(searchKeyword) &&
-                !s.Name.toLowerCase().includes(searchKeyword)
-            )
-                return false;
-            if (tsStarred && !watchlistSet.has(s.Code)) return false;
-            if (tsPriceRange) {
-                const [min, max] = tsPriceRange.split('-').map(Number);
-                if (s._closePrice < min || s._closePrice > max) return false;
-            }
-            if (tsVol > 0 && s._vol < tsVol) return false;
-            if (tsTrend !== '0') {
-                const t = parseFloat(tsTrend);
-                if ((t > 0 && s._changePct < t) || (t < 0 && s._changePct > t)) return false;
-            }
-            if (tsMA20 !== 0 && s._ma20) {
-                const dist = (s._closePrice / s._ma20 - 1) * 100;
-                if ((tsMA20 > 0 && dist < tsMA20) || (tsMA20 < 0 && dist > tsMA20)) return false;
-            }
-            return true;
-        })
-        .sort((a, b) => {
-            const key = sortKeyMap[currentSortCol] || (currentSortCol as keyof LiveStock);
-            const va = a[key] ?? 0;
-            const vb = b[key] ?? 0;
-            if (typeof va === 'string' && typeof vb === 'string')
-                return currentSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-            return currentSortAsc
-                ? (va as number) - (vb as number)
-                : (vb as number) - (va as number);
-        });
+        return stocks
+            .filter(s => {
+                if (filterMarket && (s as any)._market !== filterMarket.toUpperCase()) return false;
+                if (
+                    searchKeyword &&
+                    !s.code.includes(searchKeyword) &&
+                    !s.name.includes(searchKeyword)
+                )
+                    return false;
+                if (filterStarred && !watchlist.has(s.code)) return false;
+                if (filterPriceRange) {
+                    const [min, max] = filterPriceRange.split('-').map(Number);
+                    if (s.price < min || s.price > max) return false;
+                }
+                if (filterMinVol > 0 && s.vol < filterMinVol) return false;
+                if (filterTrend !== '0') {
+                    const t = parseFloat(filterTrend);
+                    if ((t > 0 && s.changePct < t) || (t < 0 && s.changePct > t)) return false;
+                }
+                if (filterMA20 !== 0 && s.ma20) {
+                    const dist = (s.price / s.ma20 - 1) * 100;
+                    if (
+                        (filterMA20 > 0 && dist < filterMA20) ||
+                        (filterMA20 < 0 && dist > filterMA20)
+                    )
+                        return false;
+                }
+                return true;
+            })
+            .sort((a, b) => {
+                const va = (a as any)[currentSortCol] ?? 0;
+                const vb = (b as any)[currentSortCol] ?? 0;
+                if (typeof va === 'string' && typeof vb === 'string')
+                    return currentSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+                return currentSortAsc
+                    ? (va as number) - (vb as number)
+                    : (vb as number) - (va as number);
+            });
+    });
 
-    $: displayItems = filteredAndSorted.slice(0, displayLimit);
-    $: hasMore = filteredAndSorted.length > displayLimit;
+    const displayItems = $derived(filteredAndSorted.slice(0, displayLimit));
+    const hasMore = $derived(filteredAndSorted.length > displayLimit);
 
-    // Auto-expand the first stock trend chart on initial load
+    // Auto-expand first item if none expanded
     let hasAutoExpanded = false;
-    $: if (!hasAutoExpanded && filteredAndSorted.length > 0) {
-        expandedCode = filteredAndSorted[0].Code;
-        hasAutoExpanded = true;
-    }
+    $effect(() => {
+        if (!hasAutoExpanded && filteredAndSorted.length > 0) {
+            expandedCode = filteredAndSorted[0].code;
+            hasAutoExpanded = true;
+        }
+    });
 
     const headers = [
-        { label: 'ENTITY', col: 'Code' },
-        { label: 'QUOTATION', col: 'ClosingPrice' },
-        { label: 'VARIANCE', col: 'ChangePct' },
-        { label: 'MA20', col: '_ma20' },
-        { label: 'DIFF', col: 'Change' },
-
-        { label: 'OPEN', col: 'OpeningPrice' },
-        { label: 'MAX', col: 'HighestPrice' },
-        { label: 'MIN', col: 'LowestPrice' },
-        { label: 'VOLUME', col: 'TradeVolume' },
+        { label: 'ENTITY', col: 'code' },
+        { label: 'QUOTATION', col: 'price' },
+        { label: 'VARIANCE', col: 'changePct' },
+        { label: 'MA20', col: 'ma20' },
+        { label: 'DIFF', col: 'change' },
+        { label: 'OPEN', col: 'open' },
+        { label: 'MAX', col: 'high' },
+        { label: 'MIN', col: 'low' },
+        { label: 'VOLUME', col: 'vol' },
         { label: '', col: '' },
     ];
-
-    function toggleWatchlist(code: string) {
-        // Multi-watchlist Sync
-        const stored = localStorage.getItem('tw_watchlists');
-        let store = stored ? JSON.parse(stored) : { active: '默認清單', lists: { 默認清單: [] } };
-
-        const activeList = store.active;
-        const wl = store.lists[activeList] || [];
-
-        const idx = wl.indexOf(code);
-        if (idx > -1) wl.splice(idx, 1);
-        else wl.push(code);
-
-        store.lists[activeList] = wl;
-        localStorage.setItem('tw_watchlists', JSON.stringify(store));
-        localStorage.setItem('watchlist', JSON.stringify(wl)); // Legacy sync
-
-        watchlistCodes = [...wl];
-    }
-
-    $: watchlistSet = new Set(watchlistCodes);
 
     async function toggleExpand(code: string, event: MouseEvent) {
         const isOpening = expandedCode !== code;
@@ -156,71 +113,25 @@
             if (workspace && tr) {
                 const thead = tr.closest('table')?.querySelector('thead') as HTMLElement;
                 const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
-                const headerHeight = thead ? thead.offsetHeight : 40; // Fallback to 40 if not found
+                const headerHeight = thead ? thead.offsetHeight : 40;
 
                 const workspaceRect = workspace.getBoundingClientRect();
                 const trRect = tr.getBoundingClientRect();
 
-                // Calculate the final scroll target to bring the row exactly to the top (under the header)
-                // We calculate the delta needed to move the row from its current screen position
-                // to the target screen position (toolbarHeight + headerHeight)
                 const scrollTarget =
                     workspace.scrollTop +
                     (trRect.top - workspaceRect.top) -
                     toolbarHeight -
                     headerHeight -
-                    245; // Restored safety buffer: ensures the row is visible below sticky headers and provides context
+                    245;
 
-                workspace.scrollTo({
-                    top: scrollTarget,
-                    behavior: 'smooth',
-                });
+                workspace.scrollTo({ top: scrollTarget, behavior: 'smooth' });
             }
         }
     }
 
-    let handler: ((e: Event) => void) | null = null;
-    onMount(() => {
-        watchlistCodes = JSON.parse(localStorage.getItem('watchlist') || '[]');
-        handler = (e: Event) => {
-            const { type, payload } = (e as CustomEvent).detail;
-            if (type === 'DATA') {
-                stocks = payload.data;
-                errorState = '';
-            } else if (type === 'FILTERS') {
-                searchKeyword = payload.search?.toLowerCase() || '';
-                tsMarket = payload.market || '';
-                tsPriceRange = payload.price || '';
-                tsVol = payload.volume || 0;
-                tsTrend = payload.trend || '0';
-                tsMA20 = parseFloat(payload.ma20) || 0;
-                tsStarred = payload.starred || false;
-                watchlistCodes = JSON.parse(localStorage.getItem('watchlist') || '[]');
-            }
-        };
-
-        window.addEventListener('tw-live-update', handler);
-
-        // Listen for multi-watchlist switches
-        const syncHandler = (e: any) => {
-            watchlistCodes = e.detail.codes || [];
-        };
-        window.addEventListener('tw-watchlist-sync', syncHandler);
-
-        return () => {
-            window.removeEventListener('tw-live-update', handler!);
-            window.removeEventListener('tw-watchlist-sync', syncHandler);
-        };
-    });
-
-    onDestroy(() => {
-        if (handler) window.removeEventListener('tw-live-update', handler);
-    });
-
-    import LiveIntradayDeepDive from './LiveIntradayDeepDive.svelte';
-
-    function colorClass(chg: number) {
-        return chg > 0 ? 'clr-bull' : chg < 0 ? 'clr-bear' : 'clr-flat';
+    function colorClass(val: number) {
+        return val > 0 ? 'clr-bull' : val < 0 ? 'clr-bear' : 'clr-flat';
     }
 </script>
 
@@ -246,7 +157,7 @@
                         class:cursor-pointer={!!h.col}
                         class:hover:text-accent={!!h.col}
                         style="top: var(--toolbar-nexus-height, 0px);"
-                        on:click={() => h.col && toggleSort(h.col)}
+                        onclick={() => h.col && toggleSort(h.col)}
                     >
                         {#if h.label}
                             <span class="inline-flex items-center gap-1 justify-center">
@@ -272,22 +183,22 @@
         </thead>
 
         <tbody class="divide-y divide-border/50 text-xs font-mono">
-            {#if errorState}
+            {#if marketStore.state.error}
                 <tr>
                     <td
                         colspan="9"
                         class="py-24 text-center text-bearish uppercase tracking-[0.2em] italic"
                     >
-                        {errorState}
+                        {marketStore.state.error}
                     </td>
                 </tr>
-            {:else if !stocks || stocks.length === 0}
+            {:else if marketStore.state.isLoading && marketStore.state.stocks.length === 0}
                 <tr>
                     <td colspan="9" class="py-12 bg-surface/20">
                         <div
-                            class="flex flex-col items-center gap-2 opacity-30 text-[9px] uppercase tracking-[0.5em]"
+                            class="flex flex-col items-center gap-2 opacity-30 text-[9px] uppercase tracking-[0.5em] animate-pulse"
                         >
-                            {loadingState}
+                            Awaiting_Uplink...
                         </div>
                     </td>
                 </tr>
@@ -301,43 +212,39 @@
                     </td>
                 </tr>
             {:else}
-                {#each displayItems as s (s.Code)}
-                    {@const val = s._changePct}
-                    {@const isUp = val > 0}
-                    {@const isDown = val < 0}
-                    <!-- Performance: Pre-calculate row state -->
+                {#each displayItems as s (s.code)}
+                    {@const isUp = s.changePct > 0}
+                    {@const isDown = s.changePct < 0}
                     <tr
                         class="group cursor-pointer transition-colors hover:bg-white/[0.02]"
-                        class:active-row={expandedCode === s.Code}
-                        on:click={e => toggleExpand(s.Code, e)}
+                        class:active-row={expandedCode === s.code}
+                        onclick={e => toggleExpand(s.code, e)}
                     >
                         <td
                             class="px-3 py-3 border-r border-border/30"
-                            class:border-l-4={expandedCode === s.Code}
-                            class:border-l-accent={expandedCode === s.Code}
+                            class:border-l-4={expandedCode === s.code}
+                            class:border-l-accent={expandedCode === s.code}
                         >
                             <div class="flex items-center gap-2">
-                                <!-- INLINED WATCHLIST BUTTON FOR EXTREME PERFORMANCE -->
                                 <button
-                                    class="star-btn shrink-0 transition-all duration-300 hover:scale-125 flex items-center justify-center {watchlistSet.has(
-                                        s.Code
+                                    class="star-btn shrink-0 transition-all duration-300 hover:scale-125 flex items-center justify-center {marketStore.watchlist.has(
+                                        s.code
                                     )
                                         ? 'text-warning'
                                         : 'text-text-muted/20 hover:text-text-muted/50'}"
-                                    on:click|stopPropagation={() => toggleWatchlist(s.Code)}
-                                    title="Toggle Watchlist"
+                                    aria-label="Toggle Watchlist"
+                                    onclick={e => {
+                                        e.stopPropagation();
+                                        marketStore.toggleWatchlist(s.code);
+                                    }}
                                 >
                                     <svg
-                                        class="w-5 h-5 transition-all"
+                                        class="w-5 h-5"
                                         viewBox="0 0 24 24"
-                                        fill={watchlistSet.has(s.Code) ? 'currentColor' : 'none'}
+                                        fill={marketStore.watchlist.has(s.code)
+                                            ? 'currentColor'
+                                            : 'none'}
                                         stroke="currentColor"
-                                        stroke-width={watchlistSet.has(s.Code) ? '1' : '2'}
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        style={watchlistSet.has(s.Code)
-                                            ? 'filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3))'
-                                            : ''}
                                     >
                                         <polygon
                                             points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
@@ -348,36 +255,30 @@
                                     <span
                                         class="text-sm font-black text-white group-hover:text-accent truncate tracking-tight transition-colors"
                                     >
-                                        {s.Name}
+                                        {s.name}
                                     </span>
                                     <div class="flex items-center gap-2">
                                         <span
                                             class="text-[10px] text-text-muted/60 font-mono tracking-widest"
+                                            >{s.code}</span
                                         >
-                                            {s.Code}
-                                        </span>
-                                        {#if expandedCode === s.Code}
+                                        {#if expandedCode === s.code}
                                             <a
-                                                href={`/stocks/${s.Code}`}
-                                                class="analysis-link opacity-100 text-[9px] py-0.5 px-2"
-                                                on:click|stopPropagation
+                                                href={`/stocks/${s.code}`}
+                                                class="analysis-link py-0.5 px-2"
+                                                onclick={e => e.stopPropagation()}>分析 ↗</a
                                             >
-                                                分析 ↗
-                                            </a>
                                         {/if}
                                     </div>
                                 </div>
                             </div>
                         </td>
                         <td
-                            class="px-1.5 py-2 text-center text-sm font-bold {colorClass(
-                                s._change
-                            )}"
+                            class="px-1.5 py-2 text-center text-sm font-bold {colorClass(s.change)}"
                         >
-                            {s._closePrice > 0 ? s._closePrice.toFixed(2) : '—'}
+                            {s.price > 0 ? s.price.toFixed(2) : '—'}
                         </td>
                         <td class="px-1.5 py-2 text-center">
-                            <!-- INLINED PRICE BADGE -->
                             <div
                                 class="inline-flex items-center justify-center min-w-[64px] h-[22px] rounded border text-[10px] font-black px-2 tracking-tighter"
                                 class:badge-bull={isUp}
@@ -385,77 +286,65 @@
                                 class:badge-flat={!isUp && !isDown}
                             >
                                 {(isUp ? '+' : '') +
-                                    (s._closePrice > 0 ? val.toFixed(2) + '%' : '—')}
+                                    (s.price > 0 ? s.changePct.toFixed(2) + '%' : '—')}
                             </div>
                         </td>
-
                         <td
-                            class="px-1.5 py-2 text-center min-w-[80px] text-[11px] font-bold"
-                            class:text-bullish={s._ma20 && s._closePrice > s._ma20}
-                            class:text-bearish={s._ma20 && s._closePrice < s._ma20}
+                            class="px-1.5 py-2 text-center text-[11px] font-bold"
+                            class:text-bullish={s.ma20 && s.price > s.ma20}
+                            class:text-bearish={s.ma20 && s.price < s.ma20}
                         >
                             <div class="flex flex-col items-center">
-                                <span>{s._ma20 ? s._ma20.toFixed(2) : '—'}</span>
+                                <span>{s.ma20 ? s.ma20.toFixed(2) : '—'}</span>
                                 <div class="flex gap-0.5 mt-0.5 scale-75 origin-top">
-                                    {#if s._rsi && s._rsi > 70}
-                                        <span
-                                            class="px-1 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded-[2px] text-[8px] font-black tracking-tighter"
+                                    {#if s.rsi > 70}<span
+                                            class="px-1 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded-[2px] text-[8px] font-black"
                                             >RSI:OB</span
                                         >
-                                    {:else if s._rsi && s._rsi < 30}
-                                        <span
-                                            class="px-1 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded-[2px] text-[8px] font-black tracking-tighter"
+                                    {:else if s.rsi < 30 && s.rsi > 0}<span
+                                            class="px-1 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded-[2px] text-[8px] font-black"
                                             >RSI:OS</span
-                                        >
-                                    {/if}
+                                        >{/if}
                                 </div>
                             </div>
                         </td>
-
                         <td
                             class="px-1.5 py-2 text-center font-bold {colorClass(
-                                s._change
+                                s.change
                             )} text-[10px]"
                         >
-                            {s._change > 0 ? '+' : ''}{s._closePrice > 0
-                                ? s._change.toFixed(2)
-                                : '—'}
+                            {s.change > 0 ? '+' : ''}{s.price > 0 ? s.change.toFixed(2) : '—'}
                         </td>
-                        <td class="px-1.5 py-2 text-center text-text-muted">
-                            {s._open > 0 ? s._open.toFixed(2) : '—'}
-                        </td>
-                        <td class="px-1.5 py-2 text-center clr-bull-mute">
-                            {s._high > 0 ? s._high.toFixed(2) : '—'}
-                        </td>
-                        <td class="px-1.5 py-2 text-center clr-bear-mute">
-                            {s._low > 0 ? s._low.toFixed(2) : '—'}
-                        </td>
+                        <td class="px-1.5 py-2 text-center text-text-muted"
+                            >{s.open > 0 ? s.open.toFixed(2) : '—'}</td
+                        >
+                        <td class="px-1.5 py-2 text-center clr-bull-mute"
+                            >{s.high > 0 ? s.high.toFixed(2) : '—'}</td
+                        >
+                        <td class="px-1.5 py-2 text-center clr-bear-mute"
+                            >{s.low > 0 ? s.low.toFixed(2) : '—'}</td
+                        >
                         <td
                             class="px-1.5 py-2 text-center text-text-muted opacity-60 text-[10px] uppercase font-mono"
+                            >{s.vol > 0 ? s.vol.toLocaleString() : '—'}</td
                         >
-                            {s._vol > 0 ? s._vol.toLocaleString() : '—'}
-                        </td>
                         <td class="px-1.5 py-2 text-center">
-                            <div class="flex items-center justify-center">
-                                <span
-                                    class="chevron opacity-20 group-hover:opacity-100 transition-all duration-300"
-                                    class:rotated={expandedCode === s.Code}
-                                >
-                                    ▼
-                                </span>
-                            </div>
+                            <span
+                                class="chevron opacity-20 group-hover:opacity-100 transition-all"
+                                class:rotated={expandedCode === s.code}>▼</span
+                            >
                         </td>
                     </tr>
-                    {#if expandedCode === s.Code}
+                    {#if expandedCode === s.code}
                         <tr>
                             <td
                                 colspan="9"
                                 class="p-0 border-b border-border bg-base-deep shadow-inner"
                             >
                                 <LiveIntradayDeepDive
-                                    symbol={s.Code}
-                                    currentPrice={s._closePrice}
-                                    prevClose={s._closePrice - s._change}
+                                    symbol={s.code}
+                                    currentPrice={s.price}
+                                    prevClose={s.price - s.change}
                                 />
                             </td>
                         </tr>
@@ -469,8 +358,8 @@
 {#if hasMore}
     <div class="mt-6 pb-12 flex justify-center">
         <button
-            class="h-10 px-10 bg-glass border border-border rounded-xl text-[10px] font-black tracking-[0.2em] uppercase hover:bg-accent/15 hover:border-accent/40 hover:text-accent transition-all animate-fade-up shadow-lg"
-            on:click={() => (displayLimit += 150)}
+            class="h-10 px-10 bg-glass border border-border rounded-xl text-[10px] font-black tracking-[0.2em] uppercase hover:bg-accent/15 hover:border-accent/40 hover:text-accent transition-all shadow-lg"
+            onclick={() => (displayLimit += 150)}
         >
             擴展監測範圍 (+150 向量) — {filteredAndSorted.length - displayLimit} 剩餘
         </button>
@@ -478,30 +367,16 @@
 {/if}
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 4px;
-        height: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-    }
-
     .active-row {
         background: linear-gradient(90deg, var(--color-accent-glow), rgba(0, 0, 0, 0)) !important;
         position: relative;
         z-index: 10;
         box-shadow: inset 4px 0 0 var(--color-accent);
     }
-
     .analysis-link {
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         background: var(--color-accent-glow);
         color: var(--color-accent);
-        padding: 2px 8px;
         border-radius: 4px;
         font-size: 8px;
         font-weight: 900;
@@ -513,35 +388,17 @@
         background: var(--color-accent);
         color: white;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px var(--color-accent-glow);
     }
-
     .chevron {
         font-size: 11px;
         display: inline-block;
         font-weight: 900;
-        margin-left: auto; /* Help center when analysis link is hidden */
     }
     .chevron.rotated {
         transform: rotate(180deg);
         color: var(--color-accent);
         opacity: 1 !important;
     }
-
-    /* ─── Performance Overrides ─── */
-    .live-table-root tr {
-        content-visibility: auto;
-        contain-intrinsic-size: 1px 50px;
-    }
-
-    .star-btn {
-        -webkit-tap-highlight-color: transparent;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-    }
-
     .badge-bull {
         background: rgba(239, 68, 68, 0.1);
         border-color: rgba(239, 68, 68, 0.3);

@@ -1,12 +1,12 @@
-/**
- * live-engine.ts — Core Polling & Breadth Controller
- * Atomic Design: This is the engine (Atom-level logic) for the Live page.
- * Responsibilities: polling toggle, fetch, breadth DOM update, event dispatch.
- * NO filter/sort logic here — that belongs to the Svelte component.
- */
+import { marketStore } from '../stores/market.svelte';
 import { getEl } from '../lib/dom';
 
+// Import worker using Vite's worker loader
+// @ts-ignore
+import MarketWorker from './workers/market-worker?worker';
+
 let pollInterval: ReturnType<typeof setInterval> | null = null;
+let worker: Worker | null = null;
 
 function cleanupLive() {
     if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
@@ -19,122 +19,106 @@ document.addEventListener('astro:page-load', () => {
     if (!toggleBtn || toggleBtn.dataset.bound) return;
     toggleBtn.dataset.bound = 'true';
 
-    // ─── Cached DOM refs (queried once) ────────────────
-    const searchInput = getEl('live-search-input') as HTMLInputElement | null;
-    const updateTimeEl = getEl('last-update-time');
+    // ─── Initialize Worker ────────────────────────────
+    if (!worker) {
+        worker = new MarketWorker();
+        worker.onmessage = (e: MessageEvent) => {
+            const { processed, breadth } = e.data;
+            marketStore.updateData(processed, breadth);
 
+            // ─── Update Static DOM Elements ─────────────────
+            // Update Sync Time
+            const timeEl = document.getElementById('last-update-time');
+            if (timeEl) {
+                timeEl.textContent = new Date().toLocaleTimeString('zh-TW', { hour12: false });
+            }
+
+            // Update Market Breadth
+            const upEl = document.getElementById('breadth-range-up');
+            const downEl = document.getElementById('breadth-range-down');
+            if (upEl) upEl.textContent = String(breadth.up);
+            if (downEl) downEl.textContent = String(breadth.down);
+
+            if (breadth.total > 0) {
+                const barUp = document.getElementById('breadth-bar-up');
+                const barDown = document.getElementById('breadth-bar-down');
+                const barFlat = document.getElementById('breadth-bar-flat');
+
+                if (barUp) barUp.style.width = `${(breadth.up / breadth.total) * 100}%`;
+                if (barDown) barDown.style.width = `${(breadth.down / breadth.total) * 100}%`;
+                if (barFlat) barFlat.style.width = `${(breadth.flat / breadth.total) * 100}%`;
+            }
+
+            // Forensic Signals (Still on main thread for simple event dispatch)
+            processed.forEach((s: any) => {
+                detectSignals(s.code, s.name, s.price, s.price - s.change, s.vol * 1000, s.ma20, s.rsi, s.avgVol);
+            });
+        };
+    }
+
+    let isPolling = false;
+
+    // ─── Filter bindings to Store ──────────────────────
+    const searchInput = getEl('live-search-input') as HTMLInputElement | null;
     const filterEls = {
         starred: getEl('filter-starred') as HTMLInputElement | null,
         trend: getEl('filter-trend') as HTMLInputElement | null,
         volume: getEl('filter-volume') as HTMLInputElement | null,
         market: getEl('filter-market') as HTMLSelectElement | null,
         price: getEl('filter-price') as HTMLSelectElement | null,
+        ma20: getEl('filter-ma20') as HTMLSelectElement | null,
     };
 
-    // Breadth DOM refs
-    const bUp = getEl('breadth-range-up');
-    const bDown = getEl('breadth-range-down');
-    const bBarUp = getEl('breadth-bar-up');
-    const bBarDown = getEl('breadth-bar-down');
-    const bBarFlat = getEl('breadth-bar-flat');
-
-    let isPolling = false;
-
-    // ─── Filter notification (Debounced for performance) ───────
-    let filterTimeoutId: ReturnType<typeof setTimeout> | null = null;
-    function notifyFilters() {
-        if (filterTimeoutId) clearTimeout(filterTimeoutId);
-        filterTimeoutId = setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('tw-live-update', {
-                detail: {
-                    type: 'FILTERS',
-                    payload: {
-                        search: searchInput?.value.toLowerCase() || '',
-                        trend: filterEls.trend?.value || '0',
-                        volume: parseInt(filterEls.volume?.value || '0', 10),
-                        starred: filterEls.starred?.checked || false,
-                        market: filterEls.market?.value || '',
-                        price: filterEls.price?.value || '',
-                    }
-                }
-            }));
-        }, 200);
+    function syncFiltersToStore() {
+        marketStore.searchKeyword = searchInput?.value.toLowerCase() || '';
+        marketStore.filterMarket = filterEls.market?.value || '';
+        marketStore.filterPriceRange = filterEls.price?.value || '';
+        marketStore.filterMinVol = parseInt(filterEls.volume?.value || '0', 10);
+        marketStore.filterTrend = filterEls.trend?.value || '0';
+        marketStore.filterMA20 = parseFloat(filterEls.ma20?.value || '0');
+        marketStore.filterStarred = filterEls.starred?.checked || false;
     }
-
 
     // ─── Data fetch ────────────────────────────────────
     async function fetchUpdate() {
         try {
+            marketStore.setLoading(true);
             const res = await fetch('/api/live');
-            if (!res.ok) return;
+            if (!res.ok) throw new Error('Network response was not ok');
             const result = await res.json();
-            if (result.status !== 'success' && result.status !== 'error_using_stale_cache') return;
 
-            const data = result.data;
-            let u = 0, d = 0, f = 0;
-            const mapped = new Array(data.length);
+            if (result.status === 'success' || result.status === 'error_using_stale_cache') {
+                // Pass to worker for processing
+                // We assume the API returns data with _ma20, _rsi etc.
+                // Extract indicator map for worker
+                const indicatorMap: Record<string, any> = {};
+                result.data.forEach((s: any) => {
+                    indicatorMap[s.Code] = {
+                        ma5: s._ma5,
+                        ma20: s._ma20,
+                        rsi: s._rsi,
+                        volume: s._avgVol
+                    };
+                });
 
-            for (let i = 0; i < data.length; i++) {
-                const s = data[i];
-                const close = parseFloat(s.ClosingPrice || '0');
-                const chg = parseFloat(s.Change || '0');
-                const prev = close > 0 ? close - chg : 0;
-                const vol_today = parseFloat(s.TradeVolume || '0');
-
-                mapped[i] = {
-                    ...s,
-                    _closePrice: close,
-                    _change: chg,
-                    _changePct: prev > 0 ? (chg / prev) * 100 : 0,
-                    _vol: Math.round(vol_today / 1000),
-                    _open: parseFloat(s.OpeningPrice || '0'),
-                    _high: parseFloat(s.HighestPrice || '0'),
-                    _low: parseFloat(s.LowestPrice || '0'),
-                };
-
-                // ─── Forensic Signal Detection ───
-                const ma20 = s._ma20 || 0;
-                const rsi = s._rsi || 50;
-                const avgVol = s._avgVol || 0;
-
-                detectSignals(s.Code, s.Name, close, prev, vol_today, ma20, rsi, avgVol);
-
-                if (chg > 0) u++; else if (chg < 0) d++; else f++;
+                worker?.postMessage({ data: result.data, indicatorMap });
             }
-
-            // ... (breadcrumb update remains)
-            const total = u + d + f;
-            if (bUp) bUp.textContent = String(u);
-            if (bDown) bDown.textContent = String(d);
-            if (total > 0 && bBarUp && bBarDown && bBarFlat) {
-                bBarUp.style.width = (u / total) * 100 + '%';
-                bBarDown.style.width = (d / total) * 100 + '%';
-                bBarFlat.style.width = (f / total) * 100 + '%';
-            }
-
-            if (updateTimeEl) updateTimeEl.textContent = new Date().toLocaleTimeString();
-
-            window.dispatchEvent(new CustomEvent('tw-live-update', {
-                detail: { type: 'DATA', payload: { data: mapped } }
-            }));
-        } catch (_) { /* silent */ }
+        } catch (err) {
+            marketStore.setError((err as Error).message);
+        }
     }
 
     const seenSignals = new Set<string>();
     function detectSignals(code: string, name: string, price: number, prev: number, vol: number, ma20: number, rsi: number, avgVol: number) {
         if (price === 0 || isNaN(price)) return;
 
-        // 1. Volume Breakout (>2x 20-day average)
+        // Signal logic...
         if (avgVol > 0 && vol > avgVol * 2.5 && vol > 1000000) {
             triggerSignal(code, name, 'VOLUME_SPIKE', `異常爆量! 當前成交量已達均量 2.5 倍以上`, 'warning');
         }
-
-        // 2. MA20 Breakthrough (Golden Cross)
         if (ma20 > 0 && prev < ma20 && price > ma20) {
             triggerSignal(code, name, 'MA_BREAK', `強勢突破! 價格成功站上 20日均線 (${ma20.toFixed(2)})`, 'success');
         }
-
-        // 3. RSI Overbought/Oversold
         if (rsi > 75) {
             triggerSignal(code, name, 'RSI_EXTREME', `超買警告: RSI (${rsi.toFixed(1)}) 處於極度過熱區間`, 'warning');
         } else if (rsi < 25 && rsi > 0) {
@@ -151,7 +135,6 @@ document.addEventListener('astro:page-load', () => {
             detail: { symbol, name, type, message, severity }
         }));
     }
-
 
     // ─── Polling control ──────────────────────────────
     function startPolling() {
@@ -179,8 +162,9 @@ document.addEventListener('astro:page-load', () => {
         if (isPolling) stopPolling(); else startPolling();
     });
 
-    searchInput?.addEventListener('input', notifyFilters);
-    Object.values(filterEls).forEach(f => f?.addEventListener('change', notifyFilters));
+    // Listen to filter changes
+    searchInput?.addEventListener('input', syncFiltersToStore);
+    Object.values(filterEls).forEach(f => f?.addEventListener('change', syncFiltersToStore));
 
     getEl('live-filter-reset')?.addEventListener('click', () => {
         if (searchInput) searchInput.value = '';
@@ -193,9 +177,13 @@ document.addEventListener('astro:page-load', () => {
                 }
             }
         });
-        notifyFilters();
+        syncFiltersToStore();
     });
+
+    // Initial sync
+    syncFiltersToStore();
 
     // Auto-resume
     if (sessionStorage.getItem('tw-live-polling') === 'true') startPolling();
 });
+

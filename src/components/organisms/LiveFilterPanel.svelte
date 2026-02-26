@@ -1,17 +1,8 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+    import { marketStore } from '../../stores/market.svelte';
     import SearchInput from '../atoms/filter/SearchInput.svelte';
     import FilterSelect from '../atoms/filter/FilterSelect.svelte';
     import FilterSlider from '../atoms/filter/FilterSlider.svelte';
-
-    // State Variables (Reactive)
-    let search = '';
-    let market = '';
-    let sector = '';
-    let price = '';
-    let trend = 0;
-    let volume = 0;
-    let ma20 = 0;
 
     const markets = [
         { value: 'tse', label: '上市' },
@@ -34,42 +25,20 @@
         { value: '500-10000', label: '500以上' },
     ];
 
-    let notifyTimeout: any;
-    function notify() {
-        if (notifyTimeout) clearTimeout(notifyTimeout);
-        notifyTimeout = setTimeout(() => {
-            const detail = {
-                search,
-                market,
-                sector,
-                price,
-                trend,
-                volume,
-                ma20: String(ma20),
-            };
-            window.dispatchEvent(
-                new CustomEvent('tw-live-update', {
-                    detail: { type: 'FILTERS', payload: detail },
-                })
-            );
-        }, 100);
-    }
-
     function reset() {
-        search = '';
-        market = '';
-        sector = '';
-        price = '';
-        trend = 0;
-        volume = 0;
-        ma20 = 0;
-        notify();
+        marketStore.searchKeyword = '';
+        marketStore.filterMarket = '';
+        marketStore.filterPriceRange = '';
+        marketStore.filterTrend = '0';
+        marketStore.filterMinVol = 0;
+        marketStore.filterMA20 = 0;
+        marketStore.filterStarred = false;
     }
 </script>
 
 <div class="flex items-center gap-2.5 px-0.5" id="live-toolbar-nexus-svelte">
     <!-- Atom: Keyword Search -->
-    <SearchInput id="live-search-input" bind:value={search} on:input={notify} />
+    <SearchInput id="live-search-input" bind:value={marketStore.searchKeyword} />
 
     <!-- Molecule: Classification Filters -->
     <div
@@ -79,8 +48,7 @@
             id="filter-market"
             label="市場"
             options={markets}
-            bind:value={market}
-            on:change={notify}
+            bind:value={marketStore.filterMarket}
             width="min-w-[55px]"
         />
         <div class="divider"></div>
@@ -88,8 +56,7 @@
             id="filter-sector"
             label="產業"
             options={sectors}
-            bind:value={sector}
-            on:change={notify}
+            value=""
             width="min-w-[65px]"
         />
         <div class="divider"></div>
@@ -97,21 +64,19 @@
             id="filter-price"
             label="價格"
             options={prices}
-            bind:value={price}
-            on:change={notify}
+            bind:value={marketStore.filterPriceRange}
             width="min-w-[60px]"
         />
     </div>
 
     <!-- Molecule: Technical Indicators -->
     <div class="flex items-center gap-2">
-        <FilterSlider id="filter-trend" label="Pct" bind:value={trend} on:change={notify} />
+        <FilterSlider id="filter-trend" label="Pct" bind:value={marketStore.filterTrend} />
         <FilterSlider
             id="filter-ma20"
             label="MA20"
             isMA20={true}
-            bind:value={ma20}
-            on:change={notify}
+            bind:value={marketStore.filterMA20}
         />
         <FilterSlider
             id="filter-volume"
@@ -120,14 +85,13 @@
             max={1000000}
             step={5000}
             unit=""
-            bind:value={volume}
-            on:change={notify}
+            bind:value={marketStore.filterMinVol}
         />
     </div>
 
     <!-- Atom: Reset Action -->
     <button
-        on:click={reset}
+        onclick={reset}
         title="重設所有篩選"
         class="flex items-center justify-center w-8 h-8 rounded-full border border-border bg-glass-elevated hover:bg-glass-hover hover:border-accent/40 text-text-muted/60 hover:text-accent transition-all shadow-sm active:scale-95 shrink-0"
     >

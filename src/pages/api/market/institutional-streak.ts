@@ -37,6 +37,9 @@ export const GET: APIRoute = async () => {
             invest_trust: number;
             dealer: number;
             date: string;
+            volume: number;
+            turnover: number;
+            change_pct: number;
         }>(`
             WITH RankedChips AS (
                 SELECT 
@@ -48,9 +51,11 @@ export const GET: APIRoute = async () => {
                     ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
                 FROM chips
             )
-            SELECT rc.symbol, s.name, rc.foreign_inv, rc.invest_trust, rc.dealer, rc.date
+            SELECT rc.symbol, s.name, rc.foreign_inv, rc.invest_trust, rc.dealer, rc.date,
+                   lp.volume, lp.turnover, lp.change_pct
             FROM RankedChips rc
             JOIN stocks s ON rc.symbol = s.symbol
+            LEFT JOIN latest_prices lp ON rc.symbol = lp.symbol
             WHERE rc.rn <= ?
             ORDER BY rc.symbol, rc.date DESC
         `, [CHIP_WINDOW]);
@@ -74,43 +79,53 @@ export const GET: APIRoute = async () => {
         const streakData = [];
 
         for (const [symbol, chips] of groupedData.entries()) {
-            const name = chips[0].name;
+            const latest = chips[0];
+            const name = latest.name;
 
-            const calculateStreak = (key: 'foreign_inv' | 'invest_trust' | 'dealer') => {
-                let streak = 0;
-                const firstVal = chips[0][key];
-                if (firstVal === 0) return 0;
+            // Calculate streaks only if latest value is non-zero
+            const foreignStreak = calculateStreak(chips, 'foreign_inv');
+            const investStreak = calculateStreak(chips, 'invest_trust');
+            const dealerStreak = calculateStreak(chips, 'dealer');
 
-                const isBuying = firstVal > 0;
-
-                for (const day of chips) {
-                    const val = day[key];
-                    if (isBuying && val > 0) streak++;
-                    else if (!isBuying && val < 0) streak--;
-                    else break;
-                }
-                return streak;
-            };
-
-            const foreignStreak = calculateStreak('foreign_inv');
-            const investStreak = calculateStreak('invest_trust');
-            const dealerStreak = calculateStreak('dealer');
-
-            // 只有當其中一項有 2 天以上的連續買/賣時才加入
+            // Threshold Check: Keep only entities with active streaks
             if (Math.abs(foreignStreak) >= 2 || Math.abs(investStreak) >= 2 || Math.abs(dealerStreak) >= 2) {
+                // Inline Intensity calculation (last 5 days)
+                let intensity = 0;
+                const iLen = Math.min(chips.length, 5);
+                for (let i = 0; i < iLen; i++) {
+                    intensity += chips[i].foreign_inv + chips[i].invest_trust + chips[i].dealer;
+                }
+
                 streakData.push({
                     symbol,
                     name,
                     foreignStreak,
                     investStreak,
                     dealerStreak,
+                    changePct: latest.change_pct || 0,
+                    volume: latest.volume || 0,
+                    turnover: latest.turnover || 0,
+                    chipsIntensity: intensity,
                     latest: {
-                        foreign: chips[0].foreign_inv,
-                        invest: chips[0].invest_trust,
-                        dealer: chips[0].dealer,
+                        foreign: latest.foreign_inv,
+                        invest: latest.invest_trust,
+                        dealer: latest.dealer,
                     }
                 });
             }
+        }
+
+        function calculateStreak(rows: any[], key: string) {
+            const firstVal = rows[0][key];
+            if (firstVal === 0) return 0;
+            const isBuying = firstVal > 0;
+            let streak = 0;
+            for (const row of rows) {
+                const val = row[key];
+                if (isBuying ? val > 0 : val < 0) streak++;
+                else break;
+            }
+            return isBuying ? streak : -streak;
         }
 
         // 3. 在服務端進行排序和分組，減輕前端負擔
