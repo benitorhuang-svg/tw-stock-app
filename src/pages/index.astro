@@ -169,40 +169,6 @@ try {
             topVolume={topVolume}
         />
 
-        <!-- Signal Stream & Trend Actions -->
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-4">
-            <div class="flex items-center gap-3">
-                <div class="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
-                <span class="text-[10px] font-mono text-white/40 uppercase tracking-widest"
-                    >Forensic Signal Stream</span
-                >
-                <div class="h-[1px] w-20 bg-white/5"></div>
-                <p class="text-[10px] text-white/20 italic font-medium">
-                    Tracking institutional footprints in SEMICON sector...
-                </p>
-            </div>
-            <button
-                id="open-breadth-chart"
-                class="px-8 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-white/40 hover:text-white hover:border-white/20 transition-all uppercase tracking-widest active:scale-95 flex items-center gap-3"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="text-accent/40"
-                    ><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path
-                        d="M22 12A10 10 0 0 0 12 2v10z"></path></svg
-                >
-                Analyse Sentiment Trends
-            </button>
-        </div>
-
         <SentimentTrendModal />
     </div>
 </MainTerminal>

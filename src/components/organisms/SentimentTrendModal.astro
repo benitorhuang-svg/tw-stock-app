@@ -132,26 +132,38 @@
     }
 
     const trendModal = document.getElementById('trend-modal');
-    const openChartBtn = document.getElementById('open-breadth-chart');
     const closeChartBtn = document.getElementById('close-trend-modal');
     const chartBackdrop = document.getElementById('trend-modal-backdrop');
 
-    openChartBtn?.addEventListener('click', () => {
+    const openModal = () => {
         trendModal?.classList.remove('hidden');
         initTrendChart();
-    });
+    };
 
     const closeModal = () => trendModal?.classList.add('hidden');
+
     closeChartBtn?.addEventListener('click', closeModal);
     chartBackdrop?.addEventListener('click', closeModal);
 
+    // Event delegation to support Svelte hydration
+    document.addEventListener('click', e => {
+        const target = e.target as HTMLElement;
+        if (target.closest('#open-breadth-chart')) {
+            openModal();
+        }
+    });
+
     // Astro transition support
     document.addEventListener('astro:page-load', () => {
-        const trendModal = document.getElementById('trend-modal');
-        const openChartBtn = document.getElementById('open-breadth-chart');
-        openChartBtn?.addEventListener('click', () => {
-            trendModal?.classList.remove('hidden');
-            initTrendChart();
-        });
+        const currentModal = document.getElementById('trend-modal');
+        const openBtn = document.getElementById('open-breadth-chart');
+
+        // As a fallback for astro page load, bind directly if present
+        if (openBtn && currentModal) {
+            openBtn.addEventListener('click', () => {
+                currentModal.classList.remove('hidden');
+                initTrendChart();
+            });
+        }
     });
 </script>
