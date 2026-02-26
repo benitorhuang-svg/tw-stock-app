@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 export const prerender = false;
 import type { TwseStockSnapshot } from '../../types/stock';
+import { dbService } from '../../lib/db/sqlite-service';
+
 
 const TWSE_URL = 'https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL';
 
@@ -42,17 +44,34 @@ export const GET: APIRoute = async () => {
             throw new Error(`TWSE Fetch failed: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json();
+        const data = (await response.json()) as TwseStockSnapshot[];
+
+        // ─── Data Enrichment: Inject Technical Vectors ───
+        const indicators = dbService.queryAll<{ symbol: string, ma5: number, ma20: number, rsi: number, volume: number }>(
+            'SELECT symbol, ma5, ma20, rsi, volume FROM latest_prices'
+        );
+        const indicatorMap = new Map(indicators.map(i => [i.symbol, i]));
+
+        const enriched = data.map(s => {
+            const ind = indicatorMap.get(s.Code);
+            return {
+                ...s,
+                _ma5: ind?.ma5 || 0,
+                _ma20: ind?.ma20 || 0,
+                _rsi: ind?.rsi || 0,
+                _avgVol: ind?.volume || 0,
+            };
+        });
 
         // Update cache
-        cachedData = data;
+        cachedData = enriched as any;
         lastFetchTime = Date.now();
 
         return new Response(JSON.stringify({
             status: 'success',
             cached: false,
             lastFetch: new Date(lastFetchTime).toISOString(),
-            data: cachedData
+            data: enriched
         }), {
             status: 200,
             headers: {
@@ -60,6 +79,7 @@ export const GET: APIRoute = async () => {
                 'Cache-Control': 'public, max-age=15',
             }
         });
+
     } catch (error) {
         console.error(`[API] Error fetching live data:`, error);
 

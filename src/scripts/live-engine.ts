@@ -79,22 +79,30 @@ document.addEventListener('astro:page-load', () => {
                 const close = parseFloat(s.ClosingPrice || '0');
                 const chg = parseFloat(s.Change || '0');
                 const prev = close > 0 ? close - chg : 0;
+                const vol_today = parseFloat(s.TradeVolume || '0');
 
                 mapped[i] = {
                     ...s,
                     _closePrice: close,
                     _change: chg,
                     _changePct: prev > 0 ? (chg / prev) * 100 : 0,
-                    _vol: Math.round(parseFloat(s.TradeVolume || '0') / 1000),
+                    _vol: Math.round(vol_today / 1000),
                     _open: parseFloat(s.OpeningPrice || '0'),
                     _high: parseFloat(s.HighestPrice || '0'),
                     _low: parseFloat(s.LowestPrice || '0'),
                 };
 
+                // ─── Forensic Signal Detection ───
+                const ma20 = s._ma20 || 0;
+                const rsi = s._rsi || 50;
+                const avgVol = s._avgVol || 0;
+
+                detectSignals(s.Code, s.Name, close, prev, vol_today, ma20, rsi, avgVol);
+
                 if (chg > 0) u++; else if (chg < 0) d++; else f++;
             }
 
-            // ─── Update Breadth bar (direct DOM, no framework overhead) ─
+            // ... (breadcrumb update remains)
             const total = u + d + f;
             if (bUp) bUp.textContent = String(u);
             if (bDown) bDown.textContent = String(d);
@@ -111,6 +119,39 @@ document.addEventListener('astro:page-load', () => {
             }));
         } catch (_) { /* silent */ }
     }
+
+    const seenSignals = new Set<string>();
+    function detectSignals(code: string, name: string, price: number, prev: number, vol: number, ma20: number, rsi: number, avgVol: number) {
+        if (price === 0 || isNaN(price)) return;
+
+        // 1. Volume Breakout (>2x 20-day average)
+        if (avgVol > 0 && vol > avgVol * 2.5 && vol > 1000000) {
+            triggerSignal(code, name, 'VOLUME_SPIKE', `異常爆量! 當前成交量已達均量 2.5 倍以上`, 'warning');
+        }
+
+        // 2. MA20 Breakthrough (Golden Cross)
+        if (ma20 > 0 && prev < ma20 && price > ma20) {
+            triggerSignal(code, name, 'MA_BREAK', `強勢突破! 價格成功站上 20日均線 (${ma20.toFixed(2)})`, 'success');
+        }
+
+        // 3. RSI Overbought/Oversold
+        if (rsi > 75) {
+            triggerSignal(code, name, 'RSI_EXTREME', `超買警告: RSI (${rsi.toFixed(1)}) 處於極度過熱區間`, 'warning');
+        } else if (rsi < 25 && rsi > 0) {
+            triggerSignal(code, name, 'RSI_EXTREME', `超跌信號: RSI (${rsi.toFixed(1)}) 進入深度超賣區間`, 'info');
+        }
+    }
+
+    function triggerSignal(symbol: string, name: string, type: string, message: string, severity: string) {
+        const key = `${symbol}_${type}`;
+        if (seenSignals.has(key)) return;
+        seenSignals.add(key);
+
+        window.dispatchEvent(new CustomEvent('tw-signal', {
+            detail: { symbol, name, type, message, severity }
+        }));
+    }
+
 
     // ─── Polling control ──────────────────────────────
     function startPolling() {

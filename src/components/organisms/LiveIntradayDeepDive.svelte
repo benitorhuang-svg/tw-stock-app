@@ -79,7 +79,36 @@
           }))
         : [];
 
+    $: ma5Data = history.map((_, i) => {
+        if (i < 4) return null;
+        const slice = history.slice(i - 4, i + 1);
+        return slice.reduce((sum, h) => sum + h.price, 0) / 5;
+    });
+    $: ma20Data = history.map((_, i) => {
+        if (i < 19) return null;
+        const slice = history.slice(i - 19, i + 1);
+        return slice.reduce((sum, h) => sum + h.price, 0) / 20;
+    });
+
+    $: ma5Points = ma5Data
+        .map((p, i) =>
+            p
+                ? `${pointCoords[i].x.toFixed(1)},${(PAD_T + (DRAW_H - ((p - chartMin) / range) * DRAW_H)).toFixed(1)}`
+                : ''
+        )
+        .filter(p => p)
+        .join(' ');
+    $: ma20Points = ma20Data
+        .map((p, i) =>
+            p
+                ? `${pointCoords[i].x.toFixed(1)},${(PAD_T + (DRAW_H - ((p - chartMin) / range) * DRAW_H)).toFixed(1)}`
+                : ''
+        )
+        .filter(p => p)
+        .join(' ');
+
     $: points = pointCoords.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+
     $: areaPoints =
         pointCoords.length > 0
             ? `${points} ${lastPt.x.toFixed(1)},${H} ${pointCoords[0].x.toFixed(1)},${H}`
@@ -275,6 +304,20 @@
                     stroke-dasharray="10,5"
                 />
 
+                <!-- Technical Indicators -->
+                {#if ma20Points}
+                    <polyline
+                        points={ma20Points}
+                        fill="none"
+                        stroke="#a855f7"
+                        stroke-width="1.5"
+                        stroke-dasharray="2,2"
+                    />
+                {/if}
+                {#if ma5Points}
+                    <polyline points={ma5Points} fill="none" stroke="#f59e0b" stroke-width="1.5" />
+                {/if}
+
                 <!-- Price Area & Line (Clean Technical Look) -->
                 <polyline points={areaPoints} fill="url(#cg-{symbol})" />
                 <polyline
@@ -285,6 +328,18 @@
                     stroke-linejoin="round"
                     stroke-linecap="round"
                 />
+
+                <!-- Legend -->
+                <g transform="translate(20, 30)" class="text-[9px] font-black font-mono">
+                    <rect x="0" y="0" width="8" height="2" fill={trendColor} rx="1" />
+                    <text x="12" y="3" fill="white" fill-opacity="0.5">PRICE</text>
+
+                    <rect x="50" y="0" width="8" height="2" fill="#f59e0b" rx="1" />
+                    <text x="62" y="3" fill="#f59e0b" fill-opacity="0.8">MA5</text>
+
+                    <rect x="90" y="0" width="8" height="2" fill="#a855f7" rx="1" />
+                    <text x="102" y="3" fill="#a855f7" fill-opacity="0.8">MA20</text>
+                </g>
 
                 <!-- Labels -->
                 <g transform="translate({W - 120}, {prevCloseY - 15})">

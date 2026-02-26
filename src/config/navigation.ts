@@ -12,4 +12,6 @@ export const NAV_ITEMS: NavItem[] = [
     { label: '選股', path: '/screener', icon: '🔍' },
     { label: '分析', path: '/stocks', icon: '📈' },
     { label: '自選', path: '/watchlist', icon: '⭐' },
+    { label: '策略回測', path: '/strategy', icon: '🧪' },
+
 ];

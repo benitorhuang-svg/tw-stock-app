@@ -2,12 +2,18 @@
 // src/components/organisms/LiveControlPanel.astro
 import CyberButton from '../atoms/CyberButton.astro';
 import MarketBreadth from '../molecules/MarketBreadth.astro';
+import WatchlistSwitcher from '../molecules/WatchlistSwitcher.svelte';
 ---
 
 <div class="flex items-center gap-2 shrink-0 min-w-0">
     <!-- Breadth Visual -->
     <div class="shrink-0 min-w-0">
         <MarketBreadth up={0} down={0} flat={0} total={0} />
+    </div>
+
+    <!-- Watchlist Switcher -->
+    <div class="shrink-0">
+        <WatchlistSwitcher client:load />
     </div>
 
     <!-- Connection Button -->

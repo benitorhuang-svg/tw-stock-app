@@ -8,6 +8,7 @@ import { ClientRouter } from 'astro:transitions';
 import BaseHead from './BaseHead.astro';
 import DesktopNavTabs from '../components/molecules/DesktopNavTabs.astro';
 import MobileNavTabs from '../components/molecules/MobileNavTabs.astro';
+import SignalNexus from '../components/organisms/SignalNexus.svelte';
 
 import '../styles/global.css';
 
@@ -135,7 +136,11 @@ const { title, description, fullWidth = false } = Astro.props;
         <!-- ═══ Mobile Bottom Navigation ═══ -->
         <MobileNavTabs />
 
+        <!-- Signal Hub — Global Alerts -->
+        <SignalNexus client:load />
+
         <!-- ═══ Global Scripts ═══ -->
+
         <script src="../scripts/global-engine.ts"></script>
     </body>
 </html>

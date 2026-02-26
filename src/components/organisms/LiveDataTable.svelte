@@ -17,6 +17,10 @@
         _open: number;
         _high: number;
         _low: number;
+        _ma5?: number;
+        _ma20?: number;
+        _rsi?: number;
+        _avgVol?: number;
     }
 
     // ─── State ─────────────────────────────────────────
@@ -93,7 +97,9 @@
         { label: 'ENTITY', col: 'Code' },
         { label: 'QUOTATION', col: 'ClosingPrice' },
         { label: 'VARIANCE', col: 'ChangePct' },
+        { label: 'VECTORS', col: '' },
         { label: 'DIFF', col: 'Change' },
+
         { label: 'OPEN', col: 'OpeningPrice' },
         { label: 'MAX', col: 'HighestPrice' },
         { label: 'MIN', col: 'LowestPrice' },
@@ -102,11 +108,21 @@
     ];
 
     function toggleWatchlist(code: string) {
-        const wl: string[] = JSON.parse(localStorage.getItem('watchlist') || '[]');
+        // Multi-watchlist Sync
+        const stored = localStorage.getItem('tw_watchlists');
+        let store = stored ? JSON.parse(stored) : { active: '默認清單', lists: { 默認清單: [] } };
+
+        const activeList = store.active;
+        const wl = store.lists[activeList] || [];
+
         const idx = wl.indexOf(code);
         if (idx > -1) wl.splice(idx, 1);
         else wl.push(code);
-        localStorage.setItem('watchlist', JSON.stringify(wl));
+
+        store.lists[activeList] = wl;
+        localStorage.setItem('tw_watchlists', JSON.stringify(store));
+        localStorage.setItem('watchlist', JSON.stringify(wl)); // Legacy sync
+
         watchlistCodes = [...wl];
     }
 
@@ -168,6 +184,17 @@
         };
 
         window.addEventListener('tw-live-update', handler);
+
+        // Listen for multi-watchlist switches
+        const syncHandler = (e: any) => {
+            watchlistCodes = e.detail.codes || [];
+        };
+        window.addEventListener('tw-watchlist-sync', syncHandler);
+
+        return () => {
+            window.removeEventListener('tw-live-update', handler!);
+            window.removeEventListener('tw-watchlist-sync', syncHandler);
+        };
     });
 
     onDestroy(() => {
@@ -317,6 +344,41 @@
                             >
                                 {(isUp ? '+' : '') +
                                     (s._closePrice > 0 ? val.toFixed(2) + '%' : '—')}
+                            </div>
+                        </td>
+
+                        <td class="px-1.5 py-2 text-center min-w-[80px]">
+                            <div class="flex flex-wrap justify-center gap-0.5">
+                                {#if s._ma20 && s._closePrice > s._ma20}
+                                    <span
+                                        class="px-1 py-0.5 bg-bullish/10 text-bullish border border-bullish/20 rounded-[2px] text-[8px] font-black tracking-tighter shadow-[0_0_8px_rgba(var(--bullish-rgb),0.1)]"
+                                        >MA20+</span
+                                    >
+                                {:else if s._ma20 && s._closePrice < s._ma20}
+                                    <span
+                                        class="px-1 py-0.5 bg-bearish/10 text-bearish border border-bearish/20 rounded-[2px] text-[8px] font-black tracking-tighter"
+                                        >MA20-</span
+                                    >
+                                {/if}
+
+                                {#if s._rsi && s._rsi > 70}
+                                    <span
+                                        class="px-1 py-0.5 bg-warning/10 text-warning border border-warning/20 rounded-[2px] text-[8px] font-black tracking-tighter"
+                                        >RSI:OB</span
+                                    >
+                                {:else if s._rsi && s._rsi < 30}
+                                    <span
+                                        class="px-1 py-0.5 bg-accent/10 text-accent border border-accent/20 rounded-[2px] text-[8px] font-black tracking-tighter"
+                                        >RSI:OS</span
+                                    >
+                                {/if}
+
+                                {#if s._vol && s._avgVol && s._vol > (s._avgVol / 1000) * 1.5}
+                                    <span
+                                        class="px-1 py-0.5 bg-bullish text-white rounded-[2px] text-[8px] font-black tracking-tighter animate-pulse shadow-[0_0_10px_rgba(var(--bullish-rgb),0.3)]"
+                                        >VOL!</span
+                                    >
+                                {/if}
                             </div>
                         </td>
 
