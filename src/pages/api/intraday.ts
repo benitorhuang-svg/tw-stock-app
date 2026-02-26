@@ -8,6 +8,7 @@ const INTRADAY_CACHE_MS = 30_000;
 export const GET: APIRoute = async ({ request }) => {
     const url = new URL(request.url);
     const symbol = url.searchParams.get('symbol');
+    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36';
 
     if (!symbol) {
         return new Response(JSON.stringify({ error: 'Missing symbol parameter' }), {
@@ -34,20 +35,29 @@ export const GET: APIRoute = async ({ request }) => {
         let yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?range=1d&interval=1m`;
 
         let response = await fetch(yahooUrl, {
+            headers: { 'User-Agent': USER_AGENT },
             signal: AbortSignal.timeout(8000)
         });
 
+        console.log(`[Intraday API] Fetching ${yahooSymbol}, status: ${response.status}`);
+
         // 若找不到上市股票，自動 fallback 測試上櫃 (OTC)
         if (!response.ok || response.status === 404) {
+            console.log(`[Intraday API] Fallback to .TWO for ${symbol}`);
             yahooSymbol = `${symbol}.TWO`;
             yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?range=1d&interval=1m`;
-            response = await fetch(yahooUrl, {
+            const fallbackResponse = await fetch(yahooUrl, {
+                headers: { 'User-Agent': USER_AGENT },
                 signal: AbortSignal.timeout(8000)
             });
+            console.log(`[Intraday API] Fetching ${yahooSymbol}, status: ${fallbackResponse.status}`);
 
-            if (!response.ok) {
-                throw new Error('Yahoo Finance API failed to find this symbol.');
+            if (!fallbackResponse.ok) {
+                const errorBody = await fallbackResponse.text().catch(() => 'No body');
+                console.error(`[Intraday API] Yahoo Finance API failed: ${fallbackResponse.status} ${errorBody}`);
+                throw new Error(`Yahoo Finance API failed (${fallbackResponse.status}): ${yahooSymbol}`);
             }
+            response = fallbackResponse;
         }
 
         const data = await response.json();

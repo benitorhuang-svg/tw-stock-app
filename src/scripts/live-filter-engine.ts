@@ -1,87 +1,78 @@
 /**
- * Core engine for LiveFilterPanel.astro
+ * live-filter-engine.ts — UI controller for LiveFilterPanel sliders/buttons
+ * Atomic Design: Atom-level engine for filter UI interactions.
+ * Responsibility: slider display updates + button increments only.
+ * Filtering logic is handled by LiveDataTable.svelte via events.
  */
+import { getEl } from '../lib/dom';
+
 function setupFilterUI() {
-    const trendInput = document.getElementById('filter-trend') as HTMLInputElement;
-    const trendDisplay = document.getElementById('trend-display');
-    const trendUp = document.getElementById('trend-up');
-    const trendDn = document.getElementById('trend-dn');
+    const trendInput = getEl('filter-trend') as HTMLInputElement | null;
+    const trendDisplay = getEl('trend-display');
+    const trendUp = getEl('trend-up');
+    const trendDn = getEl('trend-dn');
 
-    const volInput = document.getElementById('filter-volume') as HTMLInputElement;
-    const volDisplay = document.getElementById('vol-display');
-    const volUp = document.getElementById('vol-up');
-    const volDn = document.getElementById('vol-dn');
+    const volInput = getEl('filter-volume') as HTMLInputElement | null;
+    const volDisplay = getEl('vol-display');
+    const volUp = getEl('vol-up');
+    const volDn = getEl('vol-dn');
 
-    const starredCheck = document.getElementById('filter-starred') as HTMLInputElement;
-    const starIcon = document.querySelector('.star-toggle-icon');
+    const starredCheck = getEl('filter-starred') as HTMLInputElement | null;
+    const starIcon = document.querySelector('.star-toggle-icon') as HTMLElement | null;
 
-    const updateTrend = () => {
+    // ─── Trend display ─────────────────────────
+    function updateTrend() {
         if (!trendInput || !trendDisplay) return;
         const val = parseFloat(trendInput.value);
         const prefix = val > 0 ? '+' : '';
         trendDisplay.textContent = prefix + val.toFixed(1) + '%';
 
-        if (val > 0) {
-            trendDisplay.classList.remove('text-accent', 'text-bearish');
-            trendDisplay.classList.add('text-bullish');
-        } else if (val < 0) {
-            trendDisplay.classList.remove('text-accent', 'text-bullish');
-            trendDisplay.classList.add('text-bearish');
-        } else {
-            trendDisplay.classList.remove('text-bullish', 'text-bearish');
-            trendDisplay.classList.add('text-accent');
-        }
-    };
+        // Swap class atomically (single className assignment avoids 3x classList calls)
+        trendDisplay.className = `text-[9px] font-mono font-black leading-none ${val > 0 ? 'text-bullish' : val < 0 ? 'text-bearish' : 'text-accent'
+            }`;
+    }
 
-    const updateVol = () => {
+    // ─── Volume display ────────────────────────
+    function updateVol() {
         if (!volInput || !volDisplay) return;
-        const val = parseInt(volInput.value);
-        volDisplay.textContent = val >= 10000 ? (val / 10000).toFixed(1) + '萬' : val.toString();
-    };
-
-    // Trend Buttons
-    if (trendUp && trendInput) {
-        trendUp.addEventListener('click', () => {
-            trendInput.value = String(Math.min(10, parseFloat(trendInput.value) + 0.5));
-            updateTrend();
-            trendInput.dispatchEvent(new Event('input'));
-        });
-    }
-    if (trendDn && trendInput) {
-        trendDn.addEventListener('click', () => {
-            trendInput.value = String(Math.max(-10, parseFloat(trendInput.value) - 0.5));
-            updateTrend();
-            trendInput.dispatchEvent(new Event('input'));
-        });
-    }
-    if (trendInput) {
-        trendInput.addEventListener('input', updateTrend);
+        const val = parseInt(volInput.value, 10);
+        volDisplay.textContent = val >= 10000 ? (val / 10000).toFixed(1) + '萬' : String(val);
     }
 
-    // Volume Buttons
-    if (volUp && volInput) {
-        volUp.addEventListener('click', () => {
-            volInput.value = String(Math.min(1000000, parseInt(volInput.value) + 5000));
-            updateVol();
-            volInput.dispatchEvent(new Event('input'));
-        });
-    }
-    if (volDn && volInput) {
-        volDn.addEventListener('click', () => {
-            volInput.value = String(Math.max(0, parseInt(volInput.value) - 5000));
-            updateVol();
-            volInput.dispatchEvent(new Event('input'));
-        });
-    }
-    if (volInput) {
-        volInput.addEventListener('input', updateVol);
-    }
+    // ─── Trend controls ────────────────────────
+    trendUp?.addEventListener('click', () => {
+        if (!trendInput) return;
+        trendInput.value = String(Math.min(10, parseFloat(trendInput.value) + 0.5));
+        updateTrend();
+        trendInput.dispatchEvent(new Event('change'));
+    });
+    trendDn?.addEventListener('click', () => {
+        if (!trendInput) return;
+        trendInput.value = String(Math.max(-10, parseFloat(trendInput.value) - 0.5));
+        updateTrend();
+        trendInput.dispatchEvent(new Event('change'));
+    });
+    trendInput?.addEventListener('input', updateTrend);
 
-    if (starredCheck && starIcon) {
-        starredCheck.addEventListener('change', () => {
-            starIcon.textContent = starredCheck.checked ? '★' : '☆';
-        });
-    }
+    // ─── Volume controls ───────────────────────
+    volUp?.addEventListener('click', () => {
+        if (!volInput) return;
+        volInput.value = String(Math.min(1000000, parseInt(volInput.value, 10) + 5000));
+        updateVol();
+        volInput.dispatchEvent(new Event('change'));
+    });
+    volDn?.addEventListener('click', () => {
+        if (!volInput) return;
+        volInput.value = String(Math.max(0, parseInt(volInput.value, 10) - 5000));
+        updateVol();
+        volInput.dispatchEvent(new Event('change'));
+    });
+    volInput?.addEventListener('input', updateVol);
+
+    // ─── Star toggle ──────────────────────────
+    starredCheck?.addEventListener('change', () => {
+        if (starIcon) starIcon.textContent = starredCheck.checked ? '★' : '☆';
+    });
 }
 
 document.addEventListener('astro:page-load', setupFilterUI);

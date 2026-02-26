@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
+    import { onMount } from 'svelte';
 
     interface TableColumn {
         name: string;
@@ -91,7 +91,10 @@
     </div>
 {/if}
 
-<table class="w-full text-left border-collapse whitespace-nowrap min-w-full" id="data-table">
+<table
+    class="table-fixed w-max text-left border-collapse whitespace-nowrap min-w-full"
+    id="data-table"
+>
     <thead class="bg-surface border-b border-border/50 sticky top-0 z-20 shadow-sm">
         {#if columns.length > 0}
             <tr>
@@ -187,10 +190,3 @@
         {/if}
     </tbody>
 </table>
-
-<style>
-    table {
-        table-layout: fixed;
-        width: max-content;
-    }
-</style>

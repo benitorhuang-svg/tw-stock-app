@@ -65,7 +65,7 @@
     {/if}
 
     <table class="w-full text-left border-separate border-spacing-0" style="table-layout: fixed;">
-        <thead>
+        <thead class="sticky top-0 bg-surface/95 backdrop-blur-md z-20">
             <tr
                 class="bg-white/[0.01] text-[9px] uppercase text-white/30 font-black tracking-widest"
             >

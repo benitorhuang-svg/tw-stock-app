@@ -12,7 +12,7 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
 
 <MainTerminal title="Momentum_Nexus (FORCE_FIELD)" fullWidth>
     <div slot="header-actions" class="flex items-center justify-center mr-2 gap-2">
-        <div class="flex items-center gap-1.5 font-mono text-white/40 shrink-0 mr-1">
+        <div class="flex items-center gap-1.5 font-mono text-text-muted shrink-0 mr-1">
             <span class="opacity-40 text-[9px] hidden sm:inline uppercase">Uplink_Sync:</span>
             <span id="last-update-time" class="text-accent tracking-widest font-black text-[10px]"
                 >--:--:--</span
@@ -21,28 +21,38 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
         <SyncHourglass size="small" />
     </div>
 
-    <div class="h-full flex flex-col bg-base relative overflow-hidden">
-        <main class="flex-1 overflow-hidden p-4 lg:p-6 lg:pb-0 flex flex-col gap-4">
+    <div class="bg-base relative">
+        <main class="p-4 lg:p-6 lg:pb-0 flex flex-col">
             <span id="live-indicator" class="hidden"></span>
 
-            <!-- Dashboard Toolbar -->
+            <!-- Unified Command HUD -->
             <div
-                class="flex flex-wrap lg:flex-nowrap items-center gap-4 px-4 py-3 glass-card !bg-white/[0.02] !border-white/5 shadow-2xl shrink-0"
+                class="flex flex-col border border-border rounded-2xl overflow-hidden bg-surface/20 shadow-elevated"
             >
-                <LiveFilterPanel />
+                <!-- Dashboard Toolbar (sticky) -->
                 <div
-                    class="flex items-center justify-end gap-6 flex-1 min-w-0 border-l border-white/5 pl-4"
+                    id="live-toolbar-nexus"
+                    class="flex flex-wrap lg:flex-nowrap items-center gap-3 px-6 py-4 bg-surface/95 border-b border-border sticky top-0 z-30 backdrop-blur-md shadow-sm"
                 >
-                    <LiveControlPanel />
+                    <div class="flex-1 min-w-0">
+                        <LiveFilterPanel />
+                    </div>
+                    <div
+                        class="flex items-center justify-end gap-4 shrink-0 border-l border-border pl-4"
+                    >
+                        <LiveControlPanel />
+                    </div>
+                </div>
+
+                <!-- Momentum Grid -->
+                <div class="bg-surface/5">
+                    <LiveDataTable client:load />
                 </div>
             </div>
 
-            <!-- Momentum Grid (Organism) -->
-            <LiveDataTable client:load />
-
             <!-- System Status Line -->
             <div
-                class="flex items-center justify-between px-2 py-3 text-[8px] font-mono text-white/10 uppercase tracking-[0.2em]"
+                class="flex items-center justify-between px-2 py-3 text-[8px] font-mono text-text-muted/30 uppercase tracking-[0.2em]"
             >
                 <div>Session_ID: {Math.random().toString(36).slice(7).toUpperCase()}</div>
                 <div class="flex items-center gap-4">
@@ -54,6 +64,27 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
     </div>
 
     <script src="../scripts/live-engine.ts"></script>
+    <script>
+        // Precision Sync for Sticky Offset
+        const updateToolbarHeight = () => {
+            const toolbar = document.getElementById('live-toolbar-nexus');
+            if (toolbar) {
+                document.documentElement.style.setProperty(
+                    '--toolbar-nexus-height',
+                    `${toolbar.offsetHeight}px`
+                );
+            }
+        };
+
+        const observer = new ResizeObserver(updateToolbarHeight);
+        const toolbar = document.getElementById('live-toolbar-nexus');
+        if (toolbar) {
+            observer.observe(toolbar);
+            updateToolbarHeight();
+        }
+
+        document.addEventListener('astro:page-load', updateToolbarHeight);
+    </script>
 </MainTerminal>
 
 <style is:global>
@@ -85,5 +116,17 @@ import SyncHourglass from '../components/atoms/SyncHourglass.astro';
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Restore natural scrolling for the main workspace */
+    #main-workspace {
+        overflow-y: auto !important;
+        height: auto !important;
+        display: block;
+    }
+    #main-workspace > div {
+        flex: none;
+        display: block;
+        min-height: auto;
     }
 </style>

@@ -12,48 +12,55 @@
 /* ── Tailwind v4 Theme ── */
 /* ── CSS Theme Variables (Light/Dark support) ── */
 :root {
-    --color-base: hsl(240 20% 98%);
-    --color-base-deep: hsl(240 15% 94%);
+    /* ── Premium Light Base — cool gray with subtle blue undertone ── */
+    --color-base: hsl(220 20% 97%);
+    --color-base-deep: hsl(220 16% 93%);
     --color-surface: hsl(0 0% 100%);
-    --color-surface-hover: hsl(240 10% 96%);
+    --color-surface-hover: hsl(220 14% 95%);
     --color-elevated: hsl(0 0% 100%);
 
-    --color-accent: hsl(217 91% 55%);
-    --color-accent-dim: hsl(217 91% 65%);
-    --color-accent-glow: hsl(217 91% 60% / 0.1);
+    /* ── Accent — rich sapphire blue ── */
+    --color-accent: hsl(220 85% 50%);
+    --color-accent-dim: hsl(220 80% 60%);
+    --color-accent-glow: hsl(220 85% 50% / 0.12);
 
-    --color-bullish: hsl(346 77% 50%);
-    --color-bullish-dim: hsl(346 77% 35%);
-    --color-bullish-glow: hsl(346 77% 50% / 0.1);
+    /* ── Bull/Bear — high-contrast for readability ── */
+    --color-bullish: hsl(350 85% 48%);
+    --color-bullish-dim: hsl(350 70% 38%);
+    --color-bullish-glow: hsl(350 85% 48% / 0.1);
 
-    --color-bearish: hsl(142 71% 40%);
-    --color-bearish-dim: hsl(142 71% 30%);
-    --color-bearish-glow: hsl(142 71% 45% / 0.1);
+    --color-bearish: hsl(152 65% 35%);
+    --color-bearish-dim: hsl(152 60% 28%);
+    --color-bearish-glow: hsl(152 65% 35% / 0.1);
 
+    /* ── Warning ── */
     --color-warning: hsl(38 92% 45%);
-    --color-warning-dim: hsl(38 92% 35%);
+    --color-warning-dim: hsl(38 85% 35%);
 
-    --color-glass: hsl(0 0% 0% / 0.02);
-    --color-glass-hover: hsl(0 0% 0% / 0.04);
-    --color-glass-elevated: hsl(0 0% 0% / 0.06);
-    --color-border: hsl(0 0% 0% / 0.08);
-    --color-border-hover: hsl(0 0% 0% / 0.12);
-    --color-border-highlight: hsl(0 0% 0% / 0.15);
+    /* ── Glass — visible on light backgrounds ── */
+    --color-glass: hsl(220 20% 96%);
+    --color-glass-hover: hsl(220 18% 93%);
+    --color-glass-elevated: hsl(220 15% 90%);
+    --color-border: hsl(220 15% 86%);
+    --color-border-hover: hsl(220 15% 78%);
+    --color-border-highlight: hsl(220 20% 70%);
 
-    --color-text-primary: hsl(240 10% 10%);
-    --color-text-secondary: hsl(240 5% 35%);
-    --color-text-muted: hsl(240 4% 50%);
+    /* ── Text — strong contrast hierarchy ── */
+    --color-text-primary: hsl(220 20% 12%);
+    --color-text-secondary: hsl(220 10% 30%);
+    --color-text-muted: hsl(220 10% 50%);
 
-    /* Stock Specific Colors (Universal) */
+    /* ── Stock Specific ── */
     --color-stock-name: var(--color-text-primary);
     --color-stock-symbol: var(--color-text-muted);
-    --color-stock-price: hsl(217 91% 55%);
-    --color-stock-volume: hsl(38 92% 50%);
+    --color-stock-price: hsl(220 85% 50%);
+    --color-stock-volume: hsl(38 92% 45%);
 
-    --shadow-glass: 0 4px 12px rgba(0, 0, 0, 0.05);
-    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --color-scrollbar: hsl(217 91% 55% / 0.3);
-    --color-scrollbar-hover: hsl(217 91% 55% / 0.6);
+    /* ── Shadows — soft but visible ── */
+    --shadow-glass: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+    --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.04);
+    --color-scrollbar: hsl(220 15% 75%);
+    --color-scrollbar-hover: hsl(220 15% 60%);
 }
 
 .dark {
