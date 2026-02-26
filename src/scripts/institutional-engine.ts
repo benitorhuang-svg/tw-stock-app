@@ -33,12 +33,13 @@ function renderForensicData(data: InstitutionalData[]) {
 let institutionalRendered = false;
 
 document.addEventListener('astro:page-load', () => {
-    // Guard: only run on institutional page
-    if (!document.getElementById('foreign-list')) {
-        institutionalRendered = false; // Reset when leaving page to allow re-fetch on return
+    // Check for the institutional page header instead of the list (which is now client:idle)
+    if (!document.body.innerText.includes('Institutional Monitoring')) {
+        institutionalRendered = false;
         return;
     }
     if (institutionalRendered) return;
     institutionalRendered = true;
     fetchStreaks();
 });
+

@@ -19,21 +19,19 @@
         const listener = (e: any) => {
             const { type, payload } = e.detail;
             if (type === 'INST_DATA') {
-                const data: InstitutionalData[] = payload.data;
-                // Sorting & Filtering (Min 2 days streak) - capped at top 50
-                fSorted = data
-                    .filter(i => Math.abs(i.foreignStreak) >= 2)
-                    .sort((a, b) => Math.abs(b.foreignStreak) - Math.abs(a.foreignStreak))
-                    .slice(0, 50);
-                tSorted = data
-                    .filter(i => Math.abs(i.investStreak) >= 2)
-                    .sort((a, b) => Math.abs(b.investStreak) - Math.abs(a.investStreak))
-                    .slice(0, 50);
-                dSorted = data
-                    .filter(i => Math.abs(i.dealerStreak) >= 2)
-                    .sort((a, b) => Math.abs(b.dealerStreak) - Math.abs(a.dealerStreak))
-                    .slice(0, 50);
-                isLoading = false;
+                const { foreign, invest, dealer } = payload.data;
+
+                // Sequential rendering to prevent main-thread freezing
+                requestAnimationFrame(() => {
+                    fSorted = foreign;
+                    setTimeout(() => {
+                        tSorted = invest;
+                        setTimeout(() => {
+                            dSorted = dealer;
+                            isLoading = false;
+                        }, 50);
+                    }, 50);
+                });
             } else if (type === 'INST_LOADING') {
                 isLoading = true;
             }
@@ -45,12 +43,12 @@
 </script>
 
 <div
-    class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden min-h-0 animate-fade-up"
+    class="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 overflow-hidden min-h-0 animate-fade-up gpu-layer"
     style="animation-delay: 100ms"
 >
     <!-- Foreign Matrix -->
     <section
-        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-sm group hover:border-bullish/20 transition-all duration-500"
+        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-sm group hover:border-bullish/20 transition-all duration-500 render-optimized"
     >
         <header
             class="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-bullish/10 to-transparent"
@@ -70,7 +68,7 @@
                 {isLoading ? 'SCANNING...' : `${fSorted.length} ENTITIES ACTIVE`}
             </span>
         </header>
-        <div class="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-3">
+        <div id="foreign-list" class="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-3">
             {#if isLoading}
                 <div class="flex flex-col items-center justify-center h-full gap-4 opacity-20">
                     <div
@@ -107,7 +105,7 @@
                     {@const fmtNet = (netVal / 1000).toFixed(1) + 'K'}
                     <a
                         href="/stocks/{item.symbol}"
-                        class="group relative block p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all no-underline overflow-hidden"
+                        class="group relative block p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-[background-color,border-color,transform] duration-300 no-underline overflow-hidden"
                     >
                         <div
                             class="absolute top-0 left-0 w-1 h-full opacity-40 group-hover:opacity-100 transition-opacity {isBuy
@@ -175,7 +173,7 @@
 
     <!-- Trust Matrix -->
     <section
-        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-sm group hover:border-accent/20 transition-all duration-500"
+        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-sm group hover:border-accent/20 transition-all duration-500 render-optimized"
     >
         <header
             class="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-accent/10 to-transparent"
@@ -232,7 +230,7 @@
                     {@const fmtNet = (netVal / 1000).toFixed(1) + 'K'}
                     <a
                         href="/stocks/{item.symbol}"
-                        class="group relative block p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all no-underline overflow-hidden"
+                        class="group relative block p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-[background-color,border-color,transform] duration-300 no-underline overflow-hidden"
                     >
                         <div
                             class="absolute top-0 left-0 w-1 h-full opacity-40 group-hover:opacity-100 transition-opacity {isBuy
@@ -300,7 +298,7 @@
 
     <!-- Dealer Matrix -->
     <section
-        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-sm group hover:border-yellow-400/20 transition-all duration-500"
+        class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-sm group hover:border-yellow-400/20 transition-all duration-500 render-optimized"
     >
         <header
             class="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-yellow-400/10 to-transparent"
@@ -357,7 +355,7 @@
                     {@const fmtNet = (netVal / 1000).toFixed(1) + 'K'}
                     <a
                         href="/stocks/{item.symbol}"
-                        class="group relative block p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-all no-underline overflow-hidden"
+                        class="group relative block p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 transition-[background-color,border-color,transform] duration-300 no-underline overflow-hidden"
                     >
                         <div
                             class="absolute top-0 left-0 w-1 h-full opacity-40 group-hover:opacity-100 transition-opacity {isBuy

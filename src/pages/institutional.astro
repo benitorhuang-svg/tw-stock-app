@@ -10,12 +10,13 @@ import ForensicTicker from '../components/molecules/ForensicTicker.astro';
 ---
 
 <MainTerminal title="法人連買監控 | Institutional Tracking" fullWidth>
-    <div class="h-full flex flex-col p-4 lg:p-10 gap-8 overflow-hidden">
+    <div class="h-full flex flex-col p-4 lg:p-10 gap-8 overflow-hidden" transition:animate="fade">
         <!-- Header Section -->
+
         <InstitutionalHeader />
 
         <!-- Monitoring Matrix -->
-        <InstitutionalMatrix client:load />
+        <InstitutionalMatrix client:idle />
 
         <!-- Signal Stream -->
         <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
