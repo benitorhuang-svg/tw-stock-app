@@ -108,26 +108,34 @@
     async function toggleExpand(code: string, event: MouseEvent) {
         const isOpening = expandedCode !== code;
         expandedCode = isOpening ? code : '';
+
         if (isOpening) {
             const tr = event.currentTarget as HTMLElement;
             await tick();
 
+            const workspace = document.getElementById('main-workspace');
             const toolbar = document.getElementById('live-toolbar-nexus');
-            const thead = tr.closest('table')?.querySelector('thead');
 
-            const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
-            const headerHeight = thead ? thead.offsetHeight : 35;
+            if (workspace && tr) {
+                const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
+                const headerHeight = 35;
 
-            const elementRect = tr.getBoundingClientRect();
-            const absoluteElementTop = elementRect.top + window.pageYOffset;
+                const workspaceRect = workspace.getBoundingClientRect();
+                const trRect = tr.getBoundingClientRect();
 
-            // Precise scroll: Align the top of the row with the bottom of the sticky header
-            const finalScrollPos = absoluteElementTop - toolbarHeight - headerHeight;
+                // Increase buffer to 48px to ensure clear visibility below the sticky header
+                const scrollTarget =
+                    workspace.scrollTop +
+                    (trRect.top - workspaceRect.top) -
+                    toolbarHeight -
+                    headerHeight -
+                    48;
 
-            window.scrollTo({
-                top: finalScrollPos,
-                behavior: 'smooth',
-            });
+                workspace.scrollTo({
+                    top: Math.max(0, scrollTarget),
+                    behavior: 'smooth',
+                });
+            }
         }
     }
 
@@ -176,7 +184,7 @@
             <col style="width: 10%;" />
             <col style="width: 10%;" />
             <col style="width: 14%;" />
-            <col style="width: 10%;" />
+            <col style="width: 6%;" />
         </colgroup>
 
         <thead class="z-30">
@@ -306,13 +314,21 @@
                             {s._vol > 0 ? s._vol.toLocaleString() : '—'}
                         </td>
                         <td class="px-1.5 py-2 text-center">
-                            <a
-                                href={`/stocks/${s.Code}`}
-                                class="analysis-link opacity-0 group-hover:opacity-100"
-                                on:click|stopPropagation
-                            >
-                                Analysis ↗
-                            </a>
+                            <div class="flex items-center justify-center gap-2">
+                                <a
+                                    href={`/stocks/${s.Code}`}
+                                    class="analysis-link opacity-0 group-hover:opacity-100"
+                                    on:click|stopPropagation
+                                >
+                                    Analysis ↗
+                                </a>
+                                <span
+                                    class="chevron opacity-20 group-hover:opacity-100 transition-all duration-300"
+                                    class:rotated={expandedCode === s.Code}
+                                >
+                                    ▼
+                                </span>
+                            </div>
                         </td>
                     </tr>
                     {#if expandedCode === s.Code}
@@ -345,5 +361,41 @@
     .custom-scrollbar::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
+    }
+
+    .active-row {
+        background: linear-gradient(90deg, var(--color-accent-glow), rgba(0, 0, 0, 0)) !important;
+        position: relative;
+        z-index: 10;
+        box-shadow: inset 4px 0 0 var(--color-accent);
+    }
+
+    .analysis-link {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--color-accent-glow);
+        color: var(--color-accent);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 8px;
+        font-weight: 900;
+        text-transform: uppercase;
+        text-decoration: none;
+        border: 1px solid var(--color-accent-dim);
+    }
+    .analysis-link:hover {
+        background: var(--color-accent);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--color-accent-glow);
+    }
+
+    .chevron {
+        font-size: 8px;
+        display: inline-block;
+    }
+    .chevron.rotated {
+        transform: rotate(180deg);
+        color: var(--color-accent);
+        opacity: 1 !important;
     }
 </style>

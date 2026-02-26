@@ -14,7 +14,7 @@
 </script>
 
 <th
-    class="sticky z-20 bg-surface border-y border-border select-none text-center py-2.5 px-3 text-[10px] font-black text-text-muted uppercase shadow-sm transition-colors"
+    class="sticky z-20 bg-surface border-y border-border select-none text-center py-2.5 px-3 text-[10px] font-black text-text-muted uppercase shadow-md transition-colors"
     class:cursor-pointer={!!col}
     class:hover:text-accent={!!col}
     style="top: {stickyTop};"

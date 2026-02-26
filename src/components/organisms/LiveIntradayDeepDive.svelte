@@ -35,7 +35,7 @@
     onMount(fetchData);
 
     const W = 1000;
-    const H = 220; // Reduced H slightly to give more room for labels
+    const H = 140; // Compact height for mini-chart format
 
     // ─── Derived values ────
     $: prices = history.map(h => h.price);
@@ -58,8 +58,8 @@
     $: chartMin = pClose - maxDev;
     $: range = chartMax - chartMin || 1;
 
-    const PAD_T = 30; // More top padding for labels
-    const PAD_B = 20; // More bottom padding for axis
+    const PAD_T = 20;
+    const PAD_B = 15;
     const DRAW_H = H - PAD_T - PAD_B;
 
     $: sessionBounds = (() => {
@@ -146,14 +146,14 @@
 </script>
 
 <div
-    class="chart-container relative overflow-visible flex flex-col min-h-[300px] bg-[#0a0c10] border-y border-border/40 select-none pb-4"
+    class="chart-container relative overflow-visible flex flex-col min-h-[220px] bg-[#0a0c10] border-t-2 border-accent/10 border-b border-border/40 select-none pb-2 pt-4"
     transition:slide={{ duration: 400 }}
 >
     <!-- Background Symbol Watermark -->
     <div
         class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none overflow-hidden"
     >
-        <span class="text-[280px] font-black tracking-tighter transform -rotate-12 translate-y-4">
+        <span class="text-[180px] font-black tracking-tighter transform -rotate-12 translate-y-2">
             {meta?.symbol?.split('.')[0] || symbol}
         </span>
     </div>
@@ -392,6 +392,8 @@
 <style>
     .chart-container {
         contain: layout style;
+        max-height: 240px;
+        overflow: hidden;
         background:
             radial-gradient(
                 circle at 50% -100%,
