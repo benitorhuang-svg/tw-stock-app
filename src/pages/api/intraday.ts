@@ -8,7 +8,8 @@ const INTRADAY_CACHE_MS = 30_000;
 export const GET: APIRoute = async ({ request }) => {
     const url = new URL(request.url);
     const symbol = url.searchParams.get('symbol');
-    const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36';
+    const USER_AGENT =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36';
 
     if (!symbol) {
         return new Response(JSON.stringify({ error: 'Missing symbol parameter' }), {
@@ -36,7 +37,7 @@ export const GET: APIRoute = async ({ request }) => {
 
         let response = await fetch(yahooUrl, {
             headers: { 'User-Agent': USER_AGENT },
-            signal: AbortSignal.timeout(8000)
+            signal: AbortSignal.timeout(8000),
         });
 
         console.log(`[Intraday API] Fetching ${yahooSymbol}, status: ${response.status}`);
@@ -48,14 +49,20 @@ export const GET: APIRoute = async ({ request }) => {
             yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?range=1d&interval=1m`;
             const fallbackResponse = await fetch(yahooUrl, {
                 headers: { 'User-Agent': USER_AGENT },
-                signal: AbortSignal.timeout(8000)
+                signal: AbortSignal.timeout(8000),
             });
-            console.log(`[Intraday API] Fetching ${yahooSymbol}, status: ${fallbackResponse.status}`);
+            console.log(
+                `[Intraday API] Fetching ${yahooSymbol}, status: ${fallbackResponse.status}`
+            );
 
             if (!fallbackResponse.ok) {
                 const errorBody = await fallbackResponse.text().catch(() => 'No body');
-                console.error(`[Intraday API] Yahoo Finance API failed: ${fallbackResponse.status} ${errorBody}`);
-                throw new Error(`Yahoo Finance API failed (${fallbackResponse.status}): ${yahooSymbol}`);
+                console.error(
+                    `[Intraday API] Yahoo Finance API failed: ${fallbackResponse.status} ${errorBody}`
+                );
+                throw new Error(
+                    `Yahoo Finance API failed (${fallbackResponse.status}): ${yahooSymbol}`
+                );
             }
             response = fallbackResponse;
         }
@@ -78,7 +85,7 @@ export const GET: APIRoute = async ({ request }) => {
                 timeseries.push({
                     time: timestamps[i] * 1000,
                     price: quotes.close[i],
-                    volume: quotes.volume[i] || 0
+                    volume: quotes.volume[i] || 0,
                 });
             }
         }
@@ -88,9 +95,9 @@ export const GET: APIRoute = async ({ request }) => {
             meta: {
                 symbol: result.meta.symbol,
                 prevClose: result.meta.previousClose,
-                currency: result.meta.currency
+                currency: result.meta.currency,
             },
-            data: timeseries
+            data: timeseries,
         };
 
         // Cache the result
@@ -107,17 +114,19 @@ export const GET: APIRoute = async ({ request }) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'public, max-age=30',
-            }
+            },
         });
-
     } catch (error: any) {
         console.error(`[Intraday API Error]`, error.message);
-        return new Response(JSON.stringify({
-            status: 'error',
-            message: error.message
-        }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response(
+            JSON.stringify({
+                status: 'error',
+                message: error.message,
+            }),
+            {
+                status: 500,
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
     }
 };

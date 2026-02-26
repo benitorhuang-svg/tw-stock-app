@@ -40,13 +40,13 @@ async function initIntelligenceCenter() {
         }
 
         const matches = allStocks
-            .filter((s) => s.symbol.includes(q) || s.name.toLowerCase().includes(q))
+            .filter(s => s.symbol.includes(q) || s.name.toLowerCase().includes(q))
             .slice(0, 10);
 
         if (matches.length > 0) {
             container.innerHTML = matches
                 .map(
-                    (s) => `
+                    s => `
                 <a href="/stocks/${s.symbol}" class="search-result-item" onclick="window.Nexus_Store_Recent('${s.symbol}')">
                             <div class="flex items-center gap-4">
                                 <span class="font-mono text-sm font-black text-accent">${s.symbol}</span>
@@ -87,11 +87,11 @@ async function initIntelligenceCenter() {
         }
 
         const recentStocks = recent
-            .map((sym) => allStocks.find((s) => s.symbol === sym))
+            .map(sym => allStocks.find(s => s.symbol === sym))
             .filter((s): s is StockSnapshot => !!s);
         recentContainer.innerHTML = recentStocks
             .map(
-                (s) => `
+                s => `
                     <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-white/[0.04] transition-all border border-white/5 hover:border-accent/20 group no-underline">
                         <div class="flex items-center gap-4">
                             <span class="text-[10px] font-mono font-black border border-white/10 px-2 py-1 rounded bg-black/40 text-accent">${s.symbol}</span>
@@ -111,13 +111,13 @@ async function initIntelligenceCenter() {
     const initYieldWall = () => {
         if (!divWall || allStocks.length === 0) return;
         const topYields = [...allStocks]
-            .filter((s) => s.yield > 0)
+            .filter(s => s.yield > 0)
             .sort((a, b) => b.yield - a.yield)
             .slice(0, 8);
 
         divWall.innerHTML = topYields
             .map(
-                (s) => `
+                s => `
                     <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-warning/[0.03] transition-all border border-white/5 hover:border-warning/20 group no-underline">
                         <div class="flex items-center gap-4">
                             <span class="text-[9px] font-mono font-black text-warning/40 tracking-widest">${s.symbol}</span>
@@ -135,7 +135,9 @@ async function initIntelligenceCenter() {
             .join('');
     };
 
-    (window as unknown as Record<string, (s: string) => void>).Nexus_Store_Recent = (sym: string) => {
+    (window as unknown as Record<string, (s: string) => void>).Nexus_Store_Recent = (
+        sym: string
+    ) => {
         addToRecentViewed(sym);
         updateRecentRegistry();
     };

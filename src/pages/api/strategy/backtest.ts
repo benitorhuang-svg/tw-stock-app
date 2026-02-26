@@ -8,12 +8,12 @@ export const GET: APIRoute = async () => {
         // We pick the most recent streaks detected in history
 
         const results = dbService.queryAll<{
-            symbol: string,
-            name: string,
-            streak_date: string,
-            entry_price: number,
-            exit_price: number,
-            return_pct: number
+            symbol: string;
+            name: string;
+            streak_date: string;
+            entry_price: number;
+            exit_price: number;
+            return_pct: number;
         }>(`
             WITH DailySignals AS (
                 SELECT 
@@ -42,25 +42,35 @@ export const GET: APIRoute = async () => {
         `);
 
         if (results.length === 0) {
-            return new Response(JSON.stringify({ status: 'success', stats: { winRate: 0, avgReturn: 0, samples: 0 }, data: [] }));
+            return new Response(
+                JSON.stringify({
+                    status: 'success',
+                    stats: { winRate: 0, avgReturn: 0, samples: 0 },
+                    data: [],
+                })
+            );
         }
 
         // Aggregate stats
-        const winRate = results.filter((r) => r.return_pct > 0).length / results.length;
-        const avgReturn = results.reduce((sum: number, r) => sum + r.return_pct, 0) / results.length;
+        const winRate = results.filter(r => r.return_pct > 0).length / results.length;
+        const avgReturn =
+            results.reduce((sum: number, r) => sum + r.return_pct, 0) / results.length;
 
-        return new Response(JSON.stringify({
-            status: 'success',
-            stats: {
-                samples: results.length,
-                winRate,
-                avgReturn
-            },
-            data: results
-        }), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-        });
+        return new Response(
+            JSON.stringify({
+                status: 'success',
+                stats: {
+                    samples: results.length,
+                    winRate,
+                    avgReturn,
+                },
+                data: results,
+            }),
+            {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
     } catch (err) {
         return new Response(JSON.stringify({ error: (err as Error).message }), { status: 500 });
     }

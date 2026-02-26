@@ -7,12 +7,19 @@ import type { ProcessedStock, MarketBreadth, MarketStoreState } from '../types/m
 function createMarketStore() {
     let state = $state<MarketStoreState>({
         stocks: [],
-        institutional: { foreign: [], invest: [], dealer: [] },
+        institutional: {
+            foreign: [],
+            invest: [],
+            dealer: [],
+            summary: { foreign: 0, invest: 0, dealer: 0, total: 0 },
+            trend: [],
+            date: '',
+        },
         breadth: { up: 0, down: 0, flat: 0, total: 0 },
         lastUpdateTime: '—',
         isLoading: false,
         isInstLoading: false,
-        error: null
+        error: null,
     });
 
     let searchKeyword = $state('');
@@ -22,6 +29,7 @@ function createMarketStore() {
     let filterTrend = $state('0'); // '1' is up, '-1' is down, '0' is all
     let filterMA20 = $state(0);
     let filterStarred = $state(false);
+    let filterDivergence = $state(false); // New: Price Down + Inst Buying
 
     // Watchlist persistence
     let watchlist = $state<Set<string>>(new Set());
@@ -41,29 +49,68 @@ function createMarketStore() {
 
     return {
         // State
-        get state() { return state; },
-        get searchKeyword() { return searchKeyword; },
-        set searchKeyword(v: string) { searchKeyword = v; },
+        get state() {
+            return state;
+        },
+        get searchKeyword() {
+            return searchKeyword;
+        },
+        set searchKeyword(v: string) {
+            searchKeyword = v;
+        },
 
-        get filterMarket() { return filterMarket; },
-        set filterMarket(v: string) { filterMarket = v; },
+        get filterMarket() {
+            return filterMarket;
+        },
+        set filterMarket(v: string) {
+            filterMarket = v;
+        },
 
-        get filterPriceRange() { return filterPriceRange; },
-        set filterPriceRange(v: string) { filterPriceRange = v; },
+        get filterPriceRange() {
+            return filterPriceRange;
+        },
+        set filterPriceRange(v: string) {
+            filterPriceRange = v;
+        },
 
-        get filterMinVol() { return filterMinVol; },
-        set filterMinVol(v: number) { filterMinVol = v; },
+        get filterMinVol() {
+            return filterMinVol;
+        },
+        set filterMinVol(v: number) {
+            filterMinVol = v;
+        },
 
-        get filterTrend() { return filterTrend; },
-        set filterTrend(v: string) { filterTrend = v; },
+        get filterTrend() {
+            return filterTrend;
+        },
+        set filterTrend(v: string) {
+            filterTrend = v;
+        },
 
-        get filterMA20() { return filterMA20; },
-        set filterMA20(v: number) { filterMA20 = v; },
+        get filterMA20() {
+            return filterMA20;
+        },
+        set filterMA20(v: number) {
+            filterMA20 = v;
+        },
 
-        get filterStarred() { return filterStarred; },
-        set filterStarred(v: boolean) { filterStarred = v; },
+        get filterStarred() {
+            return filterStarred;
+        },
+        set filterStarred(v: boolean) {
+            filterStarred = v;
+        },
 
-        get watchlist() { return watchlist; },
+        get filterDivergence() {
+            return filterDivergence;
+        },
+        set filterDivergence(v: boolean) {
+            filterDivergence = v;
+        },
+
+        get watchlist() {
+            return watchlist;
+        },
 
         // Actions
         updateData(stocks: ProcessedStock[], breadth: MarketBreadth) {
@@ -101,9 +148,11 @@ function createMarketStore() {
             if (typeof window !== 'undefined') {
                 localStorage.setItem('watchlist', JSON.stringify([...watchlist]));
                 // Sync with other tabs/components if needed
-                window.dispatchEvent(new CustomEvent('tw-watchlist-sync', { detail: { codes: [...watchlist] } }));
+                window.dispatchEvent(
+                    new CustomEvent('tw-watchlist-sync', { detail: { codes: [...watchlist] } })
+                );
             }
-        }
+        },
     };
 }
 

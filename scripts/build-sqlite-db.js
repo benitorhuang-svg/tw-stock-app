@@ -67,7 +67,8 @@ db.pragma('foreign_keys = OFF');
 console.log('📁 正在建立資料表結構...\n');
 
 // 建立資料表
-db.exec(`
+try {
+    db.exec(`
     DROP TABLE IF EXISTS latest_prices;
     DROP TABLE IF EXISTS fundamentals;
     DROP TABLE IF EXISTS chips;
@@ -76,6 +77,17 @@ db.exec(`
     DROP TABLE IF EXISTS valuation_history;
     DROP TABLE IF EXISTS monthly_revenue;
     DROP TABLE IF EXISTS dividends;
+    DROP TABLE IF EXISTS margin_short;
+    DROP TABLE IF EXISTS chip_features;
+    DROP TABLE IF EXISTS valuation_features;
+    DROP TABLE IF EXISTS tech_features;
+    DROP TABLE IF EXISTS ai_reports;
+    DROP TABLE IF EXISTS shareholder_distribution;
+    DROP TABLE IF EXISTS government_chips;
+    DROP TABLE IF EXISTS major_broker_chips;
+    DROP TABLE IF EXISTS director_holdings;
+    DROP TABLE IF EXISTS security_lending;
+    DROP TABLE IF EXISTS dealer_details;
 
     -- 股票基本資料
     CREATE TABLE stocks (
@@ -163,8 +175,7 @@ db.exec(`
         foreign_inv INTEGER,
         invest_trust INTEGER,
         dealer INTEGER,
-        PRIMARY KEY (symbol, date),
-        FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+        PRIMARY KEY (symbol, date)
     );
 
     -- 歷史價格 (用於選股/圖表)
@@ -176,8 +187,7 @@ db.exec(`
         volume INTEGER,
         turnover REAL,
         change REAL,  change_pct REAL,
-        PRIMARY KEY (symbol, date),
-        FOREIGN KEY (symbol) REFERENCES stocks(symbol)
+        PRIMARY KEY (symbol, date)
     );
 
     -- 建立索引
@@ -195,7 +205,137 @@ db.exec(`
     CREATE INDEX idx_fundamentals_symbol ON fundamentals(symbol);
     CREATE INDEX idx_valuation_symbol ON valuation_history(symbol);
     CREATE INDEX idx_revenue_symbol ON monthly_revenue(symbol);
+
+    -- 股權分散表 (每週)
+    CREATE TABLE shareholder_distribution (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        total_shareholders INTEGER,
+        large_holder_400_ratio REAL,
+        large_holder_1000_ratio REAL,
+        small_holder_under_10_ratio REAL,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 官股券商買賣 (每日)
+    CREATE TABLE government_chips (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        net_buy_shares INTEGER,
+        net_buy_amount REAL,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 主力券商進出 (每日)
+    CREATE TABLE major_broker_chips (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        net_main_player_shares INTEGER,
+        concentration_ratio REAL,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 董監持股與質押 (每月)
+    CREATE TABLE director_holdings (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        director_holding_ratio REAL,
+        pawn_ratio REAL,
+        insider_net_change INTEGER,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 借券與賣出餘額 (每日)
+    CREATE TABLE security_lending (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        lending_balance INTEGER,
+        short_selling_balance INTEGER,
+        short_selling_limit INTEGER,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 自營商明細 (每日)
+    CREATE TABLE dealer_details (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        prop_buy INTEGER,
+        hedge_buy INTEGER,
+        PRIMARY KEY (symbol, date)
+    );
+
+    CREATE INDEX idx_shareholder_date ON shareholder_distribution(date);
+    CREATE INDEX idx_gov_chips_date ON government_chips(date);
+    CREATE INDEX idx_major_broker_date ON major_broker_chips(date);
+    CREATE INDEX idx_director_date ON director_holdings(date);
+    CREATE INDEX idx_lending_date ON security_lending(date);
+    CREATE INDEX idx_dealer_det_date ON dealer_details(date);
+
+    -- 融資融券 (每日)
+    CREATE TABLE margin_short (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        margin_bal INTEGER,
+        margin_net INTEGER,
+        short_bal INTEGER,
+        short_net INTEGER,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 籌碼特徵 (M1 ETL 運算)
+    CREATE TABLE chip_features (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        foreign_buy INTEGER,
+        trust_buy INTEGER,
+        dealer_buy INTEGER,
+        total_inst_buy INTEGER,
+        concentration_5d REAL,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 估值特徵 (M1 ETL 運算)
+    CREATE TABLE valuation_features (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        pe_ratio REAL,
+        pb_ratio REAL,
+        dividend_yield REAL,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- 技術指標 (M1 ETL 運算)
+    CREATE TABLE tech_features (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        ma5 REAL,
+        ma20 REAL,
+        rsi_14 REAL,
+        macd_diff REAL,
+        macd_dea REAL,
+        kd_k REAL,
+        kd_d REAL,
+        PRIMARY KEY (symbol, date)
+    );
+
+    -- AI 報告快取 (M2 Orchestrator)
+    CREATE TABLE ai_reports (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        report TEXT,
+        PRIMARY KEY (symbol, date)
+    );
+
+    CREATE INDEX idx_margin_date ON margin_short(date);
+    CREATE INDEX idx_chip_feat_date ON chip_features(date);
 `);
+} catch (e) {
+    console.error(`❌ SQL 初始化失敗: ${e.message}`);
+    if (e.message.includes('locked')) {
+        console.error('💡 提示: 請先暫停 npm run dev 以釋放資料庫檔案！');
+    }
+    process.exit(1);
+}
 
 // 載入股票清單
 console.log('📊 正在載入股票清單...');
@@ -339,20 +479,16 @@ if (fs.existsSync(MONTHLY_STATS_JSON)) {
 // 載入估值歷史資料夾 (Valuation History Folder)
 if (fs.existsSync(VALUATION_DIR)) {
     console.log('📊 正在匯入歷史估值區間數據...');
-    const files = fs.readdirSync(VALUATION_DIR).filter(f => f.endsWith('.json') && f !== 'progress.json');
+    const files = fs
+        .readdirSync(VALUATION_DIR)
+        .filter(f => f.endsWith('.json') && f !== 'progress.json');
     const insertValuation = db.prepare(
         'INSERT OR REPLACE INTO valuation_history (symbol, date, pe, pb, dividend_yield) VALUES (?, ?, ?, ?, ?)'
     );
 
     const valBatch = db.transaction((data, date) => {
         for (const item of data) {
-            insertValuation.run(
-                item.symbol,
-                date,
-                item.pe || 0,
-                item.pb || 0,
-                item.yield || 0
-            );
+            insertValuation.run(item.symbol, date, item.pe || 0, item.pb || 0, item.yield || 0);
         }
     });
 
@@ -397,11 +533,13 @@ if (fs.existsSync(FINANCIALS_JSON)) {
             );
 
             // 同時更新最新價格中的基本面快照
-            db.prepare(`
+            db.prepare(
+                `
                 UPDATE latest_prices 
                 SET eps = ?, gross_margin = ?, operating_margin = ?, net_margin = ?, revenue_yoy = ?
                 WHERE symbol = ?
-            `).run(
+            `
+            ).run(
                 item.eps || 0,
                 item.grossMargin || 0,
                 item.operatingMargin || 0,
@@ -463,6 +601,99 @@ if (fs.existsSync(CHIPS_DIR)) {
         chipsBatch(data, date);
     }
     console.log(`✅ 已載入 ${files.length} 個日期的籌碼數據\n`);
+}
+
+// 載入深層鑑識數據 (Forensic Data)
+const FORENSIC_DIR = path.join(DATA_DIR, 'forensic');
+if (fs.existsSync(FORENSIC_DIR)) {
+    console.log('🔍 正在匯入深層鑑識資料庫...');
+
+    // 1. 股權分散
+    const distPath = path.join(FORENSIC_DIR, 'shareholder_distribution.json');
+    if (fs.existsSync(distPath)) {
+        const data = JSON.parse(fs.readFileSync(distPath, 'utf-8'));
+        const stmt = db.prepare(
+            'INSERT OR REPLACE INTO shareholder_distribution VALUES (?, ?, ?, ?, ?, ?)'
+        );
+        const tx = db.transaction(rows => {
+            for (const r of rows)
+                stmt.run(
+                    r.symbol,
+                    r.date,
+                    r.total_shareholders,
+                    r.large_holder_400_ratio,
+                    r.large_holder_1000_ratio,
+                    r.small_holder_under_10_ratio || 0
+                );
+        });
+        tx(data);
+        console.log('   ✅ 股權分散數據匯入完成');
+    }
+
+    // 2. 官股動態
+    const govPath = path.join(FORENSIC_DIR, 'government_chips.json');
+    if (fs.existsSync(govPath)) {
+        const data = JSON.parse(fs.readFileSync(govPath, 'utf-8'));
+        const stmt = db.prepare('INSERT OR REPLACE INTO government_chips VALUES (?, ?, ?, ?)');
+        const tx = db.transaction(rows => {
+            for (const r of rows) stmt.run(r.symbol, r.date, r.net_buy_shares, r.net_buy_amount);
+        });
+        tx(data);
+        console.log('   ✅ 官股買賣數據匯入完成');
+    }
+
+    // 3. 借券數據
+    const lendPath = path.join(FORENSIC_DIR, 'security_lending.json');
+    if (fs.existsSync(lendPath)) {
+        const data = JSON.parse(fs.readFileSync(lendPath, 'utf-8'));
+        const stmt = db.prepare('INSERT OR REPLACE INTO security_lending VALUES (?, ?, ?, ?, ?)');
+        const tx = db.transaction(rows => {
+            for (const r of rows)
+                stmt.run(
+                    r.symbol,
+                    r.date,
+                    r.lending_balance,
+                    r.short_selling_balance,
+                    r.shorting_limit || 0
+                );
+        });
+        tx(data);
+        console.log('   ✅ 借券賣出數據匯入完成');
+    }
+
+    // 4. 董監持股
+    const dirPath = path.join(FORENSIC_DIR, 'director_holdings.json');
+    if (fs.existsSync(dirPath)) {
+        const data = JSON.parse(fs.readFileSync(dirPath, 'utf-8'));
+        const stmt = db.prepare('INSERT OR REPLACE INTO director_holdings VALUES (?, ?, ?, ?, ?)');
+        const tx = db.transaction(rows => {
+            for (const r of rows)
+                stmt.run(
+                    r.symbol,
+                    r.date,
+                    r.director_holding_ratio,
+                    r.pawn_ratio,
+                    r.insider_net_change
+                );
+        });
+        tx(data);
+        console.log('   ✅ 董監持股數據匯入完成');
+    }
+
+    // 5. 融資融券
+    const marginPath = path.join(FORENSIC_DIR, 'margin_short.json');
+    if (fs.existsSync(marginPath)) {
+        const data = JSON.parse(fs.readFileSync(marginPath, 'utf8'));
+        const stmt = db.prepare('INSERT OR REPLACE INTO margin_short VALUES (?, ?, ?, ?, ?, ?)');
+        const tx = db.transaction(rows => {
+            for (const r of rows)
+                stmt.run(r.symbol, r.date, r.margin_bal, r.margin_net, r.short_bal, r.short_net);
+        });
+        tx(data);
+        console.log('   ✅ 融資融券數據匯入完成');
+    }
+
+    console.log('');
 }
 
 // 處理 CSV 歷史價格

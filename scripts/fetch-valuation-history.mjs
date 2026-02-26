@@ -1,6 +1,6 @@
 /**
  * 抓取歷史估值資料 (PE, PB, 殖利率)
- * 
+ *
  * 用於繪製「本益比河流圖」與「股淨比河流圖」
  * 每月抓取一次資料，回溯 5 年
  */
@@ -23,7 +23,7 @@ async function fetchWithRetry(url, retries = 3) {
     for (let i = 0; i < retries; i++) {
         try {
             const res = await fetch(url, {
-                headers: { 'User-Agent': 'Mozilla/5.0' }
+                headers: { 'User-Agent': 'Mozilla/5.0' },
             });
             if (res.ok) return await res.json();
             console.warn(`   ⚠️ HTTP ${res.status}, 重試 ${i + 1}/${retries}`);
@@ -79,7 +79,7 @@ async function main() {
             symbol: row[0],
             pe: parseFloat(row[2]) || 0,
             yield: parseFloat(row[3]) || 0,
-            pb: parseFloat(row[4]) || 0
+            pb: parseFloat(row[4]) || 0,
         }));
 
         fs.writeFileSync(outputPath, JSON.stringify(stats, null, 2), 'utf-8');

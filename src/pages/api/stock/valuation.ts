@@ -16,18 +16,22 @@ export const GET: APIRoute = async ({ url }) => {
         const dbPath = path.join(process.cwd(), 'public/data/stocks.db');
         const db = new Database(dbPath, { readonly: true });
 
-        const history = db.prepare(`
+        const history = db
+            .prepare(
+                `
             SELECT date, pe, pb, dividend_yield as yield
             FROM valuation_history
             WHERE symbol = ?
             ORDER BY date DESC
             LIMIT ?
-        `).all(symbol, limit);
+        `
+            )
+            .all(symbol, limit);
 
         db.close();
 
         return new Response(JSON.stringify(history.reverse()), {
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
         });
     } catch (error) {
         console.error('Valuation API error:', error);

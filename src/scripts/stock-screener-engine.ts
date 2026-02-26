@@ -19,9 +19,10 @@ function initScreenerEngine() {
 
     function renderResults(stocks: ScreenerResult[]) {
         rowMap.clear();
-        tbody!.innerHTML = stocks.map(stock => {
-            const isBull = (stock.changePercent || 0) >= 0;
-            return `
+        tbody!.innerHTML = stocks
+            .map(stock => {
+                const isBull = (stock.changePercent || 0) >= 0;
+                return `
                 <tr tabindex="0" class="hover:bg-accent/5 transition-colors cursor-pointer border-b border-border/10" data-link="/stocks/${stock.symbol}" data-symbol="${stock.symbol}">
                     <td class="px-3 py-2 text-xs font-mono text-text-secondary">${stock.symbol}</td>
                     <td class="px-3 py-2 text-sm font-semibold text-text-primary uppercase tracking-tight">${stock.name || '—'}</td>
@@ -33,7 +34,8 @@ function initScreenerEngine() {
                     <td class="px-3 py-2 text-xs font-mono text-right text-text-secondary">${(stock.volume || 0).toLocaleString()}</td>
                     <td class="px-3 py-2 text-xs text-accent font-bold opacity-80">${(stock.matchedStrategies || []).join(' / ')}</td>
                 </tr>`;
-        }).join('');
+            })
+            .join('');
 
         // Cache rows for instant SSE selection
         tbody!.querySelectorAll('tr[data-symbol]').forEach(row => {
@@ -56,12 +58,17 @@ function initScreenerEngine() {
             getEl('active-strategy-label')!.textContent = activeStrategyName;
 
             try {
-                tbody.innerHTML = Array.from({ length: 8 }).map(() => '<tr class="h-12"><td colspan="9"><div class="skeleton h-4"></div></td></tr>').join('');
+                tbody.innerHTML = Array.from({ length: 8 })
+                    .map(
+                        () =>
+                            '<tr class="h-12"><td colspan="9"><div class="skeleton h-4"></div></td></tr>'
+                    )
+                    .join('');
 
                 const res = await fetch('/api/screener', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ strategyId, limit: 50 })
+                    body: JSON.stringify({ strategyId, limit: 50 }),
                 });
                 const data = await res.json();
 
@@ -90,22 +97,32 @@ function initScreenerEngine() {
                         const cell = row.querySelector('.cell-price');
                         if (cell) cell.textContent = ticks[i].price.toFixed(2);
                         row.style.background = 'rgba(59, 130, 246, 0.05)';
-                        setTimeout(() => row.style.background = '', 500);
+                        setTimeout(() => (row.style.background = ''), 500);
                     }
                 }
             });
         });
     }
 
-    document.addEventListener('astro:before-preparation', () => {
-        if (win.__screenerSSE) { win.__screenerSSE.close(); win.__screenerSSE = null; }
-        if (refreshTimeout) clearTimeout(refreshTimeout);
-        rowMap.clear();
-    }, { once: true });
+    document.addEventListener(
+        'astro:before-preparation',
+        () => {
+            if (win.__screenerSSE) {
+                win.__screenerSSE.close();
+                win.__screenerSSE = null;
+            }
+            if (refreshTimeout) clearTimeout(refreshTimeout);
+            rowMap.clear();
+        },
+        { once: true }
+    );
 }
 
 document.addEventListener('astro:page-load', () => {
-    if (!getEl('screener-results')) { screenerRendered = false; return; }
+    if (!getEl('screener-results')) {
+        screenerRendered = false;
+        return;
+    }
     if (screenerRendered) return;
     screenerRendered = true;
     initScreenerEngine();

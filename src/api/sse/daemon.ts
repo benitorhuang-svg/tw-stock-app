@@ -39,10 +39,7 @@ export class TickDaemon extends EventEmitter {
                     this.emit('tick', rawData);
                 } catch (emitErr: unknown) {
                     const msg = emitErr instanceof Error ? emitErr.message : String(emitErr);
-                    console.warn(
-                        '[TickDaemon] Listener execution error (handled):',
-                        msg
-                    );
+                    console.warn('[TickDaemon] Listener execution error (handled):', msg);
                 }
             } catch (err) {
                 console.error('[TickDaemon] Data fetch error:', err);

@@ -10,14 +10,18 @@ interface Props {
 const { title, description } = Astro.props;
 ---
 
-<div class="relative pl-6 border-l border-border flex items-baseline gap-3 py-1">
-    <div class="absolute top-0 left-[-1px] w-px h-4 bg-accent"></div>
-    <span
-        class="text-[10px] font-mono text-accent/80 font-black tracking-widest uppercase flex-shrink-0 w-28"
+<div
+    class="relative pl-6 border-l border-border grid grid-cols-[180px_1fr] items-baseline gap-x-6 py-1 hover:bg-white/[0.02] transition-colors rounded-r-lg group/item"
+>
+    <div
+        class="absolute top-0 left-[-1px] w-px h-full bg-accent/30 group-hover/item:bg-accent transition-colors"
     >
+    </div>
+    <div class="absolute top-0 left-[-1px] w-px h-4 bg-accent"></div>
+    <span class="text-[10px] font-mono text-accent font-black tracking-widest uppercase truncate">
         {title}
     </span>
-    <p class="text-[12px] text-text-secondary whitespace-nowrap">
+    <p class="text-[12px] text-text-secondary leading-relaxed">
         {description}
     </p>
 </div>

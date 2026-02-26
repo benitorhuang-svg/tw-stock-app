@@ -9,7 +9,8 @@ import {
     getConsecutiveDays,
 } from '../../data/institutional';
 import InstitutionalMomentumCards from '../molecules/InstitutionalMomentumCards.astro';
-import ComboDivergenceChart from '../molecules/ComboDivergenceChart.astro';
+import ForensicTrendChart from './ForensicTrendChart.svelte';
+import BrokerTradeMap from './BrokerTradeMap.svelte';
 import OwnershipChart from '../molecules/OwnershipChart.astro';
 import ForensicFlowSummary from '../molecules/ForensicFlowSummary.astro';
 import type { InstitutionalEntity } from '../../types/stock';
@@ -102,13 +103,11 @@ const sparkPoints = (data: number[]) => {
         <!-- Institutional Momentum Cards -->
         <InstitutionalMomentumCards entities={entities} fmtNet={fmtNet} sparkPoints={sparkPoints} />
 
-        <!-- Combo Divergence Chart -->
-        <ComboDivergenceChart
-            symbol={symbol}
-            chartData={chartData}
-            maxNet={maxNet}
-            fmtNet={fmtNet}
-        />
+        <!-- Advanced Forensic Trend Chart (Svelte Integration) -->
+        <ForensicTrendChart client:load symbol={symbol} price={price} />
+
+        <!-- Individual Broker Participant Map -->
+        <BrokerTradeMap client:visible symbol={symbol} />
 
         <!-- Ownership Distribution -->
         <OwnershipChart

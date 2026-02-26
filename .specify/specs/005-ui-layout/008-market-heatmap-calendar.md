@@ -12,18 +12,18 @@
 
 ### 2.1 顏色邏輯
 
-| 狀態 | 條件 | 背景色 | 說明 |
-|------|------|--------|------|
-| **沒開市** | 無 ratio 數據 | `bg-[#1e40af]/50` 藍色 | 週末或假日 |
-| **有開市 (偏多/平盤)** | ratio ≥ 1.0 | `bg-[#ef4444]` 紅色 | 漲多跌少，或漲跌家數持平 |
-| **有開市 (偏空)** | ratio < 1.0 | `bg-[#22c55e]` 綠色 | 跌多漲少 |
+| 狀態                   | 條件          | 背景色                 | 說明                     |
+| ---------------------- | ------------- | ---------------------- | ------------------------ |
+| **沒開市**             | 無 ratio 數據 | `bg-[#1e40af]/50` 藍色 | 週末或假日               |
+| **有開市 (偏多/平盤)** | ratio ≥ 1.0   | `bg-[#ef4444]` 紅色    | 漲多跌少，或漲跌家數持平 |
+| **有開市 (偏空)**      | ratio < 1.0   | `bg-[#22c55e]` 綠色    | 跌多漲少                 |
 
 ### 2.2 特殊狀態（疊加標示）
 
-| 狀態 | 樣式 | 說明 |
-|------|------|------|
-| **Selected (選取中)** | `ring-4 ring-white` | 白色發光外框，保留背景熱力色 |
-| **Today (今日)** | `border-b-[#fbbf24]` | 底部琥珀色指示線 |
+| 狀態                  | 樣式                 | 說明                         |
+| --------------------- | -------------------- | ---------------------------- |
+| **Selected (選取中)** | `ring-4 ring-white`  | 白色發光外框，保留背景熱力色 |
+| **Today (今日)**      | `border-b-[#fbbf24]` | 底部琥珀色指示線             |
 
 ### 2.3 互動動效
 
@@ -36,7 +36,7 @@
 ### 3.1 月份 Ratio 載入
 
 ```
-CyberCalendar (open) 
+CyberCalendar (open)
   → fetch `/api/market/monthly-ratios?year=YYYY&month=M`
   → 回傳 { ratios: { [day]: ratio } }
   → 每個日期方塊即時著色
@@ -57,16 +57,16 @@ CyberCalendar (open)
 
 更新的內容包括：
 
-| Widget | 更新方式 |
-|--------|----------|
-| 成交量 (VOL) | `#market-volume` textContent |
-| 平均漲跌 (VEL) | `#market-change` textContent + class 顏色 |
-| Breadth Bar | `#breadth-bar-up/down/flat` width% |
-| 漲跌家數 | `#breadth-up/down/flat` + `#breadth-range-up/down` |
-| RATIO 色塊 | `#breadth-ratio` + `#breadth-ratio-container` class |
-| 跌幅排行 | `[data-panel="losers"]` innerHTML 重建 |
-| 漲幅排行 | `[data-panel="gainers"]` innerHTML 重建 |
-| 成交熱門 | `[data-panel="volume-leaders"]` innerHTML 重建 |
+| Widget         | 更新方式                                            |
+| -------------- | --------------------------------------------------- |
+| 成交量 (VOL)   | `#market-volume` textContent                        |
+| 平均漲跌 (VEL) | `#market-change` textContent + class 顏色           |
+| Breadth Bar    | `#breadth-bar-up/down/flat` width%                  |
+| 漲跌家數       | `#breadth-up/down/flat` + `#breadth-range-up/down`  |
+| RATIO 色塊     | `#breadth-ratio` + `#breadth-ratio-container` class |
+| 跌幅排行       | `[data-panel="losers"]` innerHTML 重建              |
+| 漲幅排行       | `[data-panel="gainers"]` innerHTML 重建             |
+| 成交熱門       | `[data-panel="volume-leaders"]` innerHTML 重建      |
 
 ### 3.3 無資料處理 (404 Fallback)
 
@@ -83,6 +83,7 @@ CyberCalendar (open)
 ### GET `/api/market/history?date=YYYY-MM-DD`
 
 **Response (200)**:
+
 ```json
 {
   "date": "2026-01-23",
@@ -102,6 +103,7 @@ CyberCalendar (open)
 ### GET `/api/market/monthly-ratios?year=YYYY&month=M`
 
 **Response (200)**:
+
 ```json
 {
   "year": 2026, "month": 1,
@@ -124,10 +126,12 @@ Page:     index.astro               — 組合所有組件 + SSE/Temporal 腳本
 ## 6. 元件 Props 規劃
 
 ### `CyberCalendar.astro`
+
 - Props: `id?: string, value?: string, class?: string`
 - 事件: `change` (透過隱藏 input dispatch)
 
 ### `MarketBreadth.astro`
+
 - Props: `up: number, down: number, flat: number, total: number, class?: string`
 - 內部 IDs: `breadth-bar-up/down/flat`, `breadth-range-up/down`
 

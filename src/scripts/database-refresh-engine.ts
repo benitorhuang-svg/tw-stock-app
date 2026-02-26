@@ -72,17 +72,32 @@ export function initDatabaseRefreshTerminal() {
                 const label = el.querySelector('.stage-label');
 
                 if (s < step) {
-                    icon?.classList.remove('grayscale', 'opacity-40', 'border-border/50', 'bg-surface');
+                    icon?.classList.remove(
+                        'grayscale',
+                        'opacity-40',
+                        'border-border/50',
+                        'bg-surface'
+                    );
                     icon?.classList.add('border-accent/40', 'bg-accent/10', 'text-accent');
                     label?.classList.remove('text-white/40');
                     label?.classList.add('text-accent');
                 } else if (s === step) {
-                    icon?.classList.remove('grayscale', 'opacity-40', 'border-border/50', 'bg-surface');
+                    icon?.classList.remove(
+                        'grayscale',
+                        'opacity-40',
+                        'border-border/50',
+                        'bg-surface'
+                    );
                     icon?.classList.add('border-accent', 'bg-accent/20');
                     label?.classList.remove('text-white/40');
                     label?.classList.add('text-white', 'font-black');
                 } else {
-                    icon?.classList.add('grayscale', 'opacity-40', 'border-border/50', 'bg-surface');
+                    icon?.classList.add(
+                        'grayscale',
+                        'opacity-40',
+                        'border-border/50',
+                        'bg-surface'
+                    );
                     icon?.classList.remove('border-accent', 'bg-accent/20', 'text-accent');
                     label?.classList.add('text-white/40');
                     label?.classList.remove('text-white', 'font-black', 'text-accent');

@@ -41,7 +41,7 @@ async function getServerDb() {
         // Tuned for Read-Mostly Heavy Workloads
         serverDb.pragma('journal_mode = WAL');
         serverDb.pragma('synchronous = OFF');
-        serverDb.pragma('cache_size = -64000');   // 64MB Cache
+        serverDb.pragma('cache_size = -64000'); // 64MB Cache
         serverDb.pragma('mmap_size = 536870912'); // 512MB Memory Mapping
         serverDb.pragma('temp_store = MEMORY');
 
@@ -83,45 +83,60 @@ export async function getAllStocksWithPrices(): Promise<StockWithPrice[]> {
 }
 
 export async function getStock(symbol: string): Promise<StockWithPrice | null> {
-    return queryOne<StockWithPrice>(`
+    return queryOne<StockWithPrice>(
+        `
         SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
         FROM stocks s LEFT JOIN latest_prices p ON s.symbol = p.symbol
         WHERE s.symbol = ?
-    `, [symbol]);
+    `,
+        [symbol]
+    );
 }
 
 export async function getTopGainers(limit: number = 10): Promise<StockWithPrice[]> {
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
         FROM stocks s JOIN latest_prices p ON s.symbol = p.symbol
         WHERE p.change_pct > 0 ORDER BY p.change_pct DESC LIMIT ?
-    `, [limit]);
+    `,
+        [limit]
+    );
 }
 
 export async function getTopLosers(limit: number = 10): Promise<StockWithPrice[]> {
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
         FROM stocks s JOIN latest_prices p ON s.symbol = p.symbol
         WHERE p.change_pct < 0 ORDER BY p.change_pct ASC LIMIT ?
-    `, [limit]);
+    `,
+        [limit]
+    );
 }
 
 export async function getTopByVolume(limit: number = 10): Promise<StockWithPrice[]> {
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
         FROM stocks s JOIN latest_prices p ON s.symbol = p.symbol
         ORDER BY p.volume DESC LIMIT ?
-    `, [limit]);
+    `,
+        [limit]
+    );
 }
 
 export async function searchStocks(keyword: string, limit: number = 50): Promise<StockWithPrice[]> {
     const pattern = `%${keyword}%`;
-    return query<StockWithPrice>(`
+    return query<StockWithPrice>(
+        `
         SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
         FROM stocks s LEFT JOIN latest_prices p ON s.symbol = p.symbol
         WHERE s.symbol LIKE ? OR s.name LIKE ?
         ORDER BY s.symbol LIMIT ?
-    `, [pattern, pattern, limit]);
+    `,
+        [pattern, pattern, limit]
+    );
 }
 
 export async function screenStocks(criteria: any): Promise<StockWithPrice[]> {
@@ -134,13 +149,15 @@ export async function getDbStats() {
     const results = await Promise.all([
         queryOne<{ count: number }>('SELECT COUNT(*) as count FROM stocks'),
         queryOne<{ count: number }>('SELECT COUNT(*) as count FROM price_history'),
-        queryOne<{ date: string }>('SELECT MAX(date) as date FROM latest_prices')
+        queryOne<{ date: string }>('SELECT MAX(date) as date FROM latest_prices'),
     ]);
     return {
         stockCount: results[0]?.count || 0,
         historyRecordCount: results[1]?.count || 0,
-        lastUpdateDate: results[2]?.date || 'N/A'
+        lastUpdateDate: results[2]?.date || 'N/A',
     };
 }
 
-export function isServer() { return typeof window === 'undefined'; }
+export function isServer() {
+    return typeof window === 'undefined';
+}

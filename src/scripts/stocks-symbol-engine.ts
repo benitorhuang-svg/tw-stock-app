@@ -20,17 +20,21 @@ function setupTabs() {
         technical: document.getElementById('tab-technical'),
         chips: document.getElementById('tab-chips'),
         fundamentals: document.getElementById('tab-fundamentals'),
-        alerts: document.getElementById('tab-alerts')
+        alerts: document.getElementById('tab-alerts'),
     };
 
     tabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
+        tab.addEventListener('click', e => {
             const targetId = (e.currentTarget as HTMLElement).dataset.tab;
             if (!targetId) return;
 
             // Update UI
             tabs.forEach(t => t.classList.remove('active', 'border-accent', 'text-accent'));
-            (e.currentTarget as HTMLElement).classList.add('active', 'border-accent', 'text-accent');
+            (e.currentTarget as HTMLElement).classList.add(
+                'active',
+                'border-accent',
+                'text-accent'
+            );
 
             // Switch content
             Object.values(contents).forEach(c => c?.classList.add('hidden'));
@@ -38,7 +42,8 @@ function setupTabs() {
             if (targetContent) targetContent.classList.remove('hidden');
 
             // Trigger custom events for specific tab initializations if needed
-            if (targetId === 'technical') window.dispatchEvent(new CustomEvent('tab-switched-technical'));
+            if (targetId === 'technical')
+                window.dispatchEvent(new CustomEvent('tab-switched-technical'));
         });
     });
 }

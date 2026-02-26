@@ -21,7 +21,12 @@ export interface Point {
 /**
  * Calculate Moving Average (MA) as an SVG Path
  */
-export function calcMAPath(candles: Candle[], days: number, gap: number, pToY: (p: number) => number): string {
+export function calcMAPath(
+    candles: Candle[],
+    days: number,
+    gap: number,
+    pToY: (p: number) => number
+): string {
     const points = candles
         .map((_, i) => {
             if (i < days - 1) return null;

@@ -17,21 +17,22 @@ const SHELL_ASSETS = ['./', './manifest.json'];
 // ── Install: Precache shell ──
 self.addEventListener('install', event => {
     self.skipWaiting();
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_ASSETS))
-    );
+    event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_ASSETS)));
 });
 
 // ── Activate: Clean old caches ──
 self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys().then(names =>
-            Promise.all(
-                names
-                    .filter(n => n !== CACHE_NAME && n !== DATA_CACHE)
-                    .map(n => caches.delete(n))
+        caches
+            .keys()
+            .then(names =>
+                Promise.all(
+                    names
+                        .filter(n => n !== CACHE_NAME && n !== DATA_CACHE)
+                        .map(n => caches.delete(n))
+                )
             )
-        ).then(() => self.clients.claim())
+            .then(() => self.clients.claim())
     );
 });
 
@@ -125,6 +126,8 @@ async function staleWhileRevalidate(request, cacheName) {
 }
 
 function isStaticAsset(pathname) {
-    return /\.(js|css|woff2?|ttf|otf|png|jpg|jpeg|svg|webp|ico|avif)$/.test(pathname)
-        || pathname.includes('/_astro/');
+    return (
+        /\.(js|css|woff2?|ttf|otf|png|jpg|jpeg|svg|webp|ico|avif)$/.test(pathname) ||
+        pathname.includes('/_astro/')
+    );
 }

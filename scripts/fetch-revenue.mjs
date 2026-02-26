@@ -29,7 +29,9 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
             const res = await fetch(url, { signal: controller.signal });
             clearTimeout(timeout);
             if (res.ok) return await res.json();
-            console.warn(`⚠️ 伺服器 HTTP ${res.status}: ${url}, 正在進行第 ${i + 1}/${retries} 次重試`);
+            console.warn(
+                `⚠️ 伺服器 HTTP ${res.status}: ${url}, 正在進行第 ${i + 1}/${retries} 次重試`
+            );
         } catch (e) {
             clearTimeout(timeout);
             console.warn(`⚠️ 請求錯誤 ${url}: ${e.message}, 正在進行第 ${i + 1}/${retries} 次重試`);

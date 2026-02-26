@@ -11,13 +11,13 @@ export const GET: APIRoute = async () => {
             status: 200,
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 'public, max-age=60'
-            }
+                'Cache-Control': 'public, max-age=60',
+            },
         });
     } catch (error) {
         return new Response(JSON.stringify({ error: (error as Error).message }), {
             status: 500,
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
         });
     }
 };

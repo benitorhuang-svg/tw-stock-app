@@ -16,9 +16,7 @@ export function initTheme() {
     }
 
     if (icon) {
-        icon.textContent = document.documentElement.classList.contains('dark')
-            ? '🌙'
-            : '☀️';
+        icon.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️';
     }
 }
 
@@ -61,4 +59,3 @@ document.addEventListener('mouseover', (e: MouseEvent) => {
         });
     }
 });
-

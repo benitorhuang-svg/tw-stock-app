@@ -1,47 +1,47 @@
 name: Auto Update Market Data
 
 on:
-  schedule:
-    # 每天台灣時間 16:30 執行 (UTC 08:30) (收盤後)
-    - cron: "30 8 * * 1-5"
-  workflow_dispatch: # 允許手動觸發
+    schedule:
+        # 每天台灣時間 16:30 執行 (UTC 08:30) (收盤後)
+        - cron: '30 8 * * 1-5'
+    workflow_dispatch: # 允許手動觸發
 
 permissions:
-  contents: write
+    contents: write
 
 jobs:
-  update-data:
-    runs-on: ubuntu-latest
+    update-data:
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm ci
+            - name: Install Dependencies
+              run: npm ci
 
-      - name: Generate PWA Icons (if missing)
-        run: |
-          if [ ! -d "public/icons" ] || [ ! -f "public/icons/icon-192.png" ]; then
-              npm install -D sharp
-              node scripts/generate-pwa-icons.mjs
-          fi
+            - name: Generate PWA Icons (if missing)
+              run: |
+                  if [ ! -d "public/icons" ] || [ ! -f "public/icons/icon-192.png" ]; then
+                      npm install -D sharp
+                      node scripts/generate-pwa-icons.mjs
+                  fi
 
-      - name: Fetch and Build Data
-        run: |
-          npm run fetch:all
-          npm run build-db
+            - name: Fetch and Build Data
+              run: |
+                  npm run fetch:all
+                  npm run build-db
 
-      - name: Commit and Push changes
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f public/data/*.json public/icons/ public/data/**/*.json
-          git commit -m "chore: auto-update market data snapshots [skip ci]" || echo "No changes to commit"
-          git push
+            - name: Commit and Push changes
+              run: |
+                  git config --local user.name "github-actions[bot]"
+                  git config --local user.email "github-actions[bot]@users.noreply.github.com"
+                  git add -f public/data/*.json public/icons/ public/data/**/*.json
+                  git commit -m "chore: auto-update market data snapshots [skip ci]" || echo "No changes to commit"
+                  git push

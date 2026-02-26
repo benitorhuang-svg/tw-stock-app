@@ -41,7 +41,7 @@ export const GET: APIRoute = ({ request }) => {
                 tickDaemon.off('tick', sendTick);
                 try {
                     controller.close();
-                } catch (err) { }
+                } catch (err) {}
                 console.log('[SSE] Client disconnected (abort).');
             });
         },

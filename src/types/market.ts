@@ -40,6 +40,43 @@ export interface InstitutionalData {
     turnover: number;
     chipsIntensity: number;
     latest: Record<string, number>;
+    // Forensic Expansion
+    shareholderDist?: {
+        total: number;
+        large1000: number; // 1000+ shares ratio (%)
+        small10: number; // <10 shares ratio (%)
+    };
+    government?: {
+        netBuy: number; // Shares
+        netAmount: number; // K
+    };
+    brokerChip?: {
+        concentration: number; // %
+        netNet: number; // (Top5 Buy - Top5 Sell)
+    };
+    director?: {
+        ratio: number;
+        pawn: number;
+        change: number;
+    };
+    lending?: {
+        balance: number;
+        shorting: number;
+    };
+    dealerDet?: {
+        prop: number;
+        hedge: number;
+    };
+}
+
+export interface InstitutionalSummary {
+    foreign: number;
+    invest: number;
+    dealer: number;
+    total: number;
+    // Forensic Summary
+    govTotalAmount?: number; // Total Gov Banks Net Amount
+    avgConcentration?: number;
 }
 
 export interface MarketStoreState {
@@ -48,6 +85,17 @@ export interface MarketStoreState {
         foreign: InstitutionalData[];
         invest: InstitutionalData[];
         dealer: InstitutionalData[];
+        summary: InstitutionalSummary;
+        trend: any[];
+        date?: string;
+        forensicAlpha?: {
+            highConcentration: InstitutionalData[];
+            govSupport: InstitutionalData[];
+            mainAccumulation: InstitutionalData[];
+            insider: InstitutionalData[];
+            shorting: InstitutionalData[];
+        };
+        forensicSignals?: any[]; // For future insights
     };
     breadth: MarketBreadth;
     lastUpdateTime: string;

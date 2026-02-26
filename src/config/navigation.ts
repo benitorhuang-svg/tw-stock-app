@@ -13,5 +13,4 @@ export const NAV_ITEMS: NavItem[] = [
     { label: '分析', path: '/stocks', icon: '📈' },
     { label: '自選', path: '/watchlist', icon: '⭐' },
     { label: '策略回測', path: '/strategy', icon: '🧪' },
-
 ];

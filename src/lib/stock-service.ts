@@ -5,7 +5,7 @@ import type {
     Fundamental,
     Dividend,
     PortfolioItem,
-    Transaction
+    Transaction,
 } from '../types/database';
 import type { SqlValue } from './database';
 

@@ -1,6 +1,6 @@
 /**
  * format.ts — Shared Formatting Utilities (Atom Layer)
- * 
+ *
  * Consolidates all duplicated formatting functions across the codebase
  * into a single source of truth.
  */

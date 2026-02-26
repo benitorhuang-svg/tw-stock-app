@@ -9,7 +9,10 @@ let pollInterval: ReturnType<typeof setInterval> | null = null;
 let worker: Worker | null = null;
 
 function cleanupLive() {
-    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
 }
 
 document.addEventListener('astro:before-swap', cleanupLive, { once: true });
@@ -51,7 +54,16 @@ document.addEventListener('astro:page-load', () => {
 
             // Forensic Signals (Still on main thread for simple event dispatch)
             processed.forEach((s: any) => {
-                detectSignals(s.code, s.name, s.price, s.price - s.change, s.vol * 1000, s.ma20, s.rsi, s.avgVol);
+                detectSignals(
+                    s.code,
+                    s.name,
+                    s.price,
+                    s.price - s.change,
+                    s.vol * 1000,
+                    s.ma20,
+                    s.rsi,
+                    s.avgVol
+                );
             });
         };
     }
@@ -97,7 +109,7 @@ document.addEventListener('astro:page-load', () => {
                         ma5: s._ma5,
                         ma20: s._ma20,
                         rsi: s._rsi,
-                        volume: s._avgVol
+                        volume: s._avgVol,
                     };
                 });
 
@@ -109,31 +121,72 @@ document.addEventListener('astro:page-load', () => {
     }
 
     const seenSignals = new Set<string>();
-    function detectSignals(code: string, name: string, price: number, prev: number, vol: number, ma20: number, rsi: number, avgVol: number) {
+    function detectSignals(
+        code: string,
+        name: string,
+        price: number,
+        prev: number,
+        vol: number,
+        ma20: number,
+        rsi: number,
+        avgVol: number
+    ) {
         if (price === 0 || isNaN(price)) return;
 
         // Signal logic...
         if (avgVol > 0 && vol > avgVol * 2.5 && vol > 1000000) {
-            triggerSignal(code, name, 'VOLUME_SPIKE', `異常爆量! 當前成交量已達均量 2.5 倍以上`, 'warning');
+            triggerSignal(
+                code,
+                name,
+                'VOLUME_SPIKE',
+                `異常爆量! 當前成交量已達均量 2.5 倍以上`,
+                'warning'
+            );
         }
         if (ma20 > 0 && prev < ma20 && price > ma20) {
-            triggerSignal(code, name, 'MA_BREAK', `強勢突破! 價格成功站上 20日均線 (${ma20.toFixed(2)})`, 'success');
+            triggerSignal(
+                code,
+                name,
+                'MA_BREAK',
+                `強勢突破! 價格成功站上 20日均線 (${ma20.toFixed(2)})`,
+                'success'
+            );
         }
         if (rsi > 75) {
-            triggerSignal(code, name, 'RSI_EXTREME', `超買警告: RSI (${rsi.toFixed(1)}) 處於極度過熱區間`, 'warning');
+            triggerSignal(
+                code,
+                name,
+                'RSI_EXTREME',
+                `超買警告: RSI (${rsi.toFixed(1)}) 處於極度過熱區間`,
+                'warning'
+            );
         } else if (rsi < 25 && rsi > 0) {
-            triggerSignal(code, name, 'RSI_EXTREME', `超跌信號: RSI (${rsi.toFixed(1)}) 進入深度超賣區間`, 'info');
+            triggerSignal(
+                code,
+                name,
+                'RSI_EXTREME',
+                `超跌信號: RSI (${rsi.toFixed(1)}) 進入深度超賣區間`,
+                'info'
+            );
         }
     }
 
-    function triggerSignal(symbol: string, name: string, type: string, message: string, severity: string) {
+    function triggerSignal(
+        symbol: string,
+        name: string,
+        type: string,
+        message: string,
+        severity: string
+    ) {
         const key = `${symbol}_${type}`;
         if (seenSignals.has(key)) return;
         seenSignals.add(key);
 
-        window.dispatchEvent(new CustomEvent('tw-signal', {
-            detail: { symbol, name, type, message, severity }
-        }));
+        window.dispatchEvent(
+            new CustomEvent('tw-signal', {
+                detail: { symbol, name, type, message, severity },
+            })
+        );
     }
 
     // ─── Polling control ──────────────────────────────
@@ -141,7 +194,8 @@ document.addEventListener('astro:page-load', () => {
         isPolling = true;
         sessionStorage.setItem('tw-live-polling', 'true');
         toggleBtn!.textContent = '停止監測';
-        toggleBtn!.className = 'h-9 px-6 font-black tracking-widest bg-bearish/10 text-bearish border border-bearish/30 rounded-lg text-[10px] uppercase transition-colors ring-1 ring-bearish/20';
+        toggleBtn!.className =
+            'h-9 px-6 font-black tracking-widest bg-bearish/10 text-bearish border border-bearish/30 rounded-lg text-[10px] uppercase transition-colors ring-1 ring-bearish/20';
         getEl('hourglass-container')?.classList.remove('hidden');
         fetchUpdate();
         if (pollInterval) clearInterval(pollInterval);
@@ -152,14 +206,16 @@ document.addEventListener('astro:page-load', () => {
         isPolling = false;
         sessionStorage.setItem('tw-live-polling', 'false');
         toggleBtn!.textContent = '開始即時監測';
-        toggleBtn!.className = 'h-9 px-6 font-black tracking-widest bg-accent text-white rounded-lg border-none text-[10px] uppercase transition-colors shadow-md';
+        toggleBtn!.className =
+            'h-9 px-6 font-black tracking-widest bg-accent text-white rounded-lg border-none text-[10px] uppercase transition-colors shadow-md';
         getEl('hourglass-container')?.classList.add('hidden');
         cleanupLive();
     }
 
     // ─── Event bindings ────────────────────────────────
     toggleBtn.addEventListener('click', () => {
-        if (isPolling) stopPolling(); else startPolling();
+        if (isPolling) stopPolling();
+        else startPolling();
     });
 
     // Listen to filter changes
@@ -186,4 +242,3 @@ document.addEventListener('astro:page-load', () => {
     // Auto-resume
     if (sessionStorage.getItem('tw-live-polling') === 'true') startPolling();
 });
-

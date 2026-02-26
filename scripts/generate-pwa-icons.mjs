@@ -61,10 +61,7 @@ async function main() {
 
         if (useSharp) {
             try {
-                await sharp(Buffer.from(svgContent))
-                    .resize(size, size)
-                    .png()
-                    .toFile(outPath);
+                await sharp(Buffer.from(svgContent)).resize(size, size).png().toFile(outPath);
                 console.log(`  ✅ icon-${size}.png (${size}x${size})`);
             } catch (err) {
                 // Fallback: save as SVG

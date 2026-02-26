@@ -128,9 +128,9 @@ describe('Database Module', () => {
 
     describe('query', () => {
         it('查詢無結果時應返回空陣列', async () => {
-            dbMock.exec.mockReturnValue([ 
-// @ts-ignore
-]);
+            dbMock.exec.mockReturnValue([
+                // @ts-ignore
+            ]);
 
             const { query } = await import('./database');
             const result = await query('SELECT * FROM stocks');
@@ -139,8 +139,8 @@ describe('Database Module', () => {
         });
 
         it('應將結果轉換為物件陣列', async () => {
-            dbMock.exec.mockReturnValue([ 
-// @ts-ignore
+            dbMock.exec.mockReturnValue([
+                // @ts-ignore
 
                 {
                     columns: ['symbol', 'name'],

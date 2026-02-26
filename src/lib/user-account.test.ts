@@ -38,7 +38,7 @@ beforeEach(() => {
     mockLocalStorage.setItem.mockClear();
     mockLocalStorage.removeItem.mockClear();
     vi.stubGlobal('localStorage', mockLocalStorage);
-    vi.spyOn(console, 'error').mockImplementation(() => { });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('User Account Module', () => {

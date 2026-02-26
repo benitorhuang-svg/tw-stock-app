@@ -1,4 +1,8 @@
-import type { StockWithDetails as StockFullData, StockBasicInfo, LatestPriceData } from '../types/stock';
+import type {
+    StockWithDetails as StockFullData,
+    StockBasicInfo,
+    LatestPriceData,
+} from '../types/stock';
 export type { StockFullData, StockBasicInfo, LatestPriceData };
 
 // Redundant interfaces removed, using centralized ones from ../types/stock

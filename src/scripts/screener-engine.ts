@@ -101,11 +101,7 @@ function setupScreener() {
                 btn.classList.add('bg-bullish/20', 'text-bullish', 'border-bullish/40');
                 setTimeout(() => {
                     btn.innerHTML = originalText;
-                    btn.classList.remove(
-                        'bg-bullish/20',
-                        'text-bullish',
-                        'border-bullish/40'
-                    );
+                    btn.classList.remove('bg-bullish/20', 'text-bullish', 'border-bullish/40');
                 }, 2000);
             }
         }
@@ -145,7 +141,7 @@ interface ScreenerApiResult {
 async function execute_entity_isolation() {
     window.dispatchEvent(
         new CustomEvent('tw-screener-update', {
-            detail: { type: 'SCREENER_LOADING' }
+            detail: { type: 'SCREENER_LOADING' },
         })
     );
     try {
@@ -167,12 +163,10 @@ function renderResults(results: ScreenerApiResult[]) {
 
     window.dispatchEvent(
         new CustomEvent('tw-screener-update', {
-            detail: { type: 'SCREENER_DATA', payload: { results } }
+            detail: { type: 'SCREENER_DATA', payload: { results } },
         })
     );
 }
-
-
 
 // Initialize Screen Engine
 document.addEventListener('astro:page-load', () => {

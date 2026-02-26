@@ -30,8 +30,9 @@ function setupFilterUI() {
         trendDisplay.textContent = prefix + val.toFixed(1) + '%';
 
         // Swap class atomically (single className assignment avoids 3x classList calls)
-        trendDisplay.className = `text-[9px] font-mono font-black leading-none ${val > 0 ? 'text-bullish' : val < 0 ? 'text-bearish' : 'text-accent'
-            }`;
+        trendDisplay.className = `text-[9px] font-mono font-black leading-none ${
+            val > 0 ? 'text-bullish' : val < 0 ? 'text-bearish' : 'text-accent'
+        }`;
     }
 
     // ─── Volume display ────────────────────────
@@ -47,8 +48,9 @@ function setupFilterUI() {
         const val = parseFloat(ma20Input.value);
         const prefix = val > 0 ? '+' : '';
         ma20Display.textContent = prefix + val.toFixed(1);
-        ma20Display.className = `text-[9px] font-mono font-black leading-none ${val > 0 ? 'text-bullish' : val < 0 ? 'text-bearish' : 'text-accent'
-            }`;
+        ma20Display.className = `text-[9px] font-mono font-black leading-none ${
+            val > 0 ? 'text-bullish' : val < 0 ? 'text-bearish' : 'text-accent'
+        }`;
     }
 
     // ─── Trend controls ────────────────────────

@@ -52,7 +52,7 @@ async function loadTable(name: string, page = 1) {
     // Tell Svelte to clear the old heavy DOM immediately
     window.dispatchEvent(
         new CustomEvent('tw-db-update', {
-            detail: { type: 'DB_LOADING' }
+            detail: { type: 'DB_LOADING' },
         })
     );
 
@@ -107,15 +107,16 @@ async function loadTable(name: string, page = 1) {
                             columns: data.columns,
                             rows: data.rows,
                             total: data.total,
-                            page: page
-                        }
-                    }
+                            page: page,
+                        },
+                    },
                 })
             );
         });
 
         const queryTimeLabel = getEl('query-time');
-        if (queryTimeLabel) queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
+        if (queryTimeLabel)
+            queryTimeLabel.textContent = `${Math.round(performance.now() - startTime)}ms`;
     } catch (err: unknown) {
         if ((err as Error).name === 'AbortError') return;
         console.error(err);
@@ -141,28 +142,39 @@ function initExplorer() {
         let prefetchTid: number | null = null;
 
         // Hover Pre-fetch: Predictive loading for "Snap-in" feel
-        sidebar.addEventListener('mouseenter', (e) => {
-            const btn = (e.target as HTMLElement).closest('button[data-table]');
-            if (!btn) return;
-            const targetTable = (btn as HTMLElement).dataset.table;
-            if (targetTable && targetTable !== activeTable && targetTable !== 'refresh') {
-                if (prefetchTid) clearTimeout(prefetchTid);
-                prefetchTid = window.setTimeout(() => {
-                    fetch(`/api/db/${targetTable}?limit=${limit}&offset=0`).catch(() => { });
-                }, 150);
-            }
-        }, { capture: true });
+        sidebar.addEventListener(
+            'mouseenter',
+            e => {
+                const btn = (e.target as HTMLElement).closest('button[data-table]');
+                if (!btn) return;
+                const targetTable = (btn as HTMLElement).dataset.table;
+                if (targetTable && targetTable !== activeTable && targetTable !== 'refresh') {
+                    if (prefetchTid) clearTimeout(prefetchTid);
+                    prefetchTid = window.setTimeout(() => {
+                        fetch(`/api/db/${targetTable}?limit=${limit}&offset=0`).catch(() => {});
+                    }, 150);
+                }
+            },
+            { capture: true }
+        );
 
         sidebar.addEventListener('click', e => {
             const btn = (e.target as HTMLElement).closest('button[data-table]');
             if (!btn) return;
 
             activeTable = (btn as HTMLElement).dataset.table || '';
-            sidebar.querySelectorAll('button[data-table]').forEach(b => b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent'));
+            sidebar
+                .querySelectorAll('button[data-table]')
+                .forEach(b =>
+                    b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent')
+                );
             btn.classList.add('bg-white/[0.1]', 'text-accent', 'border-l-accent');
 
             if (activeTable === 'refresh') {
-                if (activeController) { activeController.abort(); activeController = null; }
+                if (activeController) {
+                    activeController.abort();
+                    activeController = null;
+                }
                 toggleOpt('grid-container', 'add', 'hidden');
                 toggleOpt('explorer-toolbar', 'add', 'hidden');
                 toggleOpt('refresh-area', 'remove', 'hidden');
@@ -205,21 +217,29 @@ function initExplorer() {
         let isSyncingBottom = false;
 
         // Optimized sync with micro-task
-        topScrollbar.addEventListener('scroll', function (this: HTMLElement) {
-            if (!isSyncingTop) {
-                isSyncingBottom = true;
-                tableScrollContainer!.scrollLeft = this.scrollLeft;
-            }
-            isSyncingTop = false;
-        }, { passive: true });
+        topScrollbar.addEventListener(
+            'scroll',
+            function (this: HTMLElement) {
+                if (!isSyncingTop) {
+                    isSyncingBottom = true;
+                    tableScrollContainer!.scrollLeft = this.scrollLeft;
+                }
+                isSyncingTop = false;
+            },
+            { passive: true }
+        );
 
-        tableScrollContainer.addEventListener('scroll', function (this: HTMLElement) {
-            if (!isSyncingBottom) {
-                isSyncingTop = true;
-                topScrollbar!.scrollLeft = this.scrollLeft;
-            }
-            isSyncingBottom = false;
-        }, { passive: true });
+        tableScrollContainer.addEventListener(
+            'scroll',
+            function (this: HTMLElement) {
+                if (!isSyncingBottom) {
+                    isSyncingTop = true;
+                    topScrollbar!.scrollLeft = this.scrollLeft;
+                }
+                isSyncingBottom = false;
+            },
+            { passive: true }
+        );
 
         if (topScrollContent && dataTable) {
             if (rsObserver) rsObserver.disconnect();
@@ -265,9 +285,8 @@ function initExplorer() {
         es.addEventListener('tick', e => {
             try {
                 const ticks = JSON.parse(e.data);
-                if (getEl('tick-count'))
-                    getEl('tick-count')!.textContent = String(ticks.length);
-            } catch { }
+                if (getEl('tick-count')) getEl('tick-count')!.textContent = String(ticks.length);
+            } catch {}
         });
         document.addEventListener('astro:before-swap', () => es.close(), { once: true });
     }
@@ -297,29 +316,37 @@ function initExplorer() {
         backdrop.addEventListener('click', () => toggleSidebar(true));
 
         // Auto-close ONLY on mobile selection
-        sidebar.addEventListener('click', (e) => {
+        sidebar.addEventListener('click', e => {
             if ((e.target as HTMLElement).closest('button[data-table]')) {
                 if (isMobile()) toggleSidebar(true);
             }
         });
 
         // DESKTOP RECOVERY: Force reset if window is resized above mobile
-        window.addEventListener('resize', () => {
-            if (!isMobile()) {
-                sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.add('hidden');
-            }
-        }, { passive: true });
+        window.addEventListener(
+            'resize',
+            () => {
+                if (!isMobile()) {
+                    sidebar.classList.remove('-translate-x-full');
+                    backdrop.classList.add('hidden');
+                }
+            },
+            { passive: true }
+        );
     }
 
     // Cleanup on navigation
-    document.addEventListener('astro:before-swap', () => {
-        if (rsObserver) {
-            rsObserver.disconnect();
-            rsObserver = null;
-        }
-        if (activeController) activeController.abort();
-    }, { once: true });
+    document.addEventListener(
+        'astro:before-swap',
+        () => {
+            if (rsObserver) {
+                rsObserver.disconnect();
+                rsObserver = null;
+            }
+            if (activeController) activeController.abort();
+        },
+        { once: true }
+    );
 }
 
 let explorerInitialized = false;

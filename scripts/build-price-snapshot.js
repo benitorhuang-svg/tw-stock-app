@@ -92,7 +92,12 @@ async function buildPriceSnapshot() {
     // 籌碼連買計算
     const streakMap = {};
     if (fs.existsSync(CHIPS_DIR)) {
-        const chipFiles = fs.readdirSync(CHIPS_DIR).filter(f => f.endsWith('.json')).sort().reverse().slice(0, 20);
+        const chipFiles = fs
+            .readdirSync(CHIPS_DIR)
+            .filter(f => f.endsWith('.json'))
+            .sort()
+            .reverse()
+            .slice(0, 20);
         console.log(`  🤝 正在分析 ${chipFiles.length} 份籌碼檔案以計算連買/連賣天數...`);
 
         const history = {}; // symbol -> days[]
@@ -104,12 +109,12 @@ async function buildPriceSnapshot() {
                     if (!history[item.symbol]) history[item.symbol] = [];
                     history[item.symbol].push(item);
                 }
-            } catch (e) { }
+            } catch (e) {}
         }
 
         for (const symbol in history) {
             const days = history[symbol];
-            const calc = (key) => {
+            const calc = key => {
                 let streak = 0;
                 if (!days[0] || days[0][key] === 0) return 0;
                 const isBuy = days[0][key] > 0;
@@ -123,7 +128,7 @@ async function buildPriceSnapshot() {
             streakMap[symbol] = {
                 foreign: calc('foreign_inv'),
                 trust: calc('invest_trust'),
-                dealer: calc('dealer')
+                dealer: calc('dealer'),
             };
         }
     }

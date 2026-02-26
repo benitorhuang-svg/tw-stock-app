@@ -7,10 +7,17 @@ let dashboardRendered = false;
 let updateTid: number | null = null;
 
 import { getEl } from '../lib/dom';
-import { claimOracleStatus, broadcastQuantumUpdate, subscribeToQuantumData } from '../lib/sse-messenger';
+import {
+    claimOracleStatus,
+    broadcastQuantumUpdate,
+    subscribeToQuantumData,
+} from '../lib/sse-messenger';
 
 function cleanupSSE() {
-    if (activeSSE) { activeSSE.close(); activeSSE = null; }
+    if (activeSSE) {
+        activeSSE.close();
+        activeSSE = null;
+    }
 }
 
 function fmtVol(v: number): string {
@@ -24,14 +31,22 @@ function updateUI(ticks: any[], refs: any) {
     if (updateTid) return;
     updateTid = requestAnimationFrame(() => {
         try {
-            let up = 0, down = 0, flat = 0, totalVol = 0, totalPct = 0, count = 0, latestDate = '';
+            let up = 0,
+                down = 0,
+                flat = 0,
+                totalVol = 0,
+                totalPct = 0,
+                count = 0,
+                latestDate = '';
             for (let i = 0, len = ticks.length; i < len; i++) {
                 const t = ticks[i];
                 const price = t.Close || t.price || 0;
                 const chg = t.ChangePct || t.changePercent || 0;
                 if (price > 0) {
-                    if (chg > 0) up++; else if (chg < 0) down++; else flat++;
-                    totalVol += (t.Volume || t.volume || 0);
+                    if (chg > 0) up++;
+                    else if (chg < 0) down++;
+                    else flat++;
+                    totalVol += t.Volume || t.volume || 0;
                     totalPct += chg;
                     count++;
                     if (t.Date) latestDate = t.Date;
@@ -49,9 +64,13 @@ function updateUI(ticks: any[], refs: any) {
             }
             if (refs.date && latestDate) refs.date.textContent = latestDate;
             if (refs.barUp) refs.barUp.style.width = (total > 0 ? (up / total) * 100 : 0) + '%';
-            if (refs.barDown) refs.barDown.style.width = (total > 0 ? (down / total) * 100 : 0) + '%';
-            if (refs.barFlat) refs.barFlat.style.width = (total > 0 ? (flat / total) * 100 : 0) + '%';
-        } finally { updateTid = null; }
+            if (refs.barDown)
+                refs.barDown.style.width = (total > 0 ? (down / total) * 100 : 0) + '%';
+            if (refs.barFlat)
+                refs.barFlat.style.width = (total > 0 ? (flat / total) * 100 : 0) + '%';
+        } finally {
+            updateTid = null;
+        }
     });
 }
 
@@ -78,7 +97,7 @@ function setupDashboardSync() {
     cleanupSSE();
 
     // Subscribe to quantum channel (Shared across tabs)
-    subscribeToQuantumData('tick', (ticks) => updateUI(ticks, refs));
+    subscribeToQuantumData('tick', ticks => updateUI(ticks, refs));
 
     // Election: Only one tab (the Oracle) opens the actually SSE stream
     if (claimOracleStatus()) {
@@ -98,21 +117,31 @@ function setupDashboardSync() {
         if (res.ok && !data.error) {
             const { summary, gainers, losers, volumeLeaders } = data;
             const total = summary.up + summary.down + summary.flat;
-            if (refs.ratio) refs.ratio.textContent = summary.down > 0 ? (summary.up / summary.down).toFixed(2) : 'MAX';
+            if (refs.ratio)
+                refs.ratio.textContent =
+                    summary.down > 0 ? (summary.up / summary.down).toFixed(2) : 'MAX';
             if (refs.up) refs.up.textContent = String(summary.up);
             if (refs.down) refs.down.textContent = String(summary.down);
             if (refs.vol) refs.vol.textContent = fmtVol(summary.totalVolume);
-            if (refs.barUp) refs.barUp.style.width = (total > 0 ? (summary.up / total) * 100 : 0) + '%';
-            if (refs.barDown) refs.barDown.style.width = (total > 0 ? (summary.down / total) * 100 : 0) + '%';
-            if (refs.barFlat) refs.barFlat.style.width = (total > 0 ? (summary.flat / total) * 100 : 0) + '%';
+            if (refs.barUp)
+                refs.barUp.style.width = (total > 0 ? (summary.up / total) * 100 : 0) + '%';
+            if (refs.barDown)
+                refs.barDown.style.width = (total > 0 ? (summary.down / total) * 100 : 0) + '%';
+            if (refs.barFlat)
+                refs.barFlat.style.width = (total > 0 ? (summary.flat / total) * 100 : 0) + '%';
             if (refs.date) refs.date.textContent = date;
 
-            const render = (items: any[], type: string) => items.map((s, i) => `
+            const render = (items: any[], type: string) =>
+                items
+                    .map(
+                        (s, i) => `
                 <a href="/stocks/${s.symbol}" class="flex items-center gap-4 px-6 py-4 hover:bg-accent/[0.04] transition-all group no-underline border-l-2 border-transparent ${type === 'up' ? 'hover:border-bullish' : type === 'down' ? 'hover:border-bearish' : 'hover:border-accent'}">
                     <span class="text-[8px] font-mono text-white/20 w-3">${i + 1}</span>
                     <div class="min-w-0 flex-1"><div class="text-[11px] font-bold text-white/90 group-hover:text-accent truncate">${s.name}</div><div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">ENTITY:${s.symbol}</div></div>
                     <div class="text-right"><div class="text-[10px] font-mono text-white/70">${s.price.toFixed(2)}</div><div class="text-[10px] font-mono font-bold ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%</div></div>
-                </a>`).join('');
+                </a>`
+                    )
+                    .join('');
             if (refs.gGrid) refs.gGrid.innerHTML = render(gainers, 'up');
             if (refs.lGrid) refs.lGrid.innerHTML = render(losers, 'down');
             if (refs.vGrid) refs.vGrid.innerHTML = render(volumeLeaders, 'vol');

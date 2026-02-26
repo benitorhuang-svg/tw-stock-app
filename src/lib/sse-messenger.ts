@@ -50,7 +50,7 @@ export function claimOracleStatus(): boolean {
     }
 
     // Listen for heartbeats to know when to take over
-    window.addEventListener('storage', (e) => {
+    window.addEventListener('storage', e => {
         if (e.key === 'sse_oracle_heartbeat') {
             // Heartbeat updated by another tab
         }

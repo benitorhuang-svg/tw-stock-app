@@ -1,46 +1,43 @@
 ---
 /**
- * institutional.astro — Institutional Monitoring Terminal
- * High-performance monitoring of institutional accumulation streaks.
+ * institutional.astro — Forensic_Analytics (Institutional) Dashboard
+ * Highly specialized, high-density terminal for institutional data.
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
 import InstitutionalHeader from '../components/molecules/InstitutionalHeader.astro';
+import InstitutionalPulseHUD from '../components/organisms/InstitutionalPulseHUD.svelte';
 import InstitutionalMatrix from '../components/organisms/InstitutionalMatrix.svelte';
-import ForensicTicker from '../components/molecules/ForensicTicker.astro';
+import ForensicRadar from '../components/organisms/ForensicRadar.svelte';
+import InstitutionalAnalytics from '../components/organisms/InstitutionalAnalytics.svelte';
+import ForensicReport from '../components/organisms/ForensicReport.svelte';
+import ForensicTicker from '../components/molecules/ForensicTicker.svelte';
 ---
 
-<MainTerminal title="法人連買監控 | Institutional Tracking" fullWidth>
-    <div class="h-full flex flex-col p-4 lg:p-10 gap-8 overflow-hidden">
-        <!-- Header Section -->
-
+<MainTerminal title="Institutional_Intelligence" fullWidth>
+    <div class="px-4 lg:px-6 py-4 flex flex-col h-full bg-base gap-6">
+        <!-- Dashboard Header -->
         <InstitutionalHeader />
 
-        <!-- Monitoring Matrix -->
-        <InstitutionalMatrix client:idle />
+        <!-- Pulse HUD (Unified Command & Stats) -->
+        <InstitutionalPulseHUD client:load />
 
-        <!-- Signal Stream -->
-        <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
-            <ForensicTicker />
-            <div class="flex items-center gap-6">
-                <span class="text-[9px] font-mono text-white/20 uppercase tracking-[0.3em]"
-                    >Institutional_Stream_Uplink: ESTABLISHED</span
-                >
-                <div class="flex gap-1">
-                    <div class="w-1 h-1 rounded-full bg-bullish animate-bounce"></div>
-                    <div
-                        class="w-1 h-1 rounded-full bg-accent animate-bounce"
-                        style="animation-delay: 0.1s"
-                    >
-                    </div>
-                    <div
-                        class="w-1 h-1 rounded-full bg-yellow-400 animate-bounce"
-                        style="animation-delay: 0.2s"
-                    >
-                    </div>
-                </div>
-            </div>
+        <!-- Monitoring Matrix (Core Content) -->
+        <InstitutionalMatrix client:load />
+
+        <!-- Forensic Alpha Radar (Forensic Expansion) -->
+        <ForensicRadar client:visible />
+
+        <!-- Abnormal Market Report (Forensic Archetypes) -->
+        <ForensicReport client:visible />
+
+        <!-- Analytics Engine -->
+        <InstitutionalAnalytics client:visible />
+
+        <!-- Global Signal Stream -->
+        <div class="mt-auto py-4 border-t border-border/10">
+            <ForensicTicker client:load />
         </div>
     </div>
-
-    <script src="../scripts/institutional-engine.ts"></script>
 </MainTerminal>
+
+<script src="../scripts/institutional-engine.ts"></script>

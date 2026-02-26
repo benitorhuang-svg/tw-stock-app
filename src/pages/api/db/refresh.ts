@@ -5,7 +5,7 @@ import { spawn } from 'child_process';
 // Global state for background data refresh
 let isRunning = false;
 let globalLog = ''; // Single string buffer instead of array of fragments
-let clients: Set<{ enqueue: (data: Uint8Array | string) => void, close: () => void }> = new Set();
+let clients: Set<{ enqueue: (data: Uint8Array | string) => void; close: () => void }> = new Set();
 const MAX_LOG_CHARS = 200_000; // ~200KB text limit
 const sharedDecoder = new TextDecoder();
 
@@ -26,7 +26,7 @@ const closeAllClients = () => {
     for (const client of clients) {
         try {
             client.close();
-        } catch (e) { }
+        } catch (e) {}
     }
     clients.clear();
 };
@@ -34,8 +34,8 @@ const closeAllClients = () => {
 export const GET: APIRoute = async () => {
     return new Response(JSON.stringify({ isRunning }), {
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+        },
     });
 };
 
@@ -65,23 +65,27 @@ export const POST: APIRoute = async ({ request }) => {
                 isClosed = true;
                 try {
                     controller.close();
-                } catch (e) { }
+                } catch (e) {}
             };
 
             const clientSession = { enqueue: safeEnqueue, close: safeClose };
             clients.add(clientSession);
 
-            request.signal.addEventListener('abort', () => {
-                isClosed = true;
-                clients.delete(clientSession);
-            }, { once: true });
+            request.signal.addEventListener(
+                'abort',
+                () => {
+                    isClosed = true;
+                    clients.delete(clientSession);
+                },
+                { once: true }
+            );
 
             const runScript = (script: string, args: string[] = []) => {
-                return new Promise<number>((resolve) => {
+                return new Promise<number>(resolve => {
                     const child = spawn('node', [script, ...args], { cwd: process.cwd() });
                     child.stdout.on('data', data => broadcast(data));
                     child.stderr.on('data', data => broadcast(data));
-                    child.on('close', (code) => {
+                    child.on('close', code => {
                         resolve(code || 0);
                     });
                 });
@@ -96,7 +100,9 @@ export const POST: APIRoute = async ({ request }) => {
                         return;
                     }
 
-                    broadcast('\n>> [2/4] 正在執行多維度行情同步 (歷史行情、法人籌碼、季度財報、每月營收)...\n');
+                    broadcast(
+                        '\n>> [2/4] 正在執行多維度行情同步 (歷史行情、法人籌碼、季度財報、每月營收)...\n'
+                    );
 
                     await runScript('scripts/fetch-yahoo.mjs');
                     await runScript('scripts/fetch-chips.mjs');
@@ -104,7 +110,16 @@ export const POST: APIRoute = async ({ request }) => {
                     await runScript('scripts/fetch-financials.mjs');
                     await runScript('scripts/fetch-revenue.mjs');
 
-                    broadcast('\n>> [3/4] 正在匯總異質資料並建置全系統高速快照系統 (Snapshot)...\n');
+                    broadcast(
+                        '\n>> [2.5/4] 正在同步深層鑑識數據 (法人細項、股權分散、官股動態、融資融券)...\n'
+                    );
+                    await runScript('scripts/crawlers/twse-chips.mjs');
+                    await runScript('scripts/crawlers/tdcc-shareholders.mjs');
+                    await runScript('scripts/crawlers/twse-margin.mjs');
+
+                    broadcast(
+                        '\n>> [3/4] 正在匯總異質資料並建置全系統高速快照系統 (Snapshot)...\n'
+                    );
                     const snapCode = await runScript('scripts/build-price-snapshot.js');
                     if (snapCode !== 0) {
                         broadcast(`\n\n[警告] 快照建置程序未正常結束，代碼: ${snapCode}\n`);
@@ -113,7 +128,11 @@ export const POST: APIRoute = async ({ request }) => {
                     broadcast('\n>> [4/4] 正在優化離線 SQLite 資料庫結構並重構全域索引系統...\n');
                     const dbCode = await runScript('scripts/build-sqlite-db.js');
                     if (dbCode === 0) {
-                        broadcast('\n\n[完成] 全系統數據同步全面完成！系統目前運作於極速離線模式。\n');
+                        broadcast('\n>> [最後步驟] 正在提取並運算關鍵籌碼特徵與量化技術指標...\n');
+                        await runScript('scripts/etl/generate-all-features.mjs');
+                        broadcast(
+                            '\n\n[完成] 全系統數據同步全面完成！系統目前運作於極速離線模式。\n'
+                        );
                     } else {
                         broadcast(`\n\n[錯誤] 資料庫系統建置失敗，代碼: ${dbCode}\n`);
                     }
@@ -135,7 +154,7 @@ export const POST: APIRoute = async ({ request }) => {
         },
         cancel() {
             // Client aborted the stream visually
-        }
+        },
     });
 
     return new Response(stream, {

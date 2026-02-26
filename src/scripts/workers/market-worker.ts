@@ -9,7 +9,9 @@ self.onmessage = (e: MessageEvent) => {
     const { data, indicatorMap } = e.data;
     const snapshots = data as TwseStockSnapshot[];
 
-    let u = 0, d = 0, f = 0;
+    let u = 0,
+        d = 0,
+        f = 0;
     const processed: ProcessedStock[] = new Array(snapshots.length);
 
     for (let i = 0; i < snapshots.length; i++) {
@@ -38,14 +40,16 @@ self.onmessage = (e: MessageEvent) => {
             isStarred: false, // Updated by store/UI
         };
 
-        if (chg > 0) u++; else if (chg < 0) d++; else f++;
+        if (chg > 0) u++;
+        else if (chg < 0) d++;
+        else f++;
     }
 
     const breadth: MarketBreadth = {
         up: u,
         down: d,
         flat: f,
-        total: u + d + f
+        total: u + d + f,
     };
 
     self.postMessage({ processed, breadth });

@@ -3,10 +3,10 @@ import { dbService } from '../../../lib/db/sqlite-service';
 
 /**
  * API: /api/market/monthly-ratios?year=2026&month=1
- * 
+ *
  * Returns breadth ratio (up/down) for each trading day in the specified month.
  * Used by CyberCalendar to color-code each date based on actual market sentiment.
- * 
+ *
  * Optimizations:
  * - Prepared statement for reuse across requests
  * - BETWEEN range query instead of LIKE (index-friendly)
@@ -51,7 +51,10 @@ export const GET: APIRoute = async ({ url }) => {
         const endDate = `${year}-${monthStr}-31`;
 
         const rows = getStatement().all(startDate, endDate) as Array<{
-            date: string; up: number; down: number; total: number;
+            date: string;
+            up: number;
+            down: number;
+            total: number;
         }>;
 
         const ratios: Record<number, number> = {};
@@ -64,24 +67,21 @@ export const GET: APIRoute = async ({ url }) => {
         const now = new Date();
         const isCurrentMonth = year === now.getFullYear() && month === now.getMonth() + 1;
         const cacheControl = isCurrentMonth
-            ? 'public, max-age=300'       // Current month: cache 5 min
-            : 'public, max-age=86400';    // Past months: cache 24h
+            ? 'public, max-age=300' // Current month: cache 5 min
+            : 'public, max-age=86400'; // Past months: cache 24h
 
-        return new Response(
-            JSON.stringify({ year, month, ratios, tradingDays: rows.length }),
-            {
-                status: 200,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Cache-Control': cacheControl
-                }
-            }
-        );
+        return new Response(JSON.stringify({ year, month, ratios, tradingDays: rows.length }), {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': cacheControl,
+            },
+        });
     } catch (error) {
         console.error('[Monthly Ratios API Error]', error);
-        return new Response(
-            JSON.stringify({ error: (error as Error).message }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ error: (error as Error).message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 };

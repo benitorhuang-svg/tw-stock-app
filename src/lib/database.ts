@@ -253,7 +253,10 @@ export async function importDatabase(file: File): Promise<void> {
 /**
  * 執行 SQL 查詢
  */
-export async function query<T = Record<string, SqlValue>>(sql: string, params: SqlValue[] = []): Promise<T[]> {
+export async function query<T = Record<string, SqlValue>>(
+    sql: string,
+    params: SqlValue[] = []
+): Promise<T[]> {
     const database = await getDatabase();
     const result = database.exec(sql, params);
 
@@ -285,7 +288,11 @@ export async function execute(sql: string, params: SqlValue[] = []): Promise<num
 /**
  * 批次插入
  */
-export async function batchInsert(table: string, columns: string[], rows: SqlValue[][]): Promise<void> {
+export async function batchInsert(
+    table: string,
+    columns: string[],
+    rows: SqlValue[][]
+): Promise<void> {
     const database = await getDatabase();
     const placeholders = columns.map(() => '?').join(', ');
     const sql = `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;
@@ -331,7 +338,7 @@ if (typeof window !== 'undefined') {
     window.addEventListener('beforeunload', () => {
         if (db) {
             try {
-                saveDatabase().catch(() => { });
+                saveDatabase().catch(() => {});
             } catch (e) {
                 console.warn('[DB] Failed to save on unload');
             }

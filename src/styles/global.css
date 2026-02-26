@@ -194,7 +194,6 @@
 }
 
 @keyframes glow-pulse {
-
     0%,
     100% {
         opacity: 0.4;
@@ -244,7 +243,6 @@
 }
 
 @keyframes nav-glow {
-
     0%,
     100% {
         opacity: 0.5;
@@ -260,7 +258,6 @@
    PERFORMANCE PRIMERS (EXTREME OPTIMIZATION)
    ══════════════════════════════════════════════════ */
 @layer base {
-
     /* Reduce Paint Overheads */
     .gpu-layer {
         transform: translateZ(0);
@@ -292,7 +289,6 @@
 }
 
 @layer base {
-
     *,
     *::before,
     *::after {
@@ -381,7 +377,6 @@
    TOP NAVIGATION SYSTEM
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* ── Top Nav Bar ── */
     .top-nav-bar {
         background: var(--color-surface);
@@ -392,7 +387,6 @@
         will-change: transform;
     }
 
-
     /* ── Nav Glow Line ── */
     .nav-glow-line {
         position: absolute;
@@ -400,12 +394,14 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(90deg,
-                transparent 0%,
-                hsl(217 91% 60% / 0.3) 20%,
-                hsl(217 91% 60% / 0.6) 50%,
-                hsl(217 91% 60% / 0.3) 80%,
-                transparent 100%);
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            hsl(217 91% 60% / 0.3) 20%,
+            hsl(217 91% 60% / 0.6) 50%,
+            hsl(217 91% 60% / 0.3) 80%,
+            transparent 100%
+        );
         opacity: 0.6;
         pointer-events: none;
     }
@@ -486,13 +482,14 @@
         background: hsl(217 91% 60% / 0.1);
         border: 1px solid hsl(217 91% 60% / 0.15);
         border-radius: var(--radius-sm);
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), width 0.3s ease;
+        transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            width 0.3s ease;
         opacity: 0;
         pointer-events: none;
         box-shadow: 0 0 12px hsl(217 91% 60% / 0.08);
         will-change: transform, width;
     }
-
 
     /* ── Mobile Bottom Nav ── */
     .mobile-bottom-nav {
@@ -539,7 +536,6 @@
    UTILITY COMPONENTS
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* Glass Card — Layer 1 (Frosted) */
     .glass-card {
         background: var(--color-glass);
@@ -583,9 +579,11 @@
         z-index: 1;
         transition: opacity 0.4s var(--ease-expo);
         border-radius: inherit;
-        background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                hsl(0 0% 100% / 0.06),
-                transparent 60%);
+        background: radial-gradient(
+            300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            hsl(0 0% 100% / 0.06),
+            transparent 60%
+        );
     }
 
     .glow-interactive:hover::before {
@@ -610,10 +608,12 @@
 
     /* Shimmer Skeleton */
     .skeleton {
-        background: linear-gradient(90deg,
-                hsl(240 6% 10%) 25%,
-                hsl(240 6% 16%) 50%,
-                hsl(240 6% 10%) 75%);
+        background: linear-gradient(
+            90deg,
+            hsl(240 6% 10%) 25%,
+            hsl(240 6% 16%) 50%,
+            hsl(240 6% 10%) 75%
+        );
         background-size: 200% 100%;
         animation: var(--animate-shimmer);
         border-radius: var(--radius-sm);
@@ -758,39 +758,39 @@
     }
 
     /* Stagger animation utility */
-    .stagger-children>* {
+    .stagger-children > * {
         animation: var(--animate-fade-up);
     }
 
-    .stagger-children>*:nth-child(1) {
+    .stagger-children > *:nth-child(1) {
         animation-delay: 0ms;
     }
 
-    .stagger-children>*:nth-child(2) {
+    .stagger-children > *:nth-child(2) {
         animation-delay: 50ms;
     }
 
-    .stagger-children>*:nth-child(3) {
+    .stagger-children > *:nth-child(3) {
         animation-delay: 100ms;
     }
 
-    .stagger-children>*:nth-child(4) {
+    .stagger-children > *:nth-child(4) {
         animation-delay: 150ms;
     }
 
-    .stagger-children>*:nth-child(5) {
+    .stagger-children > *:nth-child(5) {
         animation-delay: 200ms;
     }
 
-    .stagger-children>*:nth-child(6) {
+    .stagger-children > *:nth-child(6) {
         animation-delay: 250ms;
     }
 
-    .stagger-children>*:nth-child(7) {
+    .stagger-children > *:nth-child(7) {
         animation-delay: 300ms;
     }
 
-    .stagger-children>*:nth-child(8) {
+    .stagger-children > *:nth-child(8) {
         animation-delay: 350ms;
     }
 }
@@ -799,7 +799,6 @@
    PREMIUM TABLE STYLES
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* Professional data table */
     .data-table-pro {
         width: 100%;
@@ -897,7 +896,6 @@
    ENHANCED MICRO-INTERACTIONS
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* Card hover lift */
     .card-lift {
         transition:
@@ -1038,7 +1036,6 @@
    MOBILE ADJUSTMENTS
    ══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-
     /* Add bottom padding for mobile bottom nav */
     #main-workspace {
         padding-bottom: 80px;
@@ -1061,7 +1058,7 @@
     }
 
     /* Stack grid items */
-    .mobile-stack>* {
+    .mobile-stack > * {
         min-width: 0;
     }
 }
@@ -1070,7 +1067,6 @@
    PRINT STYLES
    ══════════════════════════════════════════════════ */
 @media print {
-
     .top-nav-bar,
     .mobile-bottom-nav,
     .btn-cyber,
@@ -1094,7 +1090,6 @@
    REDUCED MOTION
    ══════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {

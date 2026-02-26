@@ -4,64 +4,72 @@
  */
 ---
 
-<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-fade-up">
-    <div>
-        <h1
-            class="text-2xl font-black text-white tracking-[0.2em] uppercase flex items-center gap-3"
-        >
-            <span class="p-2 bg-accent/20 rounded-lg text-accent">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                    ></path>
-                </svg>
-            </span>
-            Institutional Monitoring
-        </h1>
-        <p class="text-xs font-mono text-white/40 mt-2 tracking-widest uppercase">
-            System Uplink: Active • Detection Mode: <span class="text-accent"
-                >FORENSIC_ACCUMULATION</span
-            >
-        </p>
-    </div>
-
-    <div class="flex items-center gap-3">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 animate-fade-in">
+    <div class="flex items-center gap-4">
         <div
-            class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl backdrop-blur-md flex items-center gap-6"
+            class="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent"
         >
-            <div class="flex items-center gap-2">
-                <span
-                    class="w-2 h-2 rounded-full bg-bullish animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"
-                ></span>
-                <span class="text-[10px] font-mono font-bold text-white/60 tracking-widest"
-                    >FOREIGN</span
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
+            </svg>
+        </div>
+        <div>
+            <h1 class="text-xl font-black text-white tracking-[0.1em] uppercase">
+                Institutional_Intelligence
+            </h1>
+            <div class="flex items-center gap-3 mt-1">
+                <span class="text-[9px] font-mono text-text-muted/40 uppercase tracking-widest"
+                    >Forensic_Nexus_v2.4</span
                 >
-            </div>
-            <div class="flex items-center gap-2">
+                <div class="w-1 h-1 rounded-full bg-accent/30"></div>
                 <span
-                    class="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.6)]"
-                ></span>
-                <span class="text-[10px] font-mono font-bold text-white/60 tracking-widest"
-                    >TRUST</span
-                >
-            </div>
-            <div class="flex items-center gap-2">
-                <span
-                    class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.6)]"
-                ></span>
-                <span class="text-[10px] font-mono font-bold text-white/60 tracking-widest"
-                    >DEALER</span
+                    class="text-[9px] font-mono text-accent uppercase tracking-widest animate-pulse"
+                    >Live_Sync_Active</span
                 >
             </div>
         </div>
     </div>
+
+    <div class="flex items-center gap-3">
+        <div class="px-4 py-2 bg-surface/40 border border-border rounded-lg backdrop-blur-md">
+            <span class="text-[10px] font-mono text-text-muted/60 tracking-widest uppercase"
+                >Target_Date: <span class="text-white font-black" id="inst-header-date">LATEST</span
+                ></span
+            >
+        </div>
+    </div>
 </div>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    @keyframes fade-in-down {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .animate-fade-in-down {
+        animation: fade-in-down 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+</style>

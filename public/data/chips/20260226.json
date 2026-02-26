@@ -157,8 +157,8 @@
     "symbol": "2891",
     "name": "中信金",
     "foreign_inv": 12329578,
-    "invest_trust": 596883,
-    "dealer": 160077
+    "invest_trust": 297000,
+    "dealer": -228000
   },
   {
     "symbol": "00918",
@@ -683,7 +683,7 @@
     "name": "中鋼元大5C購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 2283000
+    "dealer": 0
   },
   {
     "symbol": "2412",
@@ -1383,7 +1383,7 @@
     "name": "聯鈞元大53購03",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 1241000
+    "dealer": 0
   },
   {
     "symbol": "042842",
@@ -3322,7 +3322,7 @@
     "name": "緯穎元富55購04",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 675000
+    "dealer": 0
   },
   {
     "symbol": "034212",
@@ -3336,7 +3336,7 @@
     "name": "期元大S&P石油",
     "foreign_inv": 24000,
     "invest_trust": 0,
-    "dealer": 648596
+    "dealer": 5000
   },
   {
     "symbol": "031274",
@@ -4533,7 +4533,7 @@
     "name": "新日興元大57購07",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 507000
+    "dealer": 0
   },
   {
     "symbol": "036878",
@@ -5520,7 +5520,7 @@
     "name": "智邦統一61購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 426000
+    "dealer": 0
   },
   {
     "symbol": "038847",
@@ -5555,7 +5555,7 @@
     "name": "台積電元富54購21",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 424000
+    "dealer": 0
   },
   {
     "symbol": "045969",
@@ -7354,14 +7354,14 @@
     "name": "亞力統一5B購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 320000
+    "dealer": 0
   },
   {
     "symbol": "045295",
     "name": "聯鈞元大55購08",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 320000
+    "dealer": 0
   },
   {
     "symbol": "00708L",
@@ -7375,7 +7375,7 @@
     "name": "鴻海凱基56購10",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 319000
+    "dealer": 0
   },
   {
     "symbol": "046984",
@@ -7578,7 +7578,7 @@
     "name": "富世達元大54購05",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 310000
+    "dealer": 0
   },
   {
     "symbol": "035631",
@@ -7739,7 +7739,7 @@
     "name": "昇貿元大57購04",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 303000
+    "dealer": 0
   },
   {
     "symbol": "036383",
@@ -7865,7 +7865,7 @@
     "name": "世芯元大57購18",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 300000
+    "dealer": 0
   },
   {
     "symbol": "053123",
@@ -9391,7 +9391,7 @@
     "name": "川湖元大57購03",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 248000
+    "dealer": 0
   },
   {
     "symbol": "039763",
@@ -11918,14 +11918,14 @@
     "name": "華泰兆豐5C購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 189000
+    "dealer": 0
   },
   {
     "symbol": "055762",
     "name": "奇鋐永豐5A購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 189000
+    "dealer": 0
   },
   {
     "symbol": "042004",
@@ -11953,7 +11953,7 @@
     "name": "昆盈元富57購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 189000
+    "dealer": 0
   },
   {
     "symbol": "6438",
@@ -12079,7 +12079,7 @@
     "name": "群創中信61購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 187000
+    "dealer": 0
   },
   {
     "symbol": "056544",
@@ -12499,7 +12499,7 @@
     "name": "金像電台新57購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 178000
+    "dealer": 0
   },
   {
     "symbol": "055872",
@@ -12744,7 +12744,7 @@
     "name": "建準元大53購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 175000
+    "dealer": 0
   },
   {
     "symbol": "043659",
@@ -12793,7 +12793,7 @@
     "name": "南電元大57購05",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 174000
+    "dealer": 0
   },
   {
     "symbol": "053994",
@@ -13367,7 +13367,7 @@
     "name": "慧洋中信5C購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 164000
+    "dealer": 0
   },
   {
     "symbol": "049009",
@@ -14102,7 +14102,7 @@
     "name": "日電貿統一5B購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 152000
+    "dealer": 0
   },
   {
     "symbol": "039980",
@@ -14123,7 +14123,7 @@
     "name": "鴻海統一58購05",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 151000
+    "dealer": 0
   },
   {
     "symbol": "039001",
@@ -14886,7 +14886,7 @@
     "name": "盟立群益54購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 140000
+    "dealer": 0
   },
   {
     "symbol": "042098",
@@ -14977,7 +14977,7 @@
     "name": "智邦統一71購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 139000
+    "dealer": 0
   },
   {
     "symbol": "038324",
@@ -15761,7 +15761,7 @@
     "name": "富世達元大57購04",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 127000
+    "dealer": 0
   },
   {
     "symbol": "050743",
@@ -16216,7 +16216,7 @@
     "name": "AES元大59購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 120000
+    "dealer": 0
   },
   {
     "symbol": "054581",
@@ -16846,14 +16846,14 @@
     "name": "健策永豐53購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 112000
+    "dealer": 0
   },
   {
     "symbol": "054485",
     "name": "昇貿統一61購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 112000
+    "dealer": 0
   },
   {
     "symbol": "052701",
@@ -17588,7 +17588,7 @@
     "name": "聯發科元富67購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 105000
+    "dealer": 0
   },
   {
     "symbol": "08426U",
@@ -17861,7 +17861,7 @@
     "name": "貿聯富邦58購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 102000
+    "dealer": 0
   },
   {
     "symbol": "052401",
@@ -18162,7 +18162,7 @@
     "name": "緯創元大56購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 100000
+    "dealer": 0
   },
   {
     "symbol": "047039",
@@ -18204,7 +18204,7 @@
     "name": "金像電元大53購07",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 100000
+    "dealer": 0
   },
   {
     "symbol": "033935",
@@ -18309,7 +18309,7 @@
     "name": "祥碩永豐55購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 100000
+    "dealer": 0
   },
   {
     "symbol": "040971",
@@ -18834,13 +18834,13 @@
     "name": "川湖永豐57購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 98000
+    "dealer": 0
   },
   {
     "symbol": "3518",
     "name": "柏騰",
     "foreign_inv": 95070,
-    "invest_trust": 0,
+    "invest_trust": 3000,
     "dealer": 2000
   },
   {
@@ -19457,7 +19457,7 @@
     "name": "超豐元大57購09",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 92000
+    "dealer": 0
   },
   {
     "symbol": "046755",
@@ -19611,7 +19611,7 @@
     "name": "嘉澤凱基54購03",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 91000
+    "dealer": 0
   },
   {
     "symbol": "037877",
@@ -19947,7 +19947,7 @@
     "name": "牧德元大57購05",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 89000
+    "dealer": 0
   },
   {
     "symbol": "052885",
@@ -20129,7 +20129,7 @@
     "name": "中聯資源",
     "foreign_inv": 88344,
     "invest_trust": 0,
-    "dealer": -1000
+    "dealer": 0
   },
   {
     "symbol": "6272",
@@ -20892,7 +20892,7 @@
     "name": "緯創元富56購04",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 80000
+    "dealer": 0
   },
   {
     "symbol": "033077",
@@ -21004,7 +21004,7 @@
     "name": "緯穎國泰53購04",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 80000
+    "dealer": 0
   },
   {
     "symbol": "035565",
@@ -21592,7 +21592,7 @@
     "name": "羅昇永豐56購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 76000
+    "dealer": 0
   },
   {
     "symbol": "039079",
@@ -22215,7 +22215,7 @@
     "name": "光寶科元大53購04",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 72000
+    "dealer": 0
   },
   {
     "symbol": "049950",
@@ -22824,7 +22824,7 @@
     "name": "志聖元大57購02",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 68000
+    "dealer": 0
   },
   {
     "symbol": "031619",
@@ -22978,7 +22978,7 @@
     "name": "台玻中信59購01",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 67000
+    "dealer": 0
   },
   {
     "symbol": "048129",
@@ -25092,7 +25092,7 @@
     "name": "力成元大57購12",
     "foreign_inv": 0,
     "invest_trust": 0,
-    "dealer": 55000
+    "dealer": 0
   },
   {
     "symbol": "040358",

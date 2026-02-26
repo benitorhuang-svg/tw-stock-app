@@ -1,68 +1,115 @@
 <script lang="ts">
+    import { marketStore } from '../../stores/market.svelte';
     import InstitutionalCard from './InstitutionalCard.svelte';
 
-    export let title: string;
-    export let subtitle: string;
-    export let colorClasses: string; // e.g. "from-bullish/10 border-bullish/20"
-    export let dotColorClass: string; // e.g. "bg-bullish"
-    export let data: any[] = [];
-    export let isLoading = false;
-    export let channel: 'foreign' | 'invest' | 'dealer';
-    export let scanText = 'SCANNING...';
+    const {
+        title,
+        subtitle,
+        colorClasses = '',
+        dotColorClass = '',
+        data = [],
+        isLoading = false,
+        channel,
+        scanText = 'SYNCHING Vector...',
+    } = $props<{
+        title: string;
+        subtitle: string;
+        colorClasses?: string;
+        dotColorClass?: string;
+        data?: any[];
+        isLoading?: boolean;
+        channel: 'foreign' | 'invest' | 'dealer';
+        scanText?: string;
+    }>();
+
+    const filteredData = $derived.by(() => {
+        return (data || []).filter(item => {
+            const matchesSearch =
+                !marketStore.searchKeyword ||
+                item.symbol.toLowerCase().includes(marketStore.searchKeyword.toLowerCase()) ||
+                item.name?.toLowerCase().includes(marketStore.searchKeyword.toLowerCase());
+
+            const matchesMarket =
+                !marketStore.filterMarket ||
+                (item as any)._market === marketStore.filterMarket.toUpperCase();
+
+            const matchesDivergence =
+                !marketStore.filterDivergence || (item.changePct < 0 && item.chipsIntensity > 0);
+
+            return matchesSearch && matchesMarket && matchesDivergence;
+        });
+    });
 </script>
 
-<section
-    class="flex flex-col bg-surface-deep/40 rounded-[2rem] border border-white/5 overflow-hidden backdrop-blur-sm group {colorClasses} transition-all duration-500"
+<div
+    class="flex flex-col bg-surface/40 rounded-xl border border-border shadow-elevated h-full transition-all duration-500 hover:border-accent/15 group"
 >
-    <header
-        class="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r {colorClasses} to-transparent"
-    >
-        <div>
+    <!-- Header: Table-like Header -->
+    <header class="flex items-center justify-between px-6 py-4 border-b border-border bg-black/10">
+        <div class="flex flex-col gap-1">
             <h3
-                class="text-xs font-black text-white/90 tracking-[0.2em] flex items-center gap-2 uppercase"
+                class="text-xs font-black text-white/90 tracking-[0.2em] uppercase flex items-center gap-2"
             >
-                <span class="w-1.5 h-1.5 rounded-full {dotColorClass}"></span>
+                <span class="w-1.5 h-1.5 rounded-full {dotColorClass} animate-pulse"></span>
                 {title}
             </h3>
-            <p class="text-[9px] font-mono opacity-50 mt-1 uppercase tracking-widest">
-                {subtitle}
-            </p>
+            <span class="text-[9px] font-mono text-text-muted/30 uppercase tracking-widest"
+                >{subtitle}</span
+            >
         </div>
-        <span class="text-[10px] font-mono text-white/20 font-bold tracking-tighter">
-            {isLoading ? 'SCANNING...' : `${data.length} ENTITIES ACTIVE`}
-        </span>
+
+        <div class="flex flex-col items-end">
+            <span class="text-[10px] font-mono text-text-muted/40 font-black tracking-tighter">
+                {isLoading
+                    ? 'SYNC...'
+                    : `${filteredData.length.toString().padStart(3, '0')}/${data.length.toString().padStart(3, '0')}_CHANNELS`}
+            </span>
+        </div>
     </header>
 
-    <div class="flex-1 overflow-y-auto p-5 custom-scrollbar space-y-3">
+    <!-- Table Header (Sticky) -->
+    <div
+        class="sticky top-0 z-20 flex items-center gap-4 px-3 py-2 bg-[#0C0D0E] border-b border-border text-[8px] font-black text-text-muted/20 uppercase tracking-[0.2em] shadow-sm"
+    >
+        <div class="flex-1 text-left px-3">Entity</div>
+        <div class="w-16 text-center">Streak_D</div>
+        <div class="w-20 text-right px-3">Net_Vol</div>
+        <div class="w-6"></div>
+    </div>
+
+    <!-- Data List: Pure High-Density -->
+    <div class="flex-1 overflow-y-auto custom-scrollbar">
         {#if isLoading}
-            <div class="flex flex-col items-center justify-center h-full gap-4 opacity-20">
+            <div class="flex flex-col items-center justify-center py-20 gap-4 opacity-10">
                 <div
-                    class="w-8 h-8 border-2 {dotColorClass}/30 border-t-white rounded-full animate-spin"
+                    class="w-8 h-8 border-2 border-accent/20 border-t-accent rounded-full animate-spin"
                 ></div>
-                <span class="font-mono text-[10px] tracking-[0.3em] uppercase">{scanText}</span>
+                <span class="text-[9px] font-mono tracking-widest uppercase">{scanText}</span>
             </div>
-        {:else if data.length === 0}
-            <div class="h-full flex flex-col items-center justify-center opacity-10 gap-2">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-8 h-8"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1"
-                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-                    />
-                </svg>
-                <span class="font-mono text-[10px] tracking-widest uppercase">No_Sig_Detected</span>
+        {:else if filteredData.length === 0}
+            <div class="flex flex-col items-center justify-center py-20 opacity-5 gap-3">
+                <span class="text-[8px] font-mono tracking-[0.4em] uppercase">NO_SIGNAL</span>
             </div>
         {:else}
-            {#each data as item (item.symbol)}
-                <InstitutionalCard {item} {channel} />
-            {/each}
+            <div class="divide-y divide-border/20">
+                {#each filteredData as item (item.symbol)}
+                    <InstitutionalCard {item} {channel} />
+                {/each}
+            </div>
         {/if}
     </div>
-</section>
+</div>
+
+<style>
+    /* Sleek Thin Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+</style>

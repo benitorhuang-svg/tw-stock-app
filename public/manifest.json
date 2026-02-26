@@ -70,10 +70,7 @@
             "purpose": "maskable"
         }
     ],
-    "categories": [
-        "finance",
-        "utilities"
-    ],
+    "categories": ["finance", "utilities"],
     "lang": "zh-TW",
     "dir": "ltr",
     "shortcuts": [

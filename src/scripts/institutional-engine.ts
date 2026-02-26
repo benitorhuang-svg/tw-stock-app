@@ -28,4 +28,3 @@ document.addEventListener('astro:page-load', () => {
     institutionalRendered = true;
     fetchStreaks();
 });
-

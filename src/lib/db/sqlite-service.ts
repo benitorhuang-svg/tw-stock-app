@@ -14,9 +14,10 @@ export class SqliteService {
     private db: InstanceType<typeof Database> | null;
     private dbPath: string | null;
     private cachedTables: Set<string>;
-    private columnCache: Map<string, { name: string, type: string }[]> = new Map();
+    private columnCache: Map<string, { name: string; type: string }[]> = new Map();
     private rowCountCache: Map<string, number> = new Map();
-    private stmtCache: Map<string, ReturnType<InstanceType<typeof Database>['prepare']>> = new Map();
+    private stmtCache: Map<string, ReturnType<InstanceType<typeof Database>['prepare']>> =
+        new Map();
 
     private constructor() {
         this.dbPath = this.resolveHealthyDbPath();
@@ -35,16 +36,16 @@ export class SqliteService {
     }
 
     private resolveHealthyDbPath(): string | null {
-        const candidates = [
-            path.resolve(process.cwd(), 'public', 'data', 'stocks.db'),
-        ];
+        const candidates = [path.resolve(process.cwd(), 'public', 'data', 'stocks.db')];
 
         for (const candidate of candidates) {
             if (!fs.existsSync(candidate)) continue;
 
             try {
                 const probe = new Database(candidate, { readonly: true, fileMustExist: true });
-                const integrityRes = probe.prepare('PRAGMA integrity_check').get() as { integrity_check: string };
+                const integrityRes = probe.prepare('PRAGMA integrity_check').get() as {
+                    integrity_check: string;
+                };
                 const integrity = integrityRes.integrity_check;
                 probe.close();
 
@@ -114,7 +115,7 @@ export class SqliteService {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'")
             .get() as { name: string } | undefined)
             ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number })
-                .count
+                  .count
             : 0;
 
         return {
@@ -183,10 +184,14 @@ export class SqliteService {
 
         if (options.search) {
             const searchableColumns = this.getTableColumns(table).filter(
-                col => !col.type.toUpperCase().includes('REAL') && !col.type.toUpperCase().includes('FLOAT')
+                col =>
+                    !col.type.toUpperCase().includes('REAL') &&
+                    !col.type.toUpperCase().includes('FLOAT')
             );
             if (searchableColumns.length > 0) {
-                const whereClause = searchableColumns.map(col => `"${col.name}" LIKE ?`).join(' OR ');
+                const whereClause = searchableColumns
+                    .map(col => `"${col.name}" LIKE ?`)
+                    .join(' OR ');
                 sql += ` WHERE ${whereClause}`;
                 const searchPattern = `%${options.search}%`;
                 searchableColumns.forEach(() => params.push(searchPattern));
@@ -218,7 +223,10 @@ export class SqliteService {
 
         if (search) {
             const searchableColumns = this.getTableColumns(table).filter(
-                col => !col.type.toUpperCase().includes('REAL') && !col.type.toUpperCase().includes('FLOAT') && !col.type.toUpperCase().includes('DOUBLE')
+                col =>
+                    !col.type.toUpperCase().includes('REAL') &&
+                    !col.type.toUpperCase().includes('FLOAT') &&
+                    !col.type.toUpperCase().includes('DOUBLE')
             );
 
             if (searchableColumns.length > 0) {

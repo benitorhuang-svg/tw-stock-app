@@ -15,6 +15,9 @@
 | **估值水準 (P/E, P/B, 殖利率)** | `fetch-bwibbu.mjs`                          | `valuations/*.csv`   | 訓練長線投資模型、回歸預測目標價的定錨特徵 (Anchor Features)。 |
 | **三大法人籌碼動向**            | `fetch-institutional.mjs`                   | `chips_inst/*.csv`   | 外資/投信淨買賣超，捕捉大資金流向，屬於極強的預測因變數。      |
 | **信用交易 (融資融券)**         | `fetch-margin.mjs`                          | `chips_margin/*.csv` | 散戶看多/看空情緒指標 (Sentiment Features)。                   |
+| **股權分散表 (大戶持股)**       | `fetch-shareholders.mjs`                    | `chips_dist/*.csv`   | 捕捉千張大戶與散戶持股消長，判斷籌碼穩定度。                   |
+| **八大官股券商動向**            | `fetch-government.mjs`                      | `chips_gov/*.csv`    | 護盤神盾與反向操作指標，觀察官股介入水位。                     |
+| **內資主力買賣超**              | `fetch-main-players.mjs`                    | `chips_main/*.csv`   | 扣除法人的市場實力者動向，發現地緣大戶腳蹤。                   |
 | **公司營收與三率**              | `fetch-financials.mjs`                      | `financials.json`    | 獲利與成長動能標籤，用於剔除地雷股的模型邊界。                 |
 | **即時 TICK (盤中限定)**        | `twse-websocket.ts`                         | 不落地 (即時更新 DB) | 供單日當沖模型判定日內走勢，繪製微型走勢與五檔。               |
 

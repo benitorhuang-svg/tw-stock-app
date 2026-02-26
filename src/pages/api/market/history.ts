@@ -3,10 +3,10 @@ import { dbService } from '../../../lib/db/sqlite-service';
 
 /**
  * API: /api/market/history?date=2026-01-23
- * 
+ *
  * Atomic Data Service: Returns full market snapshot for a specific date.
  * Used by the CyberCalendar (Temporal Registry) to synchronize all dashboard widgets.
- * 
+ *
  * Optimizations:
  * - All queries use cached prepared statements (module-scope singleton)
  * - Cache-Control headers for browser caching
@@ -74,7 +74,7 @@ function getStmts() {
                 WHERE ph.date = ? AND ph.close > 0
                 ORDER BY ph.volume DESC
                 LIMIT 4
-            `)
+            `),
         };
     }
     return stmts;
@@ -84,18 +84,22 @@ export const GET: APIRoute = async ({ url }) => {
     const date = url.searchParams.get('date');
 
     if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        return new Response(
-            JSON.stringify({ error: 'Invalid date format. Use YYYY-MM-DD.' }),
-            { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ error: 'Invalid date format. Use YYYY-MM-DD.' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 
     try {
         const s = getStmts();
 
         const summary = s.summary.get(date) as {
-            up: number; down: number; flat: number; total: number;
-            totalVolume: number; avgChange: number;
+            up: number;
+            down: number;
+            flat: number;
+            total: number;
+            totalVolume: number;
+            avgChange: number;
         };
 
         if (!summary || summary.total === 0) {
@@ -103,7 +107,7 @@ export const GET: APIRoute = async ({ url }) => {
                 JSON.stringify({
                     error: 'No data found for this date.',
                     date,
-                    availableDates: s.availDates.all().map((d: any) => d.date)
+                    availableDates: s.availDates.all().map((d: any) => d.date),
                 }),
                 { status: 404, headers: { 'Content-Type': 'application/json' } }
             );
@@ -117,9 +121,10 @@ export const GET: APIRoute = async ({ url }) => {
 
         // Determine caching strategy
         const today = new Date().toISOString().slice(0, 10);
-        const cacheControl = date === today
-            ? 'public, max-age=60'        // Today: cache 1 min
-            : 'public, max-age=86400';    // Past dates: cache 24h (immutable)
+        const cacheControl =
+            date === today
+                ? 'public, max-age=60' // Today: cache 1 min
+                : 'public, max-age=86400'; // Past dates: cache 24h (immutable)
 
         return new Response(
             JSON.stringify({
@@ -127,21 +132,21 @@ export const GET: APIRoute = async ({ url }) => {
                 summary: { ...summary, ratio: Number(ratio.toFixed(2)) },
                 gainers,
                 losers,
-                volumeLeaders
+                volumeLeaders,
             }),
             {
                 status: 200,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Cache-Control': cacheControl
-                }
+                    'Cache-Control': cacheControl,
+                },
             }
         );
     } catch (error) {
         console.error('[Market History API Error]', error);
-        return new Response(
-            JSON.stringify({ error: (error as Error).message }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ error: (error as Error).message }), {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+        });
     }
 };

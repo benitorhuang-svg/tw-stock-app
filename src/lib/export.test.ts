@@ -23,7 +23,7 @@ beforeEach(() => {
     createdObjectURLs = [];
     revokedURLs = [];
 
-    vi.spyOn(console, 'warn').mockImplementation(() => { });
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     // Mock document.createElement
     vi.stubGlobal('document', {

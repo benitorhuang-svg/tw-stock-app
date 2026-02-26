@@ -47,7 +47,7 @@ export function getLastSyncTime(): number {
             const parsed = JSON.parse(meta) as SyncMeta;
             return parsed.lastSyncTime;
         }
-    } catch (e) { }
+    } catch (e) {}
     return 0;
 }
 
@@ -60,7 +60,7 @@ export function getSyncStatus(): SyncMeta {
         if (meta) {
             return JSON.parse(meta) as SyncMeta;
         }
-    } catch (e) { }
+    } catch (e) {}
     return currentStatus;
 }
 
@@ -132,7 +132,7 @@ export function getLocalData(): LocalStockData | null {
         if (data) {
             return JSON.parse(data) as LocalStockData;
         }
-    } catch (e) { }
+    } catch (e) {}
     return null;
 }
 

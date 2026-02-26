@@ -1,6 +1,5 @@
 import type { ScreenerCriteria } from '../types/stock';
 
-
 export interface UserProfile {
     id: string;
     name: string;

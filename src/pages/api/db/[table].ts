@@ -21,7 +21,7 @@ export const GET: APIRoute = async ({ params, url }) => {
             JSON.stringify({
                 tableName: table,
                 columns, // [{name, type}, ...]
-                rows,    // [[val1, val2, ...], ...]
+                rows, // [[val1, val2, ...], ...]
                 total: count,
                 limit,
                 offset,

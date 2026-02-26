@@ -1,67 +1,67 @@
 name: Build & Deploy PWA to GitHub Pages
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+    push:
+        branches: [main]
+    workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+    contents: read
+    pages: write
+    id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+    group: 'pages'
+    cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm ci
+            - name: Install Dependencies
+              run: npm ci
 
-      - name: Install sharp for icon generation
-        run: npm install -D sharp
+            - name: Install sharp for icon generation
+              run: npm install -D sharp
 
-      - name: Generate PWA Icons
-        run: node scripts/generate-pwa-icons.mjs
+            - name: Generate PWA Icons
+              run: node scripts/generate-pwa-icons.mjs
 
-      - name: Build Database (if data exists)
-        run: |
-          if [ -f "public/data/stocks.json" ]; then
-              npm run build-db || echo "DB build skipped"
-          fi
+            - name: Build Database (if data exists)
+              run: |
+                  if [ -f "public/data/stocks.json" ]; then
+                      npm run build-db || echo "DB build skipped"
+                  fi
 
-      - name: Build Astro (Static for GitHub Pages)
-        env:
-          STATIC_BUILD: "true"
-        run: npm run build
+            - name: Build Astro (Static for GitHub Pages)
+              env:
+                  STATIC_BUILD: 'true'
+              run: npm run build
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+            - name: Setup Pages
+              uses: actions/configure-pages@v5
 
-      - name: Upload to GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist/client
+            - name: Upload to GitHub Pages
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: ./dist/client
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
