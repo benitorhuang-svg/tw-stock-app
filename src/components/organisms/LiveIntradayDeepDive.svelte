@@ -5,14 +5,14 @@
     export let symbol: string;
     export let currentPrice: number;
 
-    let history: { time: string; price: number; volume: number }[] = [];
+    let history: { time: number; price: number; volume: number }[] = [];
     let meta: { prevClose: number; symbol: string } | null = null;
     let isLoading = true;
     let error = '';
 
     // Tooltip state
     let mouseX = -1;
-    let tooltipData: { time: string; price: number; volume: number } | null = null;
+    let tooltipData: { time: number; price: number; volume: number } | null = null;
     let svgElement: SVGSVGElement;
 
     async function fetchData() {
@@ -146,7 +146,7 @@
 </script>
 
 <div
-    class="chart-container relative overflow-visible flex flex-col min-h-[360px] bg-[#0a0c10] border-y border-border/40 select-none pb-12"
+    class="chart-container relative overflow-visible flex flex-col min-h-[300px] bg-[#0a0c10] border-y border-border/40 select-none pb-4"
     transition:slide={{ duration: 400 }}
 >
     <!-- Background Symbol Watermark -->
@@ -159,7 +159,7 @@
     </div>
 
     <div
-        class="flex-1 relative px-4 mt-8 mb-12"
+        class="flex-1 relative px-4 mt-6 mb-8"
         role="presentation"
         on:mousemove={handleMouseMove}
         on:mouseleave={handleMouseLeave}
@@ -199,17 +199,11 @@
                 viewBox="0 0 {W} {H}"
             >
                 <defs>
-                    <filter id="glow-{symbol}" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="8" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
                     <linearGradient id="cg-{symbol}" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color={trendColor} stop-opacity="0.3" />
-                        <stop offset="70%" stop-color={trendColor} stop-opacity="0.05" />
+                        <stop offset="0%" stop-color={trendColor} stop-opacity="0.2" />
                         <stop offset="100%" stop-color={trendColor} stop-opacity="0" />
                     </linearGradient>
                 </defs>
-
                 <!-- Grid -->
                 <line
                     x1="0"
@@ -274,19 +268,18 @@
                     stroke="white"
                     stroke-opacity="0.08"
                     stroke-width="1.5"
-                    stroke-dasharray="15,10"
+                    stroke-dasharray="10,5"
                 />
 
-                <!-- Price Area & Line -->
+                <!-- Price Area & Line (Clean Technical Look) -->
                 <polyline points={areaPoints} fill="url(#cg-{symbol})" />
                 <polyline
                     {points}
                     fill="none"
                     stroke={trendColor}
-                    stroke-width="4.5"
+                    stroke-width="2.5"
                     stroke-linejoin="round"
                     stroke-linecap="round"
-                    filter="url(#glow-{symbol})"
                 />
 
                 <!-- Labels -->
@@ -294,8 +287,8 @@
                     <rect
                         width="120"
                         height="30"
-                        rx="4"
-                        fill="#14161a"
+                        rx="2"
+                        fill="#050505"
                         stroke="white"
                         stroke-opacity="0.1"
                     />
@@ -304,9 +297,9 @@
                         y="20"
                         text-anchor="middle"
                         fill="white"
-                        fill-opacity="0.3"
+                        fill-opacity="0.4"
                         font-family="var(--font-mono)"
-                        font-size="12"
+                        font-size="11"
                         font-weight="900">REF {pClose.toFixed(2)}</text
                     >
                 </g>
@@ -316,19 +309,14 @@
                     y={highY - 12}
                     text-anchor="end"
                     fill="var(--color-bullish)"
-                    fill-opacity="0.6"
+                    fill-opacity="0.4"
                     font-family="var(--font-mono)"
                     font-size="10"
                     font-weight="900">MAX_{rawMax.toFixed(2)}</text
                 >
 
                 <g transform="translate({lastPt.x}, {lastPt.y})">
-                    <circle r="12" fill={trendColor} class="animate-ping" opacity="0.2" />
-                    <circle
-                        r="5"
-                        fill={trendColor}
-                        class="drop-shadow-[0_0_10px_rgba(var(--trend-rgb),0.8)]"
-                    />
+                    <circle r="3.5" fill={trendColor} stroke="white" stroke-width="1.5" />
                 </g>
 
                 <!-- Crosshair -->
@@ -353,38 +341,47 @@
                         class="drop-shadow-2xl"
                     />
 
-                    <g transform="translate({W}, {tooltipPriceY})">
-                        <rect x="0" y="-15" width="80" height="30" rx="4" fill="#1a1c22" />
-                        <text
-                            x="40"
-                            y="5"
-                            text-anchor="middle"
-                            fill="white"
-                            font-size="14"
-                            font-weight="900"
-                            font-family="var(--font-mono)">{tooltipData.price.toFixed(2)}</text
-                        >
-                    </g>
-
-                    <g transform="translate({mouseX}, {H + 45})">
+                    <!-- Unified Floating Data Card -->
+                    {@const isOnRight = mouseX > W - 120}
+                    <g
+                        transform="translate({isOnRight
+                            ? mouseX - 115
+                            : mouseX + 15}, {tooltipPriceY - 40})"
+                    >
                         <rect
-                            x="-35"
-                            y="-15"
-                            width="70"
-                            height="30"
-                            rx="15"
-                            fill="var(--color-accent)"
+                            width="100"
+                            height="44"
+                            rx="4"
+                            fill="#14161a"
+                            stroke="white"
+                            stroke-opacity="0.1"
                             class="drop-shadow-2xl"
                         />
+                        <!-- Status Accent -->
+                        <rect width="3" height="44" rx="1.5" fill={trendColor} />
+
                         <text
-                            x="0"
-                            y="5"
-                            text-anchor="middle"
+                            x="10"
+                            y="16"
+                            fill="white"
+                            fill-opacity="0.4"
+                            font-family="var(--font-mono)"
+                            font-size="9"
+                            font-weight="900"
+                            letter-spacing="1px"
+                        >
+                            TIME: {formatTime(tooltipData.time)}
+                        </text>
+                        <text
+                            x="10"
+                            y="32"
                             fill="white"
                             font-family="var(--font-mono)"
-                            font-size="12"
-                            font-weight="900">{formatTime(tooltipData.time)}</text
+                            font-size="14"
+                            font-weight="900"
                         >
+                            {tooltipData.price.toFixed(2)}
+                        </text>
                     </g>
                 {/if}
             </svg>
@@ -402,7 +399,7 @@
                 transparent 80%
             ),
             #0a0c10;
-        --bullish-rgb: 34, 197, 94;
-        --bearish-rgb: 239, 68, 68;
+        --bullish-rgb: 239, 68, 68;
+        --bearish-rgb: 34, 197, 94;
     }
 </style>
