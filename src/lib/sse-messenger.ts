@@ -12,8 +12,6 @@ type SSEMessage = {
 const CHANNEL_NAME = 'tw_stock_quantum_link';
 const channel = new BroadcastChannel(CHANNEL_NAME);
 
-let isOracle = false;
-let oracleHeartbeatTid: any = null;
 const HEARTBEAT_INTERVAL = 2000;
 
 /**
@@ -60,9 +58,8 @@ export function claimOracleStatus(): boolean {
 }
 
 function startOracleHeartbeat() {
-    isOracle = true;
     localStorage.setItem('sse_oracle_heartbeat', Date.now().toString());
-    oracleHeartbeatTid = setInterval(() => {
+    setInterval(() => {
         localStorage.setItem('sse_oracle_heartbeat', Date.now().toString());
     }, HEARTBEAT_INTERVAL);
 

@@ -1,8 +1,10 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { marketStore } from '../../stores/market.svelte';
-    import StockEntityCell from '../molecules/StockEntityCell.svelte';
+    import RankingCard from '../molecules/RankingCard.svelte';
     import { matchesSector, SECTOR_OPTIONS } from '../../lib/filters/sector-filter';
+    import { applyStockFilter } from '../../lib/filters/stock-filter';
+    import { fmtVol } from '../../utils/format';
 
     interface Props {
         // Initial data from SSR
@@ -32,15 +34,6 @@
     // Local state
     let activeSSE: EventSource | null = null;
     let isLive = $state(false);
-    // Deleted local filterSector to use global marketStore.filterSector instead
-
-    // Formatting helpers
-    function fmtVol(v: number): string {
-        const cv = Math.ceil(v);
-        if (cv >= 100000000) return (cv / 100000000).toFixed(1) + '億';
-        if (cv >= 10000) return (cv / 10000).toFixed(1) + '萬';
-        return cv > 0 ? cv.toLocaleString('zh-TW') : '—';
-    }
 
     onMount(() => {
         if (typeof EventSource !== 'undefined') {
@@ -116,14 +109,6 @@
         try {
             const res = await fetch(`/api/market/history?date=${date}`, { cache: 'no-store' });
             const data = await res.json();
-            console.log('[Dashboard] API response for', date, ':', {
-                status: res.status,
-                error: data.error,
-                gainers: data.gainers?.length,
-                losers: data.losers?.length,
-                volumeLeaders: data.volumeLeaders?.length,
-                sampleGainer: data.gainers?.[0],
-            });
             if (res.ok && !data.error) {
                 upCount = data.summary.up;
                 downCount = data.summary.down;
@@ -133,16 +118,7 @@
                 gainers = data.gainers;
                 losers = data.losers;
                 topVolume = data.volumeLeaders;
-                console.log(
-                    '[Dashboard] Data assigned. gainers:',
-                    gainers.length,
-                    'losers:',
-                    losers.length,
-                    'topVolume:',
-                    topVolume.length
-                );
             } else {
-                console.warn('[Sync Warning] No data returned for chosen date:', date, data);
                 // Clear cards on error to avoid stale data
                 gainers = [];
                 losers = [];
@@ -167,94 +143,16 @@
     let barDown = $derived(total > 0 ? (downCount / total) * 100 : 0);
     let barFlat = $derived(total > 0 ? (flatCount / total) * 100 : 0);
 
-    // Filtering logic for the dashboard tables
-    const filteredGainers = $derived.by(() => {
-        const result = (gainers || []).filter(s => applyFilters(s)).slice(0, 15);
-        if (marketStore.filterSector) {
-            console.log(
-                '[Filter] sector:',
-                marketStore.filterSector,
-                'gainers:',
-                gainers?.length,
-                '→ filtered:',
-                result.length
-            );
-        }
-        return result;
-    });
-    const filteredLosers = $derived.by(() => {
-        const result = (losers || []).filter(s => applyFilters(s)).slice(0, 15);
-        if (marketStore.filterSector) {
-            console.log(
-                '[Filter] sector:',
-                marketStore.filterSector,
-                'losers:',
-                losers?.length,
-                '→ filtered:',
-                result.length
-            );
-        }
-        return result;
-    });
-    const filteredTopVolume = $derived.by(() => {
-        const result = (topVolume || []).filter(s => applyFilters(s)).slice(0, 15);
-        if (marketStore.filterSector) {
-            console.log(
-                '[Filter] sector:',
-                marketStore.filterSector,
-                'topVolume:',
-                topVolume?.length,
-                '→ filtered:',
-                result.length
-            );
-        }
-        return result;
-    });
-
-    function applyFilters(s: any) {
-        const {
-            searchKeyword,
-            filterMarket,
-            filterPriceRange,
-            filterMinVol,
-            filterTrend,
-            filterSector,
-        } = marketStore;
-
-        const code = String(s.symbol || s.code || '');
-        const name = s.name || '';
-        const price = s.price || 0;
-        const changePct = s.changePercent || s.changePct || 0;
-        const vol = s.volume || s.vol || 0;
-
-        // Market filter — tolerant: skip if stock has no _market data
-        if (filterMarket && s._market) {
-            if (s._market.toUpperCase() !== filterMarket.toUpperCase()) return false;
-        }
-
-        // Sector filter — uses atomic utility
-        if (filterSector) {
-            const sector = String(s.sector || s.category || s.industry || '');
-            if (!matchesSector(filterSector, sector, code, name)) return false;
-        }
-
-        if (searchKeyword && !code.includes(searchKeyword) && !name.includes(searchKeyword))
-            return false;
-
-        if (filterPriceRange) {
-            const [min, max] = filterPriceRange.split('-').map(Number);
-            if (price < min || (max && price > max)) return false;
-        }
-
-        if (filterMinVol > 0 && vol < filterMinVol) return false;
-
-        if (filterTrend !== '0') {
-            const t = parseFloat(filterTrend);
-            if ((t > 0 && changePct < t) || (t < 0 && changePct > t)) return false;
-        }
-
-        return true;
-    }
+    // Filtering logic — uses shared atomic filter engine
+    const filteredGainers = $derived(
+        (gainers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
+    );
+    const filteredLosers = $derived(
+        (losers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
+    );
+    const filteredTopVolume = $derived(
+        (topVolume || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
+    );
 
     function resetFilters() {
         marketStore.searchKeyword = '';
@@ -785,179 +683,9 @@
 
 <!-- SEPARATED MATRIX NEXUS - 3 CARDS GRID -->
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 relative z-10 mt-4 lg:mt-6">
-    <!-- COLUMN 1: LIQUIDITY LEADERS -->
-    <div
-        class="flex flex-col glass-card border border-border rounded-xl bg-surface/40 shadow-elevated overflow-hidden"
-    >
-        <div
-            class="px-6 py-4 bg-white/[0.02] border-b border-white/5 flex items-center justify-between relative z-10"
-        >
-            <div class="flex items-center gap-2">
-                <span class="text-accent text-xs">💧</span>
-                <h3 class="text-[10px] font-black text-white/80 uppercase tracking-widest">
-                    主力資金匯聚排行
-                </h3>
-            </div>
-        </div>
-        <div class="overflow-y-auto w-full custom-scroll max-h-[400px]">
-            <table class="w-full text-left border-collapse">
-                <thead
-                    class="bg-surface/95 border-b border-white/5 sticky top-0 z-20 backdrop-blur-xl"
-                >
-                    <tr>
-                        <th class="atom-th !px-2">Rank</th>
-                        <th class="atom-th !px-2 text-left">Entity</th>
-                        <th class="atom-th !px-2 text-right">Price</th>
-                        <th class="atom-th !px-2 text-right">Change</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/[0.02]">
-                    {#each filteredTopVolume as s, i}
-                        <tr
-                            class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
-                            onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
-                        >
-                            <td class="px-2 py-3 text-[9px] font-mono text-white/20 pl-4">
-                                {i + 1}
-                            </td>
-                            <td class="px-1 py-3 max-w-[120px]">
-                                <StockEntityCell symbol={s.symbol} name={s.name} showLink={true} />
-                            </td>
-                            <td
-                                class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
-                            >
-                                {s.price?.toFixed(2) || '—'}
-                            </td>
-                            <td class="px-2 py-3 text-right">
-                                <div
-                                    class="atom-badge inline-flex min-w-[54px] {(s.changePercent ||
-                                        0) > 0
-                                        ? 'atom-badge-bull'
-                                        : (s.changePercent || 0) < 0
-                                          ? 'atom-badge-bear'
-                                          : 'atom-badge-flat'}"
-                                >
-                                    {(s.changePercent || 0) > 0 ? '+' : ''}{(
-                                        s.changePercent || 0
-                                    ).toFixed(2)}%
-                                </div>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- COLUMN 2: LOSERS MATRIX -->
-    <div
-        class="flex flex-col glass-card border border-border rounded-xl bg-surface/40 shadow-elevated overflow-hidden"
-    >
-        <div
-            class="px-6 py-4 bg-bearish/[0.03] border-b border-white/5 flex items-center justify-between relative z-10"
-        >
-            <div class="flex items-center gap-2">
-                <span class="text-bearish text-xs">📉</span>
-                <h3 class="text-[10px] font-black text-bearish uppercase tracking-widest">
-                    跌幅排行
-                </h3>
-            </div>
-        </div>
-        <div class="overflow-y-auto w-full custom-scroll max-h-[400px]">
-            <table class="w-full text-left border-collapse">
-                <thead
-                    class="bg-surface/95 border-b border-white/5 sticky top-0 z-20 backdrop-blur-xl"
-                >
-                    <tr>
-                        <th class="atom-th !px-2">Rank</th>
-                        <th class="atom-th !px-2 text-left">Entity</th>
-                        <th class="atom-th !px-2 text-right">Price</th>
-                        <th class="atom-th !px-2 text-right">Change</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/[0.02]">
-                    {#each filteredLosers as s, i}
-                        <tr
-                            class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
-                            onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
-                        >
-                            <td class="px-2 py-3 text-[9px] font-mono text-white/20 pl-4">
-                                {i + 1}
-                            </td>
-                            <td class="px-1 py-3 max-w-[120px]">
-                                <StockEntityCell symbol={s.symbol} name={s.name} showLink={true} />
-                            </td>
-                            <td
-                                class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
-                            >
-                                {s.price?.toFixed(2) || '—'}
-                            </td>
-                            <td class="px-2 py-3 text-right">
-                                <div class="atom-badge inline-flex min-w-[54px] atom-badge-bear">
-                                    {(s.changePercent || 0).toFixed(2)}%
-                                </div>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- COLUMN 3: GAINERS MATRIX -->
-    <div
-        class="flex flex-col glass-card border border-border rounded-xl bg-surface/40 shadow-elevated overflow-hidden"
-    >
-        <div
-            class="px-6 py-4 bg-bullish/[0.03] border-b border-white/5 flex items-center justify-between relative z-10"
-        >
-            <div class="flex items-center gap-2">
-                <span class="text-bullish text-xs">🚀</span>
-                <h3 class="text-[10px] font-black text-bullish uppercase tracking-widest">
-                    漲幅排行
-                </h3>
-            </div>
-        </div>
-        <div class="overflow-y-auto w-full custom-scroll max-h-[400px]">
-            <table class="w-full text-left border-collapse">
-                <thead
-                    class="bg-surface/95 border-b border-white/5 sticky top-0 z-20 backdrop-blur-xl"
-                >
-                    <tr>
-                        <th class="atom-th !px-2">Rank</th>
-                        <th class="atom-th !px-2 text-left">Entity</th>
-                        <th class="atom-th !px-2 text-right">Price</th>
-                        <th class="atom-th !px-2 text-right">Change</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/[0.02]">
-                    {#each filteredGainers as s, i}
-                        <tr
-                            class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
-                            onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
-                        >
-                            <td class="px-2 py-3 text-[9px] font-mono text-white/20 pl-4">
-                                {i + 1}
-                            </td>
-                            <td class="px-1 py-3 max-w-[120px]">
-                                <StockEntityCell symbol={s.symbol} name={s.name} showLink={true} />
-                            </td>
-                            <td
-                                class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
-                            >
-                                {s.price?.toFixed(2) || '—'}
-                            </td>
-                            <td class="px-2 py-3 text-right">
-                                <div class="atom-badge inline-flex min-w-[54px] atom-badge-bull">
-                                    +{(s.changePercent || 0).toFixed(2)}%
-                                </div>
-                            </td>
-                        </tr>
-                    {/each}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <RankingCard title="主力資金匯聚排行" icon="💧" variant="accent" items={filteredTopVolume} />
+    <RankingCard title="跌幅排行" icon="📉" variant="bearish" items={filteredLosers} />
+    <RankingCard title="漲幅排行" icon="🚀" variant="bullish" items={filteredGainers} />
 </div>
 
 <style>

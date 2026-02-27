@@ -1,8 +1,8 @@
 import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+
+
 const dbPath = path.resolve(process.cwd(), 'public', 'data', 'stocks.db');
 const db = new Database(dbPath, { readonly: true, fileMustExist: true });
 const tables = db

@@ -15,7 +15,7 @@ export class SqliteService {
     private dbPath: string | null;
     private cachedTables: Set<string>;
     private columnCache: Map<string, { name: string; type: string }[]> = new Map();
-    private rowCountCache: Map<string, number> = new Map();
+
     private stmtCache: Map<string, ReturnType<InstanceType<typeof Database>['prepare']>> =
         new Map();
 
@@ -115,7 +115,7 @@ export class SqliteService {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'")
             .get() as { name: string } | undefined)
             ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number })
-                  .count
+                .count
             : 0;
 
         return {

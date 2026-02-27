@@ -14,7 +14,7 @@ function initScreenerEngine() {
     if (!tbody) return;
 
     let activeStrategyName = '';
-    let lastResults: ScreenerResult[] = [];
+
     let refreshTimeout: number | null = null;
 
     function renderResults(stocks: ScreenerResult[]) {
@@ -73,7 +73,7 @@ function initScreenerEngine() {
                 const data = await res.json();
 
                 if (data.success) {
-                    lastResults = data.results;
+
                     renderResults(data.results);
                     getEl('screener-count')!.textContent = data.pagination.total;
                     toast.show({ message: `Found ${data.results.length} stocks`, type: 'success' });

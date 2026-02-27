@@ -2,17 +2,7 @@
  * Core Data Explorer Engine for database.astro
  * PERFORMANCE PEAK: Manual GC, Scroll Throttling, Hardware Acceleration Hints
  */
-function escapeHtml(str: unknown): string {
-    if (str === null || str === undefined) return '';
-    const s = String(str);
-    if (!/[&<>"']/.test(s)) return s;
-    return s
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
+
 
 let activeTable = '';
 let currentPage = 1;
@@ -151,7 +141,7 @@ function initExplorer() {
                 if (targetTable && targetTable !== activeTable && targetTable !== 'refresh') {
                     if (prefetchTid) clearTimeout(prefetchTid);
                     prefetchTid = window.setTimeout(() => {
-                        fetch(`/api/db/${targetTable}?limit=${limit}&offset=0`).catch(() => {});
+                        fetch(`/api/db/${targetTable}?limit=${limit}&offset=0`).catch(() => { });
                     }, 150);
                 }
             },
@@ -286,7 +276,7 @@ function initExplorer() {
             try {
                 const ticks = JSON.parse(e.data);
                 if (getEl('tick-count')) getEl('tick-count')!.textContent = String(ticks.length);
-            } catch {}
+            } catch { }
         });
         document.addEventListener('astro:before-swap', () => es.close(), { once: true });
     }

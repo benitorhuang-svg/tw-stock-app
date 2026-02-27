@@ -27,7 +27,8 @@ export interface StockWithPrice extends Stock {
 }
 
 let serverDb: BetterDatabase | null = null;
-const stmtCache = new Map<string, BetterDatabase.Statement>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const stmtCache = new Map<string, any>();
 
 async function getServerDb() {
     if (serverDb) return serverDb;
@@ -139,7 +140,7 @@ export async function searchStocks(keyword: string, limit: number = 50): Promise
     );
 }
 
-export async function screenStocks(criteria: any): Promise<StockWithPrice[]> {
+export async function screenStocks(): Promise<StockWithPrice[]> {
     // Basic implementation for safety - in real usage api/screener uses specialized executor
     return getAllStocksWithPrices();
 }

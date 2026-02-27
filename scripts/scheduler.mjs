@@ -23,7 +23,7 @@ async function runAll() {
         try {
             console.log(`\n🚀 Executing ${task.name}...`);
             const scriptPath = path.join(CRAWLER_DIR, task.script);
-            const output = execSync(`node ${scriptPath}`, { stdio: 'inherit' });
+            execSync(`node ${scriptPath}`, { stdio: 'inherit' });
         } catch (err) {
             console.error(`❌ Task ${task.name} failed: ${err.message}`);
         }

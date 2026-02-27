@@ -70,14 +70,6 @@ const fmtNet = (n: number) => {
     return `${prefix}${n.toLocaleString('zh-TW')}`;
 };
 
-const chartData = [...institutionalData].slice(0, 10).reverse();
-const maxNet = Math.max(
-    ...chartData.map(d =>
-        Math.max(Math.abs(d.foreignNet), Math.abs(d.investNet), Math.abs(d.dealerNet))
-    ),
-    1
-);
-
 const sparkPoints = (data: number[]) => {
     if (data.length === 0) return '';
     const max = Math.max(...data.map(Math.abs), 1);

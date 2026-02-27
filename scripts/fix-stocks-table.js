@@ -41,16 +41,7 @@ const missing = db.prepare(`
 
 console.log(`Found ${missing.length} missing symbols in stocks table.`);
 
-// 2. We need names. Let's try to get them from latest_prices.json if available
-let nameMap = {};
-try {
-    const fs = require('fs');
-    if (fs.existsSync('public/data/latest_prices.json')) {
-        const prices = JSON.parse(fs.readFileSync('public/data/latest_prices.json', 'utf-8'));
-        // If snapshot has names... wait, it might not.
-    }
-    // Better source: Try to find any existing names in the DB or CSVs
-} catch (e) { }
+
 
 // Since we can't easily get ALL names without a fresh TWSE fetch, 
 // let's at least initialize the rows so the JOINs don't fail, and use SYMBOL as NAME for now

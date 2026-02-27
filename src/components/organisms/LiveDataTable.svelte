@@ -3,7 +3,7 @@
     import { marketStore } from '../../stores/market.svelte';
     import LiveIntradayDeepDive from './LiveIntradayDeepDive.svelte';
     import StockEntityCell from '../molecules/StockEntityCell.svelte';
-    import { matchesSector } from '../../lib/filters/sector-filter';
+    import { applyStockFilter } from '../../lib/filters/stock-filter';
 
     // ─── Local UI State ────────────────────────────────
     let currentSortCol = $state('vol');
@@ -22,58 +22,10 @@
 
     // ─── Reactive Filtering & Sorting (Runes) ──────────
     const filteredAndSorted = $derived.by(() => {
-        const {
-            searchKeyword,
-            filterMarket,
-            filterPriceRange,
-            filterMinVol,
-            filterTrend,
-            filterMA20,
-            filterStarred,
-            filterSector,
-            watchlist,
-        } = marketStore;
         const { stocks } = marketStore.state;
 
         return stocks
-            .filter(s => {
-                // Market filter — tolerant of missing _market
-                if (filterMarket && (s as any)._market) {
-                    if ((s as any)._market.toUpperCase() !== filterMarket.toUpperCase())
-                        return false;
-                }
-                if (
-                    searchKeyword &&
-                    !s.code.includes(searchKeyword) &&
-                    !s.name.includes(searchKeyword)
-                )
-                    return false;
-                if (filterStarred && !watchlist.has(s.code)) return false;
-                if (filterPriceRange) {
-                    const [min, max] = filterPriceRange.split('-').map(Number);
-                    if (s.price < min || s.price > max) return false;
-                }
-                if (filterMinVol > 0 && s.vol < filterMinVol) return false;
-                if (filterTrend !== '0') {
-                    const t = parseFloat(filterTrend);
-                    if ((t > 0 && s.changePct < t) || (t < 0 && s.changePct > t)) return false;
-                }
-                if (filterMA20 !== 0 && s.ma20) {
-                    const dist = (s.price / s.ma20 - 1) * 100;
-                    if (
-                        (filterMA20 > 0 && dist < filterMA20) ||
-                        (filterMA20 < 0 && dist > filterMA20)
-                    )
-                        return false;
-                }
-
-                // Sector filter — atomic utility
-                if (filterSector) {
-                    const sector = (s as any).sector || '';
-                    if (!matchesSector(filterSector, sector, s.code, s.name)) return false;
-                }
-                return true;
-            })
+            .filter(s => applyStockFilter(s, marketStore))
             .sort((a, b) => {
                 const va = (a as any)[currentSortCol] ?? 0;
                 const vb = (b as any)[currentSortCol] ?? 0;
