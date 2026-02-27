@@ -125,6 +125,21 @@ export const GET: APIRoute = async ({ url }) => {
             );
         }
 
+        const distribution = dbService.getRawDb().prepare(`
+            SELECT 
+                count(CASE WHEN change_pct >= 9 THEN 1 END) as p9,
+                count(CASE WHEN change_pct >= 6 AND change_pct < 9 THEN 1 END) as p6_9,
+                count(CASE WHEN change_pct >= 3 AND change_pct < 6 THEN 1 END) as p3_6,
+                count(CASE WHEN change_pct > 0 AND change_pct < 3 THEN 1 END) as p0_3,
+                count(CASE WHEN change_pct = 0 THEN 1 END) as zero,
+                count(CASE WHEN change_pct > -3 AND change_pct < 0 THEN 1 END) as m0_3,
+                count(CASE WHEN change_pct > -6 AND change_pct <= -3 THEN 1 END) as m3_6,
+                count(CASE WHEN change_pct > -9 AND change_pct <= -6 THEN 1 END) as m6_9,
+                count(CASE WHEN change_pct <= -9 THEN 1 END) as m9
+            FROM price_history
+            WHERE date = ? AND close > 0
+        `).get(date) as any;
+
         const ratio = summary.down > 0 ? summary.up / summary.down : 999;
 
         const gainers: StockRow[] = s.gainers.all(date) as StockRow[];
@@ -141,7 +156,7 @@ export const GET: APIRoute = async ({ url }) => {
         return new Response(
             JSON.stringify({
                 date,
-                summary: { ...summary, ratio: Number(ratio.toFixed(2)) },
+                summary: { ...summary, ratio: Number(ratio.toFixed(2)), distribution },
                 gainers,
                 losers,
                 volumeLeaders,

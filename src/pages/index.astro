@@ -42,6 +42,7 @@ let dataDate = '';
 let totalVolume = 0;
 let avgChange = 0;
 let breadthTimeline: any[] = [];
+let distribution: any = null;
 
 try {
     // Fast path: direct SQL aggregation (SSR mode with DB available)
@@ -55,6 +56,15 @@ try {
         total_vol: number;
         avg_chg: number;
         latest_date: string;
+        p9: number;
+        p6_9: number;
+        p3_6: number;
+        p0_3: number;
+        zero: number;
+        m0_3: number;
+        m3_6: number;
+        m6_9: number;
+        m9: number;
     }>(`
         SELECT
             COUNT(*) as total,
@@ -63,7 +73,16 @@ try {
             SUM(CASE WHEN change_pct = 0 AND close > 0 THEN 1 ELSE 0 END) as flat,
             SUM(volume) as total_vol,
             AVG(change_pct) as avg_chg,
-            MAX(date) as latest_date
+            MAX(date) as latest_date,
+            SUM(CASE WHEN change_pct >= 9 THEN 1 ELSE 0 END) as p9,
+            SUM(CASE WHEN change_pct >= 6 AND change_pct < 9 THEN 1 ELSE 0 END) as p6_9,
+            SUM(CASE WHEN change_pct >= 3 AND change_pct < 6 THEN 1 ELSE 0 END) as p3_6,
+            SUM(CASE WHEN change_pct > 0 AND change_pct < 3 THEN 1 ELSE 0 END) as p0_3,
+            SUM(CASE WHEN change_pct = 0 THEN 1 ELSE 0 END) as zero,
+            SUM(CASE WHEN change_pct > -3 AND change_pct < 0 THEN 1 ELSE 0 END) as m0_3,
+            SUM(CASE WHEN change_pct > -6 AND change_pct <= -3 THEN 1 ELSE 0 END) as m3_6,
+            SUM(CASE WHEN change_pct > -9 AND change_pct <= -6 THEN 1 ELSE 0 END) as m6_9,
+            SUM(CASE WHEN change_pct <= -9 THEN 1 ELSE 0 END) as m9
         FROM latest_prices WHERE close > 0
     `);
 
@@ -74,6 +93,17 @@ try {
         totalVolume = summary.total_vol;
         avgChange = summary.avg_chg;
         dataDate = summary.latest_date || '';
+        distribution = {
+            p9: summary.p9,
+            p6_9: summary.p6_9,
+            p3_6: summary.p3_6,
+            p0_3: summary.p0_3,
+            zero: summary.zero,
+            m0_3: summary.m0_3,
+            m3_6: summary.m3_6,
+            m6_9: summary.m6_9,
+            m9: summary.m9,
+        };
     }
 
     const mapRow = (r: any): DashboardStock => ({
@@ -186,6 +216,7 @@ try {
             losers={losers}
             topVolume={topVolume}
             initialBreadthData={breadthTimeline}
+            distribution={distribution}
         />
 
         <SentimentTrendModal />

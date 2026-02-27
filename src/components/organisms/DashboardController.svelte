@@ -8,6 +8,7 @@
     import SentimentBar from '../molecules/SentimentBar.svelte';
     import StrategyFilterMatrix from '../molecules/StrategyFilterMatrix.svelte';
     import MarketBreadthChart from '../organisms/MarketBreadthChart.svelte';
+    import MarketDistributionChart from '../molecules/MarketDistributionChart.svelte';
     import { applyStockFilter } from '../../lib/filters/stock-filter';
     import { fmtVol } from '../../utils/format';
 
@@ -23,6 +24,7 @@
         losers?: any[];
         topVolume?: any[];
         initialBreadthData?: any[];
+        distribution?: any;
     }
 
     let {
@@ -36,6 +38,7 @@
         losers = $bindable([]),
         topVolume = $bindable([]),
         initialBreadthData = [],
+        distribution = $bindable(null),
     }: Props = $props();
 
     // Local state
@@ -92,6 +95,8 @@
         if (activeSSE) activeSSE.close();
     });
 
+    const allDates = $derived(initialBreadthData.map(d => d.date).sort());
+
     async function fetchDateData(date: string) {
         if (!date) return;
 
@@ -113,6 +118,7 @@
                 flatCount = data.summary.flat;
                 totalVolume = data.summary.totalVolume;
                 avgChange = data.summary.avgChange;
+                distribution = data.summary.distribution;
                 gainers = data.gainers;
                 losers = data.losers;
                 topVolume = data.volumeLeaders;
@@ -120,12 +126,23 @@
                 gainers = [];
                 losers = [];
                 topVolume = [];
+                distribution = null;
             }
         } catch (err) {
             console.error('[Sync Error]', err);
             gainers = [];
             losers = [];
             topVolume = [];
+            distribution = null;
+        }
+    }
+
+    function navigateDate(direction: number) {
+        const currentIndex = allDates.indexOf(dataDate);
+        if (currentIndex === -1) return;
+        const nextIndex = currentIndex + direction;
+        if (nextIndex >= 0 && nextIndex < allDates.length) {
+            fetchDateData(allDates[nextIndex]);
         }
     }
 
@@ -133,22 +150,25 @@
 
     // Filtering logic — uses shared atomic filter engine
     const filteredGainers = $derived(
-        (gainers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
+        (gainers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 6)
     );
     const filteredLosers = $derived(
-        (losers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
+        (losers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 6)
     );
     const filteredTopVolume = $derived(
-        (topVolume || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
+        (topVolume || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 6)
     );
 </script>
 
 <div class="space-y-4 animate-fade-up">
-    <!-- CORE COMMAND NEXUS: Tri-column Layout -->
-    <div class="flex flex-col lg:flex-row gap-4 items-stretch justify-center animate-fade-up">
+    <!-- STRATEGIC TOOLBAR: Filter Nexus -->
+    <StrategyFilterMatrix />
+
+    <!-- CORE COMMAND NEXUS: Swapped Layout -->
+    <div class="flex flex-col lg:flex-row gap-4 items-stretch justify-center">
         <!-- MARKET HUD: Key Vectors (Left) -->
         <div
-            class="lg:w-[340px] glass-card border-l-4 border-l-accent p-4 relative overflow-hidden shadow-elevated shrink-0 flex flex-col justify-between gap-4"
+            class="lg:w-[380px] glass-card border-l-4 border-l-accent p-4 relative overflow-hidden shadow-elevated shrink-0 flex flex-col justify-between gap-6"
         >
             <div class="flex flex-col gap-4">
                 <div class="flex items-center justify-between relative">
@@ -163,12 +183,38 @@
                     {/if}
 
                     <!-- ABSOLUTE POSITIONED DATE PICKER (TOP RIGHT) -->
-                    <div class="absolute -top-2 -right-2">
+                    <div class="absolute -top-2 -right-2 flex items-center gap-1">
+                        <button
+                            onclick={() => navigateDate(-1)}
+                            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
+                            aria-label="Previous day"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg
+                            >
+                        </button>
                         <CyberDatePicker
-                            size="w-20 h-20"
+                            size="w-12 h-12"
                             value={dataDate}
                             onchange={fetchDateData}
                         />
+                        <button
+                            onclick={() => navigateDate(1)}
+                            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
+                            aria-label="Next day"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.5"><path d="m9 18 6-6-6-6" /></svg
+                            >
+                        </button>
                     </div>
                 </div>
 
@@ -185,9 +231,16 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-5">
                 <!-- Sentiment Molecule -->
                 <SentimentBar up={upCount} down={downCount} flat={flatCount} {ratio} />
+
+                <!-- Distribution Molecule -->
+                {#if distribution}
+                    <div class="h-[120px] transition-all duration-500">
+                        <MarketDistributionChart {distribution} />
+                    </div>
+                {/if}
 
                 <!-- Liquidity & Volatility Molecules -->
                 <div class="grid grid-cols-2 gap-4">
@@ -201,21 +254,25 @@
             </div>
         </div>
 
-        <!-- TREND ANALYSIS: Middle Organism -->
-        <MarketBreadthChart
-            bind:this={chartRef}
-            initialData={initialBreadthData}
-            onDateSelect={fetchDateData}
-        />
-
-        <!-- FILTER NEXUS: Molecule -->
-        <StrategyFilterMatrix />
+        <!-- GAINER/LOSER RANKINGS: Moved Up -->
+        <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <RankingCard title="漲幅排行" icon="🚀" variant="bullish" items={filteredGainers} />
+            <RankingCard title="跌幅排行" icon="📉" variant="bearish" items={filteredLosers} />
+        </div>
     </div>
 </div>
 
-<!-- SEPARATED MATRIX NEXUS - 3 CARDS GRID -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 relative z-10 mt-2 lg:mt-4">
-    <RankingCard title="主力資金匯聚排行" icon="💧" variant="accent" items={filteredTopVolume} />
-    <RankingCard title="跌幅排行" icon="📉" variant="bearish" items={filteredLosers} />
-    <RankingCard title="漲幅排行" icon="🚀" variant="bullish" items={filteredGainers} />
+<!-- BOTTOM ANALYTICS ROW -->
+<div class="flex flex-col lg:flex-row gap-4 relative z-10 mt-2 lg:mt-4 items-stretch">
+    <!-- TREND ANALYSIS: Moved Down and Width Expanded -->
+    <MarketBreadthChart
+        bind:this={chartRef}
+        initialData={initialBreadthData}
+        onDateSelect={fetchDateData}
+    />
+
+    <!-- VOLUME RANKING: Positioned next to chart -->
+    <div class="lg:w-[380px] shrink-0">
+        <RankingCard title="主力資金匯聚排行" icon="�" variant="accent" items={filteredTopVolume} />
+    </div>
 </div>

@@ -81,10 +81,7 @@
             <circle cx="15" cy="17" r="0.8" fill="currentColor" />
         </svg>
 
-        <span
-            class="text-[9px] font-black uppercase tracking-[0.2em] mt-2 opacity-60 group-hover/date:opacity-100 transition-opacity"
-            >切換日期</span
-        >
+        <!-- Icon Only -->
     </div>
 
     <!-- Decorative Outer Ring -->

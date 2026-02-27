@@ -75,6 +75,15 @@
                         </td>
                         <td class="px-1 py-3 max-w-[120px]">
                             <StockEntityCell symbol={s.symbol} name={s.name} showLink={true} />
+                            {#if s.sector}
+                                <div class="mt-0.5 ml-8">
+                                    <span
+                                        class="text-[8px] px-1 rounded bg-white/5 text-white/40 font-bold uppercase tracking-tighter"
+                                    >
+                                        {s.sector}
+                                    </span>
+                                </div>
+                            {/if}
                         </td>
                         <td
                             class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
