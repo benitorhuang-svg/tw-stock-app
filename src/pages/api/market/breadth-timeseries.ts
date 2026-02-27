@@ -14,14 +14,18 @@ export const GET: APIRoute = async () => {
         const rows = db
             .prepare(
                 `
-            SELECT 
-                date,
-                count(CASE WHEN change_pct > 0 THEN 1 END) as up,
-                count(CASE WHEN change_pct < 0 THEN 1 END) as down,
-                count(CASE WHEN change_pct = 0 THEN 1 END) as flat
-            FROM price_history
-            WHERE close > 0
-            GROUP BY date
+            SELECT * FROM (
+                SELECT 
+                    date,
+                    count(CASE WHEN change_pct > 0 THEN 1 END) as up,
+                    count(CASE WHEN change_pct < 0 THEN 1 END) as down,
+                    count(CASE WHEN change_pct = 0 THEN 1 END) as flat
+                FROM price_history
+                WHERE close > 0
+                GROUP BY date
+                ORDER BY date DESC
+                LIMIT 150
+            ) sub
             ORDER BY date ASC
         `
             )
@@ -30,7 +34,7 @@ export const GET: APIRoute = async () => {
         return new Response(JSON.stringify(rows), {
             headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Cache-Control': 'public, max-age=3600',
             },
         });
     } catch (error) {

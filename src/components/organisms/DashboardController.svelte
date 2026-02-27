@@ -17,6 +17,7 @@
         gainers?: any[];
         losers?: any[];
         topVolume?: any[];
+        initialBreadthData?: any[];
     }
 
     let {
@@ -29,6 +30,7 @@
         gainers = $bindable([]),
         losers = $bindable([]),
         topVolume = $bindable([]),
+        initialBreadthData = [],
     }: Props = $props();
 
     // Local state
@@ -79,9 +81,8 @@
             });
         }
 
-        setTimeout(() => {
-            initTrendChart();
-        }, 100);
+        // Instant initialization using SSR data if available
+        initTrendChart(initialBreadthData);
     });
 
     onDestroy(() => {
@@ -199,23 +200,22 @@
         }
     }
 
-    async function initTrendChart() {
+    async function initTrendChart(providedData?: any[]) {
         if (!trendChartContainer) return;
 
-        const ensureEcharts = (): Promise<any> => {
-            if ((window as any).echarts) return Promise.resolve((window as any).echarts);
-            return new Promise(resolve => {
-                const s = document.createElement('script');
-                s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
-                s.onload = () => resolve((window as any).echarts);
-                document.head.appendChild(s);
-            });
-        };
-
         try {
-            const echarts = await ensureEcharts();
-            const res = await fetch(`/api/market/breadth-timeseries?t=${Date.now()}`);
-            const data = await res.json();
+            const echarts = (window as any).echarts;
+            if (!echarts) {
+                console.warn('ECharts not found in window, retrying in 50ms...');
+                setTimeout(() => initTrendChart(providedData), 50);
+                return;
+            }
+
+            let data = providedData;
+            if (!data || data.length === 0) {
+                const res = await fetch(`/api/market/breadth-timeseries?t=${Date.now()}`);
+                data = await res.json();
+            }
 
             if (trendChart) {
                 trendChart.dispose();
@@ -230,9 +230,9 @@
                 d.down > 0 ? Number((d.up / d.down).toFixed(2)) : 1
             );
 
-            // Calculate starting percentage for last 60 days
+            // Calculate starting percentage for last 30 days
             const totalPoints = Math.max(1, data.length);
-            const defaultStart = Math.max(0, 100 - (60 / totalPoints) * 100);
+            const defaultStart = Math.max(0, 100 - (30 / totalPoints) * 100);
 
             const option = {
                 grid: { top: 10, right: 0, bottom: 20, left: 30, containLabel: false },
@@ -378,21 +378,32 @@
                                 class="text-3xl font-mono font-black text-white tracking-tighter leading-none"
                                 >{dataDate || '—'}</span
                             >
-                            <div class="relative group/date w-8 h-8 shrink-0">
+                            <div class="relative group/date w-14 h-14 shrink-0 mt-1">
                                 <input
                                     type="date"
                                     onchange={syncHistoricalData}
-                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
                                 />
+                                <!-- Cyber-Glass Trigger Body -->
                                 <div
-                                    class="absolute inset-0 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-white/60 group-hover/date:border-accent/40 group-hover/date:bg-white/10 group-hover/date:text-accent transition-all group-active/date:scale-95"
+                                    class="absolute inset-0 flex items-center justify-center rounded-2xl bg-[#0a0c10]/80 border border-accent/30 text-accent group-hover/date:border-accent group-hover/date:bg-accent/20 group-hover/date:shadow-[0_0_25px_rgba(var(--accent-rgb),0.3)] transition-all duration-500 group-active/date:scale-90 overflow-hidden shadow-2xl z-10"
                                 >
+                                    <!-- High-tech Grid Background Overlay -->
+                                    <div
+                                        class="absolute inset-0 opacity-[0.1] pointer-events-none bg-[linear-gradient(rgba(var(--accent-rgb),0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(var(--accent-rgb),0.2)_1px,transparent_1px)] bg-[size:4px_4px]"
+                                    ></div>
+
+                                    <!-- Inner Glow Top Rim -->
+                                    <div
+                                        class="absolute top-0 left-3 right-3 h-[1px] bg-accent/40 rounded-full"
+                                    ></div>
+
                                     <svg
-                                        class="w-4 h-4"
+                                        class="w-7 h-7 drop-shadow-[0_0_8px_rgba(var(--accent-rgb),0.5)] group-hover/date:scale-110 transition-transform duration-500"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
-                                        stroke-width="2"
+                                        stroke-width="2.2"
                                         ><path
                                             stroke-linecap="round"
                                             stroke-linejoin="round"
@@ -400,6 +411,10 @@
                                         ></path></svg
                                     >
                                 </div>
+                                <!-- Outer Pulse Effect -->
+                                <div
+                                    class="absolute inset-0 rounded-2xl border border-accent/0 group-hover/date:border-accent/40 group-hover/date:scale-110 transition-all duration-700 opacity-0 group-hover:opacity-100 z-0"
+                                ></div>
                             </div>
                         </div>
                     </div>

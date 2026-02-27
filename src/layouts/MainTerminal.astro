@@ -27,6 +27,8 @@ const { title, description, fullWidth = false } = Astro.props;
     <head>
         <BaseHead title={title} description={description} />
         <ClientRouter />
+        <script is:inline src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"
+        ></script>
     </head>
     <body class="flex flex-col h-[100dvh] overflow-hidden bg-base text-text-primary">
         <!-- Skip to main content (accessibility) -->

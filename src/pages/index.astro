@@ -41,6 +41,7 @@ let flatCount = 0;
 let dataDate = '';
 let totalVolume = 0;
 let avgChange = 0;
+let breadthTimeline: any[] = [];
 
 try {
     // Fast path: direct SQL aggregation (SSR mode with DB available)
@@ -122,6 +123,23 @@ try {
             `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.volume > 0 ORDER BY lp.volume DESC LIMIT 3000`
         )
         .map(mapRow);
+
+    // Fetch breadth timeline for instant chart rendering
+    breadthTimeline = dbService.queryAll<any>(`
+        SELECT * FROM (
+            SELECT 
+                date,
+                count(CASE WHEN change_pct > 0 THEN 1 END) as up,
+                count(CASE WHEN change_pct < 0 THEN 1 END) as down,
+                count(CASE WHEN change_pct = 0 THEN 1 END) as flat
+            FROM price_history
+            WHERE close > 0
+            GROUP BY date
+            ORDER BY date DESC
+            LIMIT 150
+        ) sub
+        ORDER BY date ASC
+    `);
 } catch {
     // Fallback: JSON-based data loading (static build / no DB)
     try {
@@ -167,8 +185,10 @@ try {
             gainers={gainers}
             losers={losers}
             topVolume={topVolume}
+            initialBreadthData={breadthTimeline}
         />
 
         <SentimentTrendModal />
     </div>
 </MainTerminal>
+```
