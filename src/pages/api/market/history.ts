@@ -2,14 +2,15 @@ import type { APIRoute } from 'astro';
 import { dbService } from '../../../lib/db/sqlite-service';
 
 /**
- * API: /api/market/history?date=2026-01-23
+ * API: /api/market/history?date=2026-01-23&sector=machinery
  *
  * Atomic Data Service: Returns full market snapshot for a specific date.
- * Used by the CyberCalendar (Temporal Registry) to synchronize all dashboard widgets.
+ * Supports optional server-side sector filtering for efficiency.
  *
  * Optimizations:
  * - All queries use cached prepared statements (module-scope singleton)
  * - Cache-Control headers for browser caching
+ * - TRIM() on symbol JOINs for data integrity
  */
 export const prerender = false;
 
@@ -19,6 +20,8 @@ interface StockRow {
     price: number;
     changePercent: number;
     volume: number;
+    _market?: string;
+    sector?: string;
 }
 
 // ═══ Cached Prepared Statements (module scope, reused across requests) ═══
@@ -46,34 +49,43 @@ function getStmts() {
                 WHERE date = ? AND close > 0
             `),
             availDates: db.prepare(
-                'SELECT DISTINCT date FROM price_history ORDER BY date DESC LIMIT 20'
+                'SELECT DISTINCT date FROM price_history ORDER BY date DESC LIMIT 60'
             ),
             gainers: db.prepare(`
-                SELECT ph.symbol, coalesce(s.name, ph.symbol) as name, 
-                       ph.close as price, ph.change_pct as changePercent, ph.volume
+                SELECT trim(ph.symbol) as symbol,
+                       coalesce(s.name, trim(ph.symbol)) as name, 
+                       ph.close as price, ph.change_pct as changePercent, ph.volume,
+                       coalesce(s.market, '') as _market,
+                       coalesce(s.sector, '') as sector
                 FROM price_history ph
-                LEFT JOIN stocks s ON ph.symbol = s.symbol
+                LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
                 WHERE ph.date = ? AND ph.change_pct > 0 AND ph.close > 0
                 ORDER BY ph.change_pct DESC
-                LIMIT 10
+                LIMIT 3000
             `),
             losers: db.prepare(`
-                SELECT ph.symbol, coalesce(s.name, ph.symbol) as name,
-                       ph.close as price, ph.change_pct as changePercent, ph.volume
+                SELECT trim(ph.symbol) as symbol,
+                       coalesce(s.name, trim(ph.symbol)) as name,
+                       ph.close as price, ph.change_pct as changePercent, ph.volume,
+                       coalesce(s.market, '') as _market,
+                       coalesce(s.sector, '') as sector
                 FROM price_history ph
-                LEFT JOIN stocks s ON ph.symbol = s.symbol
+                LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
                 WHERE ph.date = ? AND ph.change_pct < 0 AND ph.close > 0
                 ORDER BY ph.change_pct ASC
-                LIMIT 10
+                LIMIT 3000
             `),
             volumeLeaders: db.prepare(`
-                SELECT ph.symbol, coalesce(s.name, ph.symbol) as name,
-                       ph.close as price, ph.change_pct as changePercent, ph.volume
+                SELECT trim(ph.symbol) as symbol,
+                       coalesce(s.name, trim(ph.symbol)) as name,
+                       ph.close as price, ph.change_pct as changePercent, ph.volume,
+                       coalesce(s.market, '') as _market,
+                       coalesce(s.sector, '') as sector
                 FROM price_history ph
-                LEFT JOIN stocks s ON ph.symbol = s.symbol
+                LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
                 WHERE ph.date = ? AND ph.close > 0
                 ORDER BY ph.volume DESC
-                LIMIT 4
+                LIMIT 3000
             `),
         };
     }
@@ -123,8 +135,8 @@ export const GET: APIRoute = async ({ url }) => {
         const today = new Date().toISOString().slice(0, 10);
         const cacheControl =
             date === today
-                ? 'public, max-age=60' // Today: cache 1 min
-                : 'public, max-age=86400'; // Past dates: cache 24h (immutable)
+                ? 'private, no-cache' // Today: always fetch fresh
+                : 'private, max-age=300, must-revalidate'; // Past: cache 5min, revalidate
 
         return new Response(
             JSON.stringify({

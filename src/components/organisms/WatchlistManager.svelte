@@ -47,9 +47,8 @@
     <!-- Watchlist Matrix -->
     {#if !isLoading && stocks.length === 0}
         <div class="glass-card p-12 text-center animate-fade-up border border-white/5">
-            <div class="text-6xl mb-6 opacity-10">🔭</div>
-            <h3 class="text-lg font-black text-white/40 uppercase tracking-widest">
-                No Active Links Detected
+            <h3 class="text-xs font-mono font-black text-white/30 uppercase tracking-[0.3em]">
+                無追蹤標的 / NO_ACTIVE_LINKS
             </h3>
             <p class="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mt-2">
                 Initialize tracking by selecting entities in the Analysis Terminal
@@ -128,7 +127,7 @@
         <header class="flex items-center gap-4">
             <div class="w-10 h-[1px] bg-warning/50"></div>
             <h2 class="text-xs font-mono font-black text-warning uppercase tracking-[0.3em]">
-                Quantum Yield Wall
+                高殖利率監控室 <span class="text-warning/20 ml-2">/ YIELD_QUANTUM</span>
             </h2>
             <div class="flex-1 h-[1px] bg-white/5"></div>
         </header>
@@ -140,14 +139,10 @@
                         <tr
                             class="bg-warning/[0.02] text-[9px] uppercase text-warning/40 font-black tracking-widest"
                         >
-                            <th class="py-4 px-8 border-b border-white/5">Entity</th>
-                            <th class="py-4 px-8 border-b border-white/5 text-right"
-                                >Dividend Yield</th
-                            >
-                            <th class="py-4 px-8 border-b border-white/5 text-right"
-                                >Price Vector</th
-                            >
-                            <th class="py-4 px-8 border-b border-white/5 text-right">P/E Domain</th>
+                            <th class="py-4 px-8 border-b border-white/5">Symbol</th>
+                            <th class="py-4 px-8 border-b border-white/5 text-right">Yield %</th>
+                            <th class="py-4 px-8 border-b border-white/5 text-right">Price</th>
+                            <th class="py-4 px-8 border-b border-white/5 text-right">P/E / P/B</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/[0.02]">

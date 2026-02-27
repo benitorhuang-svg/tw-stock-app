@@ -1,5 +1,6 @@
 ---
 // src/components/organisms/LiveFilterPanel.astro
+import { SECTOR_OPTIONS } from '../../lib/filters/sector-filter';
 ---
 
 <div class="flex items-center gap-1.5 shrink-0">
@@ -29,39 +30,33 @@
         />
     </div>
 
-    <!-- Filter Group -->
-    <div class="flex items-center gap-1 px-1 py-0.5 bg-glass rounded-full border border-border">
+    <div class="flex items-center gap-0 px-1 py-0.5 bg-glass rounded-full border border-border">
         <select
             id="filter-market"
-            class="appearance-none h-7 px-2 bg-transparent text-[10px] font-black tracking-tighter text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase min-w-[50px]"
+            class="appearance-none h-7 px-3 bg-transparent text-[10px] font-black tracking-widest text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase"
         >
             <option value="">全部</option>
             <option value="tse">上市</option>
             <option value="otc">上櫃</option>
         </select>
-        <div class="w-[1px] h-3 bg-border shrink-0"></div>
+        <div class="w-[1px] h-3 bg-border shrink-0 opacity-40"></div>
         <select
             id="filter-sector"
-            class="appearance-none h-7 px-2 bg-transparent text-[10px] font-black tracking-tighter text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase min-w-[65px]"
+            class="appearance-none h-7 px-4 bg-transparent text-[10px] font-black tracking-widest text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase min-w-[80px] text-center"
         >
             <option value="">產業</option>
-            <option value="semiconductor">半導體</option>
-            <option value="electronics">電子</option>
-            <option value="computer">電腦</option>
-            <option value="finance">金融</option>
-            <option value="shipping">航運</option>
-            <option value="etf">ETF</option>
+            {SECTOR_OPTIONS.map(opt => <option value={opt.value}>{opt.label}</option>)}
         </select>
-        <div class="w-[1px] h-3 bg-border shrink-0"></div>
+        <div class="w-[1px] h-3 bg-border shrink-0 opacity-40"></div>
         <select
             id="filter-price"
-            class="appearance-none h-7 px-2 bg-transparent text-[10px] font-black tracking-tighter text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase min-w-[60px]"
+            class="appearance-none h-7 px-3 bg-transparent text-[10px] font-black tracking-widest text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase"
         >
             <option value="">價格</option>
-            <option value="0-50">50以下</option>
+            <option value="0-50">50↓</option>
             <option value="50-100">50-100</option>
             <option value="100-500">100-500</option>
-            <option value="500-10000">500以上</option>
+            <option value="500-10000">500↑</option>
         </select>
     </div>
 

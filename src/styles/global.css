@@ -194,6 +194,7 @@
 }
 
 @keyframes glow-pulse {
+
     0%,
     100% {
         opacity: 0.4;
@@ -243,6 +244,7 @@
 }
 
 @keyframes nav-glow {
+
     0%,
     100% {
         opacity: 0.5;
@@ -258,6 +260,7 @@
    PERFORMANCE PRIMERS (EXTREME OPTIMIZATION)
    ══════════════════════════════════════════════════ */
 @layer base {
+
     /* Reduce Paint Overheads */
     .gpu-layer {
         transform: translateZ(0);
@@ -289,6 +292,7 @@
 }
 
 @layer base {
+
     *,
     *::before,
     *::after {
@@ -377,6 +381,7 @@
    TOP NAVIGATION SYSTEM
    ══════════════════════════════════════════════════ */
 @layer components {
+
     /* ── Top Nav Bar ── */
     .top-nav-bar {
         background: var(--color-surface);
@@ -394,14 +399,12 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(
-            90deg,
-            transparent 0%,
-            hsl(217 91% 60% / 0.3) 20%,
-            hsl(217 91% 60% / 0.6) 50%,
-            hsl(217 91% 60% / 0.3) 80%,
-            transparent 100%
-        );
+        background: linear-gradient(90deg,
+                transparent 0%,
+                hsl(217 91% 60% / 0.3) 20%,
+                hsl(217 91% 60% / 0.6) 50%,
+                hsl(217 91% 60% / 0.3) 80%,
+                transparent 100%);
         opacity: 0.6;
         pointer-events: none;
     }
@@ -536,6 +539,7 @@
    UTILITY COMPONENTS
    ══════════════════════════════════════════════════ */
 @layer components {
+
     /* Glass Card — Layer 1 (Frosted) */
     .glass-card {
         background: var(--color-glass);
@@ -579,11 +583,9 @@
         z-index: 1;
         transition: opacity 0.4s var(--ease-expo);
         border-radius: inherit;
-        background: radial-gradient(
-            300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-            hsl(0 0% 100% / 0.06),
-            transparent 60%
-        );
+        background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+                hsl(0 0% 100% / 0.06),
+                transparent 60%);
     }
 
     .glow-interactive:hover::before {
@@ -606,14 +608,91 @@
         font-weight: 700;
     }
 
+    /* ── ATOMIC DESIGN SYSTEM EXTENSIONS ── */
+
+    /* 1. Badges & Indicators */
+    .atom-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 8px;
+        border-radius: var(--radius-sm);
+        font-size: 10px;
+        font-weight: 900;
+        font-family: var(--font-mono);
+        letter-spacing: -0.02em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        transition: all 0.2s var(--ease-expo);
+    }
+
+    .atom-badge-bull {
+        background: var(--color-bullish-glow);
+        color: var(--color-bullish);
+        border-color: var(--color-bullish-dim) / 0.2;
+    }
+
+    .atom-badge-bear {
+        background: var(--color-bearish-glow);
+        color: var(--color-bearish);
+        border-color: var(--color-bearish-dim) / 0.2;
+    }
+
+    .atom-badge-flat {
+        background: var(--color-glass);
+        color: var(--color-text-muted);
+        border-color: var(--color-border);
+    }
+
+    .atom-badge-accent {
+        background: var(--color-accent-glow);
+        color: var(--color-accent);
+        border-color: var(--color-accent) / 0.2;
+    }
+
+    /* 2. Typography */
+    .atom-symbol {
+        font-family: var(--font-mono);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        opacity: 0.6;
+    }
+
+    .atom-name {
+        font-weight: 800;
+        font-size: 12px;
+        color: var(--color-text-primary);
+        letter-spacing: -0.01em;
+    }
+
+    /* 3. Tables & Headers */
+    .atom-th {
+        padding: 10px 16px;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        opacity: 0.6;
+        border-bottom: 1px solid var(--color-border);
+        white-space: nowrap;
+    }
+
+    .atom-td {
+        padding: 12px 16px;
+        font-size: 13px;
+        border-bottom: 1px solid var(--color-border) / 0.1;
+    }
+
     /* Shimmer Skeleton */
     .skeleton {
-        background: linear-gradient(
-            90deg,
-            hsl(240 6% 10%) 25%,
-            hsl(240 6% 16%) 50%,
-            hsl(240 6% 10%) 75%
-        );
+        background: linear-gradient(90deg,
+                hsl(240 6% 10%) 25%,
+                hsl(240 6% 16%) 50%,
+                hsl(240 6% 10%) 75%);
         background-size: 200% 100%;
         animation: var(--animate-shimmer);
         border-radius: var(--radius-sm);
@@ -758,39 +837,39 @@
     }
 
     /* Stagger animation utility */
-    .stagger-children > * {
+    .stagger-children>* {
         animation: var(--animate-fade-up);
     }
 
-    .stagger-children > *:nth-child(1) {
+    .stagger-children>*:nth-child(1) {
         animation-delay: 0ms;
     }
 
-    .stagger-children > *:nth-child(2) {
+    .stagger-children>*:nth-child(2) {
         animation-delay: 50ms;
     }
 
-    .stagger-children > *:nth-child(3) {
+    .stagger-children>*:nth-child(3) {
         animation-delay: 100ms;
     }
 
-    .stagger-children > *:nth-child(4) {
+    .stagger-children>*:nth-child(4) {
         animation-delay: 150ms;
     }
 
-    .stagger-children > *:nth-child(5) {
+    .stagger-children>*:nth-child(5) {
         animation-delay: 200ms;
     }
 
-    .stagger-children > *:nth-child(6) {
+    .stagger-children>*:nth-child(6) {
         animation-delay: 250ms;
     }
 
-    .stagger-children > *:nth-child(7) {
+    .stagger-children>*:nth-child(7) {
         animation-delay: 300ms;
     }
 
-    .stagger-children > *:nth-child(8) {
+    .stagger-children>*:nth-child(8) {
         animation-delay: 350ms;
     }
 }
@@ -799,6 +878,7 @@
    PREMIUM TABLE STYLES
    ══════════════════════════════════════════════════ */
 @layer components {
+
     /* Professional data table */
     .data-table-pro {
         width: 100%;
@@ -896,6 +976,7 @@
    ENHANCED MICRO-INTERACTIONS
    ══════════════════════════════════════════════════ */
 @layer components {
+
     /* Card hover lift */
     .card-lift {
         transition:
@@ -1036,6 +1117,7 @@
    MOBILE ADJUSTMENTS
    ══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
+
     /* Add bottom padding for mobile bottom nav */
     #main-workspace {
         padding-bottom: 80px;
@@ -1058,7 +1140,7 @@
     }
 
     /* Stack grid items */
-    .mobile-stack > * {
+    .mobile-stack>* {
         min-width: 0;
     }
 }
@@ -1067,6 +1149,7 @@
    PRINT STYLES
    ══════════════════════════════════════════════════ */
 @media print {
+
     .top-nav-bar,
     .mobile-bottom-nav,
     .btn-cyber,
@@ -1090,6 +1173,7 @@
    REDUCED MOTION
    ══════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {

@@ -37,6 +37,8 @@ self.onmessage = (e: MessageEvent) => {
             ma20: indicators.ma20 || 0,
             rsi: indicators.rsi || 0,
             avgVol: indicators.volume || 0,
+            sector: indicators.sector || '',
+            _market: indicators.market || '',
             isStarred: false, // Updated by store/UI
         };
 

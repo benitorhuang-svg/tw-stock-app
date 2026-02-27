@@ -24,6 +24,7 @@ function createMarketStore() {
 
     let searchKeyword = $state('');
     let filterMarket = $state('');
+    let filterSector = $state('');
     let filterPriceRange = $state('');
     let filterMinVol = $state(0);
     let filterTrend = $state('0'); // '1' is up, '-1' is down, '0' is all
@@ -57,6 +58,12 @@ function createMarketStore() {
         },
         set searchKeyword(v: string) {
             searchKeyword = v;
+        },
+        get filterSector() {
+            return filterSector;
+        },
+        set filterSector(v: string) {
+            filterSector = v;
         },
 
         get filterMarket() {

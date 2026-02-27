@@ -17,6 +17,8 @@ export interface ProcessedStock {
     rsi: number;
     avgVol: number;
     isStarred: boolean;
+    sector?: string;
+    _market?: string;
     // For visual feedback
     lastUpdate?: number;
     priceStatus?: 'up' | 'down' | 'flat';

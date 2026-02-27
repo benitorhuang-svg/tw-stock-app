@@ -107,19 +107,19 @@ try {
 
     gainers = dbService
         .queryAll<any>(
-            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct > 0 ORDER BY lp.change_pct DESC LIMIT 10`
+            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct > 0 ORDER BY lp.change_pct DESC LIMIT 3000`
         )
         .map(mapRow);
 
     losers = dbService
         .queryAll<any>(
-            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct < 0 ORDER BY lp.change_pct ASC LIMIT 10`
+            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct < 0 ORDER BY lp.change_pct ASC LIMIT 3000`
         )
         .map(mapRow);
 
     topVolume = dbService
         .queryAll<any>(
-            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.volume > 0 ORDER BY lp.volume DESC LIMIT 10`
+            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.volume > 0 ORDER BY lp.volume DESC LIMIT 3000`
         )
         .map(mapRow);
 } catch {
@@ -140,14 +140,14 @@ try {
         gainers = withPrice
             .filter(s => s.changePercent > 0)
             .sort((a, b) => b.changePercent - a.changePercent)
-            .slice(0, 10) as DashboardStock[];
+            .slice(0, 3000) as DashboardStock[];
         losers = withPrice
             .filter(s => s.changePercent < 0)
             .sort((a, b) => a.changePercent - b.changePercent)
-            .slice(0, 10) as DashboardStock[];
+            .slice(0, 3000) as DashboardStock[];
         topVolume = [...withPrice]
             .sort((a, b) => b.volume - a.volume)
-            .slice(0, 10) as DashboardStock[];
+            .slice(0, 3000) as DashboardStock[];
     } catch (e2) {
         console.error('Dashboard data load error:', e2);
     }

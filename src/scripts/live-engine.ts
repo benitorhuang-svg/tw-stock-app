@@ -77,6 +77,7 @@ document.addEventListener('astro:page-load', () => {
         trend: getEl('filter-trend') as HTMLInputElement | null,
         volume: getEl('filter-volume') as HTMLInputElement | null,
         market: getEl('filter-market') as HTMLSelectElement | null,
+        sector: getEl('filter-sector') as HTMLSelectElement | null,
         price: getEl('filter-price') as HTMLSelectElement | null,
         ma20: getEl('filter-ma20') as HTMLSelectElement | null,
     };
@@ -84,6 +85,7 @@ document.addEventListener('astro:page-load', () => {
     function syncFiltersToStore() {
         marketStore.searchKeyword = searchInput?.value.toLowerCase() || '';
         marketStore.filterMarket = filterEls.market?.value || '';
+        marketStore.filterSector = filterEls.sector?.value || '';
         marketStore.filterPriceRange = filterEls.price?.value || '';
         marketStore.filterMinVol = parseInt(filterEls.volume?.value || '0', 10);
         marketStore.filterTrend = filterEls.trend?.value || '0';
@@ -110,6 +112,8 @@ document.addEventListener('astro:page-load', () => {
                         ma20: s._ma20,
                         rsi: s._rsi,
                         volume: s._avgVol,
+                        market: s._market,
+                        sector: s.sector,
                     };
                 });
 

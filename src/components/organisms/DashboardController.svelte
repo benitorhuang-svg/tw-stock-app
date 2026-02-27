@@ -1,5 +1,8 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
+    import { marketStore } from '../../stores/market.svelte';
+    import StockEntityCell from '../molecules/StockEntityCell.svelte';
+    import { matchesSector, SECTOR_OPTIONS } from '../../lib/filters/sector-filter';
 
     interface Props {
         // Initial data from SSR
@@ -29,6 +32,7 @@
     // Local state
     let activeSSE: EventSource | null = null;
     let isLive = $state(false);
+    // Deleted local filterSector to use global marketStore.filterSector instead
 
     // Formatting helpers
     function fmtVol(v: number): string {
@@ -81,20 +85,45 @@
                 }
             });
         }
+
+        setTimeout(() => {
+            initTrendChart();
+        }, 100);
     });
 
     onDestroy(() => {
         if (activeSSE) {
             activeSSE.close();
         }
+        if (ro) ro.disconnect();
+        if (trendChart) trendChart.destroy();
     });
 
-    async function syncHistoricalData(e: Event) {
-        const date = (e.target as HTMLInputElement).value;
+    async function fetchDateData(date: string) {
         if (!date) return;
+
+        // Optimistic UI Update so user sees the change right away
+        dataDate = date;
+        isLive = false;
+        focusTrendChartOnDate(date);
+
+        // Close SSE when viewing historical data to prevent live overwrites
+        if (activeSSE) {
+            activeSSE.close();
+            activeSSE = null;
+        }
+
         try {
-            const res = await fetch(`/api/market/history?date=${date}`);
+            const res = await fetch(`/api/market/history?date=${date}`, { cache: 'no-store' });
             const data = await res.json();
+            console.log('[Dashboard] API response for', date, ':', {
+                status: res.status,
+                error: data.error,
+                gainers: data.gainers?.length,
+                losers: data.losers?.length,
+                volumeLeaders: data.volumeLeaders?.length,
+                sampleGainer: data.gainers?.[0],
+            });
             if (res.ok && !data.error) {
                 upCount = data.summary.up;
                 downCount = data.summary.down;
@@ -104,12 +133,32 @@
                 gainers = data.gainers;
                 losers = data.losers;
                 topVolume = data.volumeLeaders;
-                dataDate = date;
-                isLive = false;
+                console.log(
+                    '[Dashboard] Data assigned. gainers:',
+                    gainers.length,
+                    'losers:',
+                    losers.length,
+                    'topVolume:',
+                    topVolume.length
+                );
+            } else {
+                console.warn('[Sync Warning] No data returned for chosen date:', date, data);
+                // Clear cards on error to avoid stale data
+                gainers = [];
+                losers = [];
+                topVolume = [];
             }
         } catch (err) {
             console.error('[Sync Error]', err);
+            gainers = [];
+            losers = [];
+            topVolume = [];
         }
+    }
+
+    function syncHistoricalData(e: Event) {
+        const date = (e.target as HTMLInputElement).value;
+        fetchDateData(date);
     }
 
     let ratio = $derived(downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX');
@@ -117,410 +166,817 @@
     let barUp = $derived(total > 0 ? (upCount / total) * 100 : 0);
     let barDown = $derived(total > 0 ? (downCount / total) * 100 : 0);
     let barFlat = $derived(total > 0 ? (flatCount / total) * 100 : 0);
+
+    // Filtering logic for the dashboard tables
+    const filteredGainers = $derived.by(() => {
+        const result = (gainers || []).filter(s => applyFilters(s)).slice(0, 15);
+        if (marketStore.filterSector) {
+            console.log(
+                '[Filter] sector:',
+                marketStore.filterSector,
+                'gainers:',
+                gainers?.length,
+                '→ filtered:',
+                result.length
+            );
+        }
+        return result;
+    });
+    const filteredLosers = $derived.by(() => {
+        const result = (losers || []).filter(s => applyFilters(s)).slice(0, 15);
+        if (marketStore.filterSector) {
+            console.log(
+                '[Filter] sector:',
+                marketStore.filterSector,
+                'losers:',
+                losers?.length,
+                '→ filtered:',
+                result.length
+            );
+        }
+        return result;
+    });
+    const filteredTopVolume = $derived.by(() => {
+        const result = (topVolume || []).filter(s => applyFilters(s)).slice(0, 15);
+        if (marketStore.filterSector) {
+            console.log(
+                '[Filter] sector:',
+                marketStore.filterSector,
+                'topVolume:',
+                topVolume?.length,
+                '→ filtered:',
+                result.length
+            );
+        }
+        return result;
+    });
+
+    function applyFilters(s: any) {
+        const {
+            searchKeyword,
+            filterMarket,
+            filterPriceRange,
+            filterMinVol,
+            filterTrend,
+            filterSector,
+        } = marketStore;
+
+        const code = String(s.symbol || s.code || '');
+        const name = s.name || '';
+        const price = s.price || 0;
+        const changePct = s.changePercent || s.changePct || 0;
+        const vol = s.volume || s.vol || 0;
+
+        // Market filter — tolerant: skip if stock has no _market data
+        if (filterMarket && s._market) {
+            if (s._market.toUpperCase() !== filterMarket.toUpperCase()) return false;
+        }
+
+        // Sector filter — uses atomic utility
+        if (filterSector) {
+            const sector = String(s.sector || s.category || s.industry || '');
+            if (!matchesSector(filterSector, sector, code, name)) return false;
+        }
+
+        if (searchKeyword && !code.includes(searchKeyword) && !name.includes(searchKeyword))
+            return false;
+
+        if (filterPriceRange) {
+            const [min, max] = filterPriceRange.split('-').map(Number);
+            if (price < min || (max && price > max)) return false;
+        }
+
+        if (filterMinVol > 0 && vol < filterMinVol) return false;
+
+        if (filterTrend !== '0') {
+            const t = parseFloat(filterTrend);
+            if ((t > 0 && changePct < t) || (t < 0 && changePct > t)) return false;
+        }
+
+        return true;
+    }
+
+    function resetFilters() {
+        marketStore.searchKeyword = '';
+        marketStore.filterMarket = '';
+        marketStore.filterPriceRange = '';
+        marketStore.filterMinVol = 0;
+        marketStore.filterTrend = '0';
+        marketStore.filterMA20 = 0;
+        marketStore.filterSector = '';
+    }
+
+    // Chart logic
+    let trendChartContainer: HTMLDivElement | null = null;
+    let trendChart: any = null;
+    let ro: ResizeObserver | null = null;
+    let resetTrendChart = $state<() => void>(() => {});
+    let echartsLabels: string[] = [];
+
+    function focusTrendChartOnDate(dateStr: string) {
+        if (!trendChart || echartsLabels.length === 0) return;
+        const index = echartsLabels.indexOf(dateStr);
+        if (index !== -1) {
+            const totalPoints = echartsLabels.length;
+            // Focus on a window ending slightly after the selected date
+            const startIdx = Math.max(0, index - 55);
+            const endIdx = Math.min(totalPoints - 1, index + 5);
+            const startPct = (startIdx / totalPoints) * 100;
+            const endPct = (endIdx / totalPoints) * 100;
+
+            trendChart.dispatchAction({
+                type: 'dataZoom',
+                start: startPct,
+                end: endPct,
+            });
+
+            // Wait slightly for zoom to complete, then display tooltip
+            setTimeout(() => {
+                trendChart.dispatchAction({
+                    type: 'showTip',
+                    seriesIndex: 0,
+                    dataIndex: index,
+                });
+            }, 50);
+        }
+    }
+
+    async function initTrendChart() {
+        if (!trendChartContainer) return;
+
+        const ensureEcharts = (): Promise<any> => {
+            if ((window as any).echarts) return Promise.resolve((window as any).echarts);
+            return new Promise(resolve => {
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js';
+                s.onload = () => resolve((window as any).echarts);
+                document.head.appendChild(s);
+            });
+        };
+
+        try {
+            const echarts = await ensureEcharts();
+            const res = await fetch(`/api/market/breadth-timeseries?t=${Date.now()}`);
+            const data = await res.json();
+
+            if (trendChart) {
+                trendChart.dispose();
+            }
+
+            trendChart = echarts.init(trendChartContainer);
+
+            const labels = data.map((d: any) => d.date);
+            echartsLabels = labels;
+
+            const ratios = data.map((d: any) =>
+                d.down > 0 ? Number((d.up / d.down).toFixed(2)) : 1
+            );
+
+            // Calculate starting percentage for last 60 days
+            const totalPoints = Math.max(1, data.length);
+            const defaultStart = Math.max(0, 100 - (60 / totalPoints) * 100);
+
+            const option = {
+                grid: { top: 10, right: 0, bottom: 20, left: 30, containLabel: false },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'line', lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+                    backgroundColor: 'rgba(15,23,42,0.9)',
+                    borderColor: 'rgba(250, 204, 21, 0.3)',
+                    textStyle: { color: '#fff', fontSize: 10, fontFamily: 'monospace' },
+                },
+                xAxis: {
+                    type: 'category',
+                    data: labels,
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.3)',
+                        fontSize: 9,
+                        fontFamily: 'monospace',
+                    },
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'solid' } },
+                    axisLabel: {
+                        color: 'rgba(255,255,255,0.4)',
+                        fontSize: 9,
+                        fontFamily: 'monospace',
+                    },
+                    min: 'dataMin',
+                },
+                visualMap: {
+                    show: false,
+                    dimension: 1, // evaluate the y-axis value
+                    pieces: [
+                        { max: 0.999, color: 'rgba(34, 197, 94, 0.9)' }, // Green for < 1
+                        { min: 1, color: 'rgba(239, 68, 68, 0.9)' }, // Red for >= 1
+                    ],
+                },
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        start: defaultStart,
+                        end: 100,
+                        zoomOnMouseWheel: true,
+                        moveOnMouseMove: true,
+                    },
+                ],
+                series: [
+                    {
+                        data: ratios,
+                        type: 'line',
+                        smooth: 0.3,
+                        symbol: 'none',
+                        lineStyle: { width: 2.5 }, // color is controlled by visualMap
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(255, 255, 255, 0.15)' },
+                                { offset: 1, color: 'rgba(255, 255, 255, 0.0)' },
+                            ]),
+                        },
+                    },
+                ],
+            };
+
+            trendChart.setOption(option);
+
+            // Absolute zero-miss clicking via ZRender Pixel Coordinate Mapping
+            trendChart.getZr().on('click', (params: any) => {
+                const pointInPixel = [params.offsetX, params.offsetY];
+                if (trendChart.containPixel('grid', pointInPixel)) {
+                    const xIndex = trendChart.convertFromPixel({ seriesIndex: 0 }, pointInPixel)[0];
+                    const dateClicked = labels[xIndex];
+                    if (dateClicked) {
+                        fetchDateData(dateClicked);
+                    }
+                }
+            });
+
+            resetTrendChart = () => {
+                if (trendChart) {
+                    trendChart.dispatchAction({
+                        type: 'dataZoom',
+                        start: defaultStart,
+                        end: 100,
+                    });
+
+                    // Also jump data back to the latest date
+                    if (echartsLabels.length > 0) {
+                        const latestDate = echartsLabels[echartsLabels.length - 1];
+                        if (latestDate) {
+                            fetchDateData(latestDate);
+                        }
+                    }
+                }
+            };
+
+            ro = new ResizeObserver(() => {
+                if (trendChart) trendChart.resize();
+            });
+            ro.observe(trendChartContainer);
+        } catch (e) {
+            console.error('Failed to init chart:', e);
+        }
+    }
 </script>
 
-<div class="space-y-8 animate-fade-up">
-    <!-- STRATEGIC HUD SLOTS: 3 Columns -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- CARD 1: Time / Calendar -->
+<div class="space-y-6 animate-fade-up">
+    <!-- CORE COMMAND NEXUS: Tri-column Layout -->
+    <div class="flex flex-col lg:flex-row gap-4 items-stretch animate-fade-up">
+        <!-- MARKET HUD: Key Vectors (Left) -->
         <div
-            class="glass-card group p-6 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all flex flex-col justify-between"
+            class="lg:w-[320px] glass-card border-l-4 border-l-accent p-6 relative overflow-hidden shadow-elevated shrink-0 flex flex-col justify-between gap-6"
         >
-            <div
-                class="absolute right-[5px] top-[5px] text-5xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
-            >
-                🕰️
-            </div>
-            <div>
-                <div class="flex items-center justify-between mb-3 z-10 relative">
-                    <span
-                        class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <h3
+                        class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2"
                     >
-                        時間維度控制
-                    </span>
-                    {#if isLive}<div
-                            class="w-2 h-2 rounded-full bg-bullish animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"
-                        ></div>{/if}
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        市場關鍵維度 <span class="text-white/10 ml-1">/ CORE</span>
+                    </h3>
+                    {#if isLive}
+                        <div
+                            class="flex items-center gap-1.5 px-2 py-0.5 bg-bullish/10 rounded-full"
+                        >
+                            <span class="text-[8px] font-mono text-bullish uppercase font-black"
+                                >Live</span
+                            >
+                            <div class="w-1.5 h-1.5 rounded-full bg-bullish animate-pulse"></div>
+                        </div>
+                    {/if}
                 </div>
-                <h3 class="text-lg font-black text-white/90 mb-1 z-10 relative">觀測基準日</h3>
+
+                <div class="flex items-end justify-between gap-4">
+                    <div class="flex flex-col gap-1 w-full relative">
+                        <span
+                            class="text-[8px] text-white/20 uppercase font-mono tracking-widest block"
+                            >觀測日期</span
+                        >
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="text-3xl font-mono font-black text-white tracking-tighter leading-none"
+                                >{dataDate || '—'}</span
+                            >
+                            <div class="relative group/date w-8 h-8 shrink-0">
+                                <input
+                                    type="date"
+                                    onchange={syncHistoricalData}
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                />
+                                <div
+                                    class="absolute inset-0 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-white/60 group-hover/date:border-accent/40 group-hover/date:bg-white/10 group-hover/date:text-accent transition-all group-active/date:scale-95"
+                                >
+                                    <svg
+                                        class="w-4 h-4"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        ><path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        ></path></svg
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="mt-8 flex items-end justify-between z-10 relative">
-                <div>
-                    <span class="text-[8px] text-white/20 uppercase font-mono block mb-1"
-                        >Data Horizon</span
+            <div class="flex flex-col gap-6">
+                <!-- Sentiment -->
+                <div class="flex flex-col gap-1.5">
+                    <span
+                        class="text-[8px] text-white/20 uppercase font-mono tracking-widest font-bold"
+                        >市場多空比 (下跌:平盤:上漲)</span
                     >
-                    <span class="text-2xl font-mono font-bold text-white/90">{dataDate || '—'}</span
-                    >
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="text-2xl font-mono font-black w-12 {parseFloat(ratio) > 1
+                                ? 'text-bullish'
+                                : parseFloat(ratio) < 1 && ratio !== 'MAX'
+                                  ? 'text-bearish'
+                                  : 'text-white'}">{ratio}</span
+                        >
+                        <div
+                            class="h-4 flex-1 bg-white/5 rounded-full overflow-hidden flex text-[9px] font-mono font-bold text-white/90 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] border border-white/5 relative"
+                        >
+                            <div
+                                class="h-full bg-bearish flex items-center justify-center shadow-[0_0_8px_rgba(239,68,68,0.4)]"
+                                style="width: {barDown}%"
+                            >
+                                {#if downCount > 0}{downCount}{/if}
+                            </div>
+                            <div
+                                class="h-full bg-white/10 flex items-center justify-center text-white/40"
+                                style="width: {barFlat}%"
+                            >
+                                {#if flatCount > 0}{flatCount}{/if}
+                            </div>
+                            <div
+                                class="h-full bg-bullish flex items-center justify-center shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                                style="width: {barUp}%"
+                            >
+                                {#if upCount > 0}{upCount}{/if}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="relative group/input">
-                    <input
-                        type="date"
-                        onchange={syncHistoricalData}
-                        class="bg-white/5 border border-white/10 rounded px-2 py-1 text-[9px] font-mono text-white/40 outline-none focus:border-accent/50 transition-colors uppercase"
-                    />
+
+                <!-- Liquidity & Volatility (Same Row) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col gap-1.5 border-l-2 border-white/5 pl-3">
+                        <span
+                            class="text-[8px] text-white/20 uppercase font-mono tracking-widest font-bold"
+                            >市場總成交量</span
+                        >
+                        <span class="text-xl font-mono font-black text-white leading-none"
+                            >{fmtVol(totalVolume)}</span
+                        >
+                    </div>
+                    <div class="flex flex-col gap-1.5 border-l-2 border-white/5 pl-3">
+                        <span
+                            class="text-[8px] text-white/20 uppercase font-mono tracking-widest font-bold"
+                            >大盤平均漲跌幅</span
+                        >
+                        <span
+                            class="text-xl font-mono font-black leading-none {(avgChange || 0) >= 0
+                                ? 'text-bullish'
+                                : 'text-bearish'}"
+                        >
+                            {(avgChange || 0) >= 0 ? '+' : ''}{(avgChange || 0).toFixed(2)}%
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- CARD 2: Sentiment + Trend Button -->
+        <!-- TREND ANALYSIS: Middle Card -->
         <div
-            class="glass-card group p-6 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all flex flex-col justify-between"
+            class="flex-1 glass-card border-l-4 border-l-blue-500 p-6 relative overflow-hidden shadow-elevated shrink-[3] min-w-[300px] flex flex-col gap-4"
         >
-            <div
-                class="absolute right-[5px] top-[5px] text-5xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
-            >
-                📊
+            <div class="flex items-center justify-between">
+                <h3
+                    class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2"
+                >
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                    大盤市場多空比分析 <span class="text-white/10 ml-1">/ BREADTH TREND</span>
+                </h3>
+                <button
+                    onclick={resetTrendChart}
+                    class="flex items-center gap-1 px-2 py-1 rounded-full border border-border bg-glass hover:bg-glass-hover text-[9px] font-black text-white/40 hover:text-accent transition-all uppercase tracking-widest active:scale-95"
+                >
+                    <svg
+                        class="w-3 h-3"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                        ></path></svg
+                    >
+                    Reset
+                </button>
             </div>
-            <div>
-                <div class="flex items-center justify-between mb-3 z-10 relative">
-                    <span
-                        class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
-                        >大盤多空板塊</span
+
+            <div
+                class="flex-1 w-full min-h-[140px] relative rounded-xl overflow-hidden group/chart cursor-crosshair"
+                bind:this={trendChartContainer}
+            >
+                <!-- Chart Container Injected via Script -->
+            </div>
+        </div>
+
+        <!-- FILTER NEXUS: Strategic Scanning (Right) -->
+        <div
+            class="lg:w-[220px] glass-card p-6 shadow-elevated bg-surface/30 flex flex-col justify-between gap-4 shrink-0"
+        >
+            <div class="flex items-center justify-between">
+                <h3
+                    class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2"
+                >
+                    <span class="w-1.5 h-1.5 rounded-full bg-white/20"></span>
+                    戰略篩選矩陣 <span class="text-white/10 ml-1">/ FILTERS</span>
+                </h3>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <!-- Market & Industry & Price Group -->
+                <div
+                    class="flex items-center gap-0.5 px-0.5 py-0.5 bg-glass rounded-full border border-border h-8 w-full justify-between"
+                >
+                    <select
+                        bind:value={marketStore.filterMarket}
+                        class="flex-1 appearance-none h-7 px-1 text-center bg-transparent text-[10px] font-black tracking-widest text-[#94a3b8] cursor-pointer outline-none hover:text-accent transition-all uppercase"
+                    >
+                        <option value="">全部</option>
+                        <option value="tse">上市</option>
+                        <option value="otc">上櫃</option>
+                    </select>
+                    <div class="w-px h-3 bg-border shrink-0"></div>
+                    <select
+                        bind:value={marketStore.filterSector}
+                        class="flex-1 appearance-none h-7 px-1 text-center bg-transparent text-[10px] font-black tracking-widest text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase"
+                    >
+                        <option value="">產業</option>
+                        {#each SECTOR_OPTIONS as opt}
+                            <option value={opt.value}>{opt.label}</option>
+                        {/each}
+                    </select>
+                    <div class="w-px h-3 bg-border shrink-0"></div>
+                    <select
+                        bind:value={marketStore.filterPriceRange}
+                        class="flex-1 appearance-none h-7 px-1 text-center bg-transparent text-[10px] font-black tracking-widest text-[#94a3b8] cursor-pointer outline-none hover:text-accent transition-all uppercase"
+                    >
+                        <option value="">價格</option>
+                        <option value="0-50">50↓</option>
+                        <option value="50-100">50-100</option>
+                        <option value="100-500">100-500</option>
+                        <option value="500-10000">500↑</option>
+                    </select>
+                </div>
+
+                <!-- Slider: Trend -->
+                <div
+                    class="flex items-center gap-1.5 px-2 h-8 w-full bg-glass rounded-full border border-border"
+                >
+                    <div class="flex flex-col items-center justify-center shrink-0 w-8">
+                        <span
+                            class="text-[9px] font-mono font-black {parseFloat(
+                                marketStore.filterTrend
+                            ) > 0
+                                ? 'text-bullish'
+                                : parseFloat(marketStore.filterTrend) < 0
+                                  ? 'text-bearish'
+                                  : 'text-accent'} leading-none"
+                        >
+                            {parseFloat(marketStore.filterTrend) > 0 ? '+' : ''}{parseFloat(
+                                marketStore.filterTrend
+                            ).toFixed(1)}%
+                        </span>
+                        <span
+                            class="text-[7px] text-white/30 font-black tracking-widest leading-none mt-0.5 uppercase"
+                            >漲跌幅</span
+                        >
+                    </div>
+                    <button
+                        onclick={() =>
+                            (marketStore.filterTrend = String(
+                                Math.max(-10, parseFloat(marketStore.filterTrend) - 0.5)
+                            ))}
+                        class="text-white/20 hover:text-accent transition-colors text-xs font-bold px-1"
+                        >－</button
+                    >
+                    <input
+                        type="range"
+                        min="-10"
+                        max="10"
+                        step="0.5"
+                        bind:value={marketStore.filterTrend}
+                        class="flex-1 w-0 min-w-0 h-1 bg-white/5 rounded-full appearance-none flex-shrink cursor-pointer accent-accent custom-range"
+                    />
+                    <button
+                        onclick={() =>
+                            (marketStore.filterTrend = String(
+                                Math.min(10, parseFloat(marketStore.filterTrend) + 0.5)
+                            ))}
+                        class="text-white/20 hover:text-accent transition-colors text-xs font-bold px-1"
+                        >＋</button
                     >
                 </div>
-                <h3 class="text-lg font-black text-white/90 mb-1 z-10 relative">大盤情緒指標</h3>
-            </div>
 
-            <div class="mt-4 flex flex-col z-10 relative gap-3">
-                <div class="flex items-end justify-between">
-                    <div class="flex flex-col">
-                        <span class="text-[8px] text-white/20 uppercase font-mono">B/B Ratio</span>
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl font-mono font-bold text-bullish">{ratio}</span>
-                            <span class="text-[9px] font-mono text-white/40"
-                                >[{upCount}:{downCount}]</span
-                            >
-                        </div>
+                <!-- Slider: Volume -->
+                <div
+                    class="flex items-center gap-1.5 px-2 h-8 w-full bg-glass rounded-full border border-border"
+                >
+                    <div class="flex flex-col items-center justify-center shrink-0 w-8">
+                        <span class="text-[9px] font-mono font-black text-accent leading-none">
+                            {marketStore.filterMinVol > 0
+                                ? marketStore.filterMinVol >= 10000
+                                    ? (marketStore.filterMinVol / 10000).toFixed(1) + '萬'
+                                    : marketStore.filterMinVol
+                                : '0'}
+                        </span>
+                        <span
+                            class="text-[7px] text-white/30 font-black tracking-widest leading-none mt-0.5 uppercase"
+                            >成交量</span
+                        >
                     </div>
-
                     <button
-                        id="open-breadth-chart"
-                        class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-[9px] font-bold text-white/60 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all uppercase tracking-widest flex items-center gap-2 shrink-0 active:scale-95"
+                        onclick={() =>
+                            (marketStore.filterMinVol = Math.max(
+                                0,
+                                marketStore.filterMinVol - 10000
+                            ))}
+                        class="text-white/20 hover:text-accent transition-colors text-xs font-bold px-1"
+                        >－</button
+                    >
+                    <input
+                        type="range"
+                        min="0"
+                        max="1000000"
+                        step="10000"
+                        bind:value={marketStore.filterMinVol}
+                        class="flex-1 w-0 min-w-0 h-1 bg-white/5 rounded-full appearance-none flex-shrink cursor-pointer accent-accent custom-range"
+                    />
+                    <button
+                        onclick={() =>
+                            (marketStore.filterMinVol = Math.min(
+                                1000000,
+                                marketStore.filterMinVol + 10000
+                            ))}
+                        class="text-white/20 hover:text-accent transition-colors text-xs font-bold px-1"
+                        >＋</button
+                    >
+                </div>
+
+                <div class="mt-2 w-full">
+                    <button
+                        onclick={resetFilters}
+                        class="w-full flex justify-center items-center gap-2 px-3 py-2 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20 text-[10px] font-black text-white/40 hover:text-white transition-all uppercase tracking-widest active:scale-95"
                     >
                         <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="12"
-                            height="12"
+                            class="w-3.5 h-3.5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            stroke-width="2"
+                            stroke-width="2.5"
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            class="text-accent/60"
+                            ><path
+                                d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                            ></path></svg
                         >
-                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-                            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-                        </svg>
-                        大盤歷史趨勢分析
+                        RESET FILTERS
                     </button>
                 </div>
-
-                <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex mt-1">
-                    <div
-                        class="h-full bg-bullish transition-all duration-1000"
-                        style="width: {barUp}%"
-                    ></div>
-                    <div
-                        class="h-full bg-white/20 transition-all duration-1000"
-                        style="width: {barFlat}%"
-                    ></div>
-                    <div
-                        class="h-full bg-bearish transition-all duration-1000"
-                        style="width: {barDown}%"
-                    ></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CARD 3: Volume + Average -->
-        <div
-            class="glass-card group p-6 border-l-4 border-l-accent overflow-hidden relative hover:bg-accent/[0.03] transition-all flex flex-col justify-between"
-        >
-            <div
-                class="absolute right-[5px] top-[5px] text-5xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
-            >
-                🌊
-            </div>
-            <div>
-                <span
-                    class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest block mb-3 z-10 relative"
-                    >市場交投概況</span
-                >
-                <h3 class="text-lg font-black text-white/90 mb-1 z-10 relative">市場資金動能</h3>
-            </div>
-
-            <div class="mt-8 flex items-end justify-between w-full z-10 relative">
-                <div>
-                    <span class="text-[8px] text-white/20 uppercase font-mono block mb-1"
-                        >成交總量池</span
-                    >
-                    <span class="text-2xl font-mono font-black text-white/90"
-                        >{fmtVol(totalVolume)}</span
-                    >
-                </div>
-                <div class="text-right">
-                    <span class="text-[8px] text-white/20 uppercase font-mono block mb-1"
-                        >平均漲跌幅</span
-                    >
-                    <span
-                        class="text-2xl font-mono font-black {(avgChange || 0) >= 0
-                            ? 'text-bullish'
-                            : 'text-bearish'}"
-                    >
-                        {(avgChange || 0) >= 0 ? '+' : ''}{(avgChange || 0).toFixed(2)}%
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- UNIFIED MATRIX NEXUS - 3 COLUMNS GRID -->
-    <div
-        class="flex flex-col border border-border rounded-xl bg-surface/40 shadow-elevated overflow-hidden relative z-10 mt-8"
-    >
-        <!-- Sticky Nexus Toolbar -->
-        <div
-            class="sticky top-[64px] z-[40] flex items-center justify-between gap-3 px-6 py-4 bg-surface border-b border-white/5 backdrop-blur-md"
-        >
-            <div class="flex items-center gap-3">
-                <div
-                    class="w-1.5 h-4 bg-accent rounded-full shadow-[0_0_8px_rgba(var(--accent-rgb),0.6)]"
-                ></div>
-                <h2
-                    class="text-xs font-mono font-black text-white/90 uppercase tracking-[0.2em] flex items-center gap-2"
-                >
-                    大盤深度板塊 <span class="text-white/30 text-[9px] font-normal"
-                        >| MARKET_BREADTH_MATRIX</span
-                    >
-                </h2>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-                <span class="text-[9px] font-mono text-white/30 uppercase">市場動態監控中</span>
-            </div>
-        </div>
-
-        <!-- 3 Columns: Volume, Losers, Gainers -->
-        <div
-            class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-white/5 relative z-0"
-        >
-            <!-- COLUMN 1: LIQUIDITY LEADERS -->
-            <div class="flex flex-col">
-                <div
-                    class="px-6 py-3 bg-white/[0.02] border-b border-white/5 flex items-center justify-between sticky top-[125px] z-30 backdrop-blur-md"
-                >
-                    <div class="flex items-center gap-2">
-                        <span class="text-accent text-xs">💧</span>
-                        <h3 class="text-[10px] font-black text-white/80 uppercase tracking-widest">
-                            主力資金匯聚排行
-                        </h3>
-                    </div>
-                </div>
-                <table class="w-full text-left border-collapse">
-                    <thead
-                        class="bg-surface/60 border-b border-white/5 sticky top-[162px] z-30 backdrop-blur-md"
-                    >
-                        <tr>
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase"
-                                >Rank</th
-                            >
-                            <th
-                                class="px-2 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase"
-                                >Entity</th
-                            >
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase text-right"
-                                >Price</th
-                            >
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase text-right"
-                                >Change</th
-                            >
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/[0.02]">
-                        {#each topVolume.slice(0, 15) as s, i}
-                            <tr
-                                class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
-                                onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
-                            >
-                                <td class="px-4 py-3 text-[9px] font-mono text-white/20 pl-6"
-                                    >{i + 1}</td
-                                >
-                                <td class="px-2 py-3 max-w-[100px]">
-                                    <div
-                                        class="text-[11px] font-bold text-white/90 group-hover/row:text-accent transition-colors truncate"
-                                    >
-                                        {s.name}
-                                    </div>
-                                    <div
-                                        class="text-[8px] font-mono text-white/30 uppercase mt-0.5"
-                                    >
-                                        {s.symbol}
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right text-[10px] font-mono font-bold text-white/70"
-                                    >{s.price?.toFixed(2) || '—'}</td
-                                >
-                                <td
-                                    class="px-4 py-3 text-right text-[10px] font-mono font-bold pr-6 {(s.changePercent ||
-                                        0) >= 0
-                                        ? 'text-bullish'
-                                        : 'text-bearish'}"
-                                >
-                                    {(s.changePercent || 0) > 0 ? '+' : ''}{(
-                                        s.changePercent || 0
-                                    ).toFixed(2)}%
-                                </td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- COLUMN 2: LOSERS MATRIX -->
-            <div class="flex flex-col">
-                <div
-                    class="px-6 py-3 bg-bearish/[0.03] border-b border-white/5 flex items-center justify-between sticky top-[125px] z-30 backdrop-blur-md lg:border-t-0 border-t border-white/5"
-                >
-                    <div class="flex items-center gap-2">
-                        <span class="text-bearish text-xs">📉</span>
-                        <h3 class="text-[10px] font-black text-bearish uppercase tracking-widest">
-                            跌幅排行
-                        </h3>
-                    </div>
-                </div>
-                <table class="w-full text-left border-collapse">
-                    <thead
-                        class="bg-surface/60 border-b border-white/5 sticky top-[162px] z-30 backdrop-blur-md"
-                    >
-                        <tr>
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase"
-                                >Rank</th
-                            >
-                            <th
-                                class="px-2 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase"
-                                >Entity</th
-                            >
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase text-right"
-                                >Price</th
-                            >
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase text-right"
-                                >Change</th
-                            >
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/[0.02]">
-                        {#each losers.slice(0, 15) as s, i}
-                            <tr
-                                class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
-                                onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
-                            >
-                                <td class="px-4 py-3 text-[9px] font-mono text-white/20 pl-6"
-                                    >{i + 1}</td
-                                >
-                                <td class="px-2 py-3 max-w-[100px]">
-                                    <div
-                                        class="text-[11px] font-bold text-white/90 group-hover/row:text-bearish transition-colors truncate"
-                                    >
-                                        {s.name}
-                                    </div>
-                                    <div
-                                        class="text-[8px] font-mono text-white/30 uppercase mt-0.5"
-                                    >
-                                        {s.symbol}
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right text-[10px] font-mono font-bold text-white/70"
-                                    >{s.price?.toFixed(2) || '—'}</td
-                                >
-                                <td
-                                    class="px-4 py-3 text-right text-[10px] font-mono font-bold text-bearish pr-6"
-                                    >{(s.changePercent || 0).toFixed(2)}%</td
-                                >
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- COLUMN 3: GAINERS MATRIX -->
-            <div class="flex flex-col">
-                <div
-                    class="px-6 py-3 bg-bullish/[0.03] border-b border-white/5 flex items-center justify-between sticky top-[125px] z-30 backdrop-blur-md lg:border-t-0 border-t border-white/5"
-                >
-                    <div class="flex items-center gap-2">
-                        <span class="text-bullish text-xs">🚀</span>
-                        <h3 class="text-[10px] font-black text-bullish uppercase tracking-widest">
-                            漲幅排行
-                        </h3>
-                    </div>
-                </div>
-                <table class="w-full text-left border-collapse">
-                    <thead
-                        class="bg-surface/60 border-b border-white/5 sticky top-[162px] z-30 backdrop-blur-md"
-                    >
-                        <tr>
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase"
-                                >Rank</th
-                            >
-                            <th
-                                class="px-2 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase"
-                                >Entity</th
-                            >
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase text-right"
-                                >Price</th
-                            >
-                            <th
-                                class="px-4 py-2 text-[9px] font-normal text-white/30 tracking-widest uppercase text-right"
-                                >Change</th
-                            >
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/[0.02]">
-                        {#each gainers.slice(0, 15) as s, i}
-                            <tr
-                                class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
-                                onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
-                            >
-                                <td class="px-4 py-3 text-[9px] font-mono text-white/20 pl-6"
-                                    >{i + 1}</td
-                                >
-                                <td class="px-2 py-3 max-w-[100px]">
-                                    <div
-                                        class="text-[11px] font-bold text-white/90 group-hover/row:text-bullish transition-colors truncate"
-                                    >
-                                        {s.name}
-                                    </div>
-                                    <div
-                                        class="text-[8px] font-mono text-white/30 uppercase mt-0.5"
-                                    >
-                                        {s.symbol}
-                                    </div>
-                                </td>
-                                <td
-                                    class="px-4 py-3 text-right text-[10px] font-mono font-bold text-white/70"
-                                    >{s.price?.toFixed(2) || '—'}</td
-                                >
-                                <td
-                                    class="px-4 py-3 text-right text-[10px] font-mono font-bold text-bullish pr-6"
-                                    >+{(s.changePercent || 0).toFixed(2)}%</td
-                                >
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 </div>
+
+<!-- SEPARATED MATRIX NEXUS - 3 CARDS GRID -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 relative z-10 mt-4 lg:mt-6">
+    <!-- COLUMN 1: LIQUIDITY LEADERS -->
+    <div
+        class="flex flex-col glass-card border border-border rounded-xl bg-surface/40 shadow-elevated overflow-hidden"
+    >
+        <div
+            class="px-6 py-4 bg-white/[0.02] border-b border-white/5 flex items-center justify-between relative z-10"
+        >
+            <div class="flex items-center gap-2">
+                <span class="text-accent text-xs">💧</span>
+                <h3 class="text-[10px] font-black text-white/80 uppercase tracking-widest">
+                    主力資金匯聚排行
+                </h3>
+            </div>
+        </div>
+        <div class="overflow-y-auto w-full custom-scroll max-h-[400px]">
+            <table class="w-full text-left border-collapse">
+                <thead
+                    class="bg-surface/95 border-b border-white/5 sticky top-0 z-20 backdrop-blur-xl"
+                >
+                    <tr>
+                        <th class="atom-th !px-2">Rank</th>
+                        <th class="atom-th !px-2 text-left">Entity</th>
+                        <th class="atom-th !px-2 text-right">Price</th>
+                        <th class="atom-th !px-2 text-right">Change</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/[0.02]">
+                    {#each filteredTopVolume as s, i}
+                        <tr
+                            class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
+                            onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
+                        >
+                            <td class="px-2 py-3 text-[9px] font-mono text-white/20 pl-4">
+                                {i + 1}
+                            </td>
+                            <td class="px-1 py-3 max-w-[120px]">
+                                <StockEntityCell symbol={s.symbol} name={s.name} showLink={true} />
+                            </td>
+                            <td
+                                class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
+                            >
+                                {s.price?.toFixed(2) || '—'}
+                            </td>
+                            <td class="px-2 py-3 text-right">
+                                <div
+                                    class="atom-badge inline-flex min-w-[54px] {(s.changePercent ||
+                                        0) > 0
+                                        ? 'atom-badge-bull'
+                                        : (s.changePercent || 0) < 0
+                                          ? 'atom-badge-bear'
+                                          : 'atom-badge-flat'}"
+                                >
+                                    {(s.changePercent || 0) > 0 ? '+' : ''}{(
+                                        s.changePercent || 0
+                                    ).toFixed(2)}%
+                                </div>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- COLUMN 2: LOSERS MATRIX -->
+    <div
+        class="flex flex-col glass-card border border-border rounded-xl bg-surface/40 shadow-elevated overflow-hidden"
+    >
+        <div
+            class="px-6 py-4 bg-bearish/[0.03] border-b border-white/5 flex items-center justify-between relative z-10"
+        >
+            <div class="flex items-center gap-2">
+                <span class="text-bearish text-xs">📉</span>
+                <h3 class="text-[10px] font-black text-bearish uppercase tracking-widest">
+                    跌幅排行
+                </h3>
+            </div>
+        </div>
+        <div class="overflow-y-auto w-full custom-scroll max-h-[400px]">
+            <table class="w-full text-left border-collapse">
+                <thead
+                    class="bg-surface/95 border-b border-white/5 sticky top-0 z-20 backdrop-blur-xl"
+                >
+                    <tr>
+                        <th class="atom-th !px-2">Rank</th>
+                        <th class="atom-th !px-2 text-left">Entity</th>
+                        <th class="atom-th !px-2 text-right">Price</th>
+                        <th class="atom-th !px-2 text-right">Change</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/[0.02]">
+                    {#each filteredLosers as s, i}
+                        <tr
+                            class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
+                            onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
+                        >
+                            <td class="px-2 py-3 text-[9px] font-mono text-white/20 pl-4">
+                                {i + 1}
+                            </td>
+                            <td class="px-1 py-3 max-w-[120px]">
+                                <StockEntityCell symbol={s.symbol} name={s.name} showLink={true} />
+                            </td>
+                            <td
+                                class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
+                            >
+                                {s.price?.toFixed(2) || '—'}
+                            </td>
+                            <td class="px-2 py-3 text-right">
+                                <div class="atom-badge inline-flex min-w-[54px] atom-badge-bear">
+                                    {(s.changePercent || 0).toFixed(2)}%
+                                </div>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- COLUMN 3: GAINERS MATRIX -->
+    <div
+        class="flex flex-col glass-card border border-border rounded-xl bg-surface/40 shadow-elevated overflow-hidden"
+    >
+        <div
+            class="px-6 py-4 bg-bullish/[0.03] border-b border-white/5 flex items-center justify-between relative z-10"
+        >
+            <div class="flex items-center gap-2">
+                <span class="text-bullish text-xs">🚀</span>
+                <h3 class="text-[10px] font-black text-bullish uppercase tracking-widest">
+                    漲幅排行
+                </h3>
+            </div>
+        </div>
+        <div class="overflow-y-auto w-full custom-scroll max-h-[400px]">
+            <table class="w-full text-left border-collapse">
+                <thead
+                    class="bg-surface/95 border-b border-white/5 sticky top-0 z-20 backdrop-blur-xl"
+                >
+                    <tr>
+                        <th class="atom-th !px-2">Rank</th>
+                        <th class="atom-th !px-2 text-left">Entity</th>
+                        <th class="atom-th !px-2 text-right">Price</th>
+                        <th class="atom-th !px-2 text-right">Change</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/[0.02]">
+                    {#each filteredGainers as s, i}
+                        <tr
+                            class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
+                            onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
+                        >
+                            <td class="px-2 py-3 text-[9px] font-mono text-white/20 pl-4">
+                                {i + 1}
+                            </td>
+                            <td class="px-1 py-3 max-w-[120px]">
+                                <StockEntityCell symbol={s.symbol} name={s.name} showLink={true} />
+                            </td>
+                            <td
+                                class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
+                            >
+                                {s.price?.toFixed(2) || '—'}
+                            </td>
+                            <td class="px-2 py-3 text-right">
+                                <div class="atom-badge inline-flex min-w-[54px] atom-badge-bull">
+                                    +{(s.changePercent || 0).toFixed(2)}%
+                                </div>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .custom-range {
+        -webkit-appearance: none;
+        appearance: none;
+        background: rgba(255, 255, 255, 0.05);
+        height: 4px;
+        border-radius: 10px;
+    }
+    .custom-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 10px;
+        height: 10px;
+        background: var(--color-accent);
+        border: 1.5px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.5);
+    }
+</style>
