@@ -268,11 +268,11 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
                 <!-- TOP LEFT: MARKET KEY DIMENSIONS (Col 1-5) -->
                 <div
-                    class="lg:col-span-5 glass-card bg-surface/30 px-4 pt-3 pb-4 border-l-4 border-l-accent flex flex-col gap-5 shadow-elevated min-h-[180px]"
+                    class="lg:col-span-5 glass-card bg-surface/30 px-4 py-3 border-l-4 border-l-accent flex flex-col gap-3 shadow-elevated min-h-[150px]"
                 >
                     <div class="flex items-center justify-between w-full pr-4">
                         <!-- Left Column: Date & Metrics -->
-                        <div class="flex flex-col gap-5">
+                        <div class="flex flex-col gap-3">
                             <div class="flex flex-col gap-1.5">
                                 <span
                                     class="text-[10px] font-mono font-black text-white/30 uppercase tracking-[0.2em]"
@@ -365,7 +365,7 @@
 
                 <!-- TOP RIGHT: MARKET DISTRIBUTION (Col 6-12) -->
                 <div
-                    class="lg:col-span-7 glass-card bg-surface/30 p-4 shadow-elevated flex flex-col gap-3"
+                    class="lg:col-span-7 glass-card bg-surface/30 px-4 py-3 shadow-elevated flex flex-col gap-3"
                 >
                     <div class="flex items-center justify-between border-b border-white/5 pb-2">
                         <span
@@ -374,7 +374,7 @@
                         >
                     </div>
                     {#if distribution}
-                        <div class="flex-1 min-h-[140px]">
+                        <div class="flex-1 min-h-[120px]">
                             <MarketDistributionChart {distribution} />
                         </div>
                     {/if}
@@ -384,17 +384,15 @@
             <!-- Rankings Tables Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 <RankingCard
-                    title="漲幅排行"
-                    icon="🚀"
-                    variant="bullish"
-                    items={filteredGainers}
-                    align="right"
-                />
-                <RankingCard
                     title="跌幅排行"
-                    icon="📉"
                     variant="bearish"
                     items={filteredLosers}
+                    align="left"
+                />
+                <RankingCard
+                    title="漲幅排行"
+                    variant="bullish"
+                    items={filteredGainers}
                     align="left"
                 />
             </div>
