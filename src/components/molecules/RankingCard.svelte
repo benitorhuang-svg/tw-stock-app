@@ -13,9 +13,10 @@
         icon: string;
         variant: 'accent' | 'bearish' | 'bullish';
         items: any[];
+        align?: 'left' | 'right';
     }
 
-    let { title, icon, variant, items }: Props = $props();
+    let { title, icon, variant, items, align = 'left' }: Props = $props();
 
     const headerBg = {
         accent: 'bg-white/[0.02]',
@@ -41,9 +42,10 @@
 >
     <!-- Card Header -->
     <div
-        class="px-6 py-4 {headerBg[
-            variant
-        ]} border-b border-white/5 flex items-center justify-between relative z-10"
+        class="px-6 py-4 {headerBg[variant]} border-b border-white/5 flex items-center {align ===
+        'right'
+            ? 'justify-end'
+            : 'justify-start'} relative z-10"
     >
         <div class="flex items-center gap-2">
             <span class="{titleColor[variant]} text-xs">{icon}</span>

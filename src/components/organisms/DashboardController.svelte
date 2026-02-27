@@ -146,133 +146,295 @@
         }
     }
 
+    let currentView = $state('rankings'); // 'rankings' | 'breadth'
+
     let ratio = $derived(downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX');
 
-    // Filtering logic — uses shared atomic filter engine
+    // Filtering logic
     const filteredGainers = $derived(
-        (gainers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 6)
+        (gainers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 8)
     );
     const filteredLosers = $derived(
-        (losers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 6)
+        (losers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 8)
     );
     const filteredTopVolume = $derived(
-        (topVolume || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 6)
+        (topVolume || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
     );
 </script>
 
-<div class="space-y-4 animate-fade-up">
-    <!-- STRATEGIC TOOLBAR: Filter Nexus -->
-    <StrategyFilterMatrix />
+<div class="flex flex-col lg:flex-row gap-6 min-h-[800px]">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside
+        id="db-sidebar"
+        class="w-64 bg-base-deep/80 backdrop-blur-md border-r border-border flex flex-col z-20 shrink-0 min-h-[inherit]"
+    >
+        <!-- NEW: VERTICAL FILTERS IN SIDEBAR -->
+        <StrategyFilterMatrix vertical={true} />
 
-    <!-- CORE COMMAND NEXUS: Swapped Layout -->
-    <div class="flex flex-col lg:flex-row gap-4 items-stretch justify-center">
-        <!-- MARKET HUD: Key Vectors (Left) -->
+        <!-- Sidebar Header (Matches Template) -->
         <div
-            class="lg:w-[380px] glass-card border-l-4 border-l-accent p-4 relative overflow-hidden shadow-elevated shrink-0 flex flex-col justify-between gap-6"
+            class="px-6 py-4 flex items-center justify-between bg-surface/50 border-b border-border"
         >
-            <div class="flex flex-col gap-4">
-                <div class="flex items-center justify-between relative">
-                    <h3
-                        class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2"
+            <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]"
+                >觀察樣板 / TEMPLATES</span
+            >
+        </div>
+        <div class="p-2 space-y-1">
+            <!-- Rankings View Button -->
+            <button
+                onclick={() => (currentView = 'rankings')}
+                class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono transition-all flex items-center justify-between group border border-transparent active:scale-[0.98] {currentView ===
+                'rankings'
+                    ? 'bg-glass-hover text-text-primary border-accent/20'
+                    : 'text-text-secondary hover:bg-glass-hover hover:text-text-primary'}"
+            >
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <div
+                        class="w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all {currentView ===
+                        'rankings'
+                            ? 'border-accent/40 bg-accent/10 shadow-[0_0_10px_rgba(var(--accent-rgb),0.3)]'
+                            : ''}"
                     >
-                        <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                        市場關鍵維度 <span class="text-white/10 ml-1">/ CORE</span>
-                    </h3>
-                    {#if isLive}
-                        <StatusBadge label="Live" variant="bullish" />
-                    {/if}
+                        <span
+                            class="text-xs {currentView === 'rankings'
+                                ? 'text-accent'
+                                : 'text-text-muted group-hover:text-accent'}">🚀</span
+                        >
+                    </div>
+                    <span
+                        class="truncate tracking-wide group-hover:translate-x-1 transition-transform {currentView ===
+                        'rankings'
+                            ? 'font-bold text-accent'
+                            : ''}"
+                    >
+                        漲跌排行
+                    </span>
+                </div>
+            </button>
 
-                    <!-- ABSOLUTE POSITIONED DATE PICKER (TOP RIGHT) -->
-                    <div class="absolute -top-2 -right-2 flex items-center gap-1">
-                        <button
-                            onclick={() => navigateDate(-1)}
-                            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
-                            aria-label="Previous day"
+            <!-- Breadth View Button -->
+            <button
+                onclick={() => (currentView = 'breadth')}
+                class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono transition-all flex items-center justify-between group border border-transparent active:scale-[0.98] {currentView ===
+                'breadth'
+                    ? 'bg-glass-hover text-text-primary border-accent/20'
+                    : 'text-text-secondary hover:bg-glass-hover hover:text-text-primary'}"
+            >
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                    <div
+                        class="w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all {currentView ===
+                        'breadth'
+                            ? 'border-accent/40 bg-accent/10 shadow-[0_0_10px_rgba(var(--accent-rgb),0.3)]'
+                            : ''}"
+                    >
+                        <span
+                            class="text-xs {currentView === 'breadth'
+                                ? 'text-accent'
+                                : 'text-text-muted group-hover:text-accent'}">📊</span
                         >
-                            <svg
-                                class="w-4 h-4"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2.5"><path d="m15 18-6-6 6-6" /></svg
-                            >
-                        </button>
-                        <CyberDatePicker
-                            size="w-12 h-12"
-                            value={dataDate}
-                            onchange={fetchDateData}
-                        />
-                        <button
-                            onclick={() => navigateDate(1)}
-                            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-colors"
-                            aria-label="Next day"
+                    </div>
+                    <span
+                        class="truncate tracking-wide group-hover:translate-x-1 transition-transform {currentView ===
+                        'breadth'
+                            ? 'font-bold text-accent'
+                            : ''}"
+                    >
+                        多空比分析
+                    </span>
+                </div>
+            </button>
+        </div>
+
+        <!-- System Status Footer -->
+        <div class="mt-auto p-4 border-t border-border/50 bg-surface/30">
+            <div
+                class="flex items-center justify-between opacity-40 group hover:opacity-100 transition-opacity"
+            >
+                <span class="text-[8px] font-mono uppercase tracking-tighter text-text-muted"
+                    >System Health</span
+                >
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[8px] font-mono text-bullish">ONLINE</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-bullish animate-pulse"></span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 space-y-3 animate-fade-right">
+        {#if currentView === 'rankings'}
+            <!-- VIEW: RANKINGS -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+                <!-- TOP LEFT: MARKET KEY DIMENSIONS (Col 1-5) -->
+                <div
+                    class="lg:col-span-5 glass-card bg-surface/30 px-4 pt-3 pb-4 border-l-4 border-l-accent flex flex-col gap-5 shadow-elevated min-h-[180px]"
+                >
+                    <div class="flex items-center justify-between w-full pr-4">
+                        <!-- Left Column: Date & Metrics -->
+                        <div class="flex flex-col gap-5">
+                            <div class="flex flex-col gap-1.5">
+                                <span
+                                    class="text-[10px] font-mono font-black text-white/30 uppercase tracking-[0.2em]"
+                                    >市場關鍵維度 / CORE</span
+                                >
+                                <span
+                                    class="text-4xl font-mono font-black text-white tracking-tighter leading-none whitespace-nowrap"
+                                    >{dataDate || '—'}</span
+                                >
+                            </div>
+
+                            <div class="flex items-center gap-8 pl-1">
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[9px] font-mono font-black text-white/20 uppercase"
+                                        >成交量</span
+                                    >
+                                    <span class="text-lg font-mono font-black text-white"
+                                        >{fmtVol(totalVolume)}</span
+                                    >
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[9px] font-mono font-black text-white/20 uppercase"
+                                        >平均漲跌</span
+                                    >
+                                    <span
+                                        class="text-lg font-mono font-black {avgChange >= 0
+                                            ? 'text-bullish'
+                                            : 'text-bearish'}"
+                                    >
+                                        {(avgChange >= 0 ? '+' : '') + avgChange.toFixed(2)}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Calendar Controls -->
+                        <div
+                            class="flex flex-col items-center gap-1.5 bg-white/[0.03] p-1.5 rounded-xl border border-white/5 shadow-inner shrink-0 mt-3"
                         >
-                            <svg
-                                class="w-4 h-4"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2.5"><path d="m9 18 6-6-6-6" /></svg
+                            <CyberDatePicker
+                                size="w-12 h-12"
+                                value={dataDate}
+                                onchange={fetchDateData}
+                            />
+                            <div
+                                class="flex items-center gap-0.5 bg-white/10 rounded-lg p-0.5 border border-white/5 w-full"
                             >
-                        </button>
+                                <button
+                                    onclick={() => navigateDate(-1)}
+                                    class="flex-1 h-5 rounded flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all active:scale-90"
+                                    aria-label="Previous day"
+                                >
+                                    <svg
+                                        class="w-3 h-3"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="3"
+                                    >
+                                        <path d="m15 18-6-6 6-6" />
+                                    </svg>
+                                </button>
+                                <div class="w-px h-3 bg-white/20 shrink-0"></div>
+                                <button
+                                    onclick={() => navigateDate(1)}
+                                    class="flex-1 h-5 rounded flex items-center justify-center text-white/40 hover:text-white hover:bg-white/20 transition-all active:scale-90"
+                                    aria-label="Next day"
+                                >
+                                    <svg
+                                        class="w-3 h-3"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="3"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sentiment Bar at Bottom -->
+                    <div class="max-w-[320px]">
+                        <SentimentBar up={upCount} down={downCount} flat={flatCount} {ratio} />
                     </div>
                 </div>
 
-                <div class="flex items-end justify-between gap-4">
-                    <div class="flex flex-col gap-1 w-full relative">
-                        <div class="flex items-center gap-1.5">
-                            <span
-                                class="text-3xl font-mono font-black text-white tracking-tighter leading-none whitespace-nowrap"
-                            >
-                                {dataDate || '—'}
-                            </span>
-                        </div>
+                <!-- TOP RIGHT: MARKET DISTRIBUTION (Col 6-12) -->
+                <div
+                    class="lg:col-span-7 glass-card bg-surface/30 p-4 shadow-elevated flex flex-col gap-3"
+                >
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                        <span
+                            class="text-[10px] font-mono font-black text-white/30 uppercase tracking-[0.2em]"
+                            >個股漲跌家數分佈 / DISTRIBUTION</span
+                        >
                     </div>
+                    {#if distribution}
+                        <div class="flex-1 min-h-[140px]">
+                            <MarketDistributionChart {distribution} />
+                        </div>
+                    {/if}
                 </div>
             </div>
 
-            <div class="flex flex-col gap-5">
-                <!-- Sentiment Molecule -->
-                <SentimentBar up={upCount} down={downCount} flat={flatCount} {ratio} />
-
-                <!-- Distribution Molecule -->
-                {#if distribution}
-                    <div class="h-[120px] transition-all duration-500">
-                        <MarketDistributionChart {distribution} />
+            <!-- Rankings Tables Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <RankingCard
+                    title="漲幅排行"
+                    icon="🚀"
+                    variant="bullish"
+                    items={filteredGainers}
+                    align="right"
+                />
+                <RankingCard
+                    title="跌幅排行"
+                    icon="📉"
+                    variant="bearish"
+                    items={filteredLosers}
+                    align="left"
+                />
+            </div>
+        {:else}
+            <!-- VIEW: BREADTH ANALYSIS -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+                <!-- Main Breadth Chart (Col 1-8) -->
+                <div class="lg:col-span-8 flex flex-col gap-4">
+                    <div
+                        class="glass-card p-4 border-b-2 border-accent/20 flex items-center justify-between"
+                    >
+                        <h3
+                            class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2"
+                        >
+                            <span
+                                class="w-2 h-2 bg-accent shadow-[0_0_8px_rgba(var(--accent-rgb),0.6)]"
+                            ></span>
+                            大盤市場多空比分析
+                            <span class="text-white/10 ml-1">/ BREADTH ANALYSIS</span>
+                        </h3>
                     </div>
-                {/if}
+                    <div class="flex-1 min-h-[600px]">
+                        <MarketBreadthChart
+                            bind:this={chartRef}
+                            initialData={initialBreadthData}
+                            onDateSelect={fetchDateData}
+                        />
+                    </div>
+                </div>
 
-                <!-- Liquidity & Volatility Molecules -->
-                <div class="grid grid-cols-2 gap-4">
-                    <MetricDisplay label="市場總成交量" value={fmtVol(totalVolume)} />
-                    <MetricDisplay
-                        label="大盤平均漲跌幅"
-                        value={(avgChange >= 0 ? '+' : '') + avgChange.toFixed(2) + '%'}
-                        variant={avgChange >= 0 ? 'bullish' : 'bearish'}
+                <!-- Volume Ranking (Col 9-12) -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    <RankingCard
+                        title="主力資金匯聚排行"
+                        icon="💧"
+                        variant="accent"
+                        items={filteredTopVolume}
                     />
                 </div>
             </div>
-        </div>
-
-        <!-- GAINER/LOSER RANKINGS: Moved Up -->
-        <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <RankingCard title="漲幅排行" icon="🚀" variant="bullish" items={filteredGainers} />
-            <RankingCard title="跌幅排行" icon="📉" variant="bearish" items={filteredLosers} />
-        </div>
-    </div>
-</div>
-
-<!-- BOTTOM ANALYTICS ROW -->
-<div class="flex flex-col lg:flex-row gap-4 relative z-10 mt-2 lg:mt-4 items-stretch">
-    <!-- TREND ANALYSIS: Moved Down and Width Expanded -->
-    <MarketBreadthChart
-        bind:this={chartRef}
-        initialData={initialBreadthData}
-        onDateSelect={fetchDateData}
-    />
-
-    <!-- VOLUME RANKING: Positioned next to chart -->
-    <div class="lg:w-[380px] shrink-0">
-        <RankingCard title="主力資金匯聚排行" icon="�" variant="accent" items={filteredTopVolume} />
-    </div>
+        {/if}
+    </main>
 </div>

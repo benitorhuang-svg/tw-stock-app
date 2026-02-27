@@ -62,7 +62,7 @@
 
         <!-- Grid-style Calendar Icon -->
         <svg
-            class="w-10 h-10 drop-shadow-[0_0_10px_rgba(var(--accent-rgb),0.6)] group-hover/date:scale-110 transition-transform duration-500"
+            class="w-1/2 h-1/2 drop-shadow-[0_0_10px_rgba(var(--accent-rgb),0.6)] group-hover/date:scale-110 transition-transform duration-500"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
