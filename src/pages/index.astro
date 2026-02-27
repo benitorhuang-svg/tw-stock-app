@@ -90,8 +90,8 @@ try {
         upCount = summary.up;
         downCount = summary.down;
         flatCount = summary.flat;
-        totalVolume = summary.total_vol;
-        avgChange = summary.avg_chg;
+        totalVolume = summary.total_vol || 0;
+        avgChange = summary.avg_chg || 0;
         dataDate = summary.latest_date || '';
         distribution = {
             p9: summary.p9,
@@ -144,7 +144,7 @@ try {
 
     losers = dbService
         .queryAll<any>(
-            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct < 0 ORDER BY lp.change_pct ASC LIMIT 3000`
+            `SELECT ${selectCols} FROM latest_prices lp JOIN stocks s ON s.symbol = lp.symbol WHERE lp.change_pct <= 0 ORDER BY lp.change_pct ASC LIMIT 3000`
         )
         .map(mapRow);
 

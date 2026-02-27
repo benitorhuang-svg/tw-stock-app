@@ -147,18 +147,57 @@
     }
 
     let currentView = $state('rankings'); // 'rankings' | 'breadth'
+    let activeDistributionIndex: number | null = $state(null);
 
     let ratio = $derived(downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX');
 
+    function isStockInActiveBin(pct: number): boolean {
+        if (activeDistributionIndex === null) return true;
+
+        switch (activeDistributionIndex) {
+            case 0:
+                return pct <= -9; // m9
+            case 1:
+                return pct > -9 && pct <= -6; // m6_9
+            case 2:
+                return pct > -6 && pct <= -3; // m3_6
+            case 3:
+                return pct > -3 && pct < 0; // m0_3
+            case 4:
+                return pct === 0; // zero
+            case 5:
+                return pct > 0 && pct < 3; // p0_3
+            case 6:
+                return pct >= 3 && pct < 6; // p3_6
+            case 7:
+                return pct >= 6 && pct < 9; // p6_9
+            case 8:
+                return pct >= 9; // p9
+            default:
+                return true;
+        }
+    }
+
     // Filtering logic
     const filteredGainers = $derived(
-        (gainers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 8)
+        activeDistributionIndex === 4
+            ? [] // Do not show flat stocks in the gainers list
+            : (gainers || [])
+                  .filter(s => applyStockFilter(s, marketStore))
+                  .filter(s => isStockInActiveBin(s.changePercent || 0))
+                  .slice(0, 8)
     );
     const filteredLosers = $derived(
-        (losers || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 8)
+        (losers || [])
+            .filter(s => applyStockFilter(s, marketStore))
+            .filter(s => isStockInActiveBin(s.changePercent || 0))
+            .slice(0, 8)
     );
     const filteredTopVolume = $derived(
-        (topVolume || []).filter(s => applyStockFilter(s, marketStore)).slice(0, 15)
+        (topVolume || [])
+            .filter(s => applyStockFilter(s, marketStore))
+            .filter(s => isStockInActiveBin(s.changePercent || 0))
+            .slice(0, 15)
     );
 </script>
 
@@ -300,11 +339,12 @@
                                         >平均漲跌</span
                                     >
                                     <span
-                                        class="text-lg font-mono font-black {avgChange >= 0
+                                        class="text-lg font-mono font-black {(avgChange || 0) >= 0
                                             ? 'text-bullish'
                                             : 'text-bearish'}"
                                     >
-                                        {(avgChange >= 0 ? '+' : '') + avgChange.toFixed(2)}%
+                                        {((avgChange || 0) >= 0 ? '+' : '') +
+                                            (avgChange || 0).toFixed(2)}%
                                     </span>
                                 </div>
                             </div>
@@ -375,7 +415,11 @@
                     </div>
                     {#if distribution}
                         <div class="flex-1 min-h-[120px]">
-                            <MarketDistributionChart {distribution} />
+                            <MarketDistributionChart
+                                {distribution}
+                                activeRangeIndex={activeDistributionIndex}
+                                onSelectRange={idx => (activeDistributionIndex = idx)}
+                            />
                         </div>
                     {/if}
                 </div>
@@ -384,7 +428,7 @@
             <!-- Rankings Tables Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
                 <RankingCard
-                    title="跌幅排行"
+                    title={activeDistributionIndex === 4 ? '平盤排行' : '跌幅排行'}
                     variant="bearish"
                     items={filteredLosers}
                     align="left"
@@ -392,7 +436,7 @@
                 <RankingCard
                     title="漲幅排行"
                     variant="bullish"
-                    items={filteredGainers}
+                    items={activeDistributionIndex === 4 ? [] : filteredGainers}
                     align="left"
                 />
             </div>
@@ -427,7 +471,6 @@
                 <div class="lg:col-span-4 flex flex-col gap-4">
                     <RankingCard
                         title="主力資金匯聚排行"
-                        icon="💧"
                         variant="accent"
                         items={filteredTopVolume}
                     />

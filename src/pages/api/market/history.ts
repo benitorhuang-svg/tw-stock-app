@@ -24,72 +24,61 @@ interface StockRow {
     sector?: string;
 }
 
-// ═══ Cached Prepared Statements (module scope, reused across requests) ═══
-let stmts: {
-    summary: ReturnType<ReturnType<typeof dbService.getRawDb>['prepare']>;
-    availDates: ReturnType<ReturnType<typeof dbService.getRawDb>['prepare']>;
-    gainers: ReturnType<ReturnType<typeof dbService.getRawDb>['prepare']>;
-    losers: ReturnType<ReturnType<typeof dbService.getRawDb>['prepare']>;
-    volumeLeaders: ReturnType<ReturnType<typeof dbService.getRawDb>['prepare']>;
-} | null = null;
 
 function getStmts() {
-    if (!stmts) {
-        const db = dbService.getRawDb();
-        stmts = {
-            summary: db.prepare(`
-                SELECT 
-                    count(CASE WHEN change_pct > 0 THEN 1 END) as up,
-                    count(CASE WHEN change_pct < 0 THEN 1 END) as down,
-                    count(CASE WHEN change_pct = 0 THEN 1 END) as flat,
-                    count(*) as total,
-                    coalesce(sum(volume), 0) as totalVolume,
-                    coalesce(avg(change_pct), 0) as avgChange
-                FROM price_history
-                WHERE date = ? AND close > 0
-            `),
-            availDates: db.prepare(
-                'SELECT DISTINCT date FROM price_history ORDER BY date DESC LIMIT 60'
-            ),
-            gainers: db.prepare(`
-                SELECT trim(ph.symbol) as symbol,
-                       coalesce(s.name, trim(ph.symbol)) as name, 
-                       ph.close as price, ph.change_pct as changePercent, ph.volume,
-                       coalesce(s.market, '') as _market,
-                       coalesce(s.sector, '') as sector
-                FROM price_history ph
-                LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
-                WHERE ph.date = ? AND ph.change_pct > 0 AND ph.close > 0
-                ORDER BY ph.change_pct DESC
-                LIMIT 3000
-            `),
-            losers: db.prepare(`
-                SELECT trim(ph.symbol) as symbol,
-                       coalesce(s.name, trim(ph.symbol)) as name,
-                       ph.close as price, ph.change_pct as changePercent, ph.volume,
-                       coalesce(s.market, '') as _market,
-                       coalesce(s.sector, '') as sector
-                FROM price_history ph
-                LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
-                WHERE ph.date = ? AND ph.change_pct < 0 AND ph.close > 0
-                ORDER BY ph.change_pct ASC
-                LIMIT 3000
-            `),
-            volumeLeaders: db.prepare(`
-                SELECT trim(ph.symbol) as symbol,
-                       coalesce(s.name, trim(ph.symbol)) as name,
-                       ph.close as price, ph.change_pct as changePercent, ph.volume,
-                       coalesce(s.market, '') as _market,
-                       coalesce(s.sector, '') as sector
-                FROM price_history ph
-                LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
-                WHERE ph.date = ? AND ph.close > 0
-                ORDER BY ph.volume DESC
-                LIMIT 3000
-            `),
-        };
-    }
-    return stmts;
+    const db = dbService.getRawDb();
+    return {
+        summary: db.prepare(`
+            SELECT 
+                count(CASE WHEN change_pct > 0 THEN 1 END) as up,
+                count(CASE WHEN change_pct < 0 THEN 1 END) as down,
+                count(CASE WHEN change_pct = 0 THEN 1 END) as flat,
+                count(*) as total,
+                sum(volume) as totalVolume,
+                avg(change_pct) as avgChange
+            FROM price_history
+            WHERE date = ? AND close > 0
+        `),
+        availDates: db.prepare(
+            'SELECT DISTINCT date FROM price_history ORDER BY date DESC LIMIT 60'
+        ),
+        gainers: db.prepare(`
+            SELECT trim(ph.symbol) as symbol,
+                   coalesce(s.name, trim(ph.symbol)) as name,
+                   ph.close as price, ph.change_pct as changePercent, ph.volume,
+                   coalesce(s.market, '') as _market,
+                   coalesce(s.sector, '') as sector
+            FROM price_history ph
+            LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+            WHERE ph.date = ? AND ph.change_pct >= 0 AND ph.close > 0
+            ORDER BY ph.change_pct DESC
+            LIMIT 3000
+        `),
+        losers: db.prepare(`
+            SELECT trim(ph.symbol) as symbol,
+                   coalesce(s.name, trim(ph.symbol)) as name,
+                   ph.close as price, ph.change_pct as changePercent, ph.volume,
+                   coalesce(s.market, '') as _market,
+                   coalesce(s.sector, '') as sector
+            FROM price_history ph
+            LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+            WHERE ph.date = ? AND ph.change_pct <= 0 AND ph.close > 0
+            ORDER BY ph.change_pct ASC
+            LIMIT 3000
+        `),
+        volumeLeaders: db.prepare(`
+            SELECT trim(ph.symbol) as symbol,
+                   coalesce(s.name, trim(ph.symbol)) as name,
+                   ph.close as price, ph.change_pct as changePercent, ph.volume,
+                   coalesce(s.market, '') as _market,
+                   coalesce(s.sector, '') as sector
+            FROM price_history ph
+            LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+            WHERE ph.date = ? AND ph.close > 0
+            ORDER BY ph.volume DESC
+            LIMIT 3000
+        `),
+    };
 }
 
 export const GET: APIRoute = async ({ url }) => {

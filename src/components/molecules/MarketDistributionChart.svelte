@@ -17,9 +17,11 @@
             m6_9: number;
             m9: number;
         };
+        activeRangeIndex?: number | null;
+        onSelectRange?: (idx: number | null) => void;
     }
 
-    let { distribution }: Props = $props();
+    let { distribution, activeRangeIndex = null, onSelectRange }: Props = $props();
 
     let chartContainer: HTMLDivElement | null = null;
     let chart: any = null;
@@ -38,26 +40,31 @@
         '#ef4444', // p9 (Red in TW means Up)
     ];
 
-    // Reactive effect to update chart when distribution changes
+    // Reactive effect to update chart when distribution or active index changes
     $effect(() => {
-        if (chart && distribution) {
+        if (chart && (distribution || activeRangeIndex !== undefined)) {
             updateChart();
         }
     });
+
+    function getOpacity(idx: number) {
+        if (activeRangeIndex === null) return 1;
+        return activeRangeIndex === idx ? 1 : 0.2;
+    }
 
     function updateChart() {
         if (!chart) return;
 
         const data = [
-            distribution.m9,
-            distribution.m6_9,
-            distribution.m3_6,
-            distribution.m0_3,
-            distribution.zero,
-            distribution.p0_3,
-            distribution.p3_6,
-            distribution.p6_9,
-            distribution.p9,
+            distribution?.m9 || 0,
+            distribution?.m6_9 || 0,
+            distribution?.m3_6 || 0,
+            distribution?.m0_3 || 0,
+            distribution?.zero || 0,
+            distribution?.p0_3 || 0,
+            distribution?.p3_6 || 0,
+            distribution?.p6_9 || 0,
+            distribution?.p9 || 0,
         ];
 
         chart.setOption({
@@ -65,7 +72,7 @@
                 {
                     data: data.map((val, i) => ({
                         value: val,
-                        itemStyle: { color: colors[i] },
+                        itemStyle: { color: colors[i], opacity: getOpacity(i) },
                     })),
                 },
             ],
@@ -116,6 +123,7 @@
                         fontSize: 8,
                         interval: 0,
                     },
+                    triggerEvent: true,
                 },
                 yAxis: {
                     type: 'value',
@@ -129,7 +137,7 @@
                     {
                         data: initialData.map((val, i) => ({
                             value: val,
-                            itemStyle: { color: colors[i] },
+                            itemStyle: { color: colors[i], opacity: getOpacity(i) },
                         })),
                         type: 'bar',
                         barWidth: '60%',
@@ -145,6 +153,44 @@
             };
 
             chart.setOption(option);
+
+            // Click handling
+            chart.on('click', (params: any) => {
+                let dIndex = params.dataIndex;
+                if (params.componentType === 'xAxis') {
+                    dIndex = labels.indexOf(params.value);
+                }
+
+                if (dIndex !== undefined && dIndex !== -1) {
+                    if (activeRangeIndex === dIndex) {
+                        onSelectRange?.(null); // Unselect
+                    } else {
+                        onSelectRange?.(dIndex);
+                    }
+                }
+            });
+
+            chart.getZr().on('click', (params: any) => {
+                if (!params.target) {
+                    const pointInPixel = [params.offsetX, params.offsetY];
+                    if (chart.containPixel('grid', pointInPixel)) {
+                        const pointInGrid = chart.convertFromPixel(
+                            { seriesIndex: 0 },
+                            pointInPixel
+                        );
+                        const idx = pointInGrid[0];
+                        if (idx !== undefined && idx >= 0 && idx < labels.length) {
+                            if (activeRangeIndex === idx) {
+                                onSelectRange?.(null);
+                            } else {
+                                onSelectRange?.(idx);
+                            }
+                            return;
+                        }
+                    }
+                    onSelectRange?.(null); // Clicked blank background outside grid bars
+                }
+            });
 
             ro = new ResizeObserver(() => {
                 if (chart) chart.resize();
