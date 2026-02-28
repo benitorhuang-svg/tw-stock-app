@@ -22,8 +22,7 @@
 </script>
 
 <div class="px-5 flex-1 py-1 flex flex-col gap-0.5 bg-surface/5">
-    <span
-        class="text-[10px] font-mono font-black text-text-muted/40 uppercase tracking-[0.25em] mb-1"
+    <span class="text-[10px] font-mono font-black text-text-muted uppercase tracking-[0.25em] mb-1"
         >快速索引 ( NAV )</span
     >
     {#each navItems as nav}
@@ -45,7 +44,7 @@
             <span
                 class="text-xs font-bold tracking-widest {isActive
                     ? 'text-accent'
-                    : 'text-text-muted/60 group-hover:text-text-primary'} transition-colors"
+                    : 'text-text-muted group-hover:text-text-primary'} transition-colors"
             >
                 {nav.label}
             </span>

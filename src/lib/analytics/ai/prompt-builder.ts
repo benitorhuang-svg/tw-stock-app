@@ -5,7 +5,7 @@ export class PromptBuilder {
     /**
      * T006: 根據股票特徵構建 AI 提詞
      */
-    public buildStockAnalysisPrompt(symbol: string, data: any): string {
+    public buildStockAnalysisPrompt(symbol: string, data: { tech: Record<string, number>; chip: Record<string, number>; pricing: Record<string, number> }): string {
         const { tech, chip, pricing } = data;
 
         return `

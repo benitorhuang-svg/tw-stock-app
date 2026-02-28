@@ -20,7 +20,7 @@ const { entities, fmtNet, sparkPoints } = Astro.props;
             return (
                 <div
                     class:list={[
-                        'glass-card group hover:bg-white/[0.02] px-5 py-4 flex flex-col gap-3 transition-all duration-300',
+                        'glass-card group hover:bg-surface-hover/30 px-5 py-4 flex flex-col gap-3 transition-all duration-300',
                         isPos
                             ? 'border-r-2 border-r-bullish/20'
                             : entity.net < 0
@@ -40,18 +40,18 @@ const { entities, fmtNet, sparkPoints } = Astro.props;
                                           : 'bg-warning',
                                 ]}
                             />
-                            <span class="text-[10px] font-bold text-white/50 uppercase tracking-tighter">
-                                {entity.name} 資金動能
+                            <span class="text-[10px] font-bold text-text-muted uppercase tracking-tighter">
+                                {entity.name} 資�??�能
                             </span>
                         </div>
                         {entity.days !== 0 && (
                             <span
                                 class:list={[
-                                    'text-[9px] font-bold font-mono px-2 py-0.5 rounded bg-white/5 border border-white/5',
+                                    'text-[9px] font-bold font-mono px-2 py-0.5 rounded bg-surface-hover/50 border border-border/50',
                                     entity.days > 0 ? 'text-bullish' : 'text-bearish',
                                 ]}
                             >
-                                連 {Math.abs(entity.days)} {entity.days > 0 ? 'B' : 'S'}
+                                ??{Math.abs(entity.days)} {entity.days > 0 ? 'B' : 'S'}
                             </span>
                         )}
                     </div>

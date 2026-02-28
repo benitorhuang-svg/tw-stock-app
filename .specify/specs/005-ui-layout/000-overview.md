@@ -24,3 +24,4 @@
 - [006-tab-fundamentals.md](./006-tab-fundamentals.md)：【基本面與估值】本益比河流圖、營收動能直條圖與健康矩陣
 - [007-tab-alerts.md](./007-tab-alerts.md)：【AI報告與警示】智慧總結全文報告，連動一鍵設定停損停利警號
 - [008-market-heatmap-calendar.md](./008-market-heatmap-calendar.md)：【市場熱力日曆 (戳戳樂)】Dashboard 核心時間導航，Ratio 著色 + 歷史數據聯動
+- [009-tab-strategy.md](./009-tab-strategy.md)：【策略回測】將舊有的展示型態晉升，注入 Worker 回測引擎，新增即時資金曲線與買賣圖表標記

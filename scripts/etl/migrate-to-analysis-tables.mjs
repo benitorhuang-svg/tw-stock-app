@@ -1,6 +1,6 @@
 /**
  * migrate-to-analysis-tables.mjs
- * 
+ *
  * 三層分離 ETL：
  * 1. 運算層：從 price_history 計算每日個股的 MA5/20/60/120, RSI14, MACD, KD → daily_indicators
  * 2. 聚合層：依日期聚合大盤指標 (Breadth, Volume, TRIN, MA Breadth) → market_breadth_history
@@ -22,7 +22,10 @@ async function run() {
     console.log('🚀 開始三層分離 ETL 運算計畫...');
 
     const stocks = db.prepare('SELECT symbol FROM stocks').all();
-    const allDates = db.prepare('SELECT DISTINCT date FROM price_history ORDER BY date ASC').all().map(d => d.date);
+    const allDates = db
+        .prepare('SELECT DISTINCT date FROM price_history ORDER BY date ASC')
+        .all()
+        .map(d => d.date);
 
     console.log(`📊 共有 ${stocks.length} 檔股票，${allDates.length} 個交易日。`);
 
@@ -40,9 +43,11 @@ async function run() {
     const stockTx = db.transaction(() => {
         let processed = 0;
         for (const { symbol } of stocks) {
-            const history = db.prepare(
-                'SELECT date, open, high, low, close, volume, turnover FROM price_history WHERE symbol = ? ORDER BY date ASC'
-            ).all(symbol);
+            const history = db
+                .prepare(
+                    'SELECT date, open, high, low, close, volume, turnover FROM price_history WHERE symbol = ? ORDER BY date ASC'
+                )
+                .all(symbol);
             if (history.length < 2) continue;
 
             const closes = history.map(h => h.close);
@@ -103,7 +108,7 @@ async function run() {
                     m?.histogram != null ? Number(m.histogram.toFixed(4)) : null,
                     m?.signal != null ? Number(m.signal.toFixed(4)) : null,
                     k?.k != null ? Number(k.k.toFixed(2)) : null,
-                    k?.d != null ? Number(k.d.toFixed(2)) : null,
+                    k?.d != null ? Number(k.d.toFixed(2)) : null
                 );
             }
 
@@ -134,7 +139,9 @@ async function run() {
     const breadthTx = db.transaction(() => {
         let processed = 0;
         for (const date of allDates) {
-            const dayData = db.prepare(`
+            const dayData = db
+                .prepare(
+                    `
                 SELECT 
                     ph.change_pct, 
                     ph.turnover, 
@@ -147,31 +154,55 @@ async function run() {
                 FROM price_history ph
                 LEFT JOIN daily_indicators di ON ph.symbol = di.symbol AND ph.date = di.date
                 WHERE ph.date = ? AND ph.close > 0
-            `).all(date);
+            `
+                )
+                .all(date);
 
-            let up = 0, down = 0, flat = 0;
-            let upT = 0, downT = 0;
-            let upV = 0, downV = 0;
-            let above5 = 0, above20 = 0, above60 = 0, above120 = 0;
-            let count5 = 0, count20 = 0, count60 = 0, count120 = 0;
+            let up = 0,
+                down = 0,
+                flat = 0;
+            let upT = 0,
+                downT = 0;
+            let upV = 0,
+                downV = 0;
+            let above5 = 0,
+                above20 = 0,
+                above60 = 0,
+                above120 = 0;
+            let count5 = 0,
+                count20 = 0,
+                count60 = 0,
+                count120 = 0;
 
             for (const s of dayData) {
                 if (s.change_pct > 0) {
                     up++;
-                    upT += s.turnover || (s.close * s.volume);
+                    upT += s.turnover || s.close * s.volume;
                     upV += s.volume || 0;
                 } else if (s.change_pct < 0) {
                     down++;
-                    downT += s.turnover || (s.close * s.volume);
+                    downT += s.turnover || s.close * s.volume;
                     downV += s.volume || 0;
                 } else {
                     flat++;
                 }
 
-                if (s.ma5 > 0)   { count5++;   if (s.close > s.ma5)   above5++; }
-                if (s.ma20 > 0)  { count20++;  if (s.close > s.ma20)  above20++; }
-                if (s.ma60 > 0)  { count60++;  if (s.close > s.ma60)  above60++; }
-                if (s.ma120 > 0) { count120++; if (s.close > s.ma120) above120++; }
+                if (s.ma5 > 0) {
+                    count5++;
+                    if (s.close > s.ma5) above5++;
+                }
+                if (s.ma20 > 0) {
+                    count20++;
+                    if (s.close > s.ma20) above20++;
+                }
+                if (s.ma60 > 0) {
+                    count60++;
+                    if (s.close > s.ma60) above60++;
+                }
+                if (s.ma120 > 0) {
+                    count120++;
+                    if (s.close > s.ma120) above120++;
+                }
             }
 
             const issuesRatio = (up || 0.1) / (down || 0.1);
@@ -180,11 +211,15 @@ async function run() {
 
             insertBreadth.run(
                 date,
-                up, down, flat,
-                upT, downT,
-                upV, downV,
+                up,
+                down,
+                flat,
+                upT,
+                downT,
+                upV,
+                downV,
                 Number(trin.toFixed(3)),
-                count5 > 0  ? Number(((above5  / count5)  * 100).toFixed(2)) : 0,
+                count5 > 0 ? Number(((above5 / count5) * 100).toFixed(2)) : 0,
                 count20 > 0 ? Number(((above20 / count20) * 100).toFixed(2)) : 0,
                 count60 > 0 ? Number(((above60 / count60) * 100).toFixed(2)) : 0,
                 count120 > 0 ? Number(((above120 / count120) * 100).toFixed(2)) : 0,

@@ -54,7 +54,7 @@ const { pe, hasRealValuation, peLevels, mergedData } = Astro.props;
 
     <!-- River chart visualization -->
     <div
-        class="relative h-[300px] overflow-hidden rounded-xl border border-white/[0.05] bg-black/40"
+        class="relative h-[300px] overflow-hidden rounded-xl border border-border/50 bg-input-bg"
     >
         {/* SVG Layers */}
         <svg
@@ -184,13 +184,13 @@ const { pe, hasRealValuation, peLevels, mergedData } = Astro.props;
         >
             <div class="flex justify-between items-start">
                 <div
-                    class="bg-black/40 backdrop-blur-sm px-2 py-1 rounded border border-white/5 uppercase tracking-widest text-white/50"
+                    class="bg-input-bg backdrop-blur-sm px-2 py-1 rounded border border-border/50 uppercase tracking-widest text-text-muted"
                 >
                     Price vs PE Bands
                 </div>
                 <div class="flex flex-col items-end gap-1">
                     <span class="text-bearish">EXPENSIVE {peLevels[4].toFixed(1)}x</span>
-                    <span class="text-white/20">FAIR {peLevels[2].toFixed(1)}x</span>
+                    <span class="text-text-muted/50">FAIR {peLevels[2].toFixed(1)}x</span>
                     <span class="text-bullish">CHEAP {peLevels[0].toFixed(1)}x</span>
                 </div>
             </div>
@@ -198,7 +198,7 @@ const { pe, hasRealValuation, peLevels, mergedData } = Astro.props;
 
         {
             !hasRealValuation && (
-                <div class="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-white/10 uppercase tracking-[0.4em]">
+                <div class="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-text-muted/30 uppercase tracking-[0.4em]">
                     Historical_River_Data_Unavailable
                 </div>
             )

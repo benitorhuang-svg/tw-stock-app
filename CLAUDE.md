@@ -37,4 +37,7 @@ TypeScript / Node.js 20+: Follow standard conventions
 - 003-screening-scoring: Added TypeScript / Browser (sql.js WASM) + Server (better-sqlite3) + `zod` (結構與白名單驗證), `sql-template-tags` (安全封裝)
 
 <!-- MANUAL ADDITIONS START -->
-<!-- MANUAL ADDITIONS END -->
+
+- 002-analytics-engine: Added 策略回測引擎 (Strategy Backtesting Engine)
+- 005-ui-layout: Added 策略回測分頁 (Strategy Backtest Tab)
+    <!-- MANUAL ADDITIONS END -->

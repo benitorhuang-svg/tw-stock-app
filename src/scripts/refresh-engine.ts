@@ -80,7 +80,7 @@ export function initRefreshTerminal() {
                         'bg-surface'
                     );
                     icon?.classList.add('border-accent/40', 'bg-accent/10', 'text-accent');
-                    label?.classList.remove('text-white/30');
+                    label?.classList.remove('text-text-muted/70');
                     label?.classList.add('text-accent');
                 } else if (s === step) {
                     icon?.classList.remove(
@@ -90,8 +90,8 @@ export function initRefreshTerminal() {
                         'bg-surface'
                     );
                     icon?.classList.add('border-accent', 'bg-accent/20');
-                    label?.classList.remove('text-white/30');
-                    label?.classList.add('text-white', 'font-black');
+                    label?.classList.remove('text-text-muted/70');
+                    label?.classList.add('text-text-primary', 'font-black');
                 } else {
                     icon?.classList.add(
                         'grayscale',
@@ -100,8 +100,8 @@ export function initRefreshTerminal() {
                         'bg-surface'
                     );
                     icon?.classList.remove('border-accent', 'bg-accent/20', 'text-accent');
-                    label?.classList.add('text-white/30');
-                    label?.classList.remove('text-white', 'font-black', 'text-accent');
+                    label?.classList.add('text-text-muted/70');
+                    label?.classList.remove('text-text-primary', 'font-black', 'text-accent');
                 }
             });
         };
@@ -116,49 +116,53 @@ export function initRefreshTerminal() {
             let currentText = '';
             const triggeredStages = new Set<number>();
 
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+            try {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
 
-                const chunk = decoder.decode(value, { stream: true });
+                    const chunk = decoder.decode(value, { stream: true });
 
-                for (const char of chunk) {
-                    if (char === '\r') {
-                        const lastNewline = currentText.lastIndexOf('\n');
-                        if (lastNewline !== -1) {
-                            currentText = currentText.slice(0, lastNewline + 1);
+                    for (const char of chunk) {
+                        if (char === '\r') {
+                            const lastNewline = currentText.lastIndexOf('\n');
+                            if (lastNewline !== -1) {
+                                currentText = currentText.slice(0, lastNewline + 1);
+                            } else {
+                                currentText = '';
+                            }
                         } else {
-                            currentText = '';
+                            currentText += char;
                         }
-                    } else {
-                        currentText += char;
                     }
-                }
-                refreshTerminal.textContent = currentText;
-                refreshTerminal.scrollTop = refreshTerminal.scrollHeight;
+                    refreshTerminal.textContent = currentText;
+                    refreshTerminal.scrollTop = refreshTerminal.scrollHeight;
 
-                if (currentText.includes('預計剩餘:')) {
-                    const lines = currentText.split('\n');
-                    const lastLine = lines[lines.length - 1];
-                    const match = lastLine.match(/預計剩餘: ([^\|\n]+)/);
-                    if (match) {
-                        const yahooSec = timeToSec(match[1].trim());
-                        calibrateETA(yahooSec + 90);
+                    if (currentText.includes('預計剩餘:')) {
+                        const lines = currentText.split('\n');
+                        const lastLine = lines[lines.length - 1];
+                        const match = lastLine.match(/預計剩餘: ([^\|\n]+)/);
+                        if (match) {
+                            const yahooSec = timeToSec(match[1].trim());
+                            calibrateETA(yahooSec + 90);
+                        }
                     }
-                }
 
-                const checkStage = (marker: string, step: number, eta?: number) => {
-                    if (!triggeredStages.has(step) && currentText.includes(marker)) {
-                        triggeredStages.add(step);
-                        updateStage(step);
-                        if (eta !== undefined) forceETA(eta);
-                    }
-                };
-                checkStage('[1/4]', 1);
-                checkStage('[2/4]', 2);
-                checkStage('[3/4]', 3, 60);
-                checkStage('[4/4]', 4, 30);
-                checkStage('[完成]', 5, 0);
+                    const checkStage = (marker: string, step: number, eta?: number) => {
+                        if (!triggeredStages.has(step) && currentText.includes(marker)) {
+                            triggeredStages.add(step);
+                            updateStage(step);
+                            if (eta !== undefined) forceETA(eta);
+                        }
+                    };
+                    checkStage('[1/4]', 1);
+                    checkStage('[2/4]', 2);
+                    checkStage('[3/4]', 3, 60);
+                    checkStage('[4/4]', 4, 30);
+                    checkStage('[完成]', 5, 0);
+                }
+            } finally {
+                reader.cancel().catch(() => {});
             }
         } catch (err: unknown) {
             console.error(err);

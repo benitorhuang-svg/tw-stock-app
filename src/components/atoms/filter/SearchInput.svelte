@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
-
     interface Props {
         id: string;
         placeholder?: string;
         value?: string;
+        onInput?: (value: string) => void;
     }
 
-    let { id, placeholder = '搜尋...', value = $bindable('') }: Props = $props();
+    let { id, placeholder = '搜尋...', value = $bindable(''), onInput }: Props = $props();
 
     function handleInput(e: Event) {
-        dispatch('input', value);
+        onInput?.(value);
     }
 </script>
 

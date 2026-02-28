@@ -6,11 +6,18 @@
 
 type SSEMessage = {
     type: string;
-    payload: any;
+    payload: unknown;
 };
 
 const CHANNEL_NAME = 'tw_stock_quantum_link';
 const channel = new BroadcastChannel(CHANNEL_NAME);
+
+// Cleanup BroadcastChannel when all tabs close
+if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', () => {
+        channel.close();
+    });
+}
 
 const HEARTBEAT_INTERVAL = 2000;
 
@@ -18,7 +25,7 @@ const HEARTBEAT_INTERVAL = 2000;
  * Register a listener for real-time updates.
  * Automatically handles tab synchronization.
  */
-export function subscribeToQuantumData(type: string, callback: (payload: any) => void) {
+export function subscribeToQuantumData(type: string, callback: (payload: unknown) => void) {
     channel.onmessage = (event: MessageEvent<SSEMessage>) => {
         if (event.data.type === type) {
             callback(event.data.payload);
@@ -29,7 +36,7 @@ export function subscribeToQuantumData(type: string, callback: (payload: any) =>
 /**
  * Broadcast data to all other tabs.
  */
-export function broadcastQuantumUpdate(type: string, payload: any) {
+export function broadcastQuantumUpdate(type: string, payload: unknown) {
     channel.postMessage({ type, payload });
 }
 

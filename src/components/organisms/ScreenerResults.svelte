@@ -67,22 +67,22 @@
     <table class="w-full text-left border-separate border-spacing-0" style="table-layout: fixed;">
         <thead class="sticky top-0 bg-surface/95 backdrop-blur-md z-20">
             <tr
-                class="bg-white/[0.01] text-[9px] uppercase text-white/30 font-black tracking-widest"
+                class="bg-surface-hover/10 text-[9px] uppercase text-text-muted font-black tracking-widest"
             >
-                <th class="py-4 px-8 border-b border-white/5 w-[25%]">Entity</th>
-                <th class="py-4 px-8 border-b border-white/5 text-right w-[15%]">Quote</th>
-                <th class="py-4 px-8 border-b border-white/5 text-right w-[15%]">Variance</th>
-                <th class="py-4 px-8 border-b border-white/5 text-right w-[15%]">Volume</th>
-                <th class="py-4 px-8 border-b border-white/5 text-right w-[15%]">PE_Domain</th>
-                <th class="py-4 px-8 border-b border-white/5 text-right w-[15%]">Forensic</th>
+                <th class="py-4 px-8 border-b border-border/10 w-[25%]">Entity</th>
+                <th class="py-4 px-8 border-b border-border/10 text-right w-[15%]">Quote</th>
+                <th class="py-4 px-8 border-b border-border/10 text-right w-[15%]">Variance</th>
+                <th class="py-4 px-8 border-b border-border/10 text-right w-[15%]">Volume</th>
+                <th class="py-4 px-8 border-b border-border/10 text-right w-[15%]">PE_Domain</th>
+                <th class="py-4 px-8 border-b border-border/10 text-right w-[15%]">Forensic</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-white/[0.02]">
+        <tbody class="divide-y divide-border/10">
             {#if hasSearched && results.length === 0 && !isLoading}
                 <tr>
                     <td colspan="6">
                         <div
-                            class="py-32 text-center text-white/20 font-mono text-xs tracking-widest uppercase"
+                            class="py-32 text-center text-text-muted font-mono text-xs tracking-widest uppercase"
                         >
                             No entities match the current vectors
                         </div>
@@ -93,22 +93,23 @@
                     <!-- svelte-ignore a11y_click_events_have_key_events -->
                     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
                     <tr
-                        class="hover:bg-accent/[0.04] transition-all group cursor-pointer border-b border-white/[0.02]"
+                        class="hover:bg-accent/[0.04] transition-all group cursor-pointer border-b border-border/10"
                         onclick={() => navigateToStock(s.symbol)}
                     >
                         <td class="py-5 px-8">
-                            <div class="flex flex-col truncate">
-                                <span
-                                    class="text-[12px] font-black text-white group-hover:text-accent transition-colors truncate"
-                                    >{s.name}</span
+                            <div class="min-w-0">
+                                <div
+                                    class="text-[13px] font-bold text-text-primary group-hover:text-accent transition-colors"
                                 >
-                                <span
-                                    class="text-[9px] font-mono text-white/20 mt-1 uppercase tracking-widest"
-                                    >{s.symbol}</span
-                                >
+                                    {s.name}
+                                </div>
+                                <div class="text-[10px] text-text-muted mt-1 line-clamp-1">
+                                    {s.category || 'Quantitative Vector'}
+                                </div>
                             </div>
                         </td>
-                        <td class="py-5 px-8 text-right font-mono text-xs font-bold text-white/70"
+                        <td
+                            class="py-5 px-8 text-right font-mono text-xs font-bold text-text-secondary"
                             >{s.price.toFixed(2)}</td
                         >
                         <td
@@ -120,10 +121,10 @@
                             {s.changePercent >= 0 ? '+' : ''}{s.changePercent.toFixed(2)}%
                         </td>
                         <td
-                            class="py-5 px-8 text-right font-mono text-[11px] text-white/30 font-bold"
+                            class="py-5 px-8 text-right font-mono text-[11px] text-text-muted font-bold"
                             >{fmtVol(s.volume)}</td
                         >
-                        <td class="py-5 px-8 text-right font-mono text-xs text-white/50"
+                        <td class="py-5 px-8 text-right font-mono text-xs text-text-muted"
                             >{s.fundamentals.pe ? s.fundamentals.pe.toFixed(1) : '—'}</td
                         >
                         <td class="py-5 px-8 text-right">

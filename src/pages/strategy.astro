@@ -1,24 +1,10 @@
 ---
-/**
- * strategy.astro — Quantum Strategy Simulation
- */
 import MainTerminal from '../layouts/MainTerminal.astro';
 import StrategyMonitor from '../components/organisms/StrategyMonitor.svelte';
 ---
 
-<MainTerminal title="策略回測" fullWidth>
-    <div class="h-full flex flex-col p-4 lg:p-10 gap-8 overflow-hidden">
-        <header class="flex flex-col gap-2">
-            <h1 class="text-3xl font-black tracking-tight text-white uppercase italic">
-                Strategy_<span class="text-accent underline decoration-4 underline-offset-8"
-                    >Nexus</span
-                >
-            </h1>
-            <p class="text-[10px] font-mono text-white/30 uppercase tracking-[0.4em]">
-                Simulating_Historical_Alpha // Hold_Period: 5_Days
-            </p>
-        </header>
-
-        <StrategyMonitor client:load />
+<MainTerminal title="策略回測" fullWidth={true}>
+    <div class="relative px-4 lg:px-6">
+        <StrategyMonitor client:idle />
     </div>
 </MainTerminal>

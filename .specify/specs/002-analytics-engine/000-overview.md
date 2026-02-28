@@ -14,3 +14,4 @@
 
 - `001-risk-and-portfolio.md`：投資組合層級的風險模型算法 (Beta, Sharpe Ratio)。
 - `002-ai-context-distillation.md`：如何把十年的財報與籌碼數據，壓縮成給 LLM 推論的純文字特徵 (Context Generation API)。
+- `003-strategy-backtesting.md`：將歷史條件餵入引擎，產出動態且具備專業水準的量化回測報表 (Backtest Stats, Trades, Heatmap)。

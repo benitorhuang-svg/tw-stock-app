@@ -52,35 +52,35 @@
 </script>
 
 <div
-    class="margin-trend-organism bg-surface-deep/40 rounded-3xl border border-white/[0.03] p-6 mb-8 backdrop-blur-xl shadow-2xl relative group"
+    class="margin-trend-organism bg-surface-deep/40 rounded-3xl border border-border/30 p-6 mb-8 backdrop-blur-xl shadow-2xl relative group"
 >
     <div class="flex items-center justify-between mb-6">
         <div>
             <h3
-                class="text-xs font-black text-white/90 tracking-[0.2em] uppercase flex items-center gap-2"
+                class="text-xs font-black text-text-primary tracking-[0.2em] uppercase flex items-center gap-2"
             >
                 <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
                 Margin_Short_Trendline
             </h3>
-            <p class="text-[9px] font-mono text-white/20 mt-1 uppercase tracking-widest">
-                Retail_Leverage_Force • Alpha_Detection
+            <p class="text-[9px] font-mono text-text-muted/50 mt-1 uppercase tracking-widest">
+                Retail_Leverage_Force ??Alpha_Detection
             </p>
         </div>
 
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
                 <div class="w-3 h-[2px] bg-bearish"></div>
-                <span class="text-[8px] font-mono font-black text-white/40 uppercase">Margin</span>
+                <span class="text-[8px] font-mono font-black text-text-muted uppercase">Margin</span>
             </div>
             <div class="flex items-center gap-2">
                 <div class="w-3 h-[2px] bg-bullish"></div>
-                <span class="text-[8px] font-mono font-black text-white/40 uppercase">Short</span>
+                <span class="text-[8px] font-mono font-black text-text-muted uppercase">Short</span>
             </div>
             <div class="flex items-center gap-2">
                 <div
                     class="w-3 h-[2px] bg-yellow-400 border-t border-dashed border-yellow-400"
                 ></div>
-                <span class="text-[8px] font-mono font-black text-white/40 uppercase">Ratio_%</span>
+                <span class="text-[8px] font-mono font-black text-text-muted uppercase">Ratio_%</span>
             </div>
         </div>
     </div>

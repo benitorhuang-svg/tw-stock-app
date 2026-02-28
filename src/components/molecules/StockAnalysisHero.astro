@@ -16,7 +16,7 @@ interface Props {
 const { symbol, name, price, change, changePercent, sector } = Astro.props;
 const isBullish = change > 0;
 const isBearish = change < 0;
-const colorClass = isBullish ? 'text-bullish' : isBearish ? 'text-bearish' : 'text-white/40';
+const colorClass = isBullish ? 'text-bullish' : isBearish ? 'text-bearish' : 'text-text-muted';
 const prefix = isBullish ? '+' : '';
 ---
 
@@ -26,9 +26,9 @@ const prefix = isBullish ? '+' : '';
             <!-- Breadcrumbs / Meta -->
             <div class="flex items-center gap-3 opacity-40">
                 <span class="text-[9px] font-mono tracking-[0.3em] uppercase">Markets</span>
-                <div class="w-1 h-1 rounded-full bg-white/40"></div>
+                <div class="w-1 h-1 rounded-full bg-text-muted/40"></div>
                 <span class="text-[9px] font-mono tracking-[0.3em] uppercase">Entities</span>
-                <div class="w-1 h-1 rounded-full bg-white/40"></div>
+                <div class="w-1 h-1 rounded-full bg-text-muted/40"></div>
                 <span class="text-[9px] font-mono tracking-[0.3em] uppercase text-accent font-black"
                     >Analysis</span
                 >
@@ -36,11 +36,11 @@ const prefix = isBullish ? '+' : '';
 
             <div class="flex items-center gap-4 flex-wrap">
                 <div class="relative">
-                    <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tighter">
+                    <h1 class="text-3xl lg:text-5xl font-black text-text-primary tracking-tighter">
                         {name}
                     </h1>
                     <div
-                        class="absolute -right-2 top-0 translate-x-full px-2 py-0.5 rounded border border-white/10 bg-white/5 text-[10px] font-mono text-white/40"
+                        class="absolute -right-2 top-0 translate-x-full px-2 py-0.5 rounded border border-border bg-surface-hover/50 text-[10px] font-mono text-text-muted"
                     >
                         {symbol}
                     </div>
@@ -49,7 +49,7 @@ const prefix = isBullish ? '+' : '';
                     variant={isBullish ? 'bullish' : isBearish ? 'bearish' : 'muted'}
                     class="text-xs py-1 px-3"
                 >
-                    {isBullish ? '▲ MOMENTUM_GAIN' : isBearish ? '▼ VECTOR_LOSS' : '— STABLE'}
+                    {isBullish ? '??MOMENTUM_GAIN' : isBearish ? '??VECTOR_LOSS' : '??STABLE'}
                 </Badge>
                 {
                     sector && (
@@ -64,12 +64,13 @@ const prefix = isBullish ? '+' : '';
         <div class="flex items-end gap-10">
             <!-- Live Quote -->
             <div class="flex flex-col items-end">
-                <span class="text-[9px] font-mono text-white/20 uppercase tracking-[0.4em] mb-1"
+                <span
+                    class="text-[9px] font-mono text-text-muted/50 uppercase tracking-[0.4em] mb-1"
                     >Live_Quote</span
                 >
                 <div class="flex items-baseline gap-3">
                     <span
-                        class="text-4xl font-mono font-black text-white leading-none tracking-tighter"
+                        class="text-4xl font-mono font-black text-text-primary leading-none tracking-tighter"
                     >
                         {price.toFixed(2)}
                     </span>
@@ -83,7 +84,7 @@ const prefix = isBullish ? '+' : '';
             <div class="flex items-center gap-2 mb-1">
                 <button
                     id="watch-toggle-hero"
-                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:border-white/20 transition-all group overflow-hidden relative"
+                    class="w-12 h-12 flex items-center justify-center rounded-2xl bg-surface-hover/50 border border-border text-text-muted hover:text-text-primary hover:border-border-hover transition-all group overflow-hidden relative"
                 >
                     <div
                         class="absolute inset-0 bg-accent/5 translate-y-full group-hover:translate-y-0 transition-transform"
@@ -106,7 +107,7 @@ const prefix = isBullish ? '+' : '';
                 </button>
                 <a
                     href="/screener"
-                    class="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black font-mono text-white/40 hover:text-white hover:border-white/20 transition-all uppercase tracking-widest no-underline"
+                    class="px-6 py-3 rounded-2xl bg-surface-hover/50 border border-border text-[10px] font-black font-mono text-text-muted hover:text-text-primary hover:border-border-hover transition-all uppercase tracking-widest no-underline"
                 >
                     Back to Terminal
                 </a>

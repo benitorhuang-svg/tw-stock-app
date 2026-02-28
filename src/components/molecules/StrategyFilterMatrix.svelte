@@ -120,7 +120,7 @@
             >
             <button
                 onclick={resetFilters}
-                class="text-[9px] font-mono text-accent/60 hover:text-accent transition-colors uppercase tracking-widest"
+                class="text-[9px] font-mono text-accent hover:text-accent-dim transition-colors uppercase tracking-widest"
                 >RESET</button
             >
         </div>

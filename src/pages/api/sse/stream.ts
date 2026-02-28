@@ -24,7 +24,7 @@ export const GET: APIRoute = ({ request }) => {
                 try {
                     const message = `data: ${JSON.stringify(data)}\n\n`;
                     controller.enqueue(encoder.encode(message));
-                } catch (err: any) {
+                } catch (err: unknown) {
                     // 通常是連線已關閉但監聽器尚未移除
                     isClosed = true;
                     tickDaemon.off('tick', sendTick);

@@ -27,7 +27,33 @@ function fmtVol(v: number): string {
     return cv > 0 ? cv.toLocaleString('zh-TW') : '—';
 }
 
-function updateUI(ticks: any[], refs: any) {
+interface DashboardRefs {
+    ratio: HTMLElement | null;
+    up: HTMLElement | null;
+    down: HTMLElement | null;
+    vol: HTMLElement | null;
+    chg: HTMLElement | null;
+    date: HTMLElement | null;
+    barUp: HTMLElement | null;
+    barDown: HTMLElement | null;
+    barFlat: HTMLElement | null;
+    gGrid: HTMLElement | null;
+    lGrid: HTMLElement | null;
+    vGrid: HTMLElement | null;
+    picker: HTMLInputElement | null;
+}
+
+interface TickData {
+    Close?: number;
+    price?: number;
+    ChangePct?: number;
+    changePercent?: number;
+    Volume?: number;
+    volume?: number;
+    Date?: string;
+}
+
+function updateUI(ticks: TickData[], refs: DashboardRefs) {
     if (updateTid) return;
     updateTid = requestAnimationFrame(() => {
         try {
@@ -97,7 +123,7 @@ function setupDashboardSync() {
     cleanupSSE();
 
     // Subscribe to quantum channel (Shared across tabs)
-    subscribeToQuantumData('tick', ticks => updateUI(ticks, refs));
+    subscribeToQuantumData('tick', ticks => updateUI(ticks as TickData[], refs));
 
     // Election: Only one tab (the Oracle) opens the actually SSE stream
     if (claimOracleStatus()) {
@@ -108,6 +134,11 @@ function setupDashboardSync() {
             updateUI(data, refs);
         });
     }
+
+    // Cleanup SSE on view-transition navigation
+    document.addEventListener('astro:before-swap', () => {
+        cleanupSSE();
+    }, { once: true });
 
     refs.picker?.addEventListener('change', async (e: Event) => {
         const date = (e.target as HTMLInputElement).value;
@@ -131,14 +162,14 @@ function setupDashboardSync() {
                 refs.barFlat.style.width = (total > 0 ? (summary.flat / total) * 100 : 0) + '%';
             if (refs.date) refs.date.textContent = date;
 
-            const render = (items: any[], type: string) =>
+            const render = (items: { symbol: string; name: string; price: number; changePercent: number }[], type: string) =>
                 items
                     .map(
                         (s, i) => `
                 <a href="/stocks/${s.symbol}" class="flex items-center gap-4 px-6 py-4 hover:bg-accent/[0.04] transition-all group no-underline border-l-2 border-transparent ${type === 'up' ? 'hover:border-bullish' : type === 'down' ? 'hover:border-bearish' : 'hover:border-accent'}">
-                    <span class="text-[8px] font-mono text-white/20 w-3">${i + 1}</span>
-                    <div class="min-w-0 flex-1"><div class="text-[11px] font-bold text-white/90 group-hover:text-accent truncate">${s.name}</div><div class="text-[8px] font-mono text-white/30 uppercase mt-0.5">ENTITY:${s.symbol}</div></div>
-                    <div class="text-right"><div class="text-[10px] font-mono text-white/70">${s.price.toFixed(2)}</div><div class="text-[10px] font-mono font-bold ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%</div></div>
+                    <span class="text-[8px] font-mono text-text-muted/50 w-3">${i + 1}</span>
+                    <div class="min-w-0 flex-1"><div class="text-[11px] font-bold text-text-primary group-hover:text-accent truncate">${s.name}</div><div class="text-[8px] font-mono text-text-muted/70 uppercase mt-0.5">ENTITY:${s.symbol}</div></div>
+                    <div class="text-right"><div class="text-[10px] font-mono text-text-secondary">${s.price.toFixed(2)}</div><div class="text-[10px] font-mono font-bold ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%</div></div>
                 </a>`
                     )
                     .join('');

@@ -18,7 +18,8 @@ const { chartW, gap, barW, macdHist, macdMax, difValues, deaValues } = Astro.pro
 <div class="indicator-view active flex flex-col h-full" id="view-macd">
     <div class="flex items-center justify-between py-2 px-2">
         <div class="flex items-center gap-4">
-            <span class="text-[9px] font-mono font-bold text-white/30 tracking-widest uppercase"
+            <span
+                class="text-[9px] font-mono font-bold text-text-muted/70 tracking-widest uppercase"
                 >MACD</span
             >
             <div class="flex gap-3 text-[8px] font-mono">
@@ -31,7 +32,7 @@ const { chartW, gap, barW, macdHist, macdMax, difValues, deaValues } = Astro.pro
             </div>
         </div>
         <button
-            class="indicator-switch text-[8px] font-mono text-accent hover:text-white transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
+            class="indicator-switch text-[8px] font-mono text-accent hover:text-text-primary transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
             data-to="rsi"
         >
             Switch to RSI

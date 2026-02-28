@@ -95,11 +95,11 @@
         class="h-9 px-4 bg-glass border border-border rounded-lg flex items-center gap-2 transition-all group"
         onclick={() => (showDropdown = !showDropdown)}
     >
-        <span class="text-[10px] font-black text-white/40 uppercase tracking-widest font-mono"
+        <span class="text-[10px] font-black text-text-muted uppercase tracking-widest font-mono"
             >Watchlist:</span
         >
         <span class="text-[11px] font-bold text-accent truncate max-w-[100px]">{store.active}</span>
-        <span class="text-white/20 group-hover:text-white/40 transition-colors">▾</span>
+        <span class="text-text-muted/50 group-hover:text-text-muted transition-colors">▾</span>
     </button>
 
     {#if showDropdown}

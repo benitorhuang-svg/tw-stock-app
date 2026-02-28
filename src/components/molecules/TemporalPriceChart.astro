@@ -36,13 +36,15 @@ const { change } = Astro.props;
             </h2>
             <div class="flex items-center gap-2 mt-1">
                 <div class="w-1.5 h-1.5 rounded-full bg-bullish animate-pulse"></div>
-                <span class="text-[9px] font-mono text-white/30 uppercase tracking-widest"
+                <span class="text-[9px] font-mono text-text-muted/70 uppercase tracking-widest"
                     >Live_Feed: ACTIVE</span
                 >
             </div>
         </div>
 
-        <div class="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10">
+        <div
+            class="flex items-center gap-1 bg-surface-hover/50 p-1 rounded-xl border border-border"
+        >
             {
                 ['1D', '5D', '1M', '3M', '1Y'].map((t, i) => (
                     <button
@@ -50,7 +52,7 @@ const { change } = Astro.props;
                             'px-4 py-1.5 rounded-lg text-[9px] font-black font-mono transition-all',
                             i === 0
                                 ? 'bg-accent text-white shadow-[0_4px_12px_rgba(59,130,246,0.3)]'
-                                : 'text-white/30 hover:text-white hover:bg-white/5',
+                                : 'text-text-muted/70 hover:text-text-primary hover:bg-surface-hover',
                         ]}
                     >
                         {t}
@@ -62,7 +64,7 @@ const { change } = Astro.props;
 
     <!-- Chart area -->
     <div
-        class="flex-1 relative rounded-3xl overflow-hidden border border-white/5 bg-black/20"
+        class="flex-1 relative rounded-3xl overflow-hidden border border-border/50 bg-input-bg/50"
         id="chart-area"
     >
         <div class="absolute inset-0 bg-gradient-to-b from-accent/5 to-transparent"></div>
@@ -70,7 +72,7 @@ const { change } = Astro.props;
         <div
             class="absolute inset-0 flex flex-col justify-between py-10 pointer-events-none opacity-30"
         >
-            {[...Array(6)].map(() => <div class="border-b border-white/[0.05] w-full" />)}
+            {[...Array(6)].map(() => <div class="border-b border-border/50 w-full" />)}
         </div>
         <!-- Simulated trend line -->
         <div class="absolute inset-x-0 bottom-0 top-1/4 px-10">

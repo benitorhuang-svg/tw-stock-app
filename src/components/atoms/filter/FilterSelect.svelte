@@ -1,13 +1,11 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
-
     interface Props {
         id: string;
         label: string;
         options?: { value: string; label: string }[];
         value?: string;
         width?: string;
+        onChange?: (value: string) => void;
     }
 
     let {
@@ -15,11 +13,12 @@
         label,
         options = [],
         value = $bindable(''),
-        width = 'min-w-[50px]'
+        width = 'min-w-[50px]',
+        onChange
     }: Props = $props();
 
     function handleChange(e: Event) {
-        dispatch('change', value);
+        onChange?.(value);
     }
 </script>
 

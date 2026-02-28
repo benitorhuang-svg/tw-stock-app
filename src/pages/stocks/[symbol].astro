@@ -82,15 +82,15 @@ const isNotFound = stockData.price === 0 && stockData.name === symbol;
             isNotFound ? (
                 <div class="glass-card p-12 text-center animate-fade-up border border-bearish/20">
                     <div class="text-6xl mb-6 opacity-20">📡</div>
-                    <h2 class="text-xl font-black text-white/90 mb-4 tracking-tighter uppercase">
+                    <h2 class="text-xl font-black text-text-primary mb-4 tracking-tighter uppercase">
                         Entity Not Found
                     </h2>
-                    <p class="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em] mb-8">
+                    <p class="text-[10px] font-mono text-text-muted/70 uppercase tracking-[0.3em] mb-8">
                         Unable to establish uplink with target: {symbol}
                     </p>
                     <a
                         href="/screener"
-                        class="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-[9px] font-black font-mono text-white/40 hover:text-white hover:border-white/20 transition-all uppercase tracking-[0.3em] no-underline"
+                        class="px-8 py-3 rounded-2xl bg-surface-hover/50 border border-border text-[9px] font-black font-mono text-text-muted hover:text-text-primary hover:border-border-hover transition-all uppercase tracking-[0.3em] no-underline"
                     >
                         返回選股中心
                     </a>
@@ -153,10 +153,10 @@ const isNotFound = stockData.price === 0 && stockData.name === symbol;
                     </div>
 
                     {/* Footer Signal Stream */}
-                    <div class="pt-10 mt-10 border-t border-white/5 flex items-center justify-between">
+                    <div class="pt-10 mt-10 border-t border-border/50 flex items-center justify-between">
                         <ForensicTicker />
                         <div class="flex items-center gap-4">
-                            <span class="text-[9px] font-mono text-white/20 uppercase tracking-widest">
+                            <span class="text-[9px] font-mono text-text-muted/50 uppercase tracking-widest">
                                 Entity_Status: MONITORED
                             </span>
                             <div class="w-2 h-2 rounded-full bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.4)]" />

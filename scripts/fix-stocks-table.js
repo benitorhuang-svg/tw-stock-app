@@ -3,11 +3,21 @@ const db = require('better-sqlite3')('public/data/stocks.db');
 // Sector logic from stockDataService
 function getSectorBySymbol(symbol) {
     const overrides = {
-        '2330': 'semiconductor', '2454': 'semiconductor', '3034': 'semiconductor',
-        '2317': 'electronics', '2308': 'electronics', '2382': 'electronics',
-        '2412': 'communication', '3008': 'optoelectronics', '1301': 'plastic',
-        '2002': 'steel', '2603': 'shipping', '2609': 'shipping', '7722': 'finance',
-        '7705': 'tourism', '9910': 'sports-leisure'
+        2330: 'semiconductor',
+        2454: 'semiconductor',
+        3034: 'semiconductor',
+        2317: 'electronics',
+        2308: 'electronics',
+        2382: 'electronics',
+        2412: 'communication',
+        3008: 'optoelectronics',
+        1301: 'plastic',
+        2002: 'steel',
+        2603: 'shipping',
+        2609: 'shipping',
+        7722: 'finance',
+        7705: 'tourism',
+        9910: 'sports-leisure',
     };
     if (overrides[symbol]) return overrides[symbol];
     const prefix = symbol.slice(0, 2);
@@ -34,26 +44,30 @@ function getSectorBySymbol(symbol) {
 }
 
 // 1. Get all symbols from price_history that are NOT in stocks table OR have null names
-const missing = db.prepare(`
+const missing = db
+    .prepare(
+        `
     SELECT DISTINCT symbol FROM price_history 
     WHERE symbol NOT IN (SELECT symbol FROM stocks)
-`).all();
+`
+    )
+    .all();
 
 console.log(`Found ${missing.length} missing symbols in stocks table.`);
 
-
-
-// Since we can't easily get ALL names without a fresh TWSE fetch, 
+// Since we can't easily get ALL names without a fresh TWSE fetch,
 // let's at least initialize the rows so the JOINs don't fail, and use SYMBOL as NAME for now
-// if we can't find it. 
+// if we can't find it.
 // ACTUALLY, I'll try to fetch from TWSE directly to fix this ONCE AND FOR ALL.
 
-const insert = db.prepare('INSERT OR IGNORE INTO stocks (symbol, name, market, sector) VALUES (?, ?, ?, ?)');
+const insert = db.prepare(
+    'INSERT OR IGNORE INTO stocks (symbol, name, market, sector) VALUES (?, ?, ?, ?)'
+);
 
 db.transaction(() => {
     for (const row of missing) {
         const sector = getSectorBySymbol(row.symbol);
-        const market = (row.symbol.length === 4) ? 'TSE' : 'OTC';
+        const market = row.symbol.length === 4 ? 'TSE' : 'OTC';
         insert.run(row.symbol, row.symbol, market, sector);
     }
 })();

@@ -1,6 +1,6 @@
 ---
-description: "Use when creating, modifying, or debugging PWA pages in the TW-stock Quantum Terminal. Covers Astro 5 page creation, Atomic Design component hierarchy, Quantum Terminal visual tokens, SQLite data integration, Service Worker caching, responsive layout, and client-side engine scripting."
-applyTo: "src/pages/**,src/components/**,src/layouts/**,src/scripts/**,public/sw.js,public/manifest.json"
+description: 'Use when creating, modifying, or debugging PWA pages in the TW-stock Quantum Terminal. Covers Astro 5 page creation, Atomic Design component hierarchy, Quantum Terminal visual tokens, SQLite data integration, Service Worker caching, responsive layout, and client-side engine scripting.'
+applyTo: 'src/pages/**,src/components/**,src/layouts/**,src/scripts/**,public/sw.js,public/manifest.json'
 ---
 
 # TW Stock PWA Page 建構指引 (PWA Page Creation Instructions)
@@ -13,18 +13,18 @@ applyTo: "src/pages/**,src/components/**,src/layouts/**,src/scripts/**,public/sw
 
 ### 技術棧
 
-| 類別 | 技術 | 版本 |
-|------|------|------|
-| Framework | Astro | ^5.16.15 |
-| SSR Adapter | @astrojs/node | ^9.5.2 |
-| UI Framework | Svelte 5 | ^5.53.3 |
-| Styling | TailwindCSS v4 | ^4.2.0 |
-| Client DB | sql.js (WASM) | ^1.13.0 |
-| Server DB | better-sqlite3 | ^12.6.2 |
-| Charts | ChartGPU | ^0.1.6 |
-| PWA | @vite-pwa/astro | ^1.2.0 |
-| Testing | Vitest + happy-dom | ^4.0.18 |
-| Build Target | ES2022 | — |
+| 類別         | 技術               | 版本     |
+| ------------ | ------------------ | -------- |
+| Framework    | Astro              | ^5.16.15 |
+| SSR Adapter  | @astrojs/node      | ^9.5.2   |
+| UI Framework | Svelte 5           | ^5.53.3  |
+| Styling      | TailwindCSS v4     | ^4.2.0   |
+| Client DB    | sql.js (WASM)      | ^1.13.0  |
+| Server DB    | better-sqlite3     | ^12.6.2  |
+| Charts       | ChartGPU           | ^0.1.6   |
+| PWA          | @vite-pwa/astro    | ^1.2.0   |
+| Testing      | Vitest + happy-dom | ^4.0.18  |
+| Build Target | ES2022             | —        |
 
 ### 五層模組架構
 
@@ -87,12 +87,12 @@ const data = await fetchDataFromSqlite();
 ---
 
 <MainTerminal title="頁面標題" description="SEO 描述">
-  <PageHero title="頁面標題" subtitle="副標題" />
+    <PageHero title="頁面標題" subtitle="副標題" />
 
-  <!-- 頁面主體 -->
-  <div class="grid grid-cols-12 gap-6 p-4 h-[calc(100dvh-72px)] overflow-hidden">
-    <!-- 使用 Atomic Design 元件組合 -->
-  </div>
+    <!-- 頁面主體 -->
+    <div class="grid grid-cols-12 gap-6 p-4 h-[calc(100dvh-72px)] overflow-hidden">
+        <!-- 使用 Atomic Design 元件組合 -->
+    </div>
 </MainTerminal>
 
 <script src="../scripts/[new-page]-engine.ts"></script>
@@ -114,16 +114,16 @@ const data = await fetchDataFromSqlite();
 
 ```css
 /* 基底 */
---color-base:    hsl(240, 10%, 4%);    /* 全站背景 */
---color-surface: hsl(240, 6%, 10%);    /* 卡片/面板 */
+--color-base: hsl(240, 10%, 4%); /* 全站背景 */
+--color-surface: hsl(240, 6%, 10%); /* 卡片/面板 */
 
 /* 語意色 */
---color-accent:  hsl(217, 91%, 60%);   /* 主動作/掃描線 */
---color-bullish: hsl(142, 71%, 45%);   /* 上漲/正面 */
---color-bearish: hsl(346, 77%, 50%);   /* 下跌/警告 */
+--color-accent: hsl(217, 91%, 60%); /* 主動作/掃描線 */
+--color-bullish: hsl(142, 71%, 45%); /* 上漲/正面 */
+--color-bearish: hsl(346, 77%, 50%); /* 下跌/警告 */
 
 /* 邊界 */
---color-border:  hsla(0, 0%, 100%, 0.05); /* 玻璃邊界 */
+--color-border: hsla(0, 0%, 100%, 0.05); /* 玻璃邊界 */
 ```
 
 **嚴禁使用飽和度過高的純色。**
@@ -177,14 +177,14 @@ Pages → 最終呈現
 
 ### 新增元件命名規範
 
-| 項目 | 規範 | 範例 |
-|------|------|------|
-| Astro 元件 | PascalCase | `StockCard.astro` |
-| TypeScript 檔案 | kebab-case | `stock-service.ts` |
-| 測試檔案 | `{filename}.test.ts` | `analysis.test.ts` |
-| 變數/函式 | camelCase | `getTopGainers()` |
-| 類型/介面 | PascalCase | `StockFullData` |
-| 常數 | UPPER_SNAKE_CASE | `MAX_RETRY` |
+| 項目            | 規範                 | 範例               |
+| --------------- | -------------------- | ------------------ |
+| Astro 元件      | PascalCase           | `StockCard.astro`  |
+| TypeScript 檔案 | kebab-case           | `stock-service.ts` |
+| 測試檔案        | `{filename}.test.ts` | `analysis.test.ts` |
+| 變數/函式       | camelCase            | `getTopGainers()`  |
+| 類型/介面       | PascalCase           | `StockFullData`    |
+| 常數            | UPPER_SNAKE_CASE     | `MAX_RETRY`        |
 
 ---
 
@@ -195,9 +195,9 @@ Pages → 最終呈現
 ```typescript
 // sqlite-service.ts 自動判斷環境
 if (typeof window === 'undefined') {
-  // Server: better-sqlite3 (同步, <10ms)
+    // Server: better-sqlite3 (同步, <10ms)
 } else {
-  // Client: sql.js WASM + IndexedDB (非同步, <50ms)
+    // Client: sql.js WASM + IndexedDB (非同步, <50ms)
 }
 ```
 
@@ -249,50 +249,52 @@ const stocks = db.prepare('SELECT * FROM stocks LIMIT 100').all();
 
 ```json
 {
-  "name": "TW Stock App",
-  "short_name": "TW Stock",
-  "display": "standalone",
-  "background_color": "#0f0f1a",
-  "theme_color": "#00d4aa",
-  "orientation": "portrait-primary",
-  "lang": "zh-TW",
-  "categories": ["finance", "utilities"],
-  "start_url": "./",
-  "scope": "."
+    "name": "TW Stock App",
+    "short_name": "TW Stock",
+    "display": "standalone",
+    "background_color": "#0f0f1a",
+    "theme_color": "#00d4aa",
+    "orientation": "portrait-primary",
+    "lang": "zh-TW",
+    "categories": ["finance", "utilities"],
+    "start_url": "./",
+    "scope": "."
 }
 ```
 
 ### Service Worker v4 分層快取策略
 
-| 資源類型 | 策略 | 說明 |
-|----------|------|------|
-| HTML/Navigation | Network-First | 防止過期 UI |
-| 靜態資源 (JS/CSS/fonts) | Cache-First | 版本化 hash 保鮮 |
-| 資料 JSON/DB | Stale-While-Revalidate | 先顯示快取再背景更新 |
-| API GET | Network-First | 短 TTL |
-| SSE 端點 | Skip (不快取) | 即時串流 |
+| 資源類型                | 策略                   | 說明                 |
+| ----------------------- | ---------------------- | -------------------- |
+| HTML/Navigation         | Network-First          | 防止過期 UI          |
+| 靜態資源 (JS/CSS/fonts) | Cache-First            | 版本化 hash 保鮮     |
+| 資料 JSON/DB            | Stale-While-Revalidate | 先顯示快取再背景更新 |
+| API GET                 | Network-First          | 短 TTL               |
+| SSE 端點                | Skip (不快取)          | 即時串流             |
 
 ### @vite-pwa/astro 整合
 
 ```javascript
 // astro.config.mjs
 AstroPWA({
-  registerType: 'autoUpdate',
-  workbox: {
-    globPatterns: ['**/*.{js,css,html,ico,png,svg,json,db,wasm}'],
-    maximumFileSizeToCacheInBytes: 300000000, // 300MB (含 SQLite DB)
-    navigateFallback: '/index.html',
-    navigateFallbackDenylist: [/^\/api/],
-    runtimeCaching: [{
-      urlPattern: /\/data\/.*\.(json|db|csv)/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'stock-data-cache',
-        expiration: { maxEntries: 50, maxAgeSeconds: 604800 }
-      }
-    }]
-  }
-})
+    registerType: 'autoUpdate',
+    workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,db,wasm}'],
+        maximumFileSizeToCacheInBytes: 300000000, // 300MB (含 SQLite DB)
+        navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api/],
+        runtimeCaching: [
+            {
+                urlPattern: /\/data\/.*\.(json|db|csv)/i,
+                handler: 'StaleWhileRevalidate',
+                options: {
+                    cacheName: 'stock-data-cache',
+                    expiration: { maxEntries: 50, maxAgeSeconds: 604800 },
+                },
+            },
+        ],
+    },
+});
 ```
 
 ### 離線支援要點
@@ -310,32 +312,34 @@ AstroPWA({
 
 每個頁面由獨立的 Engine Script 驅動互動，UI 與業務邏輯徹底分離：
 
-| 引擎 | 對應頁面 | 核心職責 |
-|------|----------|----------|
-| `global-engine.ts` | 全站 | 主題切換、PWA 註冊、效能模式偵測 |
-| `dashboard-engine.ts` | `/` | SSE 同步 HUD、歷史數據切換 |
-| `live-engine.ts` | `/live` | 15s 輪詢、即時表格渲染、DOM Diff |
-| `database-engine.ts` | `/database` | 表格載入、搜尋、分頁 |
-| `stock-screener-engine.ts` | `/screener` | 篩選 API 呼叫 |
-| `stocks-symbol-engine.ts` | `/stocks/:id` | Tab 切換、圖表初始化 |
+| 引擎                       | 對應頁面      | 核心職責                         |
+| -------------------------- | ------------- | -------------------------------- |
+| `global-engine.ts`         | 全站          | 主題切換、PWA 註冊、效能模式偵測 |
+| `dashboard-engine.ts`      | `/`           | SSE 同步 HUD、歷史數據切換       |
+| `live-engine.ts`           | `/live`       | 15s 輪詢、即時表格渲染、DOM Diff |
+| `database-engine.ts`       | `/database`   | 表格載入、搜尋、分頁             |
+| `stock-screener-engine.ts` | `/screener`   | 篩選 API 呼叫                    |
+| `stocks-symbol-engine.ts`  | `/stocks/:id` | Tab 切換、圖表初始化             |
 
 ### 新引擎建立範本
 
 ```typescript
 // src/scripts/[page]-engine.ts
 document.addEventListener('astro:page-load', () => {
-  // 1. DOM 查詢與事件綁定
-  const container = document.querySelector('[data-page="xxx"]');
-  if (!container) return;
+    // 1. DOM 查詢與事件綁定
+    const container = document.querySelector('[data-page="xxx"]');
+    if (!container) return;
 
-  // 2. 初始化資料載入 (含 Skeleton → 實際內容)
-  initData();
+    // 2. 初始化資料載入 (含 Skeleton → 實際內容)
+    initData();
 
-  // 3. 綁定互動事件
-  bindEvents();
+    // 3. 綁定互動事件
+    bindEvents();
 
-  // 4. 清理函式 (防止 SPA 導覽事件堆疊)
-  return () => { /* cleanup listeners */ };
+    // 4. 清理函式 (防止 SPA 導覽事件堆疊)
+    return () => {
+        /* cleanup listeners */
+    };
 });
 ```
 
@@ -345,30 +349,30 @@ document.addEventListener('astro:page-load', () => {
 
 ### 中斷點
 
-| 級別 | 寬度 | 佈局策略 |
-|------|------|----------|
-| Mobile | < 768px | 單欄垂直、隱藏 Sparklines、`p-4 gap-4` |
-| Tablet (md) | 768-1024px | 雙欄 Grid 2、顯示部分指標 |
-| Desktop (lg) | 1024-1280px | 側邊導航列、完整資料表 |
-| UltraWide (xl+) | > 1280px | 三欄式 (Nav + Main + Detail) |
+| 級別            | 寬度        | 佈局策略                               |
+| --------------- | ----------- | -------------------------------------- |
+| Mobile          | < 768px     | 單欄垂直、隱藏 Sparklines、`p-4 gap-4` |
+| Tablet (md)     | 768-1024px  | 雙欄 Grid 2、顯示部分指標              |
+| Desktop (lg)    | 1024-1280px | 側邊導航列、完整資料表                 |
+| UltraWide (xl+) | > 1280px    | 三欄式 (Nav + Main + Detail)           |
 
 ### 佈局規範
 
 ```css
 /* Viewport */
-height: 100dvh;        /* 防止手機網址列跳動 */
-overflow: hidden;       /* 固定佈局, 局部滾動 */
+height: 100dvh; /* 防止手機網址列跳動 */
+overflow: hidden; /* 固定佈局, 局部滾動 */
 
 /* Sidebar */
-width: 260px;          /* 桌面端 */
-display: none;         /* 手機端隱藏, 改為底部導航 */
+width: 260px; /* 桌面端 */
+display: none; /* 手機端隱藏, 改為底部導航 */
 
 /* Workspace Grid */
-gap: 1.5rem;           /* gap-6 呼吸空間 */
+gap: 1.5rem; /* gap-6 呼吸空間 */
 
 /* 觸控間距 */
-padding: 1rem;         /* Mobile: p-4 */
-padding: 0.75rem;      /* Desktop: p-3 (Terminal-Density) */
+padding: 1rem; /* Mobile: p-4 */
+padding: 0.75rem; /* Desktop: p-3 (Terminal-Density) */
 ```
 
 ---

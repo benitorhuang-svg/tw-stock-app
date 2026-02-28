@@ -17,6 +17,7 @@ const ENDPOINTS = [
     'https://openapi.twse.com.tw/v1/opendata/t187ap06_L_ci', // 損益表摘要
     'https://openapi.twse.com.tw/v1/opendata/t187ap17_L', // 獲利能力分析
     'https://openapi.twse.com.tw/v1/opendata/t187ap14_L', // 每股盈餘
+    'https://openapi.twse.com.tw/v1/opendata/t187ap07_L_ci', // 資產負債表 (一般業)
 ];
 
 const REQUEST_TIMEOUT = 10000;
@@ -87,6 +88,17 @@ async function main() {
                 consolidated[symbol].netMargin = parseFloat(
                     item['稅後純益率(%)(稅後純益)/(營業收入)']
                 );
+
+            // 處理資產負債表 (t187ap07_L_ci)
+            if (item['資產總額']) consolidated[symbol].totalAssets = parseFloat(item['資產總額']);
+            if (item['負債總額']) consolidated[symbol].totalLiabilities = parseFloat(item['負債總額']);
+
+            // 自動計算負債比率
+            if (consolidated[symbol].totalAssets && consolidated[symbol].totalLiabilities) {
+                consolidated[symbol].debtRatio = parseFloat(
+                    ((consolidated[symbol].totalLiabilities / consolidated[symbol].totalAssets) * 100).toFixed(2)
+                );
+            }
         });
 
         console.log(`   ✅ 處理完畢，目前累計 ${Object.keys(consolidated).length} 家公司`);

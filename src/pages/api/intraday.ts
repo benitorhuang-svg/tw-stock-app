@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 export const prerender = false;
 
 // Server-side cache for intraday data (keyed by symbol, 30 sec TTL)
-const intradayCache = new Map<string, { data: any; ts: number }>();
+const intradayCache = new Map<string, { data: Record<string, unknown>; ts: number }>();
 const INTRADAY_CACHE_MS = 30_000;
 
 export const GET: APIRoute = async ({ request }) => {
@@ -116,12 +116,13 @@ export const GET: APIRoute = async ({ request }) => {
                 'Cache-Control': 'public, max-age=30',
             },
         });
-    } catch (error: any) {
-        console.error(`[Intraday API Error]`, error.message);
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        console.error(`[Intraday API Error]`, message);
         return new Response(
             JSON.stringify({
                 status: 'error',
-                message: error.message,
+                message,
             }),
             {
                 status: 500,

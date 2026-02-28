@@ -3,13 +3,15 @@
      * AnalysisAccordion.svelte - Organism
      * Standardized accordion section for dashboard analysis views
      */
+    import type { Snippet } from 'svelte';
+
     interface Props {
         id: string;
         title: string;
         icon: string;
         isOpen: boolean;
         onToggle: () => void;
-        children?: any;
+        children?: Snippet;
     }
     let { id, title, icon, isOpen, onToggle, children }: Props = $props();
 </script>
@@ -65,7 +67,9 @@
 
     {#if isOpen}
         <div class="accordion-body">
-            <slot />
+            {#if children}
+                {@render children()}
+            {/if}
         </div>
     {/if}
 </section>

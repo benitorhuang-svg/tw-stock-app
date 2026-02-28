@@ -1,20 +1,19 @@
 ---
 import MainTerminal from '../../layouts/MainTerminal.astro';
-import StockHubHero from '../../components/molecules/StockHubHero.astro';
 import ForensicTicker from '../../components/molecules/ForensicTicker.astro';
 import AnalysisHubManager from '../../components/organisms/AnalysisHubManager.svelte';
 ---
 
 <MainTerminal title="個股分析" fullWidth={true}>
     <div class="relative pb-20 pt-4 px-4 lg:px-6">
-        <AnalysisHubManager client:load />
+        <AnalysisHubManager client:idle />
 
         <!-- Signal Stream Footer -->
         <div
-            class="mt-12 pt-10 border-t border-white/5 flex items-center justify-between opacity-30"
+            class="mt-12 pt-10 border-t border-border/50 flex items-center justify-between opacity-30"
         >
             <ForensicTicker />
-            <span class="text-[8px] font-mono text-white/10 uppercase tracking-[0.4em]"
+            <span class="text-[8px] font-mono text-text-muted/30 uppercase tracking-[0.4em]"
                 >Uplink_Node: ANALYSIS_CENTER_TAIWAN</span
             >
         </div>

@@ -1,7 +1,8 @@
 <script lang="ts">
     import { marketStore } from '../../stores/market.svelte';
 
-    const summary = $derived(marketStore.state.institutional.summary);
+    const defaultSummary = { foreign: 0, invest: 0, dealer: 0, total: 0, govTotalAmount: 0, avgConcentration: 0 };
+    const summary = $derived(marketStore.state.institutional.summary ?? defaultSummary);
     const date = $derived(marketStore.state.institutional.date);
 
     function formatValue(v: number) {
@@ -134,14 +135,14 @@
             <button
                 class="flex items-center gap-2 h-8 px-3 rounded-lg border transition-all text-[9px] font-black uppercase tracking-widest {marketStore.filterDivergence
                     ? 'bg-accent/20 border-accent text-accent'
-                    : 'bg-glass border-border text-text-muted hover:border-white/20'}"
+                    : 'bg-glass border-border text-text-muted hover:border-border-hover'}"
                 onclick={() => (marketStore.filterDivergence = !marketStore.filterDivergence)}
                 title="Divergence: Price DOWN / Chips UP"
             >
                 <span
                     class="w-1.5 h-1.5 rounded-full {marketStore.filterDivergence
                         ? 'bg-accent animate-pulse'
-                        : 'bg-white/10'}"
+                        : 'bg-surface-hover'}"
                 ></span>
                 Divergence
             </button>

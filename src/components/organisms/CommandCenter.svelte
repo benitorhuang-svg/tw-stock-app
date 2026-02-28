@@ -137,7 +137,7 @@
 
         <div class="flex items-center gap-1.5">
             <FilterSlider id="hx-trend" label="Pct" bind:value={trend} on:change={notify} />
-            <div class="w-px h-3 bg-white/5"></div>
+            <div class="w-px h-3 bg-surface-hover"></div>
             <FilterSlider
                 id="hx-ma20"
                 label="MA20"
@@ -145,7 +145,7 @@
                 bind:value={ma20}
                 on:change={notify}
             />
-            <div class="w-px h-3 bg-white/5"></div>
+            <div class="w-px h-3 bg-surface-hover"></div>
             <FilterSlider
                 id="hx-vol"
                 label="Vol"
@@ -193,7 +193,7 @@
                     <div
                         class="w-1 h-1 rounded-full {isPolling
                             ? 'bg-accent animate-pulse shadow-[0_0_5px_var(--color-accent)]'
-                            : 'bg-white/10'}"
+                            : 'bg-surface-hover'}"
                     ></div>
                     <span class="text-[7px] font-mono text-text-muted/40 uppercase tracking-[0.2em]"
                         >{isPolling ? 'Active_Tele' : 'Idle_System'}</span

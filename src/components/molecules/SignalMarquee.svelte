@@ -46,7 +46,7 @@
 
 {#if signals.length > 0 && !dismissed}
     <div
-        class="signal-marquee-belt w-full h-8 bg-black/40 border-b border-border backdrop-blur-md overflow-hidden flex items-center relative group/marquee"
+        class="signal-marquee-belt w-full h-8 bg-input-bg border-b border-border backdrop-blur-md overflow-hidden flex items-center relative group/marquee"
         transition:fade={{ duration: 300 }}
     >
         <div

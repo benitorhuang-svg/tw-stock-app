@@ -10,7 +10,10 @@
     "grossMargin": 13.44,
     "operatingMargin": 7.85,
     "netMargin": 6.42,
-    "netIncome": 1381702
+    "netIncome": 1381702,
+    "totalAssets": 9976806,
+    "totalLiabilities": 3854329,
+    "debtRatio": 38.63
   },
   {
     "symbol": "1236",
@@ -23,7 +26,10 @@
     "grossMargin": 25.34,
     "operatingMargin": -2.35,
     "netMargin": -2.04,
-    "netIncome": -36925
+    "netIncome": -36925,
+    "totalAssets": 3535138,
+    "totalLiabilities": 1012251,
+    "debtRatio": 28.63
   },
   {
     "symbol": "1342",
@@ -36,7 +42,10 @@
     "grossMargin": 26.97,
     "operatingMargin": 18.48,
     "netMargin": 15.48,
-    "netIncome": 442789
+    "netIncome": 442789,
+    "totalAssets": 3581094,
+    "totalLiabilities": 1184686,
+    "debtRatio": 33.08
   },
   {
     "symbol": "1436",
@@ -49,7 +58,10 @@
     "grossMargin": 50.21,
     "operatingMargin": 37,
     "netMargin": 24.83,
-    "netIncome": 966143
+    "netIncome": 966143,
+    "totalAssets": 21673027,
+    "totalLiabilities": 14733401,
+    "debtRatio": 67.98
   },
   {
     "symbol": "1459",
@@ -62,7 +74,10 @@
     "grossMargin": 12.93,
     "operatingMargin": 4.85,
     "netMargin": 22.91,
-    "netIncome": 252255
+    "netIncome": 252255,
+    "totalAssets": 4677801,
+    "totalLiabilities": 1160929,
+    "debtRatio": 24.82
   },
   {
     "symbol": "1515",
@@ -75,7 +90,10 @@
     "grossMargin": 12.73,
     "operatingMargin": -0.38,
     "netMargin": 3.21,
-    "netIncome": 173956
+    "netIncome": 173956,
+    "totalAssets": 8272858,
+    "totalLiabilities": 4284874,
+    "debtRatio": 51.79
   },
   {
     "symbol": "1535",
@@ -88,7 +106,10 @@
     "grossMargin": 9.46,
     "operatingMargin": 4.15,
     "netMargin": 4.36,
-    "netIncome": 495280
+    "netIncome": 495280,
+    "totalAssets": 7264980,
+    "totalLiabilities": 3442855,
+    "debtRatio": 47.39
   },
   {
     "symbol": "1597",
@@ -101,7 +122,10 @@
     "grossMargin": 40.99,
     "operatingMargin": 9.27,
     "netMargin": 6.98,
-    "netIncome": 79421
+    "netIncome": 79421,
+    "totalAssets": 4093274,
+    "totalLiabilities": 1684969,
+    "debtRatio": 41.16
   },
   {
     "symbol": "1605",
@@ -114,7 +138,10 @@
     "grossMargin": 6.37,
     "operatingMargin": 0.01,
     "netMargin": 1.34,
-    "netIncome": 2339416
+    "netIncome": 2339416,
+    "totalAssets": 303417046,
+    "totalLiabilities": 127319778,
+    "debtRatio": 41.96
   },
   {
     "symbol": "1712",
@@ -127,7 +154,10 @@
     "grossMargin": 30.49,
     "operatingMargin": 6.96,
     "netMargin": 5.91,
-    "netIncome": 1099055
+    "netIncome": 1099055,
+    "totalAssets": 15370664,
+    "totalLiabilities": 6742216,
+    "debtRatio": 43.86
   },
   {
     "symbol": "1720",
@@ -140,7 +170,10 @@
     "grossMargin": 41.42,
     "operatingMargin": 19.4,
     "netMargin": 17.88,
-    "netIncome": 1255529
+    "netIncome": 1255529,
+    "totalAssets": 11795903,
+    "totalLiabilities": 2509094,
+    "debtRatio": 21.27
   },
   {
     "symbol": "1723",
@@ -153,7 +186,10 @@
     "grossMargin": 18.93,
     "operatingMargin": 9.15,
     "netMargin": 10.51,
-    "netIncome": 615824
+    "netIncome": 615824,
+    "totalAssets": 11442959,
+    "totalLiabilities": 3624680,
+    "debtRatio": 31.68
   },
   {
     "symbol": "1730",
@@ -166,7 +202,10 @@
     "grossMargin": 50.91,
     "operatingMargin": 15.35,
     "netMargin": 13.11,
-    "netIncome": 316150
+    "netIncome": 316150,
+    "totalAssets": 2775389,
+    "totalLiabilities": 584971,
+    "debtRatio": 21.08
   },
   {
     "symbol": "1731",
@@ -179,7 +218,10 @@
     "grossMargin": 63.23,
     "operatingMargin": 13.72,
     "netMargin": 11.43,
-    "netIncome": 181002
+    "netIncome": 181002,
+    "totalAssets": 3237440,
+    "totalLiabilities": 1074509,
+    "debtRatio": 33.19
   },
   {
     "symbol": "1752",
@@ -192,7 +234,10 @@
     "grossMargin": 35.56,
     "operatingMargin": 13.67,
     "netMargin": 11.28,
-    "netIncome": 243948
+    "netIncome": 243948,
+    "totalAssets": 3823371,
+    "totalLiabilities": 1333699,
+    "debtRatio": 34.88
   },
   {
     "symbol": "2002",
@@ -205,7 +250,10 @@
     "grossMargin": 2.85,
     "operatingMargin": -1.23,
     "netMargin": -1.11,
-    "netIncome": -3506701
+    "netIncome": -3506701,
+    "totalAssets": 673846973,
+    "totalLiabilities": 343927968,
+    "debtRatio": 51.04
   },
   {
     "symbol": "2006",
@@ -218,7 +266,10 @@
     "grossMargin": 14.82,
     "operatingMargin": 10.11,
     "netMargin": 8.22,
-    "netIncome": 4757984
+    "netIncome": 4757984,
+    "totalAssets": 51997209,
+    "totalLiabilities": 17534863,
+    "debtRatio": 33.72
   },
   {
     "symbol": "2013",
@@ -231,7 +282,10 @@
     "grossMargin": 4.7,
     "operatingMargin": 2.87,
     "netMargin": 3.05,
-    "netIncome": 638401
+    "netIncome": 638401,
+    "totalAssets": 14959765,
+    "totalLiabilities": 9282988,
+    "debtRatio": 62.05
   },
   {
     "symbol": "2014",
@@ -244,7 +298,10 @@
     "grossMargin": -8.36,
     "operatingMargin": -10.55,
     "netMargin": -9.71,
-    "netIncome": -1847819
+    "netIncome": -1847819,
+    "totalAssets": 26886152,
+    "totalLiabilities": 14774799,
+    "debtRatio": 54.95
   },
   {
     "symbol": "2015",
@@ -257,7 +314,10 @@
     "grossMargin": 11.53,
     "operatingMargin": 8.62,
     "netMargin": 7.76,
-    "netIncome": 2253128
+    "netIncome": 2253128,
+    "totalAssets": 25840611,
+    "totalLiabilities": 3227792,
+    "debtRatio": 12.49
   },
   {
     "symbol": "2049",
@@ -270,7 +330,10 @@
     "grossMargin": 28.76,
     "operatingMargin": 6.77,
     "netMargin": 5.81,
-    "netIncome": 1410128
+    "netIncome": 1410128,
+    "totalAssets": 54175996,
+    "totalLiabilities": 16702376,
+    "debtRatio": 30.83
   },
   {
     "symbol": "2059",
@@ -283,7 +346,10 @@
     "grossMargin": 76.05,
     "operatingMargin": 69.07,
     "netMargin": 56.21,
-    "netIncome": 9837067
+    "netIncome": 9837067,
+    "totalAssets": 35083436,
+    "totalLiabilities": 7057477,
+    "debtRatio": 20.12
   },
   {
     "symbol": "2062",
@@ -296,7 +362,10 @@
     "grossMargin": 9.71,
     "operatingMargin": 1.13,
     "netMargin": 1.25,
-    "netIncome": 78740
+    "netIncome": 78740,
+    "totalAssets": 11247296,
+    "totalLiabilities": 3638151,
+    "debtRatio": 32.35
   },
   {
     "symbol": "2301",
@@ -309,7 +378,10 @@
     "grossMargin": 22.9,
     "operatingMargin": 10.08,
     "netMargin": 9.1,
-    "netIncome": 15111794
+    "netIncome": 15111794,
+    "totalAssets": 205687383,
+    "totalLiabilities": 115708590,
+    "debtRatio": 56.25
   },
   {
     "symbol": "2303",
@@ -322,7 +394,10 @@
     "grossMargin": 29.01,
     "operatingMargin": 18.5,
     "netMargin": 17.48,
-    "netIncome": 41534748
+    "netIncome": 41534748,
+    "totalAssets": 578996009,
+    "totalLiabilities": 199140569,
+    "debtRatio": 34.39
   },
   {
     "symbol": "2308",
@@ -335,7 +410,10 @@
     "grossMargin": 34.27,
     "operatingMargin": 15.13,
     "netMargin": 12.24,
-    "netIncome": 67936308
+    "netIncome": 67936308,
+    "totalAssets": 639618600,
+    "totalLiabilities": 314229597,
+    "debtRatio": 49.13
   },
   {
     "symbol": "2329",
@@ -348,7 +426,10 @@
     "grossMargin": 15.06,
     "operatingMargin": 7.68,
     "netMargin": 7.17,
-    "netIncome": 1410397
+    "netIncome": 1410397,
+    "totalAssets": 20714230,
+    "totalLiabilities": 9560032,
+    "debtRatio": 46.15
   },
   {
     "symbol": "2330",
@@ -361,7 +442,10 @@
     "grossMargin": 59.89,
     "operatingMargin": 50.83,
     "netMargin": 45.03,
-    "netIncome": 1715396780
+    "netIncome": 1715396780,
+    "totalAssets": 7933023878,
+    "totalLiabilities": 2472228595,
+    "debtRatio": 31.16
   },
   {
     "symbol": "2340",
@@ -374,7 +458,10 @@
     "grossMargin": -3.18,
     "operatingMargin": -29.72,
     "netMargin": -31.79,
-    "netIncome": -1375352
+    "netIncome": -1375352,
+    "totalAssets": 14700808,
+    "totalLiabilities": 7634740,
+    "debtRatio": 51.93
   },
   {
     "symbol": "2344",
@@ -387,7 +474,10 @@
     "grossMargin": 34.89,
     "operatingMargin": 6.19,
     "netMargin": 3.55,
-    "netIncome": 3177448
+    "netIncome": 3177448,
+    "totalAssets": 192192067,
+    "totalLiabilities": 78061936,
+    "debtRatio": 40.62
   },
   {
     "symbol": "2379",
@@ -400,7 +490,10 @@
     "grossMargin": 50.02,
     "operatingMargin": 11.7,
     "netMargin": 12.02,
-    "netIncome": 14753316
+    "netIncome": 14753316,
+    "totalAssets": 129903363,
+    "totalLiabilities": 77691277,
+    "debtRatio": 59.81
   },
   {
     "symbol": "2395",
@@ -413,7 +506,10 @@
     "grossMargin": 39.78,
     "operatingMargin": 16.32,
     "netMargin": 14.81,
-    "netIncome": 10500516
+    "netIncome": 10500516,
+    "totalAssets": 75717524,
+    "totalLiabilities": 20668259,
+    "debtRatio": 27.3
   },
   {
     "symbol": "2412",
@@ -426,7 +522,10 @@
     "grossMargin": 36.83,
     "operatingMargin": 20.56,
     "netMargin": 17.16,
-    "netIncome": 40517100
+    "netIncome": 40517100,
+    "totalAssets": 535871951,
+    "totalLiabilities": 135081875,
+    "debtRatio": 25.21
   },
   {
     "symbol": "2419",
@@ -439,7 +538,10 @@
     "grossMargin": 18.81,
     "operatingMargin": 1.5,
     "netMargin": 0.94,
-    "netIncome": 83656
+    "netIncome": 83656,
+    "totalAssets": 10994047,
+    "totalLiabilities": 4885451,
+    "debtRatio": 44.44
   },
   {
     "symbol": "2423",
@@ -452,7 +554,10 @@
     "grossMargin": 52.93,
     "operatingMargin": 18.21,
     "netMargin": 14.41,
-    "netIncome": 424091
+    "netIncome": 424091,
+    "totalAssets": 3738017,
+    "totalLiabilities": 774301,
+    "debtRatio": 20.71
   },
   {
     "symbol": "2439",
@@ -465,7 +570,10 @@
     "grossMargin": 12.09,
     "operatingMargin": 3.14,
     "netMargin": 3.9,
-    "netIncome": 1814652
+    "netIncome": 1814652,
+    "totalAssets": 44794569,
+    "totalLiabilities": 25706744,
+    "debtRatio": 57.39
   },
   {
     "symbol": "2450",
@@ -478,7 +586,10 @@
     "grossMargin": 10.46,
     "operatingMargin": 1.01,
     "netMargin": 1.34,
-    "netIncome": 444355
+    "netIncome": 444355,
+    "totalAssets": 10693534,
+    "totalLiabilities": 4244723,
+    "debtRatio": 39.69
   },
   {
     "symbol": "2454",
@@ -491,7 +602,10 @@
     "grossMargin": 47.5,
     "operatingMargin": 17.36,
     "netMargin": 17.81,
-    "netIncome": 106117575
+    "netIncome": 106117575,
+    "totalAssets": 743784805,
+    "totalLiabilities": 334589784,
+    "debtRatio": 44.98
   },
   {
     "symbol": "2455",
@@ -504,7 +618,10 @@
     "grossMargin": 36.09,
     "operatingMargin": 19.8,
     "netMargin": 16.21,
-    "netIncome": 547942
+    "netIncome": 547942,
+    "totalAssets": 4676655,
+    "totalLiabilities": 1381959,
+    "debtRatio": 29.55
   },
   {
     "symbol": "2480",
@@ -517,7 +634,10 @@
     "grossMargin": 24.3,
     "operatingMargin": 11.87,
     "netMargin": 10.14,
-    "netIncome": 851292
+    "netIncome": 851292,
+    "totalAssets": 8063573,
+    "totalLiabilities": 4543270,
+    "debtRatio": 56.34
   },
   {
     "symbol": "2488",
@@ -530,7 +650,10 @@
     "grossMargin": 22.93,
     "operatingMargin": 11.46,
     "netMargin": 12.65,
-    "netIncome": 364592
+    "netIncome": 364592,
+    "totalAssets": 3805522,
+    "totalLiabilities": 997789,
+    "debtRatio": 26.22
   },
   {
     "symbol": "2548",
@@ -543,7 +666,10 @@
     "grossMargin": 28.22,
     "operatingMargin": 21.82,
     "netMargin": 17.77,
-    "netIncome": 3241406
+    "netIncome": 3241406,
+    "totalAssets": 54257081,
+    "totalLiabilities": 31834496,
+    "debtRatio": 58.67
   },
   {
     "symbol": "2633",
@@ -556,7 +682,10 @@
     "grossMargin": 43.26,
     "operatingMargin": 39.34,
     "netMargin": 12.04,
-    "netIncome": 6580187
+    "netIncome": 6580187,
+    "totalAssets": 380802516,
+    "totalLiabilities": 308029753,
+    "debtRatio": 80.89
   },
   {
     "symbol": "2762",
@@ -569,7 +698,10 @@
     "grossMargin": 17.29,
     "operatingMargin": 5.99,
     "netMargin": 3.72,
-    "netIncome": 409081
+    "netIncome": 409081,
+    "totalAssets": 18735425,
+    "totalLiabilities": 15842830,
+    "debtRatio": 84.56
   },
   {
     "symbol": "2801",
@@ -590,7 +722,10 @@
     "grossMargin": 34.37,
     "operatingMargin": 3.97,
     "netMargin": 3.8,
-    "netIncome": 13334282
+    "netIncome": 13334282,
+    "totalAssets": 292630628,
+    "totalLiabilities": 239704065,
+    "debtRatio": 81.91
   },
   {
     "symbol": "3004",
@@ -603,7 +738,10 @@
     "grossMargin": 24.45,
     "operatingMargin": 11.67,
     "netMargin": 8.16,
-    "netIncome": 330951
+    "netIncome": 330951,
+    "totalAssets": 8057785,
+    "totalLiabilities": 4418749,
+    "debtRatio": 54.84
   },
   {
     "symbol": "3006",
@@ -616,7 +754,10 @@
     "grossMargin": 17.05,
     "operatingMargin": 2.36,
     "netMargin": 1.68,
-    "netIncome": 244350
+    "netIncome": 244350,
+    "totalAssets": 16796952,
+    "totalLiabilities": 6633416,
+    "debtRatio": 39.49
   },
   {
     "symbol": "3008",
@@ -629,7 +770,10 @@
     "grossMargin": 50.43,
     "operatingMargin": 38.53,
     "netMargin": 35.26,
-    "netIncome": 21560257
+    "netIncome": 21560257,
+    "totalAssets": 220787020,
+    "totalLiabilities": 29919075,
+    "debtRatio": 13.55
   },
   {
     "symbol": "3029",
@@ -642,7 +786,10 @@
     "grossMargin": 12.18,
     "operatingMargin": 6.01,
     "netMargin": 5.18,
-    "netIncome": 1288628
+    "netIncome": 1288628,
+    "totalAssets": 15158591,
+    "totalLiabilities": 8152440,
+    "debtRatio": 53.78
   },
   {
     "symbol": "3030",
@@ -655,7 +802,10 @@
     "grossMargin": 58.35,
     "operatingMargin": 35.34,
     "netMargin": 29.27,
-    "netIncome": 2478679
+    "netIncome": 2478679,
+    "totalAssets": 12156354,
+    "totalLiabilities": 2552456,
+    "debtRatio": 21
   },
   {
     "symbol": "3035",
@@ -668,7 +818,10 @@
     "grossMargin": 27,
     "operatingMargin": 3.07,
     "netMargin": 4.3,
-    "netIncome": 772979
+    "netIncome": 772979,
+    "totalAssets": 18932246,
+    "totalLiabilities": 5403446,
+    "debtRatio": 28.54
   },
   {
     "symbol": "3037",
@@ -681,7 +834,10 @@
     "grossMargin": 13.94,
     "operatingMargin": 5.09,
     "netMargin": 5.75,
-    "netIncome": 7550490
+    "netIncome": 7550490,
+    "totalAssets": 255791612,
+    "totalLiabilities": 148784535,
+    "debtRatio": 58.17
   },
   {
     "symbol": "3054",
@@ -694,7 +850,10 @@
     "grossMargin": 31.15,
     "operatingMargin": -56.42,
     "netMargin": 125.97,
-    "netIncome": 158146
+    "netIncome": 158146,
+    "totalAssets": 1141666,
+    "totalLiabilities": 85542,
+    "debtRatio": 7.49
   },
   {
     "symbol": "3092",
@@ -707,7 +866,10 @@
     "grossMargin": 4.38,
     "operatingMargin": -34.8,
     "netMargin": -34.29,
-    "netIncome": -561933
+    "netIncome": -561933,
+    "totalAssets": 5004234,
+    "totalLiabilities": 3541320,
+    "debtRatio": 70.77
   },
   {
     "symbol": "3130",
@@ -720,7 +882,10 @@
     "grossMargin": 86.12,
     "operatingMargin": 19.9,
     "netMargin": 18.25,
-    "netIncome": 488047
+    "netIncome": 488047,
+    "totalAssets": 3970708,
+    "totalLiabilities": 2258882,
+    "debtRatio": 56.89
   },
   {
     "symbol": "3189",
@@ -733,7 +898,10 @@
     "grossMargin": 21.13,
     "operatingMargin": 6.78,
     "netMargin": 6.91,
-    "netIncome": 2717328
+    "netIncome": 2717328,
+    "totalAssets": 79973280,
+    "totalLiabilities": 38600083,
+    "debtRatio": 48.27
   },
   {
     "symbol": "3311",
@@ -746,7 +914,10 @@
     "grossMargin": 12.46,
     "operatingMargin": 1.81,
     "netMargin": 5.73,
-    "netIncome": 134332
+    "netIncome": 134332,
+    "totalAssets": 5014821,
+    "totalLiabilities": 1376179,
+    "debtRatio": 27.44
   },
   {
     "symbol": "3321",
@@ -759,7 +930,10 @@
     "grossMargin": 6.1,
     "operatingMargin": -6.8,
     "netMargin": -8.4,
-    "netIncome": -180132
+    "netIncome": -180132,
+    "totalAssets": 2139696,
+    "totalLiabilities": 1421768,
+    "debtRatio": 66.45
   },
   {
     "symbol": "3380",
@@ -772,7 +946,10 @@
     "grossMargin": 17.35,
     "operatingMargin": -0.61,
     "netMargin": -0.65,
-    "netIncome": -147054
+    "netIncome": -147054,
+    "totalAssets": 24159945,
+    "totalLiabilities": 11120571,
+    "debtRatio": 46.03
   },
   {
     "symbol": "3416",
@@ -785,7 +962,10 @@
     "grossMargin": 39.85,
     "operatingMargin": 19.02,
     "netMargin": 16.09,
-    "netIncome": 585810
+    "netIncome": 585810,
+    "totalAssets": 4975873,
+    "totalLiabilities": 1445009,
+    "debtRatio": 29.04
   },
   {
     "symbol": "3443",
@@ -798,7 +978,10 @@
     "grossMargin": 24.76,
     "operatingMargin": 12.74,
     "netMargin": 11.04,
-    "netIncome": 3769566
+    "netIncome": 3769566,
+    "totalAssets": 28443068,
+    "totalLiabilities": 15530276,
+    "debtRatio": 54.6
   },
   {
     "symbol": "3454",
@@ -811,7 +994,10 @@
     "grossMargin": 28.44,
     "operatingMargin": -0.32,
     "netMargin": 0.03,
-    "netIncome": 2087
+    "netIncome": 2087,
+    "totalAssets": 5768389,
+    "totalLiabilities": 2383917,
+    "debtRatio": 41.33
   },
   {
     "symbol": "3504",
@@ -824,7 +1010,10 @@
     "grossMargin": 17.17,
     "operatingMargin": -2.74,
     "netMargin": -0.35,
-    "netIncome": -9388
+    "netIncome": -9388,
+    "totalAssets": 4230968,
+    "totalLiabilities": 1435833,
+    "debtRatio": 33.94
   },
   {
     "symbol": "3515",
@@ -837,7 +1026,10 @@
     "grossMargin": 13.55,
     "operatingMargin": 5.74,
     "netMargin": 4.94,
-    "netIncome": 2362563
+    "netIncome": 2362563,
+    "totalAssets": 27130072,
+    "totalLiabilities": 12030712,
+    "debtRatio": 44.34
   },
   {
     "symbol": "3545",
@@ -850,7 +1042,10 @@
     "grossMargin": 24.81,
     "operatingMargin": -1.11,
     "netMargin": -8.29,
-    "netIncome": -990258
+    "netIncome": -990258,
+    "totalAssets": 13550227,
+    "totalLiabilities": 4921441,
+    "debtRatio": 36.32
   },
   {
     "symbol": "3563",
@@ -863,7 +1058,10 @@
     "grossMargin": 61.27,
     "operatingMargin": 36.41,
     "netMargin": 32.82,
-    "netIncome": 1047329
+    "netIncome": 1047329,
+    "totalAssets": 6890845,
+    "totalLiabilities": 1092391,
+    "debtRatio": 15.85
   },
   {
     "symbol": "3592",
@@ -876,7 +1074,10 @@
     "grossMargin": 28.52,
     "operatingMargin": 6.8,
     "netMargin": 6.18,
-    "netIncome": 1383386
+    "netIncome": 1383386,
+    "totalAssets": 19659243,
+    "totalLiabilities": 8139386,
+    "debtRatio": 41.4
   },
   {
     "symbol": "3596",
@@ -889,7 +1090,10 @@
     "grossMargin": 15.26,
     "operatingMargin": 6.61,
     "netMargin": 5.24,
-    "netIncome": 2773881
+    "netIncome": 2773881,
+    "totalAssets": 44810999,
+    "totalLiabilities": 27777836,
+    "debtRatio": 61.99
   },
   {
     "symbol": "3679",
@@ -902,7 +1106,10 @@
     "grossMargin": 32.97,
     "operatingMargin": 22.44,
     "netMargin": 13.76,
-    "netIncome": 615304
+    "netIncome": 615304,
+    "totalAssets": 9148851,
+    "totalLiabilities": 4162712,
+    "debtRatio": 45.5
   },
   {
     "symbol": "4133",
@@ -915,7 +1122,10 @@
     "grossMargin": 44.35,
     "operatingMargin": 4.85,
     "netMargin": -0.32,
-    "netIncome": -1141
+    "netIncome": -1141,
+    "totalAssets": 1327235,
+    "totalLiabilities": 70740,
+    "debtRatio": 5.33
   },
   {
     "symbol": "4576",
@@ -928,7 +1138,10 @@
     "grossMargin": 36.51,
     "operatingMargin": 11.95,
     "netMargin": 9.58,
-    "netIncome": 259924
+    "netIncome": 259924,
+    "totalAssets": 7009357,
+    "totalLiabilities": 2573502,
+    "debtRatio": 36.72
   },
   {
     "symbol": "4583",
@@ -941,7 +1154,10 @@
     "grossMargin": 52.16,
     "operatingMargin": 31.43,
     "netMargin": 32.08,
-    "netIncome": 961843
+    "netIncome": 961843,
+    "totalAssets": 11252301,
+    "totalLiabilities": 1063300,
+    "debtRatio": 9.45
   },
   {
     "symbol": "4915",
@@ -954,7 +1170,10 @@
     "grossMargin": 17.32,
     "operatingMargin": 4.72,
     "netMargin": 4.36,
-    "netIncome": 2626722
+    "netIncome": 2626722,
+    "totalAssets": 51223819,
+    "totalLiabilities": 30701284,
+    "debtRatio": 59.94
   },
   {
     "symbol": "4919",
@@ -967,7 +1186,10 @@
     "grossMargin": 36.69,
     "operatingMargin": -4.03,
     "netMargin": -5.46,
-    "netIncome": -1664644
+    "netIncome": -1664644,
+    "totalAssets": 29991428,
+    "totalLiabilities": 16873592,
+    "debtRatio": 56.26
   },
   {
     "symbol": "4952",
@@ -980,7 +1202,10 @@
     "grossMargin": 33.41,
     "operatingMargin": 4.11,
     "netMargin": 5.28,
-    "netIncome": 112351
+    "netIncome": 112351,
+    "totalAssets": 2759392,
+    "totalLiabilities": 646058,
+    "debtRatio": 23.41
   },
   {
     "symbol": "5203",
@@ -993,7 +1218,10 @@
     "grossMargin": 84.47,
     "operatingMargin": 14.95,
     "netMargin": 11.67,
-    "netIncome": 286976
+    "netIncome": 286976,
+    "totalAssets": 6072688,
+    "totalLiabilities": 1431268,
+    "debtRatio": 23.57
   },
   {
     "symbol": "5225",
@@ -1006,7 +1234,10 @@
     "grossMargin": 16.43,
     "operatingMargin": 6.74,
     "netMargin": 7.24,
-    "netIncome": 799806
+    "netIncome": 799806,
+    "totalAssets": 6592644,
+    "totalLiabilities": 3079151,
+    "debtRatio": 46.71
   },
   {
     "symbol": "5234",
@@ -1019,7 +1250,10 @@
     "grossMargin": 40.6,
     "operatingMargin": 18.42,
     "netMargin": 16.35,
-    "netIncome": 756955
+    "netIncome": 756955,
+    "totalAssets": 5113491,
+    "totalLiabilities": 1585975,
+    "debtRatio": 31.02
   },
   {
     "symbol": "5876",
@@ -1040,7 +1274,10 @@
     "grossMargin": 5.03,
     "operatingMargin": -1.44,
     "netMargin": -0.71,
-    "netIncome": -120689
+    "netIncome": -120689,
+    "totalAssets": 16097361,
+    "totalLiabilities": 7287157,
+    "debtRatio": 45.27
   },
   {
     "symbol": "6155",
@@ -1053,7 +1290,10 @@
     "grossMargin": 24.44,
     "operatingMargin": 4.9,
     "netMargin": 10.25,
-    "netIncome": 64763
+    "netIncome": 64763,
+    "totalAssets": 2098823,
+    "totalLiabilities": 510448,
+    "debtRatio": 24.32
   },
   {
     "symbol": "6176",
@@ -1066,7 +1306,10 @@
     "grossMargin": 21.4,
     "operatingMargin": 12.03,
     "netMargin": 8.9,
-    "netIncome": 4343421
+    "netIncome": 4343421,
+    "totalAssets": 68428546,
+    "totalLiabilities": 32555764,
+    "debtRatio": 47.58
   },
   {
     "symbol": "6183",
@@ -1079,7 +1322,10 @@
     "grossMargin": 43.4,
     "operatingMargin": 24.66,
     "netMargin": 21.27,
-    "netIncome": 585559
+    "netIncome": 585559,
+    "totalAssets": 4573868,
+    "totalLiabilities": 1746995,
+    "debtRatio": 38.2
   },
   {
     "symbol": "6202",
@@ -1092,7 +1338,10 @@
     "grossMargin": 38.92,
     "operatingMargin": 3.5,
     "netMargin": 6.08,
-    "netIncome": 185886
+    "netIncome": 185886,
+    "totalAssets": 5563655,
+    "totalLiabilities": 1575631,
+    "debtRatio": 28.32
   },
   {
     "symbol": "6558",
@@ -1105,7 +1354,10 @@
     "grossMargin": 18.72,
     "operatingMargin": -5.82,
     "netMargin": -8.9,
-    "netIncome": -95450
+    "netIncome": -95450,
+    "totalAssets": 1732514,
+    "totalLiabilities": 356280,
+    "debtRatio": 20.56
   },
   {
     "symbol": "6579",
@@ -1118,7 +1370,10 @@
     "grossMargin": 33.43,
     "operatingMargin": 7.34,
     "netMargin": 9.44,
-    "netIncome": 814416
+    "netIncome": 814416,
+    "totalAssets": 14866346,
+    "totalLiabilities": 2956532,
+    "debtRatio": 19.89
   },
   {
     "symbol": "6658",
@@ -1131,7 +1386,10 @@
     "grossMargin": 22.51,
     "operatingMargin": 4.45,
     "netMargin": 1.73,
-    "netIncome": 36012
+    "netIncome": 36012,
+    "totalAssets": 3159015,
+    "totalLiabilities": 1762745,
+    "debtRatio": 55.8
   },
   {
     "symbol": "6669",
@@ -1144,7 +1402,10 @@
     "grossMargin": 8.25,
     "operatingMargin": 6.72,
     "netMargin": 5.38,
-    "netIncome": 51118163
+    "netIncome": 51118163,
+    "totalAssets": 338189324,
+    "totalLiabilities": 213536562,
+    "debtRatio": 63.14
   },
   {
     "symbol": "6719",
@@ -1157,7 +1418,10 @@
     "grossMargin": 34.83,
     "operatingMargin": 14.58,
     "netMargin": 15.12,
-    "netIncome": 692687
+    "netIncome": 692687,
+    "totalAssets": 16829752,
+    "totalLiabilities": 2737286,
+    "debtRatio": 16.26
   },
   {
     "symbol": "6770",
@@ -1170,7 +1434,10 @@
     "grossMargin": -3.29,
     "operatingMargin": -12.75,
     "netMargin": -16.72,
-    "netIncome": -7812660
+    "netIncome": -7812660,
+    "totalAssets": 178685624,
+    "totalLiabilities": 96685437,
+    "debtRatio": 54.11
   },
   {
     "symbol": "6782",
@@ -1183,7 +1450,10 @@
     "grossMargin": 45.24,
     "operatingMargin": 27.34,
     "netMargin": 20.99,
-    "netIncome": 886612
+    "netIncome": 886612,
+    "totalAssets": 5998807,
+    "totalLiabilities": 1557633,
+    "debtRatio": 25.97
   },
   {
     "symbol": "6789",
@@ -1196,7 +1466,10 @@
     "grossMargin": 24.69,
     "operatingMargin": 14.93,
     "netMargin": 14.25,
-    "netIncome": 1273994
+    "netIncome": 1273994,
+    "totalAssets": 22327282,
+    "totalLiabilities": 3903821,
+    "debtRatio": 17.48
   },
   {
     "symbol": "6790",
@@ -1209,7 +1482,10 @@
     "grossMargin": 26.04,
     "operatingMargin": 9.37,
     "netMargin": 7.6,
-    "netIncome": 809141
+    "netIncome": 809141,
+    "totalAssets": 10471359,
+    "totalLiabilities": 4697087,
+    "debtRatio": 44.86
   },
   {
     "symbol": "6799",
@@ -1222,7 +1498,10 @@
     "grossMargin": 48.19,
     "operatingMargin": 21.45,
     "netMargin": 16.27,
-    "netIncome": 157242
+    "netIncome": 157242,
+    "totalAssets": 1900686,
+    "totalLiabilities": 246908,
+    "debtRatio": 12.99
   },
   {
     "symbol": "6834",
@@ -1235,7 +1514,10 @@
     "grossMargin": 17.9,
     "operatingMargin": 3.12,
     "netMargin": 3.1,
-    "netIncome": 44398
+    "netIncome": 44398,
+    "totalAssets": 2229440,
+    "totalLiabilities": 795261,
+    "debtRatio": 35.67
   },
   {
     "symbol": "6962",
@@ -1248,7 +1530,10 @@
     "grossMargin": 27.15,
     "operatingMargin": 8.95,
     "netMargin": 7.15,
-    "netIncome": 1364287
+    "netIncome": 1364287,
+    "totalAssets": 25618137,
+    "totalLiabilities": 5604783,
+    "debtRatio": 21.88
   },
   {
     "symbol": "7711",
@@ -1261,7 +1546,10 @@
     "grossMargin": 8.54,
     "operatingMargin": 3.86,
     "netMargin": 3.23,
-    "netIncome": 803475
+    "netIncome": 803475,
+    "totalAssets": 11661624,
+    "totalLiabilities": 6809146,
+    "debtRatio": 58.39
   },
   {
     "symbol": "7765",
@@ -1274,7 +1562,10 @@
     "grossMargin": 46.95,
     "operatingMargin": 25.91,
     "netMargin": 21.36,
-    "netIncome": 436927
+    "netIncome": 436927,
+    "totalAssets": 2832672,
+    "totalLiabilities": 780826,
+    "debtRatio": 27.56
   },
   {
     "symbol": "8028",
@@ -1287,7 +1578,10 @@
     "grossMargin": 34.03,
     "operatingMargin": 21.51,
     "netMargin": 16.78,
-    "netIncome": 756578
+    "netIncome": 756578,
+    "totalAssets": 12168934,
+    "totalLiabilities": 7061066,
+    "debtRatio": 58.03
   },
   {
     "symbol": "8046",
@@ -1300,7 +1594,10 @@
     "grossMargin": 9.08,
     "operatingMargin": 4.93,
     "netMargin": 4.85,
-    "netIncome": 1946775
+    "netIncome": 1946775,
+    "totalAssets": 61207398,
+    "totalLiabilities": 15084504,
+    "debtRatio": 24.64
   },
   {
     "symbol": "8150",
@@ -1313,7 +1610,10 @@
     "grossMargin": 10.83,
     "operatingMargin": 4.77,
     "netMargin": 2.07,
-    "netIncome": 495117
+    "netIncome": 495117,
+    "totalAssets": 45352421,
+    "totalLiabilities": 21344058,
+    "debtRatio": 47.06
   },
   {
     "symbol": "8215",
@@ -1326,7 +1626,10 @@
     "grossMargin": 14.45,
     "operatingMargin": -2.11,
     "netMargin": -1.93,
-    "netIncome": -344028
+    "netIncome": -344028,
+    "totalAssets": 23219334,
+    "totalLiabilities": 15662622,
+    "debtRatio": 67.46
   },
   {
     "symbol": "8261",
@@ -1339,7 +1642,10 @@
     "grossMargin": 37.39,
     "operatingMargin": 25.25,
     "netMargin": 21.91,
-    "netIncome": 680080
+    "netIncome": 680080,
+    "totalAssets": 6651529,
+    "totalLiabilities": 718668,
+    "debtRatio": 10.8
   },
   {
     "symbol": "8271",
@@ -1352,7 +1658,10 @@
     "grossMargin": 20.74,
     "operatingMargin": 9.21,
     "netMargin": 7.9,
-    "netIncome": 878529
+    "netIncome": 878529,
+    "totalAssets": 9288767,
+    "totalLiabilities": 4136287,
+    "debtRatio": 44.53
   },
   {
     "symbol": "8940",
@@ -1365,7 +1674,10 @@
     "grossMargin": 49.11,
     "operatingMargin": 4.27,
     "netMargin": 2.82,
-    "netIncome": 44845
+    "netIncome": 44845,
+    "totalAssets": 2157468,
+    "totalLiabilities": 1299344,
+    "debtRatio": 60.23
   },
   {
     "symbol": "9802",
@@ -1378,7 +1690,10 @@
     "grossMargin": 18.29,
     "operatingMargin": 9.2,
     "netMargin": 7,
-    "netIncome": 1210314
+    "netIncome": 1210314,
+    "totalAssets": 21735251,
+    "totalLiabilities": 7949512,
+    "debtRatio": 36.57
   },
   {
     "symbol": "9930",
@@ -1391,6 +1706,9 @@
     "grossMargin": 15.09,
     "operatingMargin": 11.18,
     "netMargin": 8.96,
-    "netIncome": 1254123
+    "netIncome": 1254123,
+    "totalAssets": 11496370,
+    "totalLiabilities": 4669392,
+    "debtRatio": 40.62
   }
 ]

@@ -59,19 +59,19 @@ async function initRegistry() {
 function renderRegistryCard(s: WatchlistStock) {
     const isBull = s.changePercent >= 0;
     return `
-        <a href="/stocks/${s.symbol}" class="glass-card relative p-6 hover:bg-white/[0.04] transition-all group no-underline overflow-hidden border border-white/5 hover:border-white/10">
+        <a href="/stocks/${s.symbol}" class="glass-card relative p-6 hover:bg-surface-hover transition-all group no-underline overflow-hidden border border-border/50 hover:border-border">
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent ${isBull ? 'via-bullish/40' : 'via-bearish/40'} to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             <div class="flex items-start justify-between mb-4">
                 <div class="min-w-0">
-                    <div class="text-sm font-black text-white group-hover:text-accent transition-colors truncate">${s.name}</div>
-                    <div class="text-[10px] font-mono text-white/30 uppercase tracking-widest mt-0.5">${s.symbol}</div>
+                    <div class="text-sm font-black text-text-primary group-hover:text-accent transition-colors truncate">${s.name}</div>
+                    <div class="text-[10px] font-mono text-text-muted/70 uppercase tracking-widest mt-0.5">${s.symbol}</div>
                 </div>
                 <div class="px-2 py-0.5 rounded text-[9px] font-black font-mono ${isBull ? 'bg-bullish/10 text-bullish' : 'bg-bearish/10 text-bearish'}">
                     ${isBull ? '+' : ''}${s.changePercent.toFixed(2)}%
                 </div>
             </div>
-            <div class="text-2xl font-mono font-black text-white/90 tracking-tighter mb-4">${s.price.toFixed(2)}</div>
-            <div class="flex items-center justify-between pt-4 border-t border-white/5 opacity-40 group-hover:opacity-100 transition-opacity">
+            <div class="text-2xl font-mono font-black text-text-primary tracking-tighter mb-4">${s.price.toFixed(2)}</div>
+            <div class="flex items-center justify-between pt-4 border-t border-border/50 opacity-40 group-hover:opacity-100 transition-opacity">
                 <span class="text-[8px] font-mono uppercase tracking-widest">Core_Probe</span>
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </div>
@@ -94,17 +94,17 @@ async function initIntelligence() {
                 <tr class="hover:bg-warning/[0.02] transition-colors cursor-pointer group" onclick="window.location.href='/stocks/${s.symbol}'">
                     <td class="py-5 px-8">
                         <div class="flex flex-col">
-                            <span class="text-[11px] font-black text-white/90 group-hover:text-warning transition-colors">${s.name}</span>
-                            <span class="text-[9px] font-mono text-white/20 uppercase tracking-widest mt-0.5">${s.symbol}</span>
+                            <span class="text-[11px] font-black text-text-primary group-hover:text-warning transition-colors">${s.name}</span>
+                            <span class="text-[9px] font-mono text-text-muted/50 uppercase tracking-widest mt-0.5">${s.symbol}</span>
                         </div>
                     </td>
-                    <td class="text-right py-5 px-8 font-mono text-xs font-bold text-white/70">${s.price.toFixed(2)}</td>
+                    <td class="text-right py-5 px-8 font-mono text-xs font-bold text-text-secondary">${s.price.toFixed(2)}</td>
                     <td class="text-right py-5 px-8 font-mono text-xs font-black ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
                         ${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%
                     </td>
                     <td class="text-right py-5 px-8 font-mono text-sm font-black text-warning">${s.yield.toFixed(2)}%</td>
-                    <td class="text-right py-5 px-8 font-mono text-xs text-white/40">${s.pe.toFixed(1)}</td>
-                    <td class="text-right py-5 px-8 font-mono text-xs text-white/40">${s.pb.toFixed(2)}</td>
+                    <td class="text-right py-5 px-8 font-mono text-xs text-text-muted">${s.pe.toFixed(1)}</td>
+                    <td class="text-right py-5 px-8 font-mono text-xs text-text-muted">${s.pb.toFixed(2)}</td>
                 </tr>
             `
                 )

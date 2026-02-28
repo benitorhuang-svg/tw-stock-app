@@ -122,7 +122,7 @@ const showNoData = price <= 0;
 
     <!-- Sub-indicator toggles (top-right) -->
     <div
-        class="absolute top-4 right-4 z-40 flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface/70 backdrop-blur-md border border-white/[0.08]"
+        class="absolute top-4 right-4 z-40 flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface/70 backdrop-blur-md border border-border"
     >
         {
             subIndicators.map((ind, i) => (
@@ -167,7 +167,7 @@ const showNoData = price <= 0;
 
     <!-- Indicators Strip (MACD / RSI Toggleable) -->
     <div
-        class="indicator-container h-[140px] px-10 border-t border-white/[0.05] bg-black/20 flex flex-col relative"
+        class="indicator-container h-[140px] px-10 border-t border-border/50 bg-input-bg/50 flex flex-col relative"
         id="indicator-module"
     >
         <!-- MACD View -->
@@ -225,7 +225,7 @@ const showNoData = price <= 0;
         showNoData && (
             <div class="absolute inset-0 flex flex-col items-center justify-center bg-[#050914]/95 z-50 backdrop-blur-sm">
                 <div class="w-12 h-12 border-2 border-accent/20 border-t-accent rounded-full animate-spin mb-4" />
-                <p class="text-xs font-mono text-white/40 uppercase tracking-[0.3em]">
+                <p class="text-xs font-mono text-text-muted uppercase tracking-[0.3em]">
                     Synching Market Nodes...
                 </p>
             </div>

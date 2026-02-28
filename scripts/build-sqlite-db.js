@@ -116,6 +116,7 @@ try {
         gross_margin REAL DEFAULT 0,
         operating_margin REAL DEFAULT 0,
         net_margin REAL DEFAULT 0,
+        debt_ratio REAL DEFAULT 0,
         ma5 REAL DEFAULT 0,
         ma20 REAL DEFAULT 0,
         ma60 REAL DEFAULT 0,
@@ -134,6 +135,7 @@ try {
         operating_margin REAL,
         net_margin REAL,
         revenue_yoy REAL,
+        debt_ratio REAL,
         PRIMARY KEY (symbol, year, quarter),
         FOREIGN KEY (symbol) REFERENCES stocks(symbol)
     );
@@ -450,8 +452,8 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
 
     const insertLatest = db.prepare(`
         INSERT OR REPLACE INTO latest_prices 
-        (symbol, date, open, high, low, close, volume, turnover, change, change_pct, pe, pb, yield, revenue_yoy, eps, gross_margin, operating_margin, net_margin)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (symbol, date, open, high, low, close, volume, turnover, change, change_pct, pe, pb, yield, revenue_yoy, eps, gross_margin, operating_margin, net_margin, debt_ratio)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const insertLatestBatch = db.transaction(prices => {
@@ -474,7 +476,8 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
                 data.eps || 0,
                 data.grossMargin || 0,
                 data.operatingMargin || 0,
-                data.netMargin || 0
+                data.netMargin || 0,
+                data.debtRatio || 0
             );
         }
     });
@@ -551,8 +554,8 @@ if (fs.existsSync(FINANCIALS_JSON)) {
     console.log('📈 正在匯入各期財務報表...');
     const financials = JSON.parse(fs.readFileSync(FINANCIALS_JSON, 'utf-8'));
     const insertFin = db.prepare(`
-        INSERT OR REPLACE INTO fundamentals (symbol, year, quarter, eps, gross_margin, operating_margin, net_margin, revenue_yoy)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT OR REPLACE INTO fundamentals (symbol, year, quarter, eps, gross_margin, operating_margin, net_margin, revenue_yoy, debt_ratio)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     // 獲取營收 YoY 對照
@@ -573,14 +576,15 @@ if (fs.existsSync(FINANCIALS_JSON)) {
                 item.grossMargin || 0,
                 item.operatingMargin || 0,
                 item.netMargin || 0,
-                revYoY
+                revYoY,
+                item.debtRatio || 0
             );
 
             // 同時更新最新價格中的基本面快照
             db.prepare(
                 `
                 UPDATE latest_prices 
-                SET eps = ?, gross_margin = ?, operating_margin = ?, net_margin = ?, revenue_yoy = ?
+                SET eps = ?, gross_margin = ?, operating_margin = ?, net_margin = ?, revenue_yoy = ?, debt_ratio = ?
                 WHERE symbol = ?
             `
             ).run(
@@ -589,6 +593,7 @@ if (fs.existsSync(FINANCIALS_JSON)) {
                 item.operatingMargin || 0,
                 item.netMargin || 0,
                 revYoY,
+                item.debtRatio || 0,
                 item.symbol
             );
         }
@@ -736,7 +741,10 @@ if (fs.existsSync(PRICES_DIR)) {
     console.log('\n\n📈 正在計算技術面指標 (MA5, MA20, MA60, MA120)...');
 
     // Ensure ma60/ma120 columns exist (migration for existing DBs)
-    const existingCols = db.prepare("PRAGMA table_info('latest_prices')").all().map(c => c.name);
+    const existingCols = db
+        .prepare("PRAGMA table_info('latest_prices')")
+        .all()
+        .map(c => c.name);
     if (!existingCols.includes('ma60')) {
         db.exec('ALTER TABLE latest_prices ADD COLUMN ma60 REAL DEFAULT 0');
         console.log('   ➕ 新增 ma60 欄位');
@@ -747,7 +755,9 @@ if (fs.existsSync(PRICES_DIR)) {
     }
 
     const symbols = db.prepare('SELECT symbol FROM latest_prices').all();
-    const updateTech = db.prepare('UPDATE latest_prices SET ma5 = ?, ma20 = ?, ma60 = ?, ma120 = ? WHERE symbol = ?');
+    const updateTech = db.prepare(
+        'UPDATE latest_prices SET ma5 = ?, ma20 = ?, ma60 = ?, ma120 = ? WHERE symbol = ?'
+    );
     const calcBatch = db.transaction(list => {
         for (const { symbol } of list) {
             const ma5Row = db

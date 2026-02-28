@@ -106,7 +106,7 @@
     .divider {
         width: 1px;
         height: 0.75rem;
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: var(--color-surface-hover);
         flex-shrink: 0;
     }
 </style>

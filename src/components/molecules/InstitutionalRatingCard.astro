@@ -11,28 +11,28 @@ const { pe, yield: dividendYield } = Astro.props;
 ---
 
 <div class="glass-card p-6 border-l-4 border-l-accent/40 bg-accent/[0.02]">
-    <h3 class="text-[9px] font-mono font-black text-white/30 uppercase tracking-[0.3em] mb-4">
+    <h3 class="text-[9px] font-mono font-black text-text-muted/70 uppercase tracking-[0.3em] mb-4">
         Institutional Rating
     </h3>
     <div class="space-y-4">
         <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono text-white/60">P/E Domain</span>
-            <span class="text-[10px] font-mono font-bold text-white"
+            <span class="text-[10px] font-mono text-text-muted">P/E Domain</span>
+            <span class="text-[10px] font-mono font-bold text-text-primary"
                 >{pe > 0 ? pe.toFixed(1) : 'N/A'}</span
             >
         </div>
         <div class="flex items-center justify-between">
-            <span class="text-[10px] font-mono text-white/60">Yield_Expect</span>
+            <span class="text-[10px] font-mono text-text-muted">Yield_Expect</span>
             <span class="text-[10px] font-mono font-bold text-accent"
                 >{dividendYield?.toFixed(2)}%</span
             >
         </div>
-        <div class="pt-4 border-t border-white/5 flex items-center justify-between">
-            <span class="text-[10px] font-mono text-white/40 uppercase font-black"
+        <div class="pt-4 border-t border-border/50 flex items-center justify-between">
+            <span class="text-[10px] font-mono text-text-muted uppercase font-black"
                 >Sentiment_Score</span
             >
             <div class="flex items-center gap-2">
-                <div class="w-16 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                <div class="w-16 h-1.5 bg-surface-hover/50 rounded-full overflow-hidden">
                     <div class="h-full bg-accent w-[72%]"></div>
                 </div>
                 <span class="text-[10px] font-mono font-bold text-accent">7.2</span>

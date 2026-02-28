@@ -1,7 +1,7 @@
 <script lang="ts">
     /** * MarketGridHeader.svelte - Market Table Header Molecule * Part of Atomic Design: Molecules
     (Standardizing the sticky behavior) */
-    import StockHeaderCell from './StockHeaderCell.svelte';
+    import StockHeaderCell from '../atoms/StockHeaderCell.svelte';
 
     interface Props {
         headers: any[];
@@ -27,7 +27,7 @@
                 {currentSortCol}
                 {currentSortAsc}
                 stickyTop="var(--toolbar-nexus-height, 0px)"
-                on:sort={e => onSort(e.detail)}
+                onSort={onSort}
             />
         {/each}
     </tr>

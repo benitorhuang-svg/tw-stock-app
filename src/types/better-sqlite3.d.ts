@@ -5,22 +5,22 @@ declare module 'better-sqlite3' {
     interface Database {
         prepare(sql: string): Statement;
         exec(sql: string): void;
-        pragma(pragma: string, options?: { simple?: boolean }): any;
+        pragma(pragma: string, options?: { simple?: boolean }): Record<string, unknown>;
         close(): void;
         readonly open: boolean;
         readonly name: string;
         readonly memory: boolean;
         readonly readonly: boolean;
         readonly inTransaction: boolean;
-        transaction<T extends (...args: any[]) => any>(fn: T): T;
+        transaction<T extends (...args: unknown[]) => unknown>(fn: T): T;
     }
 
     interface Statement {
-        run(...params: any[]): RunResult;
-        get(...params: any[]): any;
-        all(...params: any[]): any[];
-        iterate(...params: any[]): IterableIterator<any>;
-        bind(...params: any[]): Statement;
+        run(...params: unknown[]): RunResult;
+        get<T = Record<string, unknown>>(...params: unknown[]): T | undefined;
+        all<T = Record<string, unknown>>(...params: unknown[]): T[];
+        iterate<T = Record<string, unknown>>(...params: unknown[]): IterableIterator<T>;
+        bind(...params: unknown[]): Statement;
         readonly source: string;
         readonly reader: boolean;
     }
@@ -39,7 +39,7 @@ declare module 'better-sqlite3' {
         readonly?: boolean;
         fileMustExist?: boolean;
         timeout?: number;
-        verbose?: (message?: any) => void;
+        verbose?: (message?: unknown) => void;
         nativeBinding?: string;
     }
 

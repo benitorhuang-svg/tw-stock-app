@@ -44,18 +44,18 @@ export function initCyberCalendar(id: string, initialValue: string) {
 
         if (type === 'other')
             classes +=
-                'opacity-[0.02] cursor-default pointer-events-none border-transparent bg-white/5 ';
+                'opacity-[0.02] cursor-default pointer-events-none border-transparent bg-surface-hover ';
         else if (ratio === null) classes += 'bg-[#1e40af]/50 text-blue-200/70 border-[#1e3a5f] ';
         else if (ratio >= 1.0)
             classes +=
                 ratio >= 1.2
                     ? 'bg-[#ef4444] text-white border-[#b91c1c] '
-                    : 'bg-[#ef4444]/60 text-white/90 border-[#b91c1c]/40 ';
+                    : 'bg-[#ef4444]/60 text-text-primary border-[#b91c1c]/40 ';
         else
             classes +=
                 ratio <= 0.8
                     ? 'bg-[#22c55e] text-white border-[#15803d] '
-                    : 'bg-[#22c55e]/60 text-white/90 border-[#15803d]/40 ';
+                    : 'bg-[#22c55e]/60 text-text-primary border-[#15803d]/40 ';
 
         if (type === 'selected')
             classes += 'ring-4 ring-white shadow-xl z-10 scale-105 -translate-y-1 ';

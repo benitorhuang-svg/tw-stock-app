@@ -49,7 +49,7 @@
 </script>
 
 <div
-    class="flow-price-chart-organism bg-surface-deep/40 rounded-[2.5rem] border border-white/[0.03] p-10 mb-20 shadow-2xl relative overflow-hidden backdrop-blur-3xl group"
+    class="flow-price-chart-organism bg-surface-deep/40 rounded-[2.5rem] border border-border/30 p-10 mb-20 shadow-2xl relative overflow-hidden backdrop-blur-3xl group"
 >
     <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
         <div>
@@ -71,10 +71,10 @@
                     </svg>
                 </span>
                 <div>
-                    <h3 class="text-xl font-black text-white tracking-widest uppercase">
+                    <h3 class="text-xl font-black text-text-primary tracking-widest uppercase">
                         Institutional_Hybrid_Matrix
                     </h3>
-                    <p class="text-[10px] font-mono text-white/30 mt-1 uppercase tracking-[0.4em]">
+                    <p class="text-[10px] font-mono text-text-muted/70 mt-1 uppercase tracking-[0.4em]">
                         Multi-Chain Flow Analysis + Price Correlator
                     </p>
                 </div>
@@ -82,20 +82,20 @@
         </div>
 
         <!-- Legend -->
-        <div class="flex items-center gap-8 p-3 rounded-2xl bg-black/20 border border-white/5">
+        <div class="flex items-center gap-8 p-3 rounded-2xl bg-input-bg/50 border border-border/50">
             <div class="flex items-center gap-2">
                 <div
                     class="w-3 h-3 rounded bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"
                 ></div>
-                <span class="text-[9px] font-mono font-black text-white/50 uppercase">Foreign</span>
+                <span class="text-[9px] font-mono font-black text-text-muted uppercase">Foreign</span>
             </div>
             <div class="flex items-center gap-2">
                 <div class="w-3 h-3 rounded bg-bullish shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-                <span class="text-[9px] font-mono font-black text-white/50 uppercase">Invest</span>
+                <span class="text-[9px] font-mono font-black text-text-muted uppercase">Invest</span>
             </div>
             <div class="flex items-center gap-2">
                 <div class="w-3 h-2 rounded-full border-2 border-yellow-400"></div>
-                <span class="text-[9px] font-mono font-black text-white/50 uppercase"
+                <span class="text-[9px] font-mono font-black text-text-muted uppercase"
                     >Price_Index</span
                 >
             </div>
@@ -112,7 +112,7 @@
                 x2={width - padding}
                 y2={height / 2}
                 stroke="currentColor"
-                class="text-white/10"
+                class="text-text-muted/30"
                 stroke-width="1"
             />
 

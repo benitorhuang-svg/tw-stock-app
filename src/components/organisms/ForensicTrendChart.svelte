@@ -6,7 +6,7 @@
         price: number;
     }
 
-    const { symbol, price } = $props<Props>();
+    const { symbol, price }: Props = $props();
 
     let history: any = $state(null);
     let isLoading = $state(true);
@@ -95,7 +95,7 @@
             </div>
             <div>
                 <h3
-                    class="text-xs font-black text-white uppercase tracking-widest leading-none mb-1"
+                    class="text-xs font-black text-text-primary uppercase tracking-widest leading-none mb-1"
                 >
                     Forensic_Pulse_Trend
                 </h3>
@@ -106,13 +106,13 @@
         </div>
 
         <div
-            class="flex items-center bg-black/40 p-1 rounded-lg border border-white/5 backdrop-blur-sm"
+            class="flex items-center bg-input-bg p-1 rounded-lg border border-border/50 backdrop-blur-sm"
         >
             <button
                 class="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'chips'
                     ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'chips')}
             >
                 Institutional_Flows
@@ -121,7 +121,7 @@
                 class="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'lending'
                     ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'lending')}
             >
                 Security_Shorting
@@ -130,7 +130,7 @@
                 class="px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'strength'
                     ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'strength')}
             >
                 Chip_Strength
@@ -146,7 +146,7 @@
         </div>
     {:else if error}
         <div
-            class="h-[300px] flex items-center justify-center border border-dashed border-white/10 rounded-xl"
+            class="h-[300px] flex items-center justify-center border border-dashed border-border rounded-xl"
         >
             <span class="text-[10px] font-mono text-bearish uppercase tracking-[0.3em]"
                 >Error: {error}</span
@@ -329,16 +329,16 @@
             {#if hoveredIdx !== null}
                 {@const d = chartData[hoveredIdx]}
                 <div
-                    class="absolute top-0 pointer-events-none bg-black/80 backdrop-blur-md border border-white/10 p-2 rounded shadow-xl min-w-[120px] transition-all duration-75"
+                    class="absolute top-0 pointer-events-none bg-overlay backdrop-blur-md border border-border p-2 rounded shadow-xl min-w-[120px] transition-all duration-75"
                     style="left: {scaleX(hoveredIdx, chartData.length) +
                         10}px; transform: translateX({hoveredIdx > chartData.length / 2
                         ? '-110%'
                         : '10%'})"
                 >
-                    <div class="text-[10px] font-black text-white/90 mb-1">{d.date}</div>
+                    <div class="text-[10px] font-black text-text-primary mb-1">{d.date}</div>
                     <div class="flex justify-between gap-4">
                         <span class="text-[8px] font-mono text-text-muted/60 uppercase">Price</span>
-                        <span class="text-[10px] font-bold text-white">{d.close.toFixed(2)}</span>
+                        <span class="text-[10px] font-bold text-text-primary">{d.close.toFixed(2)}</span>
                     </div>
                     {#if activeTab === 'chips'}
                         <div class="flex justify-between gap-4 mt-1">
@@ -380,13 +380,13 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div class="p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+            <div class="p-3 bg-surface-hover/20 border border-border/50 rounded-xl">
                 <span class="text-[8px] font-mono text-text-muted/40 uppercase block mb-1"
                     >Max_Price_60D</span
                 >
-                <span class="text-xs font-black text-white">{maxPrice.toFixed(1)}</span>
+                <span class="text-xs font-black text-text-primary">{maxPrice.toFixed(1)}</span>
             </div>
-            <div class="p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+            <div class="p-3 bg-surface-hover/20 border border-border/50 rounded-xl">
                 <span class="text-[8px] font-mono text-text-muted/40 uppercase block mb-1"
                     >Price_Volatility</span
                 >
@@ -394,15 +394,15 @@
                     >{(((maxPrice - minPrice) / minPrice) * 100).toFixed(1)}%</span
                 >
             </div>
-            <div class="p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+            <div class="p-3 bg-surface-hover/20 border border-border/50 rounded-xl">
                 <span class="text-[8px] font-mono text-text-muted/40 uppercase block mb-1"
                     >Power_Index</span
                 >
-                <span class="text-xs font-black text-white"
+                <span class="text-xs font-black text-text-primary"
                     >{(chartData[chartData.length - 1]?.power_index || 0).toFixed(1)}M</span
                 >
             </div>
-            <div class="p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+            <div class="p-3 bg-surface-hover/20 border border-border/50 rounded-xl">
                 <span class="text-[8px] font-mono text-text-muted/40 uppercase block mb-1"
                     >Trust_Score</span
                 >
@@ -422,6 +422,6 @@
 
 <style>
     polyline {
-        filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.1));
+        filter: drop-shadow(0 0 2px var(--color-accent-glow));
     }
 </style>

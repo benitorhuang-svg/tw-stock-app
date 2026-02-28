@@ -57,7 +57,7 @@ const todayDisplay = value || '2026-02-24';
                 >
             </div>
             <span
-                class="text-base font-mono font-black text-white tracking-widest leading-none mt-1"
+                class="text-base font-mono font-black text-text-primary tracking-widest leading-none mt-1"
                 id={`${id}-label`}>{todayDisplay}</span
             >
         </div>
@@ -68,7 +68,7 @@ const todayDisplay = value || '2026-02-24';
     <!-- Popover -->
     <div
         id={`${id}-popover`}
-        class="hidden absolute top-full left-0 mt-3 z-[200] w-72 bg-[#0d1117] border border-accent/30 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.8),0_0_0_1px_rgba(59,130,246,0.1)] overflow-hidden animate-pop-in origin-top"
+        class="hidden absolute top-full left-0 mt-3 z-[200] w-72 bg-elevated border border-accent/30 rounded-2xl shadow-elevated overflow-hidden animate-pop-in origin-top"
     >
         <div class="p-4 bg-surface/40 border-b border-border/20 flex items-center justify-between">
             <button
@@ -76,7 +76,8 @@ const todayDisplay = value || '2026-02-24';
                 class="nav-prev p-1.5 hover:bg-accent/10 rounded-lg text-accent transition-all cursor-pointer"
                 >◀</button
             >
-            <span class="month-year font-mono font-black text-white text-base tracking-[0.1em]"
+            <span
+                class="month-year font-mono font-black text-text-primary text-base tracking-[0.1em]"
             ></span>
             <button
                 type="button"

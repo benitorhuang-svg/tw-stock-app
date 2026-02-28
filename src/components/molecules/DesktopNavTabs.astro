@@ -5,32 +5,38 @@ import NavTab from '../atoms/NavTab.astro';
 const currentPath = Astro.url.pathname;
 const isActive = (path: string) =>
     currentPath === path || (path !== '/' && currentPath.startsWith(path));
+
+const filteredItems = NAV_ITEMS.filter(
+    item =>
+        item.label !== '數據觀測' &&
+        item.label !== '即時開盤' &&
+        item.label !== '市場漲幅' &&
+        item.label !== '法人監控' &&
+        item.label !== '選股' &&
+        item.label !== '分析' &&
+        item.label !== '自選' &&
+        item.label !== '策略回測'
+);
 ---
 
-<nav class="hidden md:flex items-center" aria-label="主要導覽" id="desktop-nav">
-    <div class="top-nav-tabs">
-        {
-            NAV_ITEMS.filter(
-                item =>
-                    item.label !== '數據觀測' &&
-                    item.label !== '即時開盤' &&
-                    item.label !== '市場漲幅' &&
-                    item.label !== '法人監控' &&
-                    item.label !== '選股' &&
-                    item.label !== '分析'
-            ).map(item => (
-                <NavTab
-                    variant="desktop"
-                    path={item.path}
-                    label={item.label}
-                    icon={item.icon}
-                    isActive={isActive(item.path)}
-                />
-            ))
-        }
-        <div class="tab-indicator" id="tab-indicator"></div>
-    </div>
-</nav>
+{
+    filteredItems.length > 0 && (
+        <nav class="hidden md:flex items-center" aria-label="主要導覽" id="desktop-nav">
+            <div class="top-nav-tabs">
+                {filteredItems.map(item => (
+                    <NavTab
+                        variant="desktop"
+                        path={item.path}
+                        label={item.label}
+                        icon={item.icon}
+                        isActive={isActive(item.path)}
+                    />
+                ))}
+                <div class="tab-indicator" id="tab-indicator" />
+            </div>
+        </nav>
+    )
+}
 
 <script>
     function updateActiveTabs() {
@@ -52,7 +58,16 @@ const isActive = (path: string) =>
         document.querySelectorAll<HTMLElement>('.top-nav-tab').forEach(updateFn);
         document.querySelectorAll<HTMLElement>('.mobile-nav-item').forEach(updateFn);
 
-        ['/database', '/live', '/', '/institutional', '/screener', '/stocks'].forEach(basePath => {
+        [
+            '/database',
+            '/live',
+            '/',
+            '/institutional',
+            '/screener',
+            '/stocks',
+            '/watchlist',
+            '/strategy',
+        ].forEach(basePath => {
             const btn = document.querySelector(`header a[href="${basePath}"]`) as HTMLElement;
             if (btn) {
                 const isActive = currentPath === basePath || currentPath.startsWith(basePath + '/');

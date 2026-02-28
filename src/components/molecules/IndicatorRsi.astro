@@ -14,16 +14,17 @@ const { chartW, gap, rsiValues } = Astro.props;
 <div class="indicator-view hidden flex flex-col h-full" id="view-rsi">
     <div class="flex items-center justify-between py-2 px-2">
         <div class="flex items-center gap-4">
-            <span class="text-[9px] font-mono font-bold text-white/30 tracking-widest uppercase"
+            <span
+                class="text-[9px] font-mono font-bold text-text-muted/70 tracking-widest uppercase"
                 >RSI(14)</span
             >
             <div class="flex gap-3 text-[8px] font-mono">
-                <span class="text-white/60">Overbought: 70</span>
-                <span class="text-white/60">Oversold: 30</span>
+                <span class="text-text-muted">Overbought: 70</span>
+                <span class="text-text-muted">Oversold: 30</span>
             </div>
         </div>
         <button
-            class="indicator-switch text-[8px] font-mono text-accent hover:text-white transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
+            class="indicator-switch text-[8px] font-mono text-accent hover:text-text-primary transition-colors uppercase border border-accent/20 px-2 py-0.5 rounded"
             data-to="macd"
         >
             Switch to MACD

@@ -18,7 +18,7 @@ const { upCount, downCount, flatCount, totalStocks } = Astro.props;
     <div
         class="absolute right-[-10px] top-[-10px] text-6xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
     >
-        📊
+        ??
     </div>
     <div class="flex items-center justify-between mb-3">
         <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
@@ -26,17 +26,17 @@ const { upCount, downCount, flatCount, totalStocks } = Astro.props;
         >
         <div class="w-2 h-2 rounded-full bg-bullish animate-pulse"></div>
     </div>
-    <h3 class="text-lg font-black text-white/90 mb-1">Sentiment Vector</h3>
+    <h3 class="text-lg font-black text-text-primary mb-1">Sentiment Vector</h3>
     <div class="flex items-end justify-between mt-auto">
         <div class="flex flex-col">
-            <span class="text-[8px] text-white/20 uppercase font-mono">B/B Ratio</span>
+            <span class="text-[8px] text-text-muted/50 uppercase font-mono">B/B Ratio</span>
             <span class="text-xl font-mono font-bold text-bullish" id="breadth-ratio-hud">
                 {(upCount / Math.max(1, downCount)).toFixed(2)}
             </span>
         </div>
         <div class="text-right">
-            <div class="text-[8px] text-white/20 uppercase font-mono">Up/Down</div>
-            <div class="text-[10px] font-mono font-bold text-white/70">
+            <div class="text-[8px] text-text-muted/50 uppercase font-mono">Up/Down</div>
+            <div class="text-[10px] font-mono font-bold text-text-secondary">
                 <span class="text-bullish" id="hud-up">{upCount}</span> / <span
                     class="text-bearish"
                     id="hud-down">{downCount}</span
@@ -44,7 +44,7 @@ const { upCount, downCount, flatCount, totalStocks } = Astro.props;
             </div>
         </div>
     </div>
-    <div class="mt-4 h-1.5 w-full bg-white/5 rounded-full overflow-hidden flex">
+    <div class="mt-4 h-1.5 w-full bg-surface-hover/50 rounded-full overflow-hidden flex">
         <div
             id="hud-bar-up"
             class="h-full bg-bullish transition-all duration-1000"
@@ -53,7 +53,7 @@ const { upCount, downCount, flatCount, totalStocks } = Astro.props;
         </div>
         <div
             id="hud-bar-flat"
-            class="h-full bg-white/20 transition-all duration-1000"
+            class="h-full bg-surface-hover transition-all duration-1000"
             style={`width: ${(flatCount / totalStocks) * 100}%`}
         >
         </div>

@@ -1,9 +1,9 @@
 /**
  * Atomic Sector Filter Utility
- * 
+ *
  * Single source of truth for sector matching logic.
  * Used by both DashboardController (historical data) and LiveDataTable (real-time data).
- * 
+ *
  * Design: Maps English sector keys to Chinese terms for robust matching,
  * ensuring data from any source (API, DB, or legacy data) can be filtered consistently.
  */
@@ -35,7 +35,7 @@ export const SECTOR_OPTIONS = Object.entries(SECTOR_MAP).map(([value, label]) =>
 /**
  * Check if a stock matches the given sector filter.
  * Handles English keys, Chinese fallbacks, and ETF special logic.
- * 
+ *
  * @param sectorKey - The filter key (e.g. 'machinery', 'etf')
  * @param stockSector - The sector string from the stock data (can be English or Chinese)
  * @param stockCode - The stock symbol (used for ETF detection via '00' prefix)

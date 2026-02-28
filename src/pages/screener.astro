@@ -5,10 +5,7 @@
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
 import ScreenerController from '../components/organisms/ScreenerController.svelte';
-import ForensicFilteringMatrix from '../components/organisms/ForensicFilteringMatrix.astro';
 import ForensicTicker from '../components/molecules/ForensicTicker.astro';
-import BacktestHeatmap from '../components/molecules/BacktestHeatmap.astro';
-import ScreenerResults from '../components/organisms/ScreenerResults.svelte';
 
 try {
     const svc = await import('../utils/stockDataService');
@@ -35,14 +32,7 @@ const presetStrategies = allStrategies.filter(s => supportedIds.includes(s.id));
 
 <MainTerminal title="選股中心">
     <div class="relative pb-20 pt-0 px-4 lg:px-6">
-        <ScreenerController client:load presetStrategies={presetStrategies}>
-            <div slot="matrix">
-                <ForensicFilteringMatrix />
-            </div>
-            <div slot="backtest">
-                <BacktestHeatmap />
-            </div>
-        </ScreenerController>
+        <ScreenerController client:idle presetStrategies={presetStrategies} />
 
         <!-- Signal Stream -->
         <div

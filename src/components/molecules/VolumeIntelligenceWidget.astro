@@ -16,7 +16,7 @@ const { totalVolume } = Astro.props;
     <div
         class="absolute right-[-10px] top-[-10px] text-6xl opacity-[0.03] group-hover:opacity-[0.08] transition-opacity group-hover:scale-110 duration-500"
     >
-        🌊
+        ??
     </div>
     <div class="flex items-center justify-between mb-3">
         <span class="text-[10px] font-mono font-bold text-accent uppercase tracking-widest"
@@ -24,16 +24,16 @@ const { totalVolume } = Astro.props;
         >
         <div class="w-2 h-2 rounded-full bg-accent animate-pulse"></div>
     </div>
-    <h3 class="text-lg font-black text-white/90 mb-1">Volume Aggregate</h3>
+    <h3 class="text-lg font-black text-text-primary mb-1">Volume Aggregate</h3>
     <div class="flex items-end justify-between mt-auto">
         <div class="flex flex-col">
-            <span class="text-[8px] text-white/20 uppercase font-mono">Total Volume</span>
-            <span class="text-xl font-mono font-bold text-white/90" id="hud-volume">
+            <span class="text-[8px] text-text-muted/50 uppercase font-mono">Total Volume</span>
+            <span class="text-xl font-mono font-bold text-text-primary" id="hud-volume">
                 {fmtVol(totalVolume)}
             </span>
         </div>
         <div class="text-right">
-            <span class="text-[8px] text-white/20 uppercase font-mono">Uplink Status</span>
+            <span class="text-[8px] text-text-muted/50 uppercase font-mono">Uplink Status</span>
             <div class="text-[10px] font-mono font-bold text-accent">STABLE</div>
         </div>
     </div>

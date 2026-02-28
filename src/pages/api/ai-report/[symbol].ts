@@ -72,7 +72,7 @@ export const GET: APIRoute = async ({ params }) => {
     return new Response(JSON.stringify({ reportSections, suggestedAlerts }), {
         headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
+            'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
         },
     });
 };

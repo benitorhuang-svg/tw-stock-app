@@ -65,7 +65,7 @@ export async function getAvailableStocks(): Promise<string[]> {
         if (!response.ok) return [];
 
         const stocks = await response.json();
-        return stocks.map((s: any) => s.symbol);
+        return stocks.map((s: { symbol: string }) => s.symbol);
     } catch {
         return [];
     }

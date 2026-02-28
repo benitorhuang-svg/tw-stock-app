@@ -15,7 +15,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h3
-                class="text-sm font-black text-white/90 tracking-[0.2em] uppercase flex items-center gap-3"
+                class="text-sm font-black text-text-primary tracking-[0.2em] uppercase flex items-center gap-3"
             >
                 <span class="p-1.5 bg-accent/20 rounded-lg text-accent">
                     <svg
@@ -35,14 +35,14 @@
                 </span>
                 Margin_Analytics_Engine
             </h3>
-            <p class="text-[9px] font-mono text-white/20 mt-1 tracking-widest uppercase">
+            <p class="text-[9px] font-mono text-text-muted/50 mt-1 tracking-widest uppercase">
                 Liquidity_Leverage_Monitoring • Realtime_Uplink
             </p>
         </div>
 
         <div class="flex items-center gap-2">
             <button
-                class="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black font-mono text-white/40 hover:bg-white/10 transition-colors uppercase tracking-widest"
+                class="px-3 py-1.5 bg-surface-hover border border-border rounded-lg text-[10px] font-black font-mono text-text-muted hover:bg-surface-hover transition-colors uppercase tracking-widest"
             >
                 FETCH_LATEST
             </button>

@@ -180,7 +180,7 @@
                     {@const isUp = s.changePct > 0}
                     {@const isDown = s.changePct < 0}
                     <tr
-                        class="group cursor-pointer transition-colors hover:bg-white/[0.02]"
+                        class="group cursor-pointer transition-colors hover:bg-surface-hover/30"
                         class:active-row={expandedCode === s.code}
                         onclick={e => toggleExpand(s.code, e)}
                     >

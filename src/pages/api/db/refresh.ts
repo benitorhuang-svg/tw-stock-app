@@ -27,7 +27,9 @@ const closeAllClients = () => {
     isRunning = false;
     currentStep = 0;
     for (const client of clients) {
-        try { client.close(); } catch {}
+        try {
+            client.close();
+        } catch {}
     }
     clients.clear();
 };
@@ -58,16 +60,22 @@ export const POST: APIRoute = async ({ request }) => {
             const safeClose = () => {
                 if (isClosed) return;
                 isClosed = true;
-                try { controller.close(); } catch {}
+                try {
+                    controller.close();
+                } catch {}
             };
 
             const clientSession = { enqueue: safeEnqueue, close: safeClose };
             clients.add(clientSession);
 
-            request.signal.addEventListener('abort', () => {
-                isClosed = true;
-                clients.delete(clientSession);
-            }, { once: true });
+            request.signal.addEventListener(
+                'abort',
+                () => {
+                    isClosed = true;
+                    clients.delete(clientSession);
+                },
+                { once: true }
+            );
 
             const runScript = (script: string, args: string[] = []) => {
                 return new Promise<number>(resolve => {
@@ -110,9 +118,7 @@ export const POST: APIRoute = async ({ request }) => {
                         'scripts/fetch-revenue.mjs',
                     ]);
 
-                    broadcast(
-                        '\n>> └─ 正在同步深層鑑識數據（法人細項、股權分散、融資融券）...\n'
-                    );
+                    broadcast('\n>> └─ 正在同步深層鑑識數據（法人細項、股權分散、融資融券）...\n');
 
                     // 第二波：爬蟲類（並行）
                     await runParallel([
@@ -123,9 +129,7 @@ export const POST: APIRoute = async ({ request }) => {
 
                     // ── 第 3 階段：快照建置 ──
                     currentStep = 3;
-                    broadcast(
-                        '\n>> [3/6] 【快照建置】正在匯總異質資料並建置全系統高速快照...\n'
-                    );
+                    broadcast('\n>> [3/6] 【快照建置】正在匯總異質資料並建置全系統高速快照...\n');
                     const snapCode = await runScript('scripts/build-price-snapshot.js');
                     if (snapCode !== 0) {
                         broadcast(`\n[警告] 快照建置未正常結束（結束碼: ${snapCode}）\n`);
@@ -154,16 +158,18 @@ export const POST: APIRoute = async ({ request }) => {
                     if (etlCode !== 0) {
                         broadcast(`\n[警告] 延伸資料運算未正常結束（結束碼: ${etlCode}）\n`);
                     } else {
-                        broadcast('>> └─ 已完成：tech_features / chip_features / valuation_features\n');
-                        broadcast('>> └─ 已完成：institutional_snapshot / institutional_trend / sector_daily\n');
+                        broadcast(
+                            '>> └─ 已完成：tech_features / chip_features / valuation_features\n'
+                        );
+                        broadcast(
+                            '>> └─ 已完成：institutional_snapshot / institutional_trend / sector_daily\n'
+                        );
                         broadcast('>> └─ 已完成：latest_prices 回填法人籌碼與產業分類\n');
                     }
 
                     // ── 第 6 階段：同步完成 ──
                     currentStep = 6;
-                    broadcast(
-                        '\n\n[完成] 【同步完成】全系統數據同步完畢！四層架構已就緒。\n'
-                    );
+                    broadcast('\n\n[完成] 【同步完成】全系統數據同步完畢！四層架構已就緒。\n');
                     broadcast('>> 原始層 → 運算層 → 聚合層 → 快照層　全數更新完成。\n');
                     broadcast('>> 各分頁可即時讀取快照/聚合層資料，零延遲回應。\n');
                 } catch (err) {

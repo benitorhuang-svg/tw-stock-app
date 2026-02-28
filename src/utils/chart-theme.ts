@@ -69,7 +69,7 @@ export function getChartColors(): ChartThemeColors {
 /** Listen for theme changes and call callback */
 export function onThemeChange(callback: () => void): () => void {
     if (typeof document === 'undefined') return () => {};
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver(mutations => {
         for (const m of mutations) {
             if (m.attributeName === 'class') {
                 callback();

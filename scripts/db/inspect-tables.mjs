@@ -1,8 +1,5 @@
 import Database from 'better-sqlite3';
 
-
-
-
 const dbPath = path.resolve(process.cwd(), 'public', 'data', 'stocks.db');
 const db = new Database(dbPath, { readonly: true, fileMustExist: true });
 const tables = db

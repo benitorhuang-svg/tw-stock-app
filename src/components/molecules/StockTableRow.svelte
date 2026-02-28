@@ -1,36 +1,32 @@
 <script lang="ts">
-    import { createBubbler, stopPropagation } from 'svelte/legacy';
-
-    const bubble = createBubbler();
     import PriceBadge from '../atoms/PriceBadge.svelte';
     import WatchlistButton from '../atoms/WatchlistButton.svelte';
-    import { createEventDispatcher } from 'svelte';
-
-    const dispatch = createEventDispatcher();
 
     interface Props {
         stock: any;
         expanded?: boolean;
         isFavorite?: boolean;
+        onToggleWatchlist?: (code: string) => void;
+        onClick?: (detail: { code: string; event: MouseEvent }) => void;
     }
 
-    let { stock, expanded = false, isFavorite = false }: Props = $props();
+    let { stock, expanded = false, isFavorite = false, onToggleWatchlist, onClick }: Props = $props();
 
     function colorClass(chg: number) {
         return chg > 0 ? 'clr-bull' : chg < 0 ? 'clr-bear' : 'clr-flat';
     }
 
     function handleToggleWatchlist() {
-        dispatch('toggleWatchlist', stock.Code);
+        onToggleWatchlist?.(stock.Code);
     }
 
     function handleClick(event: MouseEvent) {
-        dispatch('click', { code: stock.Code, event });
+        onClick?.({ code: stock.Code, event });
     }
 </script>
 
 <tr
-    class="group cursor-pointer transition-colors hover:bg-white/[0.02]"
+    class="group cursor-pointer transition-colors hover:bg-surface-hover/30"
     class:active-row={expanded}
     onclick={handleClick}
 >
@@ -40,10 +36,10 @@
         class:border-l-accent={expanded}
     >
         <div class="flex items-center gap-2">
-            <WatchlistButton active={isFavorite} on:toggle={handleToggleWatchlist} />
+            <WatchlistButton active={isFavorite} onToggle={handleToggleWatchlist} />
             <div class="flex flex-col min-w-0 flex-1 leading-tight text-left">
                 <span
-                    class="text-sm font-black text-white group-hover:text-accent truncate tracking-tight transition-colors"
+                    class="text-sm font-black text-text-primary group-hover:text-accent truncate tracking-tight transition-colors"
                 >
                     {stock.Name}
                 </span>
@@ -78,9 +74,9 @@
         <a
             href={`/stocks/${stock.Code}`}
             class="analysis-link opacity-0 group-hover:opacity-100"
-            onclick={stopPropagation(bubble('click'))}
+            onclick={(e: MouseEvent) => e.stopPropagation()}
         >
-            Analysis ↗
+            Analysis →
         </a>
     </td>
 </tr>

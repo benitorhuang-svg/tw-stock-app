@@ -88,7 +88,7 @@ export interface MarketStoreState {
         invest: InstitutionalData[];
         dealer: InstitutionalData[];
         summary: InstitutionalSummary;
-        trend: any[];
+        trend: { date: string; f: number; i: number; d: number; avgChg: number }[];
         date?: string;
         forensicAlpha?: {
             highConcentration: InstitutionalData[];
@@ -97,7 +97,7 @@ export interface MarketStoreState {
             insider: InstitutionalData[];
             shorting: InstitutionalData[];
         };
-        forensicSignals?: any[]; // For future insights
+        forensicSignals?: Record<string, unknown>[];
     };
     breadth: MarketBreadth;
     lastUpdateTime: string;

@@ -21,7 +21,7 @@
 </script>
 
 <div
-    class="insight-list-organism bg-surface-deep/40 rounded-3xl border border-white/[0.03] p-6 mb-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
+    class="insight-list-organism bg-surface-deep/40 rounded-3xl border border-border/30 p-6 mb-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
 >
     <!-- Background Gradient -->
     <div
@@ -47,11 +47,11 @@
                 </svg>
             </span>
             <div>
-                <h3 class="text-sm font-black text-white/90 tracking-[0.2em] uppercase">
+                <h3 class="text-sm font-black text-text-primary tracking-[0.2em] uppercase">
                     Intelligence_Insight
                 </h3>
-                <p class="text-[9px] font-mono text-white/20 mt-1 uppercase tracking-widest">
-                    Aura_Nexus • Forensic_Synthesis
+                <p class="text-[9px] font-mono text-text-muted/50 mt-1 uppercase tracking-widest">
+                    Aura_Nexus ??Forensic_Synthesis
                 </p>
             </div>
         </div>
@@ -59,7 +59,7 @@
         <div class="space-y-4">
             {#each insights as insight}
                 <div
-                    class="flex items-start gap-4 p-4 rounded-xl bg-black/20 border border-white/[0.02] hover:border-white/10 transition-all duration-300"
+                    class="flex items-start gap-4 p-4 rounded-xl bg-input-bg/50 border border-border/20 hover:border-border transition-all duration-300"
                 >
                     <div
                         class="w-1.5 h-1.5 rounded-full mt-1.5 {insight.type === 'bullish'
@@ -69,7 +69,7 @@
                               : 'bg-accent'} {insight.type !== 'neutral' ? 'animate-pulse' : ''}"
                     ></div>
                     <div class="flex-1">
-                        <p class="text-[11px] font-mono leading-relaxed text-white/70">
+                        <p class="text-[11px] font-mono leading-relaxed text-text-secondary">
                             {insight.text}
                         </p>
                         <div class="flex items-center gap-2 mt-2">
@@ -79,7 +79,7 @@
                                     ? 'text-bullish'
                                     : insight.type === 'bearish'
                                       ? 'text-bearish'
-                                      : 'text-accent'} bg-white/5 px-1 py-0.5 rounded"
+                                      : 'text-accent'} bg-surface-hover/50 px-1 py-0.5 rounded"
                             >
                                 {insight.type}_SIGNAL
                             </span>

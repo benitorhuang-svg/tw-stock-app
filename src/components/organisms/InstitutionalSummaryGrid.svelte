@@ -20,7 +20,7 @@
             ? 'from-bullish/20 to-bullish/5 border-bullish/20'
             : v < 0
               ? 'from-bearish/20 to-bearish/5 border-bearish/20'
-              : 'from-white/5 to-transparent border-white/10';
+              : 'from-surface-hover to-transparent border-border';
     }
 
     function glowClass(v: number) {
@@ -46,7 +46,7 @@
             <span class="text-[10px] font-black font-mono tracking-[0.3em] uppercase opacity-60"
                 >Foreign_Channel</span
             >
-            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center">
                 <span class="text-lg">🏛️</span>
             </div>
         </div>
@@ -68,7 +68,7 @@
             <span class="text-[10px] font-black font-mono tracking-[0.3em] uppercase opacity-60"
                 >Investment_Trust</span
             >
-            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center">
                 <span class="text-lg">📊</span>
             </div>
         </div>
@@ -92,7 +92,7 @@
             <span class="text-[10px] font-black font-mono tracking-[0.3em] uppercase opacity-60"
                 >Prop_Dealers</span
             >
-            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center">
                 <span class="text-lg">🏢</span>
             </div>
         </div>
@@ -116,7 +116,7 @@
             <span class="text-[10px] font-black font-mono tracking-[0.3em] uppercase opacity-60"
                 >Combined_Matrix</span
             >
-            <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+            <div class="w-8 h-8 rounded-lg bg-surface-hover flex items-center justify-center">
                 <span class="text-lg">📈</span>
             </div>
         </div>

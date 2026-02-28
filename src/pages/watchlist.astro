@@ -1,29 +1,10 @@
 ---
 import MainTerminal from '../layouts/MainTerminal.astro';
-import WatchlistHero from '../components/molecules/WatchlistHero.astro';
-import ForensicTicker from '../components/molecules/ForensicTicker.astro';
 import WatchlistManager from '../components/organisms/WatchlistManager.svelte';
 ---
 
-<MainTerminal title="自選監控中心">
-    <div class="h-full flex flex-col p-4 lg:p-10 gap-10 overflow-hidden">
-        <!-- Hero Header -->
-        <WatchlistHero />
-
-        <WatchlistManager client:load />
-
-        <!-- Signal Stream Footer -->
-        <div class="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-            <ForensicTicker />
-            <div class="flex items-center gap-6">
-                <span class="text-[9px] font-mono text-white/20 uppercase tracking-[0.3em]"
-                    >Registry_Status: SYNCHRONIZED</span
-                >
-                <div
-                    class="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.3)]"
-                >
-                </div>
-            </div>
-        </div>
+<MainTerminal title="自選監控中心" fullWidth={true}>
+    <div class="relative px-4 lg:px-6">
+        <WatchlistManager client:idle />
     </div>
 </MainTerminal>

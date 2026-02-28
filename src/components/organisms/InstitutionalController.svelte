@@ -61,7 +61,8 @@
     ];
 
     // ─── Data Fetching ───────────────────────────────────
-    const summary = $derived(marketStore.state.institutional.summary);
+    const defaultSummary = { foreign: 0, invest: 0, dealer: 0, total: 0 };
+    const summary = $derived(marketStore.state.institutional.summary ?? defaultSummary);
     const date = $derived(marketStore.state.institutional.date);
     const isLoading = $derived(marketStore.state.isInstLoading);
 
@@ -70,7 +71,15 @@
             marketStore.setInstLoading(true);
             const res = await fetch('/api/market/institutional-streak');
             const data = await res.json();
-            marketStore.updateInstitutionalData(data);
+            marketStore.updateInstitutionalData({
+                foreign: data.foreign || [],
+                invest: data.invest || [],
+                dealer: data.dealer || [],
+                summary: data.marketSummary || { foreign: 0, invest: 0, dealer: 0, total: 0 },
+                trend: data.trend || [],
+                date: data.date || '',
+                forensicAlpha: data.forensicAlpha,
+            });
         } catch (err) {
             console.error('[Institutional Controller] Fetch failure:', err);
             marketStore.setError('Failed to fetch institutional data');

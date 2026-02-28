@@ -12,44 +12,46 @@
 /* ── Tailwind v4 Theme ── */
 /* ── CSS Theme Variables (Light/Dark support) ── */
 :root {
-    /* ── Premium Light Base — ultra-clean with subtle arctic tint ── */
+    /* ── Premium Light Base — clean with definitive contrast ── */
     --color-base: hsl(210 40% 98%);
-    --color-base-deep: hsl(210 30% 96%);
+    --color-base-deep: hsl(210 30% 94%);
     --color-surface: hsl(0 0% 100%);
-    --color-surface-hover: hsl(210 25% 97%);
+    --color-surface-hover: hsl(210 25% 96%);
     --color-elevated: hsl(0 0% 100%);
 
-    /* ── Accent — vibrant electric blue ── */
-    --color-accent: hsl(215 100% 55%);
-    --color-accent-dim: hsl(215 90% 45%);
-    --color-accent-glow: hsl(215 100% 55% / 0.1);
+    /* ── Accent — vibrant electric blue (optimized for light) ── */
+    --color-accent: hsl(215 100% 50%);
+    --color-accent-dim: hsl(215 90% 40%);
+    --color-accent-glow: hsl(215 100% 50% / 0.12);
     --color-on-accent: hsl(0 0% 100%);
 
-    /* ── Bull/Bear — optimized for light background ── */
-    --color-bullish: hsl(0 85% 60%); /* Red for Taiwan market */
-    --color-bullish-dim: hsl(0 80% 50%);
-    --color-bullish-glow: hsl(0 85% 60% / 0.08);
+    /* ── Bull/Bear — definitive colors for Taiwan market ── */
+    --color-bullish: hsl(0 80% 50%);
+    /* Red for Taiwan */
+    --color-bullish-dim: hsl(0 80% 40%);
+    --color-bullish-glow: hsl(0 80% 50% / 0.1);
 
-    --color-bearish: hsl(150 70% 35%); /* Green for Taiwan market */
-    --color-bearish-dim: hsl(150 70% 25%);
-    --color-bearish-glow: hsl(150 70% 35% / 0.08);
+    --color-bearish: hsl(155 80% 30%);
+    /* Green for Taiwan */
+    --color-bearish-dim: hsl(155 80% 20%);
+    --color-bearish-glow: hsl(155 80% 30% / 0.1);
 
     /* ── Warning — amber gold ── */
-    --color-warning: hsl(42 100% 50%);
-    --color-warning-dim: hsl(42 90% 40%);
+    --color-warning: hsl(38 100% 45%);
+    --color-warning-dim: hsl(38 90% 35%);
 
-    /* ── Glass — improved transparency ── */
-    --color-glass: hsla(210, 30%, 98%, 0.7);
-    --color-glass-hover: hsla(210, 30%, 95%, 0.85);
-    --color-glass-elevated: hsla(0, 0%, 100%, 0.95);
-    --color-border: hsl(210 20% 90%);
-    --color-border-hover: hsl(210 20% 84%);
-    --color-border-highlight: hsl(215 100% 55% / 0.3);
+    /* ── Glass — improved visibility and depth in light mode ── */
+    --color-glass: hsla(210, 30%, 98%, 0.8);
+    --color-glass-hover: hsla(210, 30%, 94%, 0.9);
+    --color-glass-elevated: hsla(0, 0%, 100%, 0.98);
+    --color-border: hsl(215 20% 86%);
+    --color-border-hover: hsl(215 20% 78%);
+    --color-border-highlight: hsl(215 100% 50% / 0.25);
 
-    /* ── Text — deep charcoal for primary, soft slate for muted ── */
-    --color-text-primary: hsl(220 40% 12%);
-    --color-text-secondary: hsl(220 20% 35%);
-    --color-text-muted: hsl(220 15% 55%);
+    /* ── Text — High contrast hierarchy for premium clarity ── */
+    --color-text-primary: hsl(222 47% 11%);
+    --color-text-secondary: hsl(217 25% 27%);
+    --color-text-muted: hsl(215 16% 47%);
 
     /* ── Stock Specific ── */
     --color-stock-name: var(--color-text-primary);
@@ -57,11 +59,16 @@
     --color-stock-price: var(--color-accent);
     --color-stock-volume: var(--color-warning);
 
-    /* ── Shadows — multi-layered for depth ── */
-    --shadow-glass: 0 4px 12px -2px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-    --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-    --color-scrollbar: hsl(210 20% 85%);
-    --color-scrollbar-hover: hsl(210 20% 75%);
+    /* ── Sidebar / Input — light-optimized ── */
+    --color-input-bg: hsl(210 25% 93%);
+    --color-input-border: hsl(215 20% 82%);
+    --color-overlay: hsl(0 0% 0% / 0.4);
+
+    /* ── Shadows — more pronounced for light mode depth ── */
+    --shadow-glass: 0 8px 32px -4px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+    --shadow-elevated: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    --color-scrollbar: hsl(210 10% 80%);
+    --color-scrollbar-hover: hsl(210 10% 70%);
 }
 
 .dark {
@@ -108,6 +115,10 @@
     --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.6);
     --color-scrollbar: hsl(217 100% 70% / 0.3);
     --color-scrollbar-hover: hsl(217 100% 70% / 0.6);
+
+    --color-input-bg: hsl(0 0% 0% / 0.4);
+    --color-input-border: hsl(0 0% 100% / 0.1);
+    --color-overlay: hsl(0 0% 0% / 0.5);
 }
 
 @theme {
@@ -149,6 +160,10 @@
     --color-stock-symbol: var(--color-stock-symbol);
     --color-stock-price: var(--color-stock-price);
     --color-stock-volume: var(--color-stock-volume);
+
+    --color-input-bg: var(--color-input-bg);
+    --color-input-border: var(--color-input-border);
+    --color-overlay: var(--color-overlay);
 
     /* ── Font Families ── */
     --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -197,7 +212,6 @@
 }
 
 @keyframes glow-pulse {
-
     0%,
     100% {
         opacity: 0.4;
@@ -247,7 +261,6 @@
 }
 
 @keyframes nav-glow {
-
     0%,
     100% {
         opacity: 0.5;
@@ -263,7 +276,6 @@
    PERFORMANCE PRIMERS (EXTREME OPTIMIZATION)
    ══════════════════════════════════════════════════ */
 @layer base {
-
     /* Reduce Paint Overheads */
     .gpu-layer {
         transform: translateZ(0);
@@ -295,7 +307,6 @@
 }
 
 @layer base {
-
     *,
     *::before,
     *::after {
@@ -410,7 +421,6 @@
    TOP NAVIGATION SYSTEM
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* ── Top Nav Bar ── */
     .top-nav-bar {
         background: var(--color-surface);
@@ -428,12 +438,14 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(90deg,
-                transparent 0%,
-                hsl(217 91% 60% / 0.3) 20%,
-                hsl(217 91% 60% / 0.6) 50%,
-                hsl(217 91% 60% / 0.3) 80%,
-                transparent 100%);
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            hsl(217 91% 60% / 0.3) 20%,
+            hsl(217 91% 60% / 0.6) 50%,
+            hsl(217 91% 60% / 0.3) 80%,
+            transparent 100%
+        );
         opacity: 0.6;
         pointer-events: none;
     }
@@ -568,7 +580,6 @@
    UTILITY COMPONENTS
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* Glass Card — Layer 1 (Frosted) */
     .glass-card {
         background: var(--color-glass);
@@ -612,9 +623,11 @@
         z-index: 1;
         transition: opacity 0.4s var(--ease-expo);
         border-radius: inherit;
-        background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                hsl(0 0% 100% / 0.06),
-                transparent 60%);
+        background: radial-gradient(
+            300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            hsl(0 0% 100% / 0.06),
+            transparent 60%
+        );
     }
 
     .glow-interactive:hover::before {
@@ -718,10 +731,12 @@
 
     /* Shimmer Skeleton */
     .skeleton {
-        background: linear-gradient(90deg,
-                hsl(240 6% 10%) 25%,
-                hsl(240 6% 16%) 50%,
-                hsl(240 6% 10%) 75%);
+        background: linear-gradient(
+            90deg,
+            hsl(240 6% 10%) 25%,
+            hsl(240 6% 16%) 50%,
+            hsl(240 6% 10%) 75%
+        );
         background-size: 200% 100%;
         animation: var(--animate-shimmer);
         border-radius: var(--radius-sm);
@@ -866,39 +881,39 @@
     }
 
     /* Stagger animation utility */
-    .stagger-children>* {
+    .stagger-children > * {
         animation: var(--animate-fade-up);
     }
 
-    .stagger-children>*:nth-child(1) {
+    .stagger-children > *:nth-child(1) {
         animation-delay: 0ms;
     }
 
-    .stagger-children>*:nth-child(2) {
+    .stagger-children > *:nth-child(2) {
         animation-delay: 50ms;
     }
 
-    .stagger-children>*:nth-child(3) {
+    .stagger-children > *:nth-child(3) {
         animation-delay: 100ms;
     }
 
-    .stagger-children>*:nth-child(4) {
+    .stagger-children > *:nth-child(4) {
         animation-delay: 150ms;
     }
 
-    .stagger-children>*:nth-child(5) {
+    .stagger-children > *:nth-child(5) {
         animation-delay: 200ms;
     }
 
-    .stagger-children>*:nth-child(6) {
+    .stagger-children > *:nth-child(6) {
         animation-delay: 250ms;
     }
 
-    .stagger-children>*:nth-child(7) {
+    .stagger-children > *:nth-child(7) {
         animation-delay: 300ms;
     }
 
-    .stagger-children>*:nth-child(8) {
+    .stagger-children > *:nth-child(8) {
         animation-delay: 350ms;
     }
 }
@@ -907,7 +922,6 @@
    PREMIUM TABLE STYLES
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* Professional data table */
     .data-table-pro {
         width: 100%;
@@ -1005,7 +1019,6 @@
    ENHANCED MICRO-INTERACTIONS
    ══════════════════════════════════════════════════ */
 @layer components {
-
     /* Card hover lift */
     .card-lift {
         transition:
@@ -1146,7 +1159,6 @@
    MOBILE ADJUSTMENTS
    ══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-
     /* Add bottom padding for mobile bottom nav */
     #main-workspace {
         padding-bottom: 80px;
@@ -1169,7 +1181,7 @@
     }
 
     /* Stack grid items */
-    .mobile-stack>* {
+    .mobile-stack > * {
         min-width: 0;
     }
 }
@@ -1178,7 +1190,6 @@
    PRINT STYLES
    ══════════════════════════════════════════════════ */
 @media print {
-
     .top-nav-bar,
     .mobile-bottom-nav,
     .btn-cyber,
@@ -1202,7 +1213,6 @@
    REDUCED MOTION
    ══════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {

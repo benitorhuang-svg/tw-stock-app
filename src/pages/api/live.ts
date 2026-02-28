@@ -58,7 +58,9 @@ export const GET: APIRoute = async () => {
             volume: number;
             market: string;
             sector: string;
-        }>('SELECT lp.symbol, lp.ma5, lp.ma20, lp.rsi, lp.volume, s.market, s.sector FROM latest_prices lp LEFT JOIN stocks s ON lp.symbol = s.symbol');
+        }>(
+            'SELECT lp.symbol, lp.ma5, lp.ma20, lp.rsi, lp.volume, s.market, s.sector FROM latest_prices lp LEFT JOIN stocks s ON lp.symbol = s.symbol'
+        );
         const indicatorMap = new Map(indicators.map(i => [i.symbol, i]));
 
         const enriched = data.map(s => {

@@ -115,7 +115,7 @@ export class SqliteService {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='stocks'")
             .get() as { name: string } | undefined)
             ? (this.db.prepare('SELECT count(*) as count FROM stocks').get() as { count: number })
-                .count
+                  .count
             : 0;
 
         return {

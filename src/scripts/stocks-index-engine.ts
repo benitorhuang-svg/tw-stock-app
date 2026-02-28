@@ -51,18 +51,18 @@ async function initIntelligenceCenter() {
                             <div class="flex items-center gap-4">
                                 <span class="font-mono text-sm font-black text-accent">${s.symbol}</span>
                                 <div class="flex flex-col">
-                                    <span class="text-[11px] font-black text-white/90 group-hover:text-accent transition-colors">${s.name}</span>
-                                    <span class="text-[8px] font-mono text-white/20 uppercase tracking-widest">${s.sector || 'GENERAL'}</span>
+                                    <span class="text-[11px] font-black text-text-primary group-hover:text-accent transition-colors">${s.name}</span>
+                                    <span class="text-[8px] font-mono text-text-muted/50 uppercase tracking-widest">${s.sector || 'GENERAL'}</span>
                                 </div>
                             </div>
                             <div class="flex items-center gap-6">
                                 <div class="text-right">
-                                    <div class="text-sm font-black font-mono text-white/70">${s.price.toFixed(2)}</div>
+                                    <div class="text-sm font-black font-mono text-text-secondary">${s.price.toFixed(2)}</div>
                                     <div class="text-[9px] font-black font-mono ${s.changePercent >= 0 ? 'text-bullish' : 'text-bearish'}">
                                         ${s.changePercent >= 0 ? '+' : ''}${s.changePercent.toFixed(2)}%
                                     </div>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white/20 group-hover:text-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-text-muted/50 group-hover:text-accent group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
                             </div>
                         </a>
                     `
@@ -71,7 +71,7 @@ async function initIntelligenceCenter() {
             results.classList.remove('hidden');
         } else {
             container.innerHTML =
-                '<div class="py-12 text-center text-[9px] font-mono text-white/20 uppercase tracking-[0.2em]">Signal_Not_Detected_In_Nexus</div>';
+                '<div class="py-12 text-center text-[9px] font-mono text-text-muted/50 uppercase tracking-[0.2em]">Signal_Not_Detected_In_Nexus</div>';
             results.classList.remove('hidden');
         }
     });
@@ -92,13 +92,13 @@ async function initIntelligenceCenter() {
         recentContainer.innerHTML = recentStocks
             .map(
                 s => `
-                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-white/[0.04] transition-all border border-white/5 hover:border-accent/20 group no-underline">
+                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-surface-hover transition-all border border-border/50 hover:border-accent/20 group no-underline">
                         <div class="flex items-center gap-4">
-                            <span class="text-[10px] font-mono font-black border border-white/10 px-2 py-1 rounded bg-black/40 text-accent">${s.symbol}</span>
-                            <span class="text-[11px] font-black text-white/70 group-hover:text-white transition-colors uppercase">${s.name}</span>
+                            <span class="text-[10px] font-mono font-black border border-border px-2 py-1 rounded bg-input-bg text-accent">${s.symbol}</span>
+                            <span class="text-[11px] font-black text-text-secondary group-hover:text-text-primary transition-colors uppercase">${s.name}</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="text-[10px] font-mono font-black text-white/40">${s.price.toFixed(2)}</span>
+                            <span class="text-[10px] font-mono font-black text-text-muted">${s.price.toFixed(2)}</span>
                             <div class="w-1 h-1 rounded-full ${s.changePercent >= 0 ? 'bg-bullish' : 'bg-bearish'}"></div>
                         </div>
                     </a>
@@ -118,14 +118,14 @@ async function initIntelligenceCenter() {
         divWall.innerHTML = topYields
             .map(
                 s => `
-                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-warning/[0.03] transition-all border border-white/5 hover:border-warning/20 group no-underline">
+                    <a href="/stocks/${s.symbol}" class="flex items-center justify-between p-4 rounded-xl hover:bg-warning/[0.03] transition-all border border-border/50 hover:border-warning/20 group no-underline">
                         <div class="flex items-center gap-4">
                             <span class="text-[9px] font-mono font-black text-warning/40 tracking-widest">${s.symbol}</span>
-                            <span class="text-[11px] font-black text-white/70 group-hover:text-warning transition-colors uppercase">${s.name}</span>
+                            <span class="text-[11px] font-black text-text-secondary group-hover:text-warning transition-colors uppercase">${s.name}</span>
                         </div>
                         <div class="flex items-center gap-6">
                             <span class="text-[11px] font-mono font-black text-warning">${s.yield.toFixed(2)}%</span>
-                            <div class="w-12 h-[3px] bg-black/40 rounded-full overflow-hidden">
+                            <div class="w-12 h-[3px] bg-input-bg rounded-full overflow-hidden">
                                 <div class="bg-warning h-full" style="width: ${Math.min(s.yield * 10, 100)}%"></div>
                             </div>
                         </div>

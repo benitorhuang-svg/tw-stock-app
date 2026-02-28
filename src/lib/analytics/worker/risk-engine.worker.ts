@@ -13,8 +13,8 @@ self.onmessage = (e: MessageEvent) => {
     }
 
     try {
-        const matrix: any = {};
-        const symbols = stocksData.map((s: any) => s.symbol);
+        const matrix: Record<string, Record<string, number>> = {};
+        const symbols = stocksData.map((s: { symbol: string; prices: number[] }) => s.symbol);
 
         // 計算相關性矩陣
         for (let i = 0; i < symbols.length; i++) {
@@ -34,7 +34,7 @@ self.onmessage = (e: MessageEvent) => {
         }
 
         self.postMessage({ matrix, symbols });
-    } catch (err: any) {
-        self.postMessage({ error: err.message });
+    } catch (err: unknown) {
+        self.postMessage({ error: err instanceof Error ? err.message : 'Unknown error' });
     }
 };

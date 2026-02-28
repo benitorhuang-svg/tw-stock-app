@@ -387,7 +387,10 @@ async function generate() {
     // 9. 增強 latest_prices: 回填法人籌碼 + 產業分類
     // 確保 latest_prices 有新欄位 (ALTER TABLE 對已存在欄位安全跳過)
     const existingCols = new Set(
-        db.prepare('PRAGMA table_info(latest_prices)').all().map(c => c.name)
+        db
+            .prepare('PRAGMA table_info(latest_prices)')
+            .all()
+            .map(c => c.name)
     );
     const newCols = [
         ['foreign_inv', 'INTEGER DEFAULT 0'],

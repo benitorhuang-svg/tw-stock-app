@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { run } from 'svelte/legacy';
-
     import { onMount } from 'svelte';
 
     interface TableColumn {
@@ -15,16 +13,15 @@
     let activeTable = $state('');
 
     // Derived flags for fast rendering
-    let colPrototypes: { isPct: boolean; isPrice: boolean }[] = $state([]);
-    run(() => {
-        colPrototypes = columns.map(col => {
+    let colPrototypes = $derived(
+        columns.map(col => {
             const lName = col.name.toLowerCase();
             return {
                 isPct: lName.includes('pct'),
                 isPrice: lName.includes('price') || lName.includes('close'),
             };
-        });
-    });
+        })
+    );
 
     onMount(() => {
         const container = document.getElementById('table-scroll-container');

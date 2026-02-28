@@ -48,9 +48,9 @@ const { symbol, chartData, maxNet, fmtNet } = Astro.props;
                 </div>
                 <div class="ml-14 mr-4 h-full flex flex-col">
                     <div class="flex-1 relative">
-                        <div class="absolute left-0 right-0 top-1/2 border-t border-white/[0.08]" />
-                        <div class="absolute left-0 right-0 top-1/4 border-t border-dashed border-white/[0.03]" />
-                        <div class="absolute left-0 right-0 top-3/4 border-t border-dashed border-white/[0.03]" />
+                        <div class="absolute left-0 right-0 top-1/2 border-t border-border" />
+                        <div class="absolute left-0 right-0 top-1/4 border-t border-dashed border-border/30" />
+                        <div class="absolute left-0 right-0 top-3/4 border-t border-dashed border-border/30" />
 
                         <div class="absolute inset-0 flex items-center justify-around px-2">
                             {chartData.map(d => {

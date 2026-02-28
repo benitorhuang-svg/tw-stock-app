@@ -24,6 +24,7 @@ export interface StockWithPrice extends Stock {
     pe: number;
     pb: number;
     yield: number;
+    debtRatio: number;
 }
 
 let serverDb: BetterDatabase | null = null;
@@ -77,7 +78,7 @@ async function queryOne<T>(sql: string, params: any[] = []): Promise<T | null> {
  */
 export async function getAllStocksWithPrices(): Promise<StockWithPrice[]> {
     return query<StockWithPrice>(`
-        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
+        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield, p.debt_ratio as debtRatio
         FROM stocks s LEFT JOIN latest_prices p ON s.symbol = p.symbol
         ORDER BY s.symbol
     `);
@@ -86,7 +87,7 @@ export async function getAllStocksWithPrices(): Promise<StockWithPrice[]> {
 export async function getStock(symbol: string): Promise<StockWithPrice | null> {
     return queryOne<StockWithPrice>(
         `
-        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
+        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield, p.debt_ratio as debtRatio
         FROM stocks s LEFT JOIN latest_prices p ON s.symbol = p.symbol
         WHERE s.symbol = ?
     `,
@@ -97,7 +98,7 @@ export async function getStock(symbol: string): Promise<StockWithPrice | null> {
 export async function getTopGainers(limit: number = 10): Promise<StockWithPrice[]> {
     return query<StockWithPrice>(
         `
-        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
+        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield, p.debt_ratio as debtRatio
         FROM stocks s JOIN latest_prices p ON s.symbol = p.symbol
         WHERE p.change_pct > 0 ORDER BY p.change_pct DESC LIMIT ?
     `,
@@ -108,7 +109,7 @@ export async function getTopGainers(limit: number = 10): Promise<StockWithPrice[
 export async function getTopLosers(limit: number = 10): Promise<StockWithPrice[]> {
     return query<StockWithPrice>(
         `
-        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
+        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield, p.debt_ratio as debtRatio
         FROM stocks s JOIN latest_prices p ON s.symbol = p.symbol
         WHERE p.change_pct < 0 ORDER BY p.change_pct ASC LIMIT ?
     `,
@@ -119,7 +120,7 @@ export async function getTopLosers(limit: number = 10): Promise<StockWithPrice[]
 export async function getTopByVolume(limit: number = 10): Promise<StockWithPrice[]> {
     return query<StockWithPrice>(
         `
-        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
+        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield, p.debt_ratio as debtRatio
         FROM stocks s JOIN latest_prices p ON s.symbol = p.symbol
         ORDER BY p.volume DESC LIMIT ?
     `,
@@ -131,7 +132,7 @@ export async function searchStocks(keyword: string, limit: number = 50): Promise
     const pattern = `%${keyword}%`;
     return query<StockWithPrice>(
         `
-        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield
+        SELECT s.symbol, s.name, s.market, p.date, p.open, p.high, p.low, p.close, p.volume, p.change, p.change_pct as changePct, p.pe, p.pb, p.yield, p.debt_ratio as debtRatio
         FROM stocks s LEFT JOIN latest_prices p ON s.symbol = p.symbol
         WHERE s.symbol LIKE ? OR s.name LIKE ?
         ORDER BY s.symbol LIMIT ?

@@ -81,7 +81,7 @@ export function initDatabaseRefreshTerminal() {
                         'bg-surface'
                     );
                     icon?.classList.add('border-accent/40', 'bg-accent/10', 'text-accent');
-                    label?.classList.remove('text-white/40');
+                    label?.classList.remove('text-text-muted');
                     label?.classList.add('text-accent');
                 } else if (s === step) {
                     icon?.classList.remove(
@@ -91,8 +91,8 @@ export function initDatabaseRefreshTerminal() {
                         'bg-surface'
                     );
                     icon?.classList.add('border-accent', 'bg-accent/20');
-                    label?.classList.remove('text-white/40');
-                    label?.classList.add('text-white', 'font-black');
+                    label?.classList.remove('text-text-muted');
+                    label?.classList.add('text-text-primary', 'font-black');
                 } else {
                     icon?.classList.add(
                         'grayscale',
@@ -101,8 +101,8 @@ export function initDatabaseRefreshTerminal() {
                         'bg-surface'
                     );
                     icon?.classList.remove('border-accent', 'bg-accent/20', 'text-accent');
-                    label?.classList.add('text-white/40');
-                    label?.classList.remove('text-white', 'font-black', 'text-accent');
+                    label?.classList.add('text-text-muted');
+                    label?.classList.remove('text-text-primary', 'font-black', 'text-accent');
                 }
             });
         };

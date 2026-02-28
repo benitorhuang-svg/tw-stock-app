@@ -17,9 +17,11 @@ async function updateStockNames() {
 
         function getSectorBySymbol(symbol) {
             const prefix = symbol.slice(0, 2);
-            if (prefix === '00' || prefix === '01' || prefix === '03' || prefix === '04') return 'etf';
+            if (prefix === '00' || prefix === '01' || prefix === '03' || prefix === '04')
+                return 'etf';
             if (prefix === '28' || prefix === '58' || prefix === '60') return 'finance';
-            if (prefix === '23' || prefix === '24' || prefix === '30' || prefix === '31') return 'semiconductor';
+            if (prefix === '23' || prefix === '24' || prefix === '30' || prefix === '31')
+                return 'semiconductor';
             if (prefix === '26') return 'shipping';
             // Default for now
             return 'other';

@@ -24,7 +24,7 @@ const { price, isBullish, isBearish } = Astro.props;
         <div class="absolute inset-0 bg-gradient-to-b from-accent/5 to-transparent"></div>
         <!-- Chart grid lines -->
         <div class="absolute inset-0 flex flex-col justify-between py-4">
-            {[0, 1, 2, 3, 4].map(() => <div class="border-b border-white/[0.03] w-full" />)}
+            {[0, 1, 2, 3, 4].map(() => <div class="border-b border-border/30 w-full" />)}
         </div>
         <!-- Price line simulation via SVG -->
         <svg

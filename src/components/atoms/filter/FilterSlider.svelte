@@ -1,16 +1,14 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
-
     interface Props {
         id: string;
         label: string;
-        min?: any;
+        min?: number;
         max?: number;
         step?: number;
         value?: number | string;
         unit?: string;
         isMA20?: boolean;
+        onChange?: (value: number) => void;
     }
 
     let {
@@ -21,13 +19,14 @@
         step = 0.5,
         value = $bindable(0),
         unit = '%',
-        isMA20 = false
+        isMA20 = false,
+        onChange
     }: Props = $props();
 
     let num = $derived(typeof value === 'string' ? parseFloat(value) : value);
 
     function emit() {
-        dispatch('change', num);
+        onChange?.(num);
     }
 
     function adjust(delta: number) {

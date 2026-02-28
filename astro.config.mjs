@@ -45,6 +45,9 @@ export default defineConfig({
                         if (id.includes('node_modules')) return 'vendor';
                     },
                 },
+                treeshake: {
+                    moduleSideEffects: false,
+                },
             },
             // Smaller output
             target: 'es2022',

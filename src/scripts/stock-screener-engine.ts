@@ -73,7 +73,6 @@ function initScreenerEngine() {
                 const data = await res.json();
 
                 if (data.success) {
-
                     renderResults(data.results);
                     getEl('screener-count')!.textContent = data.pagination.total;
                     toast.show({ message: `Found ${data.results.length} stocks`, type: 'success' });
@@ -85,7 +84,7 @@ function initScreenerEngine() {
     });
 
     // SSE Dynamic Updates (Fast-Patch)
-    const win = window as any;
+    const win = window as Window & { __screenerSSE?: EventSource | null };
     if (typeof EventSource !== 'undefined' && !win.__screenerSSE) {
         win.__screenerSSE = new EventSource('/api/sse/stream');
         win.__screenerSSE.addEventListener('tick', (e: MessageEvent) => {
@@ -104,18 +103,17 @@ function initScreenerEngine() {
         });
     }
 
-    document.addEventListener(
-        'astro:before-preparation',
-        () => {
-            if (win.__screenerSSE) {
-                win.__screenerSSE.close();
-                win.__screenerSSE = null;
-            }
-            if (refreshTimeout) clearTimeout(refreshTimeout);
-            rowMap.clear();
-        },
-        { once: true }
-    );
+    const cleanupScreenerSSE = () => {
+        if (win.__screenerSSE) {
+            win.__screenerSSE.close();
+            win.__screenerSSE = null;
+        }
+        if (refreshTimeout) clearTimeout(refreshTimeout);
+        rowMap.clear();
+    };
+
+    document.addEventListener('astro:before-preparation', cleanupScreenerSSE, { once: true });
+    document.addEventListener('astro:before-swap', cleanupScreenerSSE, { once: true });
 }
 
 document.addEventListener('astro:page-load', () => {

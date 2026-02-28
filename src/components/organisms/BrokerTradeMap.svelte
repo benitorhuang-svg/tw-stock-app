@@ -5,7 +5,7 @@
         symbol: string;
     }
 
-    const { symbol } = $props<Props>();
+    const { symbol }: Props = $props();
 
     let brokers: any[] = $state([]);
     let concentration = $state(0);
@@ -55,7 +55,7 @@
             </div>
             <div>
                 <h3
-                    class="text-xs font-black text-white uppercase tracking-widest leading-none mb-1"
+                    class="text-xs font-black text-text-primary uppercase tracking-widest leading-none mb-1"
                 >
                     Entity_Broker_Map
                 </h3>
@@ -65,7 +65,7 @@
             </div>
         </div>
 
-        <div class="px-3 py-1 bg-white/[0.03] border border-white/10 rounded-full">
+        <div class="px-3 py-1 bg-surface-hover/20 border border-border rounded-full">
             <span class="text-[9px] font-mono text-text-muted uppercase">Concentration: </span>
             <span
                 class="text-[10px] font-black {concentration > 5
@@ -78,7 +78,7 @@
     {#if isLoading}
         <div class="space-y-4">
             {#each Array(5) as _}
-                <div class="h-10 bg-white/5 rounded-lg animate-pulse"></div>
+                <div class="h-10 bg-surface-hover/50 rounded-lg animate-pulse"></div>
             {/each}
         </div>
     {:else}
@@ -90,14 +90,14 @@
                 </div>
                 {#each brokers.filter(b => b.net > 0) as broker}
                     <div
-                        class="flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-xl hover:bg-white/[0.05] transition-all group"
+                        class="flex items-center justify-between p-3 bg-surface-hover/30 border border-border/50 rounded-xl hover:bg-surface-hover/40 transition-all group"
                     >
                         <div class="flex items-center gap-3">
                             <span class="text-[10px] font-mono text-text-muted/60">{broker.id}</span
                             >
                             <div>
                                 <div
-                                    class="text-[11px] font-bold text-white group-hover:text-up transition-colors"
+                                    class="text-[11px] font-bold text-text-primary group-hover:text-up transition-colors"
                                 >
                                     {broker.name}
                                 </div>
@@ -114,7 +114,7 @@
                             <div class="text-[11px] font-mono font-black text-up">
                                 +{(broker.net / 1000).toFixed(1)}K
                             </div>
-                            <div class="w-16 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
+                            <div class="w-16 h-1 bg-surface-hover/50 rounded-full mt-1 overflow-hidden">
                                 <div
                                     class="h-full bg-up/40"
                                     style="width: {Math.min(Math.abs(broker.net) / 100, 100)}%"
@@ -132,14 +132,14 @@
                 </div>
                 {#each brokers.filter(b => b.net < 0) as broker}
                     <div
-                        class="flex items-center justify-between p-3 bg-white/[0.02] border border-white/5 rounded-xl hover:bg-white/[0.05] transition-all group"
+                        class="flex items-center justify-between p-3 bg-surface-hover/30 border border-border/50 rounded-xl hover:bg-surface-hover/40 transition-all group"
                     >
                         <div class="flex items-center gap-3">
                             <span class="text-[10px] font-mono text-text-muted/60">{broker.id}</span
                             >
                             <div>
                                 <div
-                                    class="text-[11px] font-bold text-white group-hover:text-down transition-colors"
+                                    class="text-[11px] font-bold text-text-primary group-hover:text-down transition-colors"
                                 >
                                     {broker.name}
                                 </div>
@@ -156,7 +156,7 @@
                             <div class="text-[11px] font-mono font-black text-down">
                                 {(broker.net / 1000).toFixed(1)}K
                             </div>
-                            <div class="w-16 h-1 bg-white/5 rounded-full mt-1 overflow-hidden">
+                            <div class="w-16 h-1 bg-surface-hover/50 rounded-full mt-1 overflow-hidden">
                                 <div
                                     class="h-full bg-down/40"
                                     style="width: {Math.min(Math.abs(broker.net) / 100, 100)}%"

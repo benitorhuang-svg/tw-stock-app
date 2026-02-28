@@ -143,9 +143,7 @@ export const GET: APIRoute = async ({ url }) => {
 
         const today = new Date().toISOString().slice(0, 10);
         const cacheControl =
-            date === today
-                ? 'private, no-cache'
-                : 'private, max-age=300, must-revalidate';
+            date === today ? 'private, no-cache' : 'private, max-age=300, must-revalidate';
 
         return new Response(
             JSON.stringify({
@@ -155,7 +153,7 @@ export const GET: APIRoute = async ({ url }) => {
                     ratio: Number(ratio.toFixed(2)),
                     distribution,
                     sectors: sectorSummary,
-                    maBreadth: maBreadth
+                    maBreadth: maBreadth,
                 },
                 gainers,
                 losers,

@@ -40,8 +40,8 @@
         color: rgb(34, 197, 94);
     }
     .badge-flat {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.4);
+        background: var(--color-surface-hover);
+        border-color: var(--color-border);
+        color: var(--color-text-muted);
     }
 </style>

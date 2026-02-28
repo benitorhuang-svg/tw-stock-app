@@ -1,13 +1,11 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
-    const dispatch = createEventDispatcher();
-
     interface Props {
         label: string;
         col: string;
         currentSortCol: string;
         currentSortAsc: boolean;
         stickyTop?: string;
+        onSort?: (col: string) => void;
     }
 
     let {
@@ -15,11 +13,12 @@
         col,
         currentSortCol,
         currentSortAsc,
-        stickyTop = '0px'
+        stickyTop = '0px',
+        onSort
     }: Props = $props();
 
     function handleClick() {
-        if (col) dispatch('sort', col);
+        if (col) onSort?.(col);
     }
 </script>
 

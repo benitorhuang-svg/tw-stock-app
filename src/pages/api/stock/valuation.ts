@@ -31,7 +31,10 @@ export const GET: APIRoute = async ({ url }) => {
         db.close();
 
         return new Response(JSON.stringify(history.reverse()), {
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+            },
         });
     } catch (error) {
         console.error('Valuation API error:', error);

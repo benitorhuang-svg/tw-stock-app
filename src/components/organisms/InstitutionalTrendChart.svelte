@@ -64,18 +64,18 @@
 </script>
 
 <div
-    class="institutional-trend-organism bg-surface-deep/40 rounded-3xl border border-white/5 p-6 mb-8 backdrop-blur-xl group overflow-hidden shadow-2xl"
+    class="institutional-trend-organism bg-surface-deep/40 rounded-3xl border border-border/50 p-6 mb-8 backdrop-blur-xl group overflow-hidden shadow-2xl"
 >
     <div class="flex items-center justify-between mb-8">
         <div>
             <h3
-                class="text-sm font-black text-white/90 tracking-[0.2em] uppercase flex items-center gap-2"
+                class="text-sm font-black text-text-primary tracking-[0.2em] uppercase flex items-center gap-2"
             >
                 <span class="w-2 h-2 rounded-full bg-accent"></span>
                 Institutional_Inflow_Trend
             </h3>
-            <p class="text-[9px] font-mono text-white/20 mt-1 uppercase tracking-widest">
-                20-Day Market Liquidity Velocity • Forensic_Analytics
+            <p class="text-[9px] font-mono text-text-muted/50 mt-1 uppercase tracking-widest">
+                20-Day Market Liquidity Velocity ??Forensic_Analytics
             </p>
         </div>
 
@@ -83,15 +83,15 @@
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-[2px] bg-bullish rounded-full"></div>
-                <span class="text-[8px] font-black text-white/40 uppercase">Foreign</span>
+                <span class="text-[8px] font-black text-text-muted uppercase">Foreign</span>
             </div>
             <div class="flex items-center gap-2">
                 <div class="w-8 h-[2px] bg-accent rounded-full"></div>
-                <span class="text-[8px] font-black text-white/40 uppercase">Trust</span>
+                <span class="text-[8px] font-black text-text-muted uppercase">Trust</span>
             </div>
             <div class="flex items-center gap-2">
-                <div class="w-8 h-[2px] bg-white border-t-2 border-dashed border-white/20"></div>
-                <span class="text-[8px] font-black text-white/40 uppercase">Total_Net</span>
+                <div class="w-8 h-[2px] bg-text-muted border-t-2 border-dashed border-text-muted/30"></div>
+                <span class="text-[8px] font-black text-text-muted uppercase">Total_Net</span>
             </div>
         </div>
     </div>
@@ -106,7 +106,7 @@
                 x2={width - padding}
                 y2={height / 2}
                 stroke="currentColor"
-                class="text-white/5"
+                class="text-border"
                 stroke-dasharray="4"
             />
 
@@ -178,7 +178,7 @@
 
         <!-- Y Axis Markers -->
         <div
-            class="absolute left-0 top-0 bottom-0 py-4 flex flex-col justify-between text-[8px] font-mono font-black text-white/10 pointer-events-none"
+            class="absolute left-0 top-0 bottom-0 py-4 flex flex-col justify-between text-[8px] font-mono font-black text-text-muted/30 pointer-events-none"
         >
             <span>+{maxVal.toFixed(0)}B</span>
             <span>0</span>

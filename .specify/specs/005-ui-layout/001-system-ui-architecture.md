@@ -1,7 +1,7 @@
 # 001 — Quantum Terminal Layout & Design System
 
 > 本文件定義了「量子終端 (Quantum Terminal)」的視覺規範與完整元件登記。
-> 最後更新：2026-02-25 · 元件總數：97 (11 Atoms + 59 Molecules + 27 Organisms) + 2 Layouts + 8 Pages
+> 最後更新：2026-03-01 · 元件總數：99 (11 Atoms + 60 Molecules + 28 Organisms) + 2 Layouts + 8 Pages
 
 ## 一、宏觀佈局模型 (Macro Layout: The Command Center)
 
@@ -61,7 +61,7 @@
 | `StrategyIcon.astro`    | 策略圖示                  |
 | `SyncHourglass.astro`   | 同步等待沙漏動畫          |
 
-### Molecules (`src/components/molecules/`) — 59 個
+### Molecules (`src/components/molecules/`) — 60 個
 
 Atoms 的功能性組合，封裝單一可重用邏輯。
 
@@ -115,6 +115,7 @@ Atoms 的功能性組合，封裝單一可重用邏輯。
 | `StockHubHero.astro`               | Search + Stats        | 股票首頁 Hero              |
 | `StrategicActionMatrix.astro`      | Buttons Grid          | 策略操作矩陣               |
 | `StrategyCard.astro`               | Icon + Name + Desc    | 策略卡片                   |
+| `StrategyFilterMatrix.svelte`      | Selects + Sliders     | 策略參數面板               |
 | `StrategySidebar.astro`            | StrategyCard[]        | 策略側欄                   |
 | `SyncScrollbar.astro`              | Scrollbar Overlay     | 同步滾動條                 |
 | `TechnicalSummaryPanel.astro`      | Indicators + Text     | 技術面摘要面板             |
@@ -124,7 +125,7 @@ Atoms 的功能性組合，封裝單一可重用邏輯。
 | `WatchlistEmpty.astro`             | Empty State           | 自選股空狀態               |
 | + 其他 4 個                        | —                     | 參見原始碼                 |
 
-### Organisms (`src/components/organisms/`) — 27 個
+### Organisms (`src/components/organisms/`) — 28 個
 
 多個 Molecules 組合的複雜業務功能區塊。
 
@@ -147,6 +148,7 @@ Atoms 的功能性組合，封裝單一可重用邏輯。
 | `ScreenerSidebar.astro`         | Filters + Strategies          | 選股器側邊篩選欄            |
 | `SentimentTrendModal.astro`     | Modal + Charts + Analysis     | 情緒趨勢分析彈窗            |
 | `StockChartSection.astro`       | K-line + Volume + Indicators  | 個股走勢圖表區              |
+| `StrategyMonitor.svelte`        | Sidebar + Stats + Heatmap     | 動態策略回測監控站          |
 | `StockScreener.astro`           | Sidebar + Results + Export    | 選股引擎核心組合            |
 | `StockSearchEngine.astro`       | Search + Autocomplete + Table | 股票搜尋引擎                |
 | `StrategicHUD.astro`            | Breadth + Volume + AvgΔ       | Dashboard 戰略 HUD 抬頭顯示 |

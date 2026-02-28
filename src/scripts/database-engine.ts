@@ -3,7 +3,6 @@
  * PERFORMANCE PEAK: Manual GC, Scroll Throttling, Hardware Acceleration Hints
  */
 
-
 let activeTable = '';
 let currentPage = 1;
 let limit = 100;
@@ -141,7 +140,7 @@ function initExplorer() {
                 if (targetTable && targetTable !== activeTable && targetTable !== 'refresh') {
                     if (prefetchTid) clearTimeout(prefetchTid);
                     prefetchTid = window.setTimeout(() => {
-                        fetch(`/api/db/${targetTable}?limit=${limit}&offset=0`).catch(() => { });
+                        fetch(`/api/db/${targetTable}?limit=${limit}&offset=0`).catch(() => {});
                     }, 150);
                 }
             },
@@ -156,9 +155,9 @@ function initExplorer() {
             sidebar
                 .querySelectorAll('button[data-table]')
                 .forEach(b =>
-                    b.classList.remove('bg-white/[0.1]', 'text-accent', 'border-l-accent')
+                    b.classList.remove('bg-surface-hover', 'text-accent', 'border-l-accent')
                 );
-            btn.classList.add('bg-white/[0.1]', 'text-accent', 'border-l-accent');
+            btn.classList.add('bg-surface-hover', 'text-accent', 'border-l-accent');
 
             if (activeTable === 'refresh') {
                 if (activeController) {
@@ -276,7 +275,7 @@ function initExplorer() {
             try {
                 const ticks = JSON.parse(e.data);
                 if (getEl('tick-count')) getEl('tick-count')!.textContent = String(ticks.length);
-            } catch { }
+            } catch {}
         });
         document.addEventListener('astro:before-swap', () => es.close(), { once: true });
     }

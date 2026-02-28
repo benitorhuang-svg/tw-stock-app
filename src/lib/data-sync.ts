@@ -22,7 +22,7 @@ interface SyncMeta {
 
 interface LocalStockData {
     stocks: StockWithPrice[];
-    fundamentals: any[]; // Consider more specific type if known
+    fundamentals: Record<string, unknown>[];
     timestamp: number;
 }
 

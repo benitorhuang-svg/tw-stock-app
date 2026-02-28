@@ -168,23 +168,23 @@ export const GET: APIRoute = async () => {
                     director:
                         snap.dir_pawn !== null
                             ? {
-                                  ratio: latest.dir_ratio,
-                                  pawn: latest.dir_pawn,
-                                  change: latest.dir_change,
+                                  ratio: snap.dir_ratio,
+                                  pawn: snap.dir_pawn,
+                                  change: snap.dir_change,
                               }
                             : undefined,
                     lending:
-                        latest.lend_bal !== null
+                        snap.lend_bal !== null
                             ? {
-                                  balance: latest.lend_bal,
-                                  shorting: latest.short_bal,
+                                  balance: snap.lend_bal,
+                                  shorting: snap.short_bal,
                               }
                             : undefined,
                     dealerDet:
-                        latest.prop_buy !== null
+                        snap.prop_buy !== null
                             ? {
-                                  prop: latest.prop_buy,
-                                  hedge: latest.hedge_buy,
+                                  prop: snap.prop_buy,
+                                  hedge: snap.hedge_buy,
                               }
                             : undefined,
                 });

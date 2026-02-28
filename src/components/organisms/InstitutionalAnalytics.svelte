@@ -231,7 +231,7 @@
                 <span class="font-black {latest.i >= 0 ? 'text-bullish' : 'text-bearish'}">{latest.i >= 0 ? '+' : ''}{latest.i.toFixed(1)}M</span>
             </div>
             <div class="flex items-center gap-1.5">
-                <span class="w-2 h-[2px] bg-white/30 rounded-full"></span>
+                <span class="w-2 h-[2px] bg-border rounded-full"></span>
                 <span class="text-text-muted/40 uppercase">Net:</span>
                 <span class="font-black {latestTotal >= 0 ? 'text-bullish' : 'text-bearish'}">{latestTotal >= 0 ? '+' : ''}{latestTotal.toFixed(1)}M</span>
             </div>

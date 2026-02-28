@@ -14,7 +14,7 @@ let flatCount = 0;
 let dataDate = '';
 let totalVolume = 0;
 let avgChange = 0;
-let distribution: any = null;
+let distribution: Record<string, number> | null = null;
 
 try {
     const { dbService } = await import('../lib/db/sqlite-service');

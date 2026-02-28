@@ -151,6 +151,36 @@ const { title, description, fullWidth = false } = Astro.props;
                         >
                             <span>個股分析</span>
                         </a>
+
+                        <!-- Watchlist (自選清單) -->
+                        <a
+                            href="/watchlist"
+                            id="nav-watchlist-btn"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group relative',
+                                Astro.url.pathname === '/watchlist'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span>自選清單</span>
+                        </a>
+
+                        <!-- Backtest (策略回測) -->
+                        <a
+                            href="/strategy"
+                            id="nav-backtest-btn"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group relative',
+                                Astro.url.pathname === '/strategy'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span>策略回測</span>
+                        </a>
                     </div>
 
                     <!-- Desktop Navigation Tabs -->
@@ -220,7 +250,7 @@ const { title, description, fullWidth = false } = Astro.props;
         <MobileNavTabs />
 
         <!-- Signal Hub — Global Alerts -->
-        <SignalNexus client:load />
+        <SignalNexus client:idle />
 
         <!-- ═══ Global Scripts ═══ -->
 

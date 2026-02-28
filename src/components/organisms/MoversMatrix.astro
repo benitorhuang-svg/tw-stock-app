@@ -18,7 +18,7 @@ const { gainers, losers } = Astro.props;
     <!-- BULLISH MOVERS -->
     <div class="glass-card overflow-hidden animate-fade-up border-t-2 border-t-bullish/40">
         <div
-            class="px-6 py-4 border-b border-white/5 bg-bullish/[0.03] flex items-center justify-between"
+            class="px-6 py-4 border-b border-border/50 bg-bullish/[0.03] flex items-center justify-between"
         >
             <div class="flex items-center gap-3">
                 <div
@@ -38,11 +38,13 @@ const { gainers, losers } = Astro.props;
                             points="17 6 23 6 23 12"></polyline></svg
                     >
                 </div>
-                <h3 class="text-xs font-mono font-black text-white/80 uppercase tracking-widest">
+                <h3
+                    class="text-xs font-mono font-black text-text-secondary uppercase tracking-widest"
+                >
                     Bullish Momentum
                 </h3>
             </div>
-            <span class="text-[8px] font-mono text-white/20 uppercase tracking-tight"
+            <span class="text-[8px] font-mono text-text-muted/50 uppercase tracking-tight"
                 >Top 10 Decile</span
             >
         </div>
@@ -57,7 +59,7 @@ const { gainers, losers } = Astro.props;
         style="animation-delay: 100ms"
     >
         <div
-            class="px-6 py-4 border-b border-white/5 bg-bearish/[0.03] flex items-center justify-between"
+            class="px-6 py-4 border-b border-border/50 bg-bearish/[0.03] flex items-center justify-between"
         >
             <div class="flex items-center gap-3">
                 <div
@@ -77,11 +79,13 @@ const { gainers, losers } = Astro.props;
                             points="17 18 23 18 23 12"></polyline></svg
                     >
                 </div>
-                <h3 class="text-xs font-mono font-black text-white/80 uppercase tracking-widest">
+                <h3
+                    class="text-xs font-mono font-black text-text-secondary uppercase tracking-widest"
+                >
                     Bearish Vector
                 </h3>
             </div>
-            <span class="text-[8px] font-mono text-white/20 uppercase tracking-tight"
+            <span class="text-[8px] font-mono text-text-muted/50 uppercase tracking-tight"
                 >Bottom 10 Decile</span
             >
         </div>

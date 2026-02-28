@@ -91,12 +91,12 @@
 <div class="flex flex-col lg:flex-row gap-6 items-start relative pb-20">
     <!-- LEFT SIDEBAR -->
     <aside
-        class="w-full lg:w-64 bg-base-deep/80 backdrop-blur-xl border border-white/5 flex flex-col z-20 shrink-0 sticky top-0 lg:h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl"
+        class="w-full lg:w-64 bg-base-deep/80 backdrop-blur-xl border border-border/50 flex flex-col z-20 shrink-0 sticky top-0 lg:h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl"
     >
-        <div class="p-4 border-b border-white/5 bg-white/[0.02]">
+        <div class="p-4 border-b border-border/50 bg-surface-hover/30">
             <div class="relative group">
                 <div
-                    class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-white/20 group-focus-within:text-accent transition-colors"
+                    class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-text-muted/50 group-focus-within:text-accent transition-colors"
                 >
                     🔍
                 </div>
@@ -105,7 +105,7 @@
                     bind:value={searchQuery}
                     oninput={handleSearch}
                     placeholder="搜尋代號/名稱..."
-                    class="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-xs font-bold text-white outline-none focus:border-accent/40 transition-all"
+                    class="w-full bg-input-bg border border-border rounded-xl py-2 pl-10 pr-4 text-xs font-bold text-text-primary outline-none focus:border-accent/40 transition-all"
                 />
             </div>
         </div>
@@ -113,52 +113,52 @@
         <div class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
             <button
                 onclick={() => scrollToSection('search')}
-                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/[0.05] transition-all text-left group"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-hover transition-all text-left group"
             >
                 <span
                     class="text-sm opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"
                     >🔍</span
                 >
                 <span
-                    class="text-[11px] font-black tracking-widest uppercase text-white/40 group-hover:text-white"
+                    class="text-[11px] font-black tracking-widest uppercase text-text-muted group-hover:text-text-primary"
                     >搜尋結果</span
                 >
             </button>
             <button
                 onclick={() => scrollToSection('recent')}
-                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/[0.05] transition-all text-left group"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-hover transition-all text-left group"
             >
                 <span
                     class="text-sm opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"
                     >⏲️</span
                 >
                 <span
-                    class="text-[11px] font-black tracking-widest uppercase text-white/40 group-hover:text-white"
+                    class="text-[11px] font-black tracking-widest uppercase text-text-muted group-hover:text-text-primary"
                     >最近觀看</span
                 >
             </button>
             <button
                 onclick={() => scrollToSection('dividend')}
-                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/[0.05] transition-all text-left group"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-hover transition-all text-left group"
             >
                 <span
                     class="text-sm opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"
                     >💎</span
                 >
                 <span
-                    class="text-[11px] font-black tracking-widest uppercase text-white/40 group-hover:text-white"
+                    class="text-[11px] font-black tracking-widest uppercase text-text-muted group-hover:text-text-primary"
                     >高殖利率</span
                 >
             </button>
         </div>
 
-        <div class="p-4 border-t border-white/5 bg-white/[0.01]">
-            <div class="text-[9px] font-mono text-white/20 uppercase tracking-[0.2em] mb-1">
+        <div class="p-4 border-t border-border/50 bg-surface-hover/20">
+            <div class="text-[9px] font-mono text-text-muted/50 uppercase tracking-[0.2em] mb-1">
                 Status
             </div>
             <div class="flex items-center gap-2">
                 <div class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
-                <span class="text-[9px] font-black text-white/60">NEXUS_UPLINK_OK</span>
+                <span class="text-[9px] font-black text-text-muted">NEXUS_UPLINK_OK</span>
             </div>
         </div>
     </aside>
@@ -177,7 +177,7 @@
                 <div class="grid grid-cols-1 gap-3">
                     {#each matches as s}
                         <div
-                            class="glass-card border-white/5 hover:border-accent/20 transition-all"
+                            class="glass-card border-border/50 hover:border-accent/20 transition-all"
                         >
                             <button
                                 onclick={() => toggleStock(s.symbol)}
@@ -188,17 +188,17 @@
                                         >{s.symbol}</span
                                     >
                                     <span
-                                        class="text-[13px] font-black text-white/90 group-hover:text-accent transition-colors"
+                                        class="text-[13px] font-black text-text-primary group-hover:text-accent transition-colors"
                                         >{s.name}</span
                                     >
                                     <span
-                                        class="text-[10px] font-mono text-white/20 uppercase tracking-widest hidden md:block"
+                                        class="text-[10px] font-mono text-text-muted/50 uppercase tracking-widest hidden md:block"
                                         >{s.sector || 'GENERAL'}</span
                                     >
                                 </div>
                                 <div class="flex items-center gap-6">
                                     <div class="text-right">
-                                        <div class="text-[13px] font-black font-mono text-white/80">
+                                        <div class="text-[13px] font-black font-mono text-text-secondary">
                                             {s.price?.toFixed(2) || '—'}
                                         </div>
                                         <div
@@ -214,7 +214,7 @@
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <div
-                                            class="text-white/20 group-hover:text-accent transition-transform {expandedStocks[
+                                            class="text-text-muted/50 group-hover:text-accent transition-transform {expandedStocks[
                                                 s.symbol
                                             ]
                                                 ? 'rotate-90'
@@ -226,7 +226,7 @@
                                 </div>
                             </button>
                             {#if expandedStocks[s.symbol]}
-                                <div class="p-4 border-t border-white/5 animate-fade-in">
+                                <div class="p-4 border-t border-border/50 animate-fade-in">
                                     <div class="mb-4 flex justify-end">
                                         <a
                                             href="/stocks/{s.symbol}"
@@ -265,7 +265,7 @@
                 {:else}
                     {#each recentStocks as s}
                         <div
-                            class="glass-card border-white/5 hover:border-accent/20 transition-all"
+                            class="glass-card border-border/50 hover:border-accent/20 transition-all"
                         >
                             <button
                                 onclick={() => toggleStock(s.symbol)}
@@ -276,13 +276,13 @@
                                         >{s.symbol}</span
                                     >
                                     <span
-                                        class="text-[13px] font-black text-white/90 group-hover:text-accent transition-colors"
+                                        class="text-[13px] font-black text-text-primary group-hover:text-accent transition-colors"
                                         >{s.name}</span
                                     >
                                 </div>
                                 <div class="flex items-center gap-6">
                                     <div class="text-right">
-                                        <div class="text-[13px] font-black font-mono text-white/80">
+                                        <div class="text-[13px] font-black font-mono text-text-secondary">
                                             {s.price?.toFixed(2) || '—'}
                                         </div>
                                         <div
@@ -297,7 +297,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="text-white/20 group-hover:text-accent transition-transform {expandedStocks[
+                                        class="text-text-muted/50 group-hover:text-accent transition-transform {expandedStocks[
                                             s.symbol
                                         ]
                                             ? 'rotate-90'
@@ -308,7 +308,7 @@
                                 </div>
                             </button>
                             {#if expandedStocks[s.symbol]}
-                                <div class="p-4 border-t border-white/5 animate-fade-in">
+                                <div class="p-4 border-t border-border/50 animate-fade-in">
                                     <div class="mb-4 flex justify-end">
                                         <a
                                             href="/stocks/{s.symbol}"
@@ -335,7 +335,7 @@
         >
             <div class="grid grid-cols-1 gap-3">
                 {#each dividendStocks as s}
-                    <div class="glass-card border-white/5 hover:border-accent/20 transition-all">
+                    <div class="glass-card border-border/50 hover:border-accent/20 transition-all">
                         <button
                             onclick={() => toggleStock(s.symbol)}
                             class="w-full flex items-center justify-between p-4 group"
@@ -345,7 +345,7 @@
                                     >{s.symbol}</span
                                 >
                                 <span
-                                    class="text-[13px] font-black text-white/90 group-hover:text-accent transition-colors"
+                                    class="text-[13px] font-black text-text-primary group-hover:text-accent transition-colors"
                                     >{s.name}</span
                                 >
                                 <span
@@ -355,7 +355,7 @@
                             </div>
                             <div class="flex items-center gap-6">
                                 <div class="text-right">
-                                    <div class="text-[13px] font-black font-mono text-white/80">
+                                    <div class="text-[13px] font-black font-mono text-text-secondary">
                                         {s.price?.toFixed(2) || '—'}
                                     </div>
                                     <div
@@ -370,7 +370,7 @@
                                     </div>
                                 </div>
                                 <div
-                                    class="text-white/20 group-hover:text-accent transition-transform {expandedStocks[
+                                    class="text-text-muted/50 group-hover:text-accent transition-transform {expandedStocks[
                                         s.symbol
                                     ]
                                         ? 'rotate-90'
@@ -381,7 +381,7 @@
                             </div>
                         </button>
                         {#if expandedStocks[s.symbol]}
-                            <div class="p-4 border-t border-white/5 animate-fade-in">
+                            <div class="p-4 border-t border-border/50 animate-fade-in">
                                 <div class="mb-4 flex justify-end">
                                     <a
                                         href="/stocks/{s.symbol}"

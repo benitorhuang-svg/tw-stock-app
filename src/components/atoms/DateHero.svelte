@@ -46,9 +46,7 @@
         {/if}
 
         <div class="flex flex-col leading-none">
-            <span
-                class="text-[15px] font-black text-accent/60 uppercase tracking-[0.4em] mb-1 pl-1"
-            >
+            <span class="text-[15px] font-black text-accent uppercase tracking-[0.4em] mb-1 pl-1">
                 {year}
             </span>
 
@@ -66,7 +64,7 @@
         {#if onNavigate}
             <button
                 onclick={() => onNavigate(-1)}
-                class="flex-1 h-12 rounded-xl flex items-center justify-center text-text-muted/40 hover:text-text-primary hover:bg-surface-hover/50 transition-all active:scale-90 bg-surface/80 border border-border/30 shadow-xl"
+                class="flex-1 h-12 rounded-xl flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-hover/50 transition-all active:scale-90 bg-surface border border-border/30 shadow-xl"
                 aria-label="前一天"
             >
                 <svg
@@ -87,7 +85,7 @@
         {#if onDateChange}
             <button
                 onclick={() => onDateChange(new Date().toISOString().slice(0, 10))}
-                class="px-4 py-3 rounded-2xl bg-surface/80 border border-border/40 text-[12px] font-black text-text-primary hover:border-accent hover:text-accent shadow-xl uppercase tracking-[0.2em] active:scale-95 transition-all text-center min-w-[100px]"
+                class="px-4 py-3 rounded-2xl bg-surface border border-border/40 text-[12px] font-black text-text-primary hover:border-accent hover:text-accent shadow-xl uppercase tracking-[0.2em] active:scale-95 transition-all text-center min-w-[100px]"
             >
                 TODAY
             </button>
@@ -97,7 +95,7 @@
         {#if onNavigate}
             <button
                 onclick={() => onNavigate(1)}
-                class="flex-1 h-12 rounded-xl flex items-center justify-center text-text-muted/40 hover:text-text-primary hover:bg-surface-hover/50 transition-all active:scale-90 bg-surface/80 border border-border/30 shadow-xl"
+                class="flex-1 h-12 rounded-xl flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-hover/50 transition-all active:scale-90 bg-surface border border-border/30 shadow-xl"
                 aria-label="後一天"
             >
                 <svg

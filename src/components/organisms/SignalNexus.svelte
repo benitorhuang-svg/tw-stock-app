@@ -68,14 +68,14 @@
         >
             <div class="flex items-start gap-3">
                 <div
-                    class="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-lg"
+                    class="flex-shrink-0 w-8 h-8 rounded-lg bg-surface-hover border border-border flex items-center justify-center text-lg"
                 >
                     {getSignalIcon(s.type)}
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between gap-2">
                         <span
-                            class="text-[10px] font-black tracking-widest text-white/40 uppercase font-mono"
+                            class="text-[10px] font-black tracking-widest text-text-muted uppercase font-mono"
                         >
                             Signal_Logged // {new Date(s.timestamp).toLocaleTimeString([], {
                                 hour12: false,
@@ -87,8 +87,8 @@
                             {s.symbol}
                         </span>
                     </div>
-                    <h4 class="text-xs font-black text-white mt-1 truncate">{s.name}</h4>
-                    <p class="text-[10px] text-white/60 leading-relaxed mt-1">{s.message}</p>
+                    <h4 class="text-xs font-black text-text-primary mt-1 truncate">{s.name}</h4>
+                    <p class="text-[10px] text-text-muted leading-relaxed mt-1">{s.message}</p>
                 </div>
             </div>
 

@@ -91,23 +91,35 @@ export function isStockInActiveBin(pct: number, activeIndex: number | null): boo
     if (activeIndex === null) return true;
 
     switch (activeIndex) {
-        case 0: return pct <= -9;
-        case 1: return pct > -9 && pct <= -6;
-        case 2: return pct > -6 && pct <= -3;
-        case 3: return pct > -3 && pct < 0;
-        case 4: return pct === 0;
-        case 5: return pct > 0 && pct < 3;
-        case 6: return pct >= 3 && pct < 6;
-        case 7: return pct >= 6 && pct < 9;
-        case 8: return pct >= 9;
-        default: return true;
+        case 0:
+            return pct <= -9;
+        case 1:
+            return pct > -9 && pct <= -6;
+        case 2:
+            return pct > -6 && pct <= -3;
+        case 3:
+            return pct > -3 && pct < 0;
+        case 4:
+            return pct === 0;
+        case 5:
+            return pct > 0 && pct < 3;
+        case 6:
+            return pct >= 3 && pct < 6;
+        case 7:
+            return pct >= 6 && pct < 9;
+        case 8:
+            return pct >= 9;
+        default:
+            return true;
     }
 }
 
 /**
  * Aggregate stocks into sector summary for treemap visualization
  */
-export function aggregateSectors(stocks: any[]): { name: string; value: number; change: number; count: number }[] {
+export function aggregateSectors(
+    stocks: any[]
+): { name: string; value: number; change: number; count: number }[] {
     const map = new Map<string, { name: string; value: number; change: number; count: number }>();
     stocks.forEach(s => {
         const secName = s.sector || '其他';
@@ -128,15 +140,30 @@ export function aggregateSectors(stocks: any[]): { name: string; value: number; 
 /**
  * Calculate MA breadth from a filtered stock list
  */
-export function calcMABreadth(stocks: any[]): { aboveMA20: number; aboveMA60: number; aboveMA120: number; total: number } | null {
+export function calcMABreadth(
+    stocks: any[]
+): { aboveMA20: number; aboveMA60: number; aboveMA120: number; total: number } | null {
     if (!stocks.length) return null;
 
-    let above20 = 0, above60 = 0, above120 = 0;
-    let count20 = 0, count60 = 0, count120 = 0;
+    let above20 = 0,
+        above60 = 0,
+        above120 = 0;
+    let count20 = 0,
+        count60 = 0,
+        count120 = 0;
     stocks.forEach(s => {
-        if (s.ma20 > 0) { count20++; if (s.price > s.ma20) above20++; }
-        if (s.ma60 > 0) { count60++; if (s.price > s.ma60) above60++; }
-        if (s.ma120 > 0) { count120++; if (s.price > s.ma120) above120++; }
+        if (s.ma20 > 0) {
+            count20++;
+            if (s.price > s.ma20) above20++;
+        }
+        if (s.ma60 > 0) {
+            count60++;
+            if (s.price > s.ma60) above60++;
+        }
+        if (s.ma120 > 0) {
+            count120++;
+            if (s.price > s.ma120) above120++;
+        }
     });
 
     return {

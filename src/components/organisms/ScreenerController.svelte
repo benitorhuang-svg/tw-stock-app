@@ -3,6 +3,8 @@
     import QuickNav from '../molecules/QuickNav.svelte';
     import AnalysisAccordion from '../organisms/AnalysisAccordion.svelte';
     import ScreenerResults from './ScreenerResults.svelte';
+    import ForensicFilteringMatrix from './ForensicFilteringMatrix.svelte';
+    import BacktestHeatmap from '../molecules/BacktestHeatmap.svelte';
 
     interface Strategy {
         id: string;
@@ -121,7 +123,7 @@
                             >
                                 {s.name}
                             </div>
-                            <div class="text-[10px] text-text-muted mt-1 line-clamp-1 opacity-60">
+                            <div class="text-[10px] text-text-muted mt-1 line-clamp-1">
                                 {s.category || 'Quantitative Vector'}
                             </div>
                         </div>
@@ -141,7 +143,7 @@
             isOpen={expandedSections.matrix}
             onToggle={() => toggleSection('matrix')}
         >
-            <slot name="matrix" />
+            <ForensicFilteringMatrix />
         </AnalysisAccordion>
 
         <!-- ③ 回測表現 ( BACKTEST HEATMAP ) -->
@@ -152,7 +154,7 @@
             isOpen={expandedSections.backtest}
             onToggle={() => toggleSection('backtest')}
         >
-            <slot name="backtest" />
+            <BacktestHeatmap />
         </AnalysisAccordion>
 
         <!-- ④ 篩選結果 ( DETECTION RESULTS ) -->
@@ -181,7 +183,7 @@
                         >
                     </div>
                 </header>
-                <ScreenerResults client:load />
+                <ScreenerResults />
             </div>
         </AnalysisAccordion>
     </main>
