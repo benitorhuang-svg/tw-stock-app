@@ -16,12 +16,12 @@ import FAQItem from '../atoms/FAQItem.astro';
     >
     </div>
     <div
-        class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)] pointer-events-none"
+        class="absolute inset-0 bg-[linear-gradient(var(--color-border)_1px,transparent_1px),linear-gradient(90deg,var(--color-border)_1px,transparent_1px)] bg-[size:32px_32px] opacity-[0.05] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)] pointer-events-none"
     >
     </div>
 
     <div
-        class="relative w-full max-w-[1400px] mx-auto p-[1px] rounded-[2.5rem] bg-gradient-to-b from-white/10 via-white/[0.02] to-white/[0.05] animate-fade-up shadow-[0_0_100px_rgba(0,0,0,0.8)] group/core flex flex-col justify-start"
+        class="relative w-full max-w-[1400px] mx-auto p-[1px] rounded-[2.5rem] bg-gradient-to-b from-border/20 via-border/5 to-border/10 animate-fade-up shadow-elevated group/core flex flex-col justify-start"
     >
         <div
             class="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent opacity-0 group-hover/core:opacity-100 transition-all duration-1000 blur-sm"
@@ -38,7 +38,7 @@ import FAQItem from '../atoms/FAQItem.astro';
                         class="rounded-3xl border border-border/50 bg-surface/30 px-8 lg:px-12 py-6 relative overflow-hidden group shadow-glass"
                     >
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                            class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                         </div>
 
@@ -53,77 +53,116 @@ import FAQItem from '../atoms/FAQItem.astro';
                             </div>
 
                             <div class="grid grid-cols-1 gap-y-0.5">
+                                <!-- Layer 1: Raw Data -->
+                                <div
+                                    class="py-3 px-6 bg-white/[0.02] rounded-xl mb-1 border border-white/5"
+                                >
+                                    <span
+                                        class="text-[9px] font-black text-gray-400 uppercase tracking-widest"
+                                        >① 原始數據層 RAW_DATA_LAKE</span
+                                    >
+                                </div>
                                 <RegistryItem
                                     title="STOCKS"
-                                    description="紀錄台股上市櫃公司基本資料、產業類別及所屬板塊。"
-                                />
-                                <RegistryItem
-                                    title="LATEST_PRICES"
-                                    description="每日即時收盤股價、漲跌趨勢及成交量能監控。"
-                                />
-                                <RegistryItem
-                                    title="FUNDAMENTALS"
-                                    description="整合本益比、殖利率等關鍵財務指標與基本面數據。"
-                                />
-                                <RegistryItem
-                                    title="VALUATION_HISTORY"
-                                    description="追蹤歷史 PE/PB 估值位階，評估股價長期價值空間。"
-                                />
-                                <RegistryItem
-                                    title="MONTHLY_REVENUE"
-                                    description="掌握公司每月營收發布動態、年增表現與成長動能。"
-                                />
-                                <RegistryItem
-                                    title="CHIPS"
-                                    description="監控三大法人籌碼流向，詳列外資與投信買賣動向。"
+                                    description="核心實體表，紀錄上市櫃公司代號、名稱、產業別及市場分類。"
                                 />
                                 <RegistryItem
                                     title="PRICE_HISTORY"
-                                    description="累積百萬筆歷史 K 線數據，支援技術指標開發與分析。"
+                                    description="歷史行情總匯，累積百萬級 K 線數據，支援全維度技術分析。"
+                                />
+                                <RegistryItem
+                                    title="CHIPS"
+                                    description="三大法人每日買賣明細，標定外資、投信與自營商的操作脈絡。"
+                                />
+                                <RegistryItem
+                                    title="MONTHLY_REVENUE"
+                                    description="月營收數據流，追蹤公司業績成長性與年增/月增動能趨勢。"
+                                />
+                                <RegistryItem
+                                    title="FUNDAMENTALS"
+                                    description="財報核心指標，整合本益比、殖利率及淨值比等基本面要素。"
                                 />
                                 <RegistryItem
                                     title="SHAREHOLDER_DISTRIBUTION"
-                                    description="追蹤每週大戶越持股變化與股東人數趨勢。"
+                                    description="股權分散數據，追蹤每週大戶持股比例與關鍵散戶流向。"
                                 />
                                 <RegistryItem
                                     title="GOVERNMENT_CHIPS"
-                                    description="掃描八大官股券商動向，掌握政策護盤資金流向。"
+                                    description="八大代庫券商明細，解析官股資金動向與政策護盤底氣。"
                                 />
                                 <RegistryItem
                                     title="MAJOR_BROKER_CHIPS"
-                                    description="監控五大主力分點進出，精確鎖定核心大戶足跡。"
+                                    description="關鍵主力分點進出紀錄，鎖定特定分點的大戶建倉行為。"
                                 />
+
+                                <!-- Layer 2: Computed Features -->
+                                <div
+                                    class="py-3 px-6 bg-yellow-500/5 rounded-xl mt-6 mb-1 border border-yellow-500/10"
+                                >
+                                    <span
+                                        class="text-[9px] font-black text-amber-400 uppercase tracking-widest"
+                                        >② 運算特徵層 COMPUTED_FEATURES</span
+                                    >
+                                </div>
                                 <RegistryItem
-                                    title="DIRECTOR_HOLDINGS"
-                                    description="紀錄董監持股比例與質押率，反映內部信心程度。"
-                                />
-                                <RegistryItem
-                                    title="SECURITY_LENDING"
-                                    description="追蹤借券餘額與賣出動態，預警市場潛在空方力道。"
-                                />
-                                <RegistryItem
-                                    title="DEALER_DETAILS"
-                                    description="精確掌握自營商避險與權證操作，區分核心持股與套利部位。"
-                                />
-                                <RegistryItem
-                                    title="MARGIN_SHORT"
-                                    description="監控融資融券餘額與水位，判別散戶情緒與槓桿率。"
-                                />
-                                <RegistryItem
-                                    title="AI_REPORTS"
-                                    description="M2 Orchestrator 生成的深度鑑識摘要，提供 AI 洞察。"
+                                    title="DAILY_INDICATORS"
+                                    description="自動化運算結果，包含 MA 多頭排列、量能增幅等即時指標。"
                                 />
                                 <RegistryItem
                                     title="CHIP_FEATURES"
-                                    description="M1 ETL 轉化的籌碼指標，揭示主力資金積累強度。"
-                                />
-                                <RegistryItem
-                                    title="VALUATION_FEATURES"
-                                    description="萃取關鍵估值因子，支援量化策略與風險模型之多維度計算。"
+                                    description="籌碼多因子轉化，量化主力吸籌強度與散戶退場係數。"
                                 />
                                 <RegistryItem
                                     title="TECH_FEATURES"
-                                    description="自動計算之技術指標（MA, RSI），輔助趨勢判斷。"
+                                    description="技術面特徵工程，包含 RSI 超賣、MACD 背離等偵測數據。"
+                                />
+                                <RegistryItem
+                                    title="VALUATION_FEATURES"
+                                    description="價值模型因子，計算歷史本益比與淨值比之分位點與偏移量。"
+                                />
+
+                                <!-- Layer 3: Aggregated Insights -->
+                                <div
+                                    class="py-3 px-6 bg-emerald-500/5 rounded-xl mt-6 mb-1 border border-emerald-500/10"
+                                >
+                                    <span
+                                        class="text-[9px] font-black text-emerald-400 uppercase tracking-widest"
+                                        >③ 聚合洞察層 AGGREGATED_INSIGHTS</span
+                                    >
+                                </div>
+                                <RegistryItem
+                                    title="MARKET_BREADTH_HISTORY"
+                                    description="全市場廣度追蹤，統計上漲家數比率、市場溫度指標。"
+                                />
+                                <RegistryItem
+                                    title="INSTITUTIONAL_TREND"
+                                    description="法人資金合流分析，判別外資投信同步做多的強勢區間。"
+                                />
+                                <RegistryItem
+                                    title="SECTOR_DAILY"
+                                    description="產業板塊熱圖數據，即時聚合 33 類產業別的資金淨流向。"
+                                />
+
+                                <!-- Layer 4: Snapshots & AI -->
+                                <div
+                                    class="py-3 px-6 bg-accent/5 rounded-xl mt-6 mb-1 border border-accent/10"
+                                >
+                                    <span
+                                        class="text-[9px] font-black text-accent uppercase tracking-widest"
+                                        >④ 快照鑑識層 SNAPSHOT_FORENSICS</span
+                                    >
+                                </div>
+                                <RegistryItem
+                                    title="LATEST_PRICES"
+                                    description="每日最新行情快照，反映即時價格位階與漲跌熱力分布。"
+                                />
+                                <RegistryItem
+                                    title="AI_REPORTS"
+                                    description="M2 Orchestrator 生成的深度鑑識摘要，提供個股 AI 洞察結論。"
+                                />
+                                <RegistryItem
+                                    title="INSTITUTIONAL_SNAPSHOT"
+                                    description="法人當日最新觀測，快速掌握大戶籌碼異動之預警信號。"
                                 />
                             </div>
                         </div>

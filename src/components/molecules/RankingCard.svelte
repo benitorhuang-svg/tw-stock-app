@@ -18,7 +18,7 @@
     let { title, variant, items, align = 'left' }: Props = $props();
 
     const headerBg = {
-        accent: 'bg-white/[0.02]',
+        accent: 'bg-surface-hover/20',
         bearish: 'bg-bearish/[0.03]',
         bullish: 'bg-bullish/[0.03]',
     };
@@ -41,7 +41,7 @@
 >
     <!-- Card Header -->
     <div
-        class="px-6 py-4 {headerBg[variant]} border-b border-white/5 flex items-center {align ===
+        class="px-6 py-4 {headerBg[variant]} border-b border-border flex items-center {align ===
         'right'
             ? 'justify-end'
             : 'justify-start'} relative z-10"
@@ -97,7 +97,7 @@
     <!-- Data Table -->
     <div class="w-full">
         <table class="w-full text-left border-collapse">
-            <thead class="bg-surface/95 border-b border-white/5 sticky top-0 z-20 backdrop-blur-xl">
+            <thead class="bg-surface/95 border-b border-border sticky top-0 z-20 backdrop-blur-xl">
                 <tr>
                     <th class="atom-th !px-2">Rank</th>
                     <th class="atom-th !px-2 text-left">Entity</th>
@@ -106,13 +106,13 @@
                     <th class="atom-th !px-2 text-right">Change</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-white/[0.02]">
+            <tbody class="divide-y divide-border/30">
                 {#each items as s, i}
                     <tr
                         class="hover:bg-glass-hover transition-colors group/row cursor-pointer"
                         onclick={() => (window.location.href = `/stocks/${s.symbol}`)}
                     >
-                        <td class="px-2 py-3 text-[9px] font-mono text-white/20 pl-4 w-10">
+                        <td class="px-2 py-3 text-[9px] font-mono text-text-muted/40 pl-4 w-10">
                             {i + 1}
                         </td>
                         <td class="px-1 py-3 max-w-[120px]">
@@ -121,16 +121,16 @@
                         <td class="px-2 py-3 text-center">
                             {#if s.sector}
                                 <span
-                                    class="text-[8px] px-1.5 py-0.5 rounded bg-white/5 text-white/40 font-bold uppercase tracking-tighter whitespace-nowrap"
+                                    class="text-[8px] px-1.5 py-0.5 rounded bg-surface-hover text-text-muted/60 font-bold uppercase tracking-tighter whitespace-nowrap"
                                 >
                                     {s.sector}
                                 </span>
                             {:else}
-                                <span class="text-[8px] text-white/10">—</span>
+                                <span class="text-[8px] text-text-muted/30">—</span>
                             {/if}
                         </td>
                         <td
-                            class="px-2 py-3 text-right text-[10px] font-mono font-bold text-white/70"
+                            class="px-2 py-3 text-right text-[10px] font-mono font-bold text-text-secondary"
                         >
                             {fmtPrice(s.price || 0)}
                         </td>

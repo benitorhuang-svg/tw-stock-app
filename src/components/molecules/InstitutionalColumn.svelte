@@ -23,7 +23,7 @@
     }>();
 
     const filteredData = $derived.by(() => {
-        return (data || []).filter(item => {
+        return (data || []).filter((item: any) => {
             const matchesSearch =
                 !marketStore.searchKeyword ||
                 item.symbol.toLowerCase().includes(marketStore.searchKeyword.toLowerCase()) ||
@@ -45,10 +45,10 @@
     class="flex flex-col bg-surface/40 rounded-xl border border-border shadow-elevated h-full transition-all duration-500 hover:border-accent/15 group"
 >
     <!-- Header: Table-like Header -->
-    <header class="flex items-center justify-between px-6 py-4 border-b border-border bg-black/10">
+    <header class="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-hover/30">
         <div class="flex flex-col gap-1">
             <h3
-                class="text-xs font-black text-white/90 tracking-[0.2em] uppercase flex items-center gap-2"
+                class="text-xs font-black text-text-primary/90 tracking-[0.2em] uppercase flex items-center gap-2"
             >
                 <span class="w-1.5 h-1.5 rounded-full {dotColorClass} animate-pulse"></span>
                 {title}
@@ -69,7 +69,7 @@
 
     <!-- Table Header (Sticky) -->
     <div
-        class="sticky top-0 z-20 flex items-center gap-4 px-3 py-2 bg-[#0C0D0E] border-b border-border text-[8px] font-black text-text-muted/20 uppercase tracking-[0.2em] shadow-sm"
+        class="sticky top-0 z-20 flex items-center gap-4 px-3 py-2 bg-elevated border-b border-border text-[8px] font-black text-text-muted/20 uppercase tracking-[0.2em] shadow-sm"
     >
         <div class="flex-1 text-left px-3">Entity</div>
         <div class="w-16 text-center">Streak_D</div>
@@ -109,7 +109,7 @@
         background: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--color-scrollbar, rgba(128, 128, 128, 0.15));
         border-radius: 10px;
     }
 </style>

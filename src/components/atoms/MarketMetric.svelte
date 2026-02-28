@@ -11,7 +11,7 @@
     let { label, value, trend = 'neutral' }: Props = $props();
 
     const colorClass = $derived(
-        trend === 'bullish' ? 'text-bullish' : trend === 'bearish' ? 'text-bearish' : 'text-white'
+        trend === 'bullish' ? 'text-bullish' : trend === 'bearish' ? 'text-bearish' : 'text-text-primary'
     );
 </script>
 

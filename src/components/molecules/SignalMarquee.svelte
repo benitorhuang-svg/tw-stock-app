@@ -46,7 +46,7 @@
 
 {#if signals.length > 0 && !dismissed}
     <div
-        class="signal-marquee-belt w-full h-8 bg-black/40 border-b border-white/5 backdrop-blur-md overflow-hidden flex items-center relative group/marquee"
+        class="signal-marquee-belt w-full h-8 bg-black/40 border-b border-border backdrop-blur-md overflow-hidden flex items-center relative group/marquee"
         transition:fade={{ duration: 300 }}
     >
         <div
@@ -57,10 +57,10 @@
                 <div class="flex items-center gap-12">
                     {#each signals as s (s.id + i)}
                         <div
-                            class="flex items-center gap-3 group/item px-2 py-0.5 rounded hover:bg-white/5 transition-all"
+                            class="flex items-center gap-3 group/item px-2 py-0.5 rounded hover:bg-surface-hover transition-all"
                         >
                             <span
-                                class="text-[10px] font-mono font-black py-0.5 px-1.5 bg-white/5 text-white/40 rounded border border-white/10 group-hover/item:border-accent/30 group-hover/item:text-accent transition-colors"
+                                class="text-[10px] font-mono font-black py-0.5 px-1.5 bg-surface-hover text-text-muted/60 rounded border border-border group-hover/item:border-accent/30 group-hover/item:text-accent transition-colors"
                             >
                                 {s.symbol}
                             </span>
@@ -71,7 +71,7 @@
                             >
                                 {s.message}
                             </span>
-                            <span class="text-[8px] font-mono text-white/20">
+                            <span class="text-[8px] font-mono text-text-muted/40">
                                 {new Date(s.timestamp).toLocaleTimeString([], {
                                     hour12: false,
                                     hour: '2-digit',

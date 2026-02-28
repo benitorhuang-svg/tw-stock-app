@@ -132,11 +132,20 @@ export function calcMABreadth(stocks: any[]): { aboveMA20: number; aboveMA60: nu
     if (!stocks.length) return null;
 
     let above20 = 0, above60 = 0, above120 = 0;
+    let count20 = 0, count60 = 0, count120 = 0;
     stocks.forEach(s => {
-        if (s.price > (s.ma20 || 0)) above20++;
-        if (s.price > (s.ma60 || s.ma5 || 0)) above60++;
-        if (s.price > (s.ma120 || 0)) above120++;
+        if (s.ma20 > 0) { count20++; if (s.price > s.ma20) above20++; }
+        if (s.ma60 > 0) { count60++; if (s.price > s.ma60) above60++; }
+        if (s.ma120 > 0) { count120++; if (s.price > s.ma120) above120++; }
     });
 
-    return { aboveMA20: above20, aboveMA60: above60, aboveMA120: above120, total: stocks.length };
+    return {
+        aboveMA20: above20,
+        aboveMA60: above60,
+        aboveMA120: above120,
+        total: stocks.length,
+        totalMA20: count20,
+        totalMA60: count60,
+        totalMA120: count120,
+    } as any;
 }

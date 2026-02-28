@@ -14,7 +14,10 @@ const isActive = (path: string) =>
                 item =>
                     item.label !== '數據觀測' &&
                     item.label !== '即時開盤' &&
-                    item.label !== '市場漲幅'
+                    item.label !== '市場漲幅' &&
+                    item.label !== '法人監控' &&
+                    item.label !== '選股' &&
+                    item.label !== '分析'
             ).map(item => (
                 <NavTab
                     variant="desktop"
@@ -49,7 +52,7 @@ const isActive = (path: string) =>
         document.querySelectorAll<HTMLElement>('.top-nav-tab').forEach(updateFn);
         document.querySelectorAll<HTMLElement>('.mobile-nav-item').forEach(updateFn);
 
-        ['/database', '/live', '/'].forEach(basePath => {
+        ['/database', '/live', '/', '/institutional', '/screener', '/stocks'].forEach(basePath => {
             const btn = document.querySelector(`header a[href="${basePath}"]`) as HTMLElement;
             if (btn) {
                 const isActive = currentPath === basePath || currentPath.startsWith(basePath + '/');

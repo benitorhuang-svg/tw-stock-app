@@ -23,7 +23,7 @@
 </script>
 
 <div class="mt-8 bg-surface/40 rounded-2xl border border-border/10 overflow-hidden">
-    <div class="p-6 border-b border-border/10 flex items-center justify-between bg-white/[0.02]">
+    <div class="p-6 border-b border-border/10 flex items-center justify-between bg-surface/30">
         <div class="flex items-center gap-3">
             <div
                 class="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center text-accent"
@@ -39,7 +39,7 @@
                 </svg>
             </div>
             <div>
-                <h2 class="text-sm font-black text-white uppercase tracking-widest">
+                <h2 class="text-sm font-black text-text-primary uppercase tracking-widest">
                     Abnormal_Forensic_Report
                 </h2>
                 <p class="text-[9px] font-mono text-text-muted/60 uppercase">
@@ -59,8 +59,8 @@
     <div class="p-6">
         {#if isLoading}
             <div class="space-y-4 animate-pulse">
-                <div class="h-4 bg-white/5 rounded w-3/4"></div>
-                <div class="h-24 bg-white/5 rounded"></div>
+                <div class="h-4 bg-surface/40 rounded w-3/4"></div>
+                <div class="h-24 bg-surface/40 rounded"></div>
             </div>
         {:else if report}
             <div class="space-y-6">
@@ -75,7 +75,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {#each report.alerts as alert}
                         <div
-                            class="group p-4 rounded-xl border border-border/10 bg-white/[0.02] hover:bg-white/[0.04] transition-all relative overflow-hidden"
+                            class="group p-4 rounded-xl border border-border/10 bg-surface/30 hover:bg-surface-hover/40 transition-all relative overflow-hidden"
                         >
                             <div class="flex items-center justify-between mb-3">
                                 <span
@@ -85,11 +85,11 @@
                                 >
                                     {alert.type}
                                 </span>
-                                <span class="text-[10px] font-black font-mono text-white/40"
+                                <span class="text-[10px] font-black font-mono text-text-muted/60"
                                     >{alert.symbol}</span
                                 >
                             </div>
-                            <h3 class="text-xs font-black text-white mb-2">{alert.name}</h3>
+                            <h3 class="text-xs font-black text-text-primary mb-2">{alert.name}</h3>
                             <p class="text-[9px] text-text-muted leading-relaxed line-clamp-3">
                                 {alert.reason}
                             </p>

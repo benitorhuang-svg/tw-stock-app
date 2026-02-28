@@ -27,6 +27,7 @@
     let chartContainer: HTMLDivElement | null = null;
     let chart: any = null;
     let ro: ResizeObserver | null = null;
+    let resizeRaf: number | null = null;
 
     const labels = ['跌停', '-9~-6%', '-6~-3%', '-3~0%', '平盤', '0~3%', '3~6%', '6~9%', '漲停'];
     const colors = [
@@ -209,7 +210,10 @@
             });
 
             ro = new ResizeObserver(() => {
-                if (chart) chart.resize();
+                if (resizeRaf) cancelAnimationFrame(resizeRaf);
+                resizeRaf = requestAnimationFrame(() => {
+                    if (chart) chart.resize();
+                });
             });
             ro.observe(chartContainer);
         } catch (e) {
@@ -229,6 +233,7 @@
     });
 
     onDestroy(() => {
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
         if (chart) chart.dispose();
         if (ro) ro.disconnect();
         if (unsubTheme) unsubTheme();

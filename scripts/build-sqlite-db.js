@@ -88,6 +88,8 @@ try {
     DROP TABLE IF EXISTS director_holdings;
     DROP TABLE IF EXISTS security_lending;
     DROP TABLE IF EXISTS dealer_details;
+    DROP TABLE IF EXISTS market_breadth_history;
+    DROP TABLE IF EXISTS daily_indicators;
 
     -- 股票基本資料
     CREATE TABLE stocks (
@@ -116,6 +118,8 @@ try {
         net_margin REAL DEFAULT 0,
         ma5 REAL DEFAULT 0,
         ma20 REAL DEFAULT 0,
+        ma60 REAL DEFAULT 0,
+        ma120 REAL DEFAULT 0,
         rsi REAL DEFAULT 0,
         FOREIGN KEY (symbol) REFERENCES stocks(symbol)
     );
@@ -331,6 +335,43 @@ try {
 
     CREATE INDEX idx_margin_date ON margin_short(date);
     CREATE INDEX idx_chip_feat_date ON chip_features(date);
+
+    -- 每日大盤聚合指標 (分析數據 - 聚合層)
+    CREATE TABLE market_breadth_history (
+        date TEXT PRIMARY KEY,
+        up_count INTEGER,
+        down_count INTEGER,
+        flat_count INTEGER,
+        up_turnover REAL,
+        down_turnover REAL,
+        up_volume INTEGER,
+        down_volume INTEGER,
+        trin REAL,
+        ma5_breadth REAL,
+        ma20_breadth REAL,
+        ma60_breadth REAL,
+        ma120_breadth REAL,
+        total_stocks INTEGER
+    );
+
+    -- 每日個股指標歷史 (分析數據 - 運算層)
+    CREATE TABLE daily_indicators (
+        symbol TEXT NOT NULL,
+        date TEXT NOT NULL,
+        ma5 REAL,
+        ma20 REAL,
+        ma60 REAL,
+        ma120 REAL,
+        rsi14 REAL,
+        macd_diff REAL,
+        macd_dea REAL,
+        kd_k REAL,
+        kd_d REAL,
+        PRIMARY KEY (symbol, date)
+    );
+
+    CREATE INDEX idx_daily_ind_date ON daily_indicators(date);
+    CREATE INDEX idx_daily_ind_symbol_date ON daily_indicators(symbol, date DESC);
 `);
 } catch (e) {
     console.error(`❌ SQL 初始化失敗: ${e.message}`);
@@ -613,105 +654,127 @@ let totalRecords = 0;
 let processedFiles = 0;
 
 if (fs.existsSync(PRICES_DIR)) {
-console.log('📈 正在掃描 CSV 歷史價格檔案...');
-const csvFiles = fs.readdirSync(PRICES_DIR).filter(f => f.endsWith('.csv'));
-console.log(`   共找到 ${csvFiles.length} 個 CSV 檔案\n`);
+    console.log('📈 正在掃描 CSV 歷史價格檔案...');
+    const csvFiles = fs.readdirSync(PRICES_DIR).filter(f => f.endsWith('.csv'));
+    console.log(`   共找到 ${csvFiles.length} 個 CSV 檔案\n`);
 
-const insertHistory = db.prepare(`
+    const insertHistory = db.prepare(`
     INSERT OR REPLACE INTO price_history 
     (symbol, date, open, high, low, close, volume, turnover, change, change_pct)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
-// 使用 transaction 進行批次插入 (大幅提升效能)
+    // 使用 transaction 進行批次插入 (大幅提升效能)
 
-const processCSVBatch = db.transaction(records => {
-    for (const record of records) {
-        insertHistory.run(
-            record.symbol,
-            record.date,
-            record.open,
-            record.high,
-            record.low,
-            record.close,
-            record.volume,
-            record.turnover,
-            record.change,
-            record.changePct
+    const processCSVBatch = db.transaction(records => {
+        for (const record of records) {
+            insertHistory.run(
+                record.symbol,
+                record.date,
+                record.open,
+                record.high,
+                record.low,
+                record.close,
+                record.volume,
+                record.turnover,
+                record.change,
+                record.changePct
+            );
+        }
+    });
+
+    // 分批處理以顯示進度
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < csvFiles.length; i += BATCH_SIZE) {
+        const batch = csvFiles.slice(i, i + BATCH_SIZE);
+        const allRecords = [];
+
+        for (const file of batch) {
+            // 從檔名提取股票代碼 (格式: 2330_台積電.csv)
+            const symbol = file.split('_')[0];
+            const filePath = path.join(PRICES_DIR, file);
+
+            try {
+                const content = fs.readFileSync(filePath, 'utf-8');
+                const lines = content.trim().split('\n');
+
+                // 跳過標題行
+                for (let j = 1; j < lines.length; j++) {
+                    const cols = lines[j].split(',');
+                    if (cols.length >= 9) {
+                        allRecords.push({
+                            symbol,
+                            date: cols[0],
+                            open: parseFloat(cols[1]) || 0,
+                            high: parseFloat(cols[2]) || 0,
+                            low: parseFloat(cols[3]) || 0,
+                            close: parseFloat(cols[4]) || 0,
+                            volume: parseInt(cols[5]) || 0,
+                            turnover: parseFloat(cols[6]) || 0,
+                            change: parseFloat(cols[7]) || 0,
+                            changePct: parseFloat(cols[8]) || 0,
+                        });
+                    }
+                }
+                processedFiles++;
+            } catch (err) {
+                console.error(`   ⚠️ 處理 ${file} 時發生錯誤:`, err.message);
+            }
+        }
+
+        // 批次寫入
+        processCSVBatch(allRecords);
+        totalRecords += allRecords.length;
+
+        // 進度顯示
+        const progress = Math.round(((i + batch.length) / csvFiles.length) * 100);
+        process.stdout.write(
+            `\r   同步進度: ${progress}% (${processedFiles}/${csvFiles.length} 個檔案, ${totalRecords.toLocaleString()} 筆紀錄)`
         );
     }
-});
 
-// 分批處理以顯示進度
-const BATCH_SIZE = 50;
-for (let i = 0; i < csvFiles.length; i += BATCH_SIZE) {
-    const batch = csvFiles.slice(i, i + BATCH_SIZE);
-    const allRecords = [];
+    console.log('\n\n📈 正在計算技術面指標 (MA5, MA20, MA60, MA120)...');
 
-    for (const file of batch) {
-        // 從檔名提取股票代碼 (格式: 2330_台積電.csv)
-        const symbol = file.split('_')[0];
-        const filePath = path.join(PRICES_DIR, file);
+    // Ensure ma60/ma120 columns exist (migration for existing DBs)
+    const existingCols = db.prepare("PRAGMA table_info('latest_prices')").all().map(c => c.name);
+    if (!existingCols.includes('ma60')) {
+        db.exec('ALTER TABLE latest_prices ADD COLUMN ma60 REAL DEFAULT 0');
+        console.log('   ➕ 新增 ma60 欄位');
+    }
+    if (!existingCols.includes('ma120')) {
+        db.exec('ALTER TABLE latest_prices ADD COLUMN ma120 REAL DEFAULT 0');
+        console.log('   ➕ 新增 ma120 欄位');
+    }
 
-        try {
-            const content = fs.readFileSync(filePath, 'utf-8');
-            const lines = content.trim().split('\n');
-
-            // 跳過標題行
-            for (let j = 1; j < lines.length; j++) {
-                const cols = lines[j].split(',');
-                if (cols.length >= 9) {
-                    allRecords.push({
-                        symbol,
-                        date: cols[0],
-                        open: parseFloat(cols[1]) || 0,
-                        high: parseFloat(cols[2]) || 0,
-                        low: parseFloat(cols[3]) || 0,
-                        close: parseFloat(cols[4]) || 0,
-                        volume: parseInt(cols[5]) || 0,
-                        turnover: parseFloat(cols[6]) || 0,
-                        change: parseFloat(cols[7]) || 0,
-                        changePct: parseFloat(cols[8]) || 0,
-                    });
-                }
-            }
-            processedFiles++;
-        } catch (err) {
-            console.error(`   ⚠️ 處理 ${file} 時發生錯誤:`, err.message);
+    const symbols = db.prepare('SELECT symbol FROM latest_prices').all();
+    const updateTech = db.prepare('UPDATE latest_prices SET ma5 = ?, ma20 = ?, ma60 = ?, ma120 = ? WHERE symbol = ?');
+    const calcBatch = db.transaction(list => {
+        for (const { symbol } of list) {
+            const ma5Row = db
+                .prepare(
+                    'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 5)'
+                )
+                .get(symbol);
+            const ma20Row = db
+                .prepare(
+                    'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 20)'
+                )
+                .get(symbol);
+            const ma60Row = db
+                .prepare(
+                    'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? AND close > 0 ORDER BY date DESC LIMIT 60)'
+                )
+                .get(symbol);
+            const ma120Row = db
+                .prepare(
+                    'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? AND close > 0 ORDER BY date DESC LIMIT 120)'
+                )
+                .get(symbol);
+            updateTech.run(ma5Row.v || 0, ma20Row.v || 0, ma60Row.v || 0, ma120Row.v || 0, symbol);
         }
-    }
-
-    // 批次寫入
-    processCSVBatch(allRecords);
-    totalRecords += allRecords.length;
-
-    // 進度顯示
-    const progress = Math.round(((i + batch.length) / csvFiles.length) * 100);
-    process.stdout.write(
-        `\r   同步進度: ${progress}% (${processedFiles}/${csvFiles.length} 個檔案, ${totalRecords.toLocaleString()} 筆紀錄)`
-    );
-}
-
-console.log('\n\n📈 正在計算技術面指標 (MA5, MA20)...');
-const symbols = db.prepare('SELECT symbol FROM latest_prices').all();
-const updateTech = db.prepare('UPDATE latest_prices SET ma5 = ?, ma20 = ? WHERE symbol = ?');
-const calcBatch = db.transaction(list => {
-    for (const { symbol } of list) {
-        const ma5Row = db
-            .prepare(
-                'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 5)'
-            )
-            .get(symbol);
-        const ma20Row = db
-            .prepare(
-                'SELECT AVG(close) as v FROM (SELECT close FROM price_history WHERE symbol = ? ORDER BY date DESC LIMIT 20)'
-            )
-            .get(symbol);
-        updateTech.run(ma5Row.v || 0, ma20Row.v || 0, symbol);
-    }
-});
-calcBatch(symbols);
-console.log('✅ 技術面指標計算完成');
+    });
+    calcBatch(symbols);
+    console.log('✅ 技術面指標計算完成');
 } else {
     console.log('⚠️ 未找到 prices 資料夾，跳過 CSV 歷史價格匯入');
 }

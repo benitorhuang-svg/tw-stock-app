@@ -40,7 +40,7 @@
         <div class="flex items-center gap-3">
             <span class="w-1.5 h-1.5 rounded-full bg-accent animate-ping"></span>
             <div class="flex flex-col">
-                <h2 class="text-xs font-black text-white/90 uppercase tracking-[0.3em]">
+                <h2 class="text-xs font-black text-text-primary/90 uppercase tracking-[0.3em]">
                     Forensic_Alpha_Radar
                 </h2>
                 <span class="text-[8px] font-mono text-text-muted/40 uppercase"
@@ -53,8 +53,8 @@
             <button
                 class="px-2 py-1 text-[8px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'conc'
-                    ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    ? 'bg-accent text-on-accent'
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'conc')}
             >
                 Conc
@@ -62,8 +62,8 @@
             <button
                 class="px-2 py-1 text-[8px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'gov'
-                    ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    ? 'bg-accent text-on-accent'
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'gov')}
             >
                 Gov
@@ -71,8 +71,8 @@
             <button
                 class="px-2 py-1 text-[8px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'main'
-                    ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    ? 'bg-accent text-on-accent'
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'main')}
             >
                 Main
@@ -80,8 +80,8 @@
             <button
                 class="px-2 py-1 text-[8px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'insider'
-                    ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    ? 'bg-accent text-on-accent'
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'insider')}
             >
                 Pledge
@@ -89,8 +89,8 @@
             <button
                 class="px-2 py-1 text-[8px] font-black uppercase tracking-widest rounded transition-all {activeTab ===
                 'short'
-                    ? 'bg-accent text-white'
-                    : 'text-text-muted hover:text-white'}"
+                    ? 'bg-accent text-on-accent'
+                    : 'text-text-muted hover:text-text-primary'}"
                 onclick={() => (activeTab = 'short')}
             >
                 Shorting
@@ -112,7 +112,7 @@
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex flex-col">
                             <span
-                                class="text-[10px] font-black text-white group-hover:text-accent transition-colors"
+                                class="text-[10px] font-black text-text-primary group-hover:text-accent transition-colors"
                                 >{item.name}</span
                             >
                             <span
@@ -146,17 +146,17 @@
                                     Short_Bal
                                 {/if}
                             </span>
-                            <span class="text-xs font-black font-mono text-white/80">
+                            <span class="text-xs font-black font-mono text-text-primary/80">
                                 {#if activeTab === 'conc'}
                                     {item.shareholderDist?.large1000.toFixed(1)}%
                                 {:else if activeTab === 'gov'}
-                                    {(item.government?.netAmount || 0 / 1000).toFixed(1)}M
+                                    {((item.government?.netAmount || 0) / 1000).toFixed(1)}M
                                 {:else if activeTab === 'main'}
                                     {item.brokerChip?.concentration.toFixed(1)}%
                                 {:else if activeTab === 'insider'}
                                     {item.director?.pawn.toFixed(1)}%
                                 {:else}
-                                    {(item.lending?.shorting || 0 / 1000).toFixed(1)}K
+                                    {((item.lending?.shorting || 0) / 1000).toFixed(1)}K
                                 {/if}
                             </span>
                         </div>

@@ -14,7 +14,7 @@ let tableStats: { name: string; rows: number; cols: number }[] = [];
 
 try {
     const { dbService } = await import('../lib/db/sqlite-service');
-    tables = dbService.getTables().filter(t => t !== 'dividends');
+    tables = dbService.getTables().filter(t => t !== 'dividends' && !t.startsWith('sqlite_'));
     tableStats = tables.map(t => {
         try {
             const count = dbService.getTableRowCount(t);

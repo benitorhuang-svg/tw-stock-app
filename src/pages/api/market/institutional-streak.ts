@@ -24,23 +24,41 @@ export const GET: APIRoute = async () => {
             });
         }
 
-        // 1. 使用 Window Function 一次性獲取所有股票最近 20 天的籌碼資料
-        // 這避免了 N+1 查詢問題，顯著提升效能
+        // 1. 使用 institutional_snapshot (預計算) + chips (近20天歷史) 兩步取代 7-table JOIN
         const CHIP_WINDOW = 20;
 
-        // 建立一個子查詢，為每隻股票的籌碼資料編號 (row_number)
-        // 然後只取出前 20 筆
-        const allChips = dbService.queryAll<{
+        // Step A: 從 chips 取近20天歷史 (用於計算連續買賣超天數)
+        const chipHistory = dbService.queryAll<{
             symbol: string;
-            name: string;
             foreign_inv: number;
             invest_trust: number;
             dealer: number;
             date: string;
+        }>(
+            `
+            WITH RankedChips AS (
+                SELECT symbol, foreign_inv, invest_trust, dealer, date,
+                       ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
+                FROM chips
+            )
+            SELECT symbol, foreign_inv, invest_trust, dealer, date
+            FROM RankedChips WHERE rn <= ?
+            ORDER BY symbol, date DESC
+        `,
+            [CHIP_WINDOW]
+        );
+
+        // Step B: 從 institutional_snapshot (ETL 預計算) 取所有法人快照
+        const snapshots = dbService.queryAll<{
+            symbol: string;
+            name: string;
+            date: string;
             volume: number;
             turnover: number;
             change_pct: number;
-            // Forensic Data
+            foreign_inv: number;
+            invest_trust: number;
+            dealer: number;
             total_shareholders: number;
             large_holder_1000_ratio: number;
             small_holder_under_10_ratio: number;
@@ -48,7 +66,6 @@ export const GET: APIRoute = async () => {
             gov_net_amount: number;
             main_net_shares: number;
             main_concentration: number;
-            // Pro Forensic Data
             dir_ratio: number;
             dir_pawn: number;
             dir_change: number;
@@ -58,90 +75,42 @@ export const GET: APIRoute = async () => {
             hedge_buy: number;
         }>(
             `
-            WITH RankedChips AS (
-                SELECT 
-                    symbol,
-                    foreign_inv,
-                    invest_trust,
-                    dealer,
-                    date,
-                    ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
-                FROM chips
-            ),
-            LatestShareholders AS (
-                SELECT symbol, total_shareholders, large_holder_1000_ratio, small_holder_under_10_ratio,
-                       ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
-                FROM shareholder_distribution
-            ),
-            LatestGov AS (
-                SELECT symbol, net_buy_shares, net_buy_amount,
-                       ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
-                FROM government_chips
-            ),
-            LatestBroker AS (
-                SELECT symbol, net_main_player_shares, concentration_ratio,
-                       ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
-                FROM major_broker_chips
-            ),
-            LatestDirector AS (
-                SELECT symbol, director_holding_ratio, pawn_ratio, insider_net_change,
-                       ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
-                FROM director_holdings
-            ),
-            LatestLending AS (
-                SELECT symbol, lending_balance, short_selling_balance,
-                       ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
-                FROM security_lending
-            ),
-            LatestDealer AS (
-                SELECT symbol, prop_buy, hedge_buy,
-                       ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY date DESC) as rn
-                FROM dealer_details
-            )
-            SELECT rc.symbol, s.name, rc.foreign_inv, rc.invest_trust, rc.dealer, rc.date,
+            SELECT isnap.symbol, s.name, isnap.date,
                    lp.volume, lp.turnover, lp.change_pct,
-                   ls.total_shareholders, ls.large_holder_1000_ratio, ls.small_holder_under_10_ratio,
-                   lg.net_buy_shares as gov_net_buy, lg.net_buy_amount as gov_net_amount,
-                   lb.net_main_player_shares as main_net_shares, lb.concentration_ratio as main_concentration,
-                   ldir.director_holding_ratio as dir_ratio, ldir.pawn_ratio as dir_pawn, ldir.insider_net_change as dir_change,
-                   ll.lending_balance as lend_bal, ll.short_selling_balance as short_bal,
-                   ld.prop_buy, ld.hedge_buy
-            FROM RankedChips rc
-            JOIN stocks s ON rc.symbol = s.symbol
-            LEFT JOIN latest_prices lp ON rc.symbol = lp.symbol
-            LEFT JOIN LatestShareholders ls ON rc.symbol = ls.symbol AND ls.rn = 1
-            LEFT JOIN LatestGov lg ON rc.symbol = lg.symbol AND lg.rn = 1
-            LEFT JOIN LatestBroker lb ON rc.symbol = lb.symbol AND lb.rn = 1
-            LEFT JOIN LatestDirector ldir ON rc.symbol = ldir.symbol AND ldir.rn = 1
-            LEFT JOIN LatestLending ll ON rc.symbol = ll.symbol AND ll.rn = 1
-            LEFT JOIN LatestDealer ld ON rc.symbol = ld.symbol AND ld.rn = 1
-            WHERE rc.rn <= ?
-            ORDER BY rc.symbol, rc.date DESC
-        `,
-            [CHIP_WINDOW]
+                   isnap.foreign_inv, isnap.invest_trust, isnap.dealer,
+                   isnap.total_shareholders, isnap.large_holder_1000_ratio, isnap.small_holder_under_10_ratio,
+                   isnap.gov_net_buy, isnap.gov_net_amount,
+                   isnap.main_net_shares, isnap.main_concentration,
+                   isnap.director_ratio as dir_ratio, isnap.pawn_ratio as dir_pawn, isnap.insider_change as dir_change,
+                   isnap.lending_balance as lend_bal, isnap.short_selling_balance as short_bal,
+                   isnap.prop_buy, isnap.hedge_buy
+            FROM institutional_snapshot isnap
+            JOIN stocks s ON isnap.symbol = s.symbol
+            LEFT JOIN latest_prices lp ON isnap.symbol = lp.symbol
+        `
         );
 
-        if (allChips.length === 0) {
+        if (chipHistory.length === 0) {
             return new Response(JSON.stringify({ foreign: [], invest: [], dealer: [] }), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' },
             });
         }
 
-        // 2. 在記憶體中進行分組處理
-        const groupedData = new Map<string, typeof allChips>();
-        for (const row of allChips) {
-            if (!groupedData.has(row.symbol)) {
-                groupedData.set(row.symbol, []);
-            }
-            groupedData.get(row.symbol)!.push(row);
+        // 2. 在記憶體中合併: chipHistory (streak計算) + snapshots (法人資料)
+        const chipMap = new Map<string, typeof chipHistory>();
+        for (const row of chipHistory) {
+            if (!chipMap.has(row.symbol)) chipMap.set(row.symbol, []);
+            chipMap.get(row.symbol)!.push(row);
         }
+
+        const snapMap = new Map(snapshots.map(s => [s.symbol, s]));
 
         const streakData = [];
 
-        for (const [symbol, chips] of groupedData.entries()) {
-            const latest = chips[0];
-            const name = latest.name;
+        for (const [symbol, chips] of chipMap.entries()) {
+            const snap = snapMap.get(symbol);
+            if (!snap) continue;
 
             // Calculate streaks only if latest value is non-zero
             const foreignStreak = calculateStreak(chips, 'foreign_inv');
@@ -163,41 +132,41 @@ export const GET: APIRoute = async () => {
 
                 streakData.push({
                     symbol,
-                    name,
+                    name: snap.name,
                     foreignStreak,
                     investStreak,
                     dealerStreak,
-                    changePct: latest.change_pct || 0,
-                    volume: latest.volume || 0,
-                    turnover: latest.turnover || 0,
+                    changePct: snap.change_pct || 0,
+                    volume: snap.volume || 0,
+                    turnover: snap.turnover || 0,
                     chipsIntensity: intensity,
                     latest: {
-                        foreign: latest.foreign_inv,
-                        invest: latest.invest_trust,
-                        dealer: latest.dealer,
+                        foreign: snap.foreign_inv,
+                        invest: snap.invest_trust,
+                        dealer: snap.dealer,
                     },
-                    // Forensic Mapping
-                    shareholderDist: latest.total_shareholders
+                    // Forensic Mapping (from pre-computed snapshot)
+                    shareholderDist: snap.total_shareholders
                         ? {
-                              total: latest.total_shareholders,
-                              large1000: latest.large_holder_1000_ratio,
-                              small10: latest.small_holder_under_10_ratio,
+                              total: snap.total_shareholders,
+                              large1000: snap.large_holder_1000_ratio,
+                              small10: snap.small_holder_under_10_ratio,
                           }
                         : undefined,
-                    government: latest.gov_net_amount
+                    government: snap.gov_net_amount
                         ? {
-                              netBuy: latest.gov_net_buy,
-                              netAmount: latest.gov_net_amount,
+                              netBuy: snap.gov_net_buy,
+                              netAmount: snap.gov_net_amount,
                           }
                         : undefined,
-                    brokerChip: latest.main_concentration
+                    brokerChip: snap.main_concentration
                         ? {
-                              concentration: latest.main_concentration,
-                              netNet: latest.main_net_shares,
+                              concentration: snap.main_concentration,
+                              netNet: snap.main_net_shares,
                           }
                         : undefined,
                     director:
-                        latest.dir_pawn !== null
+                        snap.dir_pawn !== null
                             ? {
                                   ratio: latest.dir_ratio,
                                   pawn: latest.dir_pawn,
@@ -235,63 +204,49 @@ export const GET: APIRoute = async () => {
             return isBuying ? streak : -streak;
         }
 
-        // 4. Calculate Market Aggregates (Yesterday's total institutional flow)
-        // Find latest date in chips
-        const latestDateRow = dbService.queryOne<{ date: string }>(
-            `SELECT date FROM chips ORDER BY date DESC LIMIT 1`
-        );
-        const latestDate = latestDateRow?.date;
+        // 4. 從 institutional_trend (預計算) 取市場匯總 + 20天趨勢
+        const latestTrend = dbService.queryOne<{
+            date: string;
+            total_foreign: number;
+            total_trust: number;
+            total_dealer: number;
+            total_net: number;
+        }>(`SELECT date, total_foreign, total_trust, total_dealer, total_net
+            FROM institutional_trend ORDER BY date DESC LIMIT 1`);
 
-        let marketSummary = {
-            foreign: 0,
-            invest: 0,
-            dealer: 0,
-            total: 0,
+        const marketSummary = {
+            foreign: latestTrend?.total_foreign || 0,
+            invest: latestTrend?.total_trust || 0,
+            dealer: latestTrend?.total_dealer || 0,
+            total: latestTrend?.total_net || 0,
             govTotalAmount: 0,
             avgConcentration: 0,
         };
 
+        const latestDate = latestTrend?.date;
+
+        // Forensic aggregates (still from raw tables, but these are simple single-row queries)
         if (latestDate) {
-            const sumRow = dbService.queryOne<{ f: number; i: number; d: number }>(
-                `
-                SELECT SUM(foreign_inv) as f, SUM(invest_trust) as i, SUM(dealer) as d 
-                FROM chips WHERE date = ?`,
-                [latestDate]
-            );
-
-            // Forensic Aggregates
             const govSum = dbService.queryOne<{ amt: number }>(
-                `
-                SELECT SUM(net_buy_amount) as amt FROM government_chips WHERE date = ?`,
+                `SELECT SUM(net_buy_amount) as amt FROM government_chips WHERE date = ?`,
                 [latestDate]
             );
-
             const concAvg = dbService.queryOne<{ avg: number }>(
-                `
-                SELECT AVG(large_holder_1000_ratio) as avg FROM shareholder_distribution WHERE date = ?`,
+                `SELECT AVG(large_holder_1000_ratio) as avg FROM shareholder_distribution WHERE date = ?`,
                 [latestDate]
             );
-
-            if (sumRow) {
-                marketSummary = {
-                    foreign: sumRow.f || 0,
-                    invest: sumRow.i || 0,
-                    dealer: sumRow.d || 0,
-                    total: (sumRow.f || 0) + (sumRow.i || 0) + (sumRow.d || 0),
-                    govTotalAmount: govSum?.amt || 0,
-                    avgConcentration: concAvg?.avg || 0,
-                };
-            }
+            marketSummary.govTotalAmount = govSum?.amt || 0;
+            marketSummary.avgConcentration = concAvg?.avg || 0;
         }
 
-        // 5. Calculate 20-day Trend for Charts
+        // 5. 從 institutional_trend (預計算) 讀取 20 天趨勢，免 GROUP BY
         const trendData = dbService
-            .queryAll<{ date: string; f: number; i: number; d: number }>(
+            .queryAll<{ date: string; f: number; i: number; d: number; avgChg: number }>(
                 `
-            SELECT date, SUM(foreign_inv) as f, SUM(invest_trust) as i, SUM(dealer) as d 
-            FROM chips 
-            GROUP BY date 
-            ORDER BY date DESC 
+            SELECT date, total_foreign as f, total_trust as i, total_dealer as d,
+                   avg_change_pct as avgChg
+            FROM institutional_trend
+            ORDER BY date DESC
             LIMIT 20
         `
             )

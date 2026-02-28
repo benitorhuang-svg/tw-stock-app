@@ -16,7 +16,7 @@ const FORENSIC_DIR = path.join(DATA_DIR, 'forensic');
 const db = new Database(DB_PATH);
 
 async function crawl() {
-    console.log(`\n🌐 Fetching TDCC Weekly Shareholder Distribution (CSV)...`);
+    console.log(`\n🌐 正在抓取集保週報股權分散表（CSV）...`);
     const csvUrl = `https://opendata.tdcc.com.tw/getOD.ashx?id=1-5`;
 
     try {
@@ -31,7 +31,7 @@ async function crawl() {
         const latestDate = rows[0].split(',')[0].trim();
         const dbDate = `${latestDate.slice(0, 4)}-${latestDate.slice(4, 6)}-${latestDate.slice(6, 8)}`;
 
-        console.log(`🚀 Processing ${rows.length} records for ${dbDate}...`);
+        console.log(`🚀 正在處理 ${rows.length} 筆紀錄（${dbDate}）...`);
 
         // Group by symbol to calculate 400/1000 ratios
         const stats = new Map();
@@ -87,9 +87,9 @@ async function crawl() {
             JSON.stringify(result, null, 2)
         );
 
-        console.log(`✅ Weekly Distribution sync complete (DB & JSON).`);
+        console.log(`✅ 週報股權分散表同步完成（DB & JSON）。`);
     } catch (err) {
-        console.error(`❌ Fetch failed: ${err.message}`);
+        console.error(`❌ 抓取失敗：${err.message}`);
     }
 }
 

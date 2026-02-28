@@ -14,24 +14,31 @@ export const GET: APIRoute = async () => {
         const rows = db
             .prepare(
                 `
-            SELECT * FROM (
                 SELECT 
                     date,
-                    count(CASE WHEN change_pct > 0 THEN 1 END) as up,
-                    count(CASE WHEN change_pct < 0 THEN 1 END) as down,
-                    count(CASE WHEN change_pct = 0 THEN 1 END) as flat
-                FROM price_history
-                WHERE close > 0
-                GROUP BY date
+                    up_count as up,
+                    down_count as down,
+                    flat_count as flat,
+                    up_turnover as upTurnover,
+                    down_turnover as downTurnover,
+                    up_volume as upVolume,
+                    down_volume as downVolume,
+                    trin,
+                    ma5_breadth,
+                    ma20_breadth,
+                    ma60_breadth,
+                    ma120_breadth
+                FROM market_breadth_history
                 ORDER BY date DESC
                 LIMIT 150
-            ) sub
-            ORDER BY date ASC
         `
             )
-            .all() as Array<{ date: string; up: number; down: number; flat: number }>;
+            .all() as any[];
 
-        return new Response(JSON.stringify(rows), {
+        // Keep ASC order for charts
+        const results = rows.reverse();
+
+        return new Response(JSON.stringify(results), {
             headers: {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'public, max-age=3600',

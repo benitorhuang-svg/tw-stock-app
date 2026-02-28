@@ -1,21 +1,14 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import { fade, slide } from 'svelte/transition';
     import { marketStore } from '../../stores/market.svelte.ts';
 
-    // Atoms
-    import ViewHeader from '../atoms/ViewHeader.svelte';
-
     // Molecules
-    import RankingCard from '../molecules/RankingCard.svelte';
     import MarketKeyDimensions from '../molecules/MarketKeyDimensions.svelte';
-    import MarketDistributionChart from '../molecules/MarketDistributionChart.svelte';
     import StrategyFilterMatrix from '../molecules/StrategyFilterMatrix.svelte';
     import QuickNav from '../molecules/QuickNav.svelte';
-    import MarketPulseMetrics from '../molecules/MarketPulseMetrics.svelte';
 
     // Organisms
-    import MABreadthChart from '../molecules/MABreadthChart.svelte';
+    import AnalysisAccordion from '../organisms/AnalysisAccordion.svelte';
     import DashboardPulse from '../organisms/DashboardPulse.svelte';
     import DashboardAnalysisMatrix from '../organisms/DashboardAnalysisMatrix.svelte';
     import DashboardTechStructure from '../organisms/DashboardTechStructure.svelte';
@@ -29,9 +22,8 @@
         aggregateSectors,
         calcMABreadth,
     } from '../../lib/filters/stock-filter';
-    import { fmtVol } from '../../utils/format';
 
-    // ─── Props ───────────────────────────────────────────
+    // ─── Props (lightweight: only SSR summary numbers) ──
     interface Props {
         upCount?: number;
         downCount?: number;
@@ -39,13 +31,7 @@
         totalVolume?: number;
         avgChange?: number;
         dataDate?: string;
-        gainers?: any[];
-        losers?: any[];
-        topVolume?: any[];
         distribution?: any;
-        initialBreadthData?: any[];
-        initialSectorData?: any[];
-        initialMAData?: any;
     }
 
     let props = $props<Props>();
@@ -53,8 +39,8 @@
     // ─── Local Reactive State ────────────────────────────
     /**
      * Svelte 5 Pattern (Seed & Diverge):
-     * We initialize local state from props (Astro SSR values).
-     * Local state is then updated by SSE (live) or manual date navigation.
+     * Summary numbers from SSR props (instant render).
+     * Heavy data (stocks, breadth) fetched client-side on mount.
      */
     let upCount = $state(0);
     let downCount = $state(0);
@@ -64,16 +50,15 @@
     let dataDate = $state('');
     let gainers = $state<any[]>([]);
     let losers = $state<any[]>([]);
-    let topVolume = $state<any[]>([]);
     let distribution = $state<any>(null);
-    let sectors = $state<any[]>([]);
-    let maData = $state<any>(null);
+    let breadthData = $state<any[]>([]);
 
     let activeSSE: EventSource | null = null;
     let isLive = $state(false);
     let chartRef: any = $state();
     let expandedSections = $state<Record<string, boolean>>({
-        pulse: true,
+        guide: true,
+        pulse: false,
         scatter: false,
         sectors: false,
         movers: false,
@@ -96,21 +81,15 @@
                 const el = document.getElementById(`section-${key}`);
                 const scrollContainer = document.getElementById('main-workspace');
                 if (el && scrollContainer) {
-                    // Calculate offset: position section just below the sticky filter bar
+                    // Use getBoundingClientRect for reliable positioning
                     const filterEl = scrollContainer.querySelector('.sticky.z-30') as HTMLElement;
-                    const stickyOffset = filterEl
-                        ? filterEl.offsetTop + filterEl.offsetHeight + 16
-                        : 96;
-                    const elTop = el.offsetTop;
-                    // Walk up offset parents within the scroll container
-                    let parent = el.offsetParent as HTMLElement | null;
-                    let totalOffset = el.offsetTop;
-                    while (parent && parent !== scrollContainer && scrollContainer.contains(parent)) {
-                        totalOffset += parent.offsetTop;
-                        parent = parent.offsetParent as HTMLElement | null;
-                    }
-                    scrollContainer.scrollTo({
-                        top: totalOffset - stickyOffset,
+                    const filterBottom = filterEl
+                        ? filterEl.getBoundingClientRect().bottom
+                        : scrollContainer.getBoundingClientRect().top + 96;
+                    const elRect = el.getBoundingClientRect();
+                    const scrollOffset = elRect.top - filterBottom+56;
+                    scrollContainer.scrollBy({
+                        top: scrollOffset,
                         behavior: 'smooth',
                     });
                 }
@@ -120,12 +99,6 @@
 
     let activeDistributionIndex: number | null = $state(null);
     let selectedSector: string | null = $state(null);
-
-    // Scatter stocks: filtered by selected sector (from treemap click)
-    const scatterStocks = $derived.by(() => {
-        if (!selectedSector) return allFilteredStocks;
-        return allFilteredStocks.filter(s => s.sector === selectedSector);
-    });
 
     function handleSectorSelect(sectorName: string) {
         selectedSector = selectedSector === sectorName ? null : sectorName;
@@ -140,17 +113,33 @@
             totalVolume = props.totalVolume ?? 0;
             avgChange = props.avgChange ?? 0;
             dataDate = props.dataDate ?? '';
-            gainers = props.gainers ?? [];
-            losers = props.losers ?? [];
-            topVolume = props.topVolume ?? [];
             distribution = props.distribution ?? null;
-            sectors = props.initialSectorData ?? [];
-            maData = props.initialMAData ?? null;
         }
     });
 
+    // ─── Client-side data fetch (keeps HTML lightweight) ─
+    async function fetchInitialData() {
+        try {
+            const [stocksRes, breadthRes] = await Promise.all([
+                fetch('/api/market/latest'),
+                fetch('/api/market/breadth-timeseries'),
+            ]);
+            if (stocksRes.ok) {
+                const data = await stocksRes.json();
+                gainers = data.gainers ?? [];
+                losers = data.losers ?? [];
+            }
+            if (breadthRes.ok) {
+                breadthData = await breadthRes.json();
+            }
+        } catch (err) {
+            console.error('[Initial fetch error]', err);
+        }
+    }
+
     // ─── SSE Lifecycle ───────────────────────────────────
     onMount(() => {
+        fetchInitialData();
         if (typeof EventSource !== 'undefined') {
             activeSSE = new EventSource('/api/sse/stream');
             activeSSE.addEventListener('tick', (e: any) => {
@@ -197,7 +186,7 @@
     });
 
     // ─── Logic ───────────────────────────────────────────
-    const allDates = $derived(props.initialBreadthData?.map(d => d.date).sort() || []);
+    const allDates = $derived(breadthData.map(d => d.date).sort());
 
     async function fetchDateData(date: string) {
         if (!date) return;
@@ -218,11 +207,8 @@
                 totalVolume = data.summary.totalVolume;
                 avgChange = data.summary.avgChange;
                 distribution = data.summary.distribution;
-                sectors = data.summary.sectors || [];
-                maData = data.summary.maBreadth || null;
                 gainers = data.gainers;
                 losers = data.losers;
-                topVolume = data.volumeLeaders;
             }
         } catch (err) {
             console.error('[Sync Error]', err);
@@ -239,63 +225,54 @@
     }
 
     let ratio = $derived(downCount > 0 ? (upCount / downCount).toFixed(2) : 'MAX');
-    const allStocks = $derived([...(gainers || []), ...(losers || [])]);
-    const allFilteredStocks = $derived(
-        allStocks
-            .filter(s => applyStockFilter(s, marketStore))
-            .filter(s => isStockInActiveBin(s.changePercent || 0, activeDistributionIndex))
-    );
 
-    // List Derivations - Unified with allFilteredStocks
-    const filteredGainers = $derived(
-        activeDistributionIndex === 4
-            ? []
-            : allFilteredStocks
-                  .filter(s => (s.changePercent || 0) > 0)
-                  .sort((a, b) => (b.changePercent || 0) - (a.changePercent || 0))
-                  .slice(0, 8)
-    );
-    const filteredLosers = $derived(
-        allFilteredStocks
+    // ─── Single-pass filter: combines market filter + distribution bin ──
+    const allFilteredStocks = $derived.by(() => {
+        const g = gainers;
+        const l = losers;
+        if (!g.length && !l.length) return [];
+        const combined = g.length && l.length ? [...g, ...l] : g.length ? g : l;
+        const idx = activeDistributionIndex;
+        return combined.filter(
+            s => applyStockFilter(s, marketStore) && isStockInActiveBin(s.changePercent || 0, idx)
+        );
+    });
+
+    // ─── Gated Derivations: Skip expensive sort/aggregation when accordion is collapsed ──
+
+    const filteredGainers = $derived.by(() => {
+        if (!expandedSections.movers || activeDistributionIndex === 4) return [];
+        return allFilteredStocks
+            .filter(s => (s.changePercent || 0) > 0)
+            .sort((a, b) => (b.changePercent || 0) - (a.changePercent || 0))
+            .slice(0, 8);
+    });
+    const filteredLosers = $derived.by(() => {
+        if (!expandedSections.movers) return [];
+        return allFilteredStocks
             .filter(s => (s.changePercent || 0) <= 0)
             .sort((a, b) => (a.changePercent || 0) - (b.changePercent || 0))
-            .slice(0, 8)
-    );
-    const filteredTopVolume = $derived(
-        allFilteredStocks.sort((a, b) => (b.volume || 0) - (a.volume || 0)).slice(0, 15)
-    );
+            .slice(0, 8);
+    });
+    const filteredTopVolume = $derived.by(() => {
+        if (!expandedSections.flow) return [];
+        return [...allFilteredStocks].sort((a, b) => (b.volume || 0) - (a.volume || 0)).slice(0, 15);
+    });
 
-    // Derived Aggregate Data for Real-time Synchronization
-    const treemapSectors = $derived(aggregateSectors(allFilteredStocks));
-    const maBreadthData = $derived(calcMABreadth(allFilteredStocks));
+    const scatterStocks = $derived.by(() => {
+        if (!expandedSections.scatter && !expandedSections.sectors) return [];
+        if (!selectedSector) return allFilteredStocks;
+        return allFilteredStocks.filter(s => s.sector === selectedSector);
+    });
 
-    // Distribution - Dynamic based on MARKET side-filters
-    const dynamicDistribution = $derived.by(() => {
-        const base = allStocks.filter(s => applyStockFilter(s, marketStore));
-        const dist = {
-            p9: 0,
-            p6_9: 0,
-            p3_6: 0,
-            p0_3: 0,
-            zero: 0,
-            m0_3: 0,
-            m3_6: 0,
-            m6_9: 0,
-            m9: 0,
-        };
-        for (const s of base) {
-            const chg = s.changePercent || 0;
-            if (chg >= 9) dist.p9++;
-            else if (chg >= 6) dist.p6_9++;
-            else if (chg >= 3) dist.p3_6++;
-            else if (chg > 0) dist.p0_3++;
-            else if (chg === 0) dist.zero++;
-            else if (chg > -3) dist.m0_3++;
-            else if (chg > -6) dist.m3_6++;
-            else if (chg > -9) dist.m6_9++;
-            else dist.m9++;
-        }
-        return dist;
+    const treemapSectors = $derived.by(() => {
+        if (!expandedSections.scatter && !expandedSections.sectors) return [];
+        return aggregateSectors(allFilteredStocks);
+    });
+
+    const maBreadthData = $derived.by(() => {
+        if (!expandedSections.structure) return null;
+        return calcMABreadth(allFilteredStocks);
     });
 </script>
 
@@ -324,11 +301,35 @@
             class="w-full flex flex-col gap-2 mb-2 sticky top-4 z-30 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)]"
         >
             <div
-                class="glass-card shadow-elevated rounded-xl overflow-hidden border border-white/5 backdrop-blur-2xl bg-base-deep/90"
+                class="glass-card shadow-elevated rounded-xl overflow-hidden border border-border backdrop-blur-2xl bg-base-deep/90"
             >
                 <StrategyFilterMatrix vertical={false} />
             </div>
         </div>
+
+        <!-- ⓪ 功能說明 ( FEATURE GUIDE ) -->
+        <AnalysisAccordion id="guide" icon="📖" title="功能說明 ( FEATURE GUIDE )" isOpen={expandedSections.guide} onToggle={() => toggleSection('guide')}>
+            <div class="glass-card bg-base-deep/30 px-5 py-4 shadow-elevated rounded-xl border border-border/10">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {#each [
+                        { icon: '📡', title: '大盤脈搏', desc: '即時總覽漲跌家數、成交量、平均漲幅等大盤關鍵指標，並以分佈圖顯示個股漲跌幅度分布。點選分佈柱可篩選特定漲跌區間。' },
+                        { icon: '⚡', title: '量價與產業', desc: '散佈圖展示個股量價關係，樹狀圖顯示產業板塊漲跌熱度。點選產業可快速篩選該板塊個股。' },
+                        { icon: '🏆', title: '漲跌排行', desc: '即時顯示當日漲幅/跌幅前 5 名的個股，自動依篩選條件更新排行結果。' },
+                        { icon: '💰', title: '資金流向', desc: '以成交量排序顯示前 5 活躍個股，快速掌握市場資金集中方向。' },
+                        { icon: '📐', title: '技術結構', desc: '多重均線多空排列分析—顯示站上月線/季線/半年線的個股比例，以及漲跌比率趨勢圖。' },
+                        { icon: '🔍', title: '篩選概述', desc: '上方篩選列可依市場別、產業別、價格區間、最低成交量、趨勢方向等條件快速過濾個股。' },
+                    ] as item}
+                        <div class="flex gap-3 items-start p-3 rounded-lg bg-surface/30 border border-border/5">
+                            <span class="text-xl mt-0.5 shrink-0">{item.icon}</span>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-text-primary tracking-wide mb-1">{item.title}</p>
+                                <p class="text-[11px] text-text-muted leading-relaxed">{item.desc}</p>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+        </AnalysisAccordion>
 
         <!-- ① 大盤脈搏 ( MARKET PULSE ) -->
         <DashboardPulse
@@ -376,7 +377,7 @@
             isOpen={expandedSections.structure}
             onToggle={() => toggleSection('structure')}
             {maBreadthData}
-            initialBreadthData={props.initialBreadthData || []}
+            initialBreadthData={breadthData}
             bind:chartRef
             onDateSelect={fetchDateData}
         />

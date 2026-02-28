@@ -1,4 +1,6 @@
 <script lang="ts">
+    import StreakBadge from '../atoms/StreakBadge.svelte';
+
     const { item, channel } = $props<{ item: any; channel: 'foreign' | 'invest' | 'dealer' }>();
 
     const isBuy = $derived((item[`${channel}Streak`] || 0) > 0);
@@ -19,12 +21,12 @@
             ? 'bg-bullish/10 text-bullish border-bullish/20'
             : v < 0
               ? 'bg-bearish/10 text-bearish border-bearish/20'
-              : 'bg-white/5 text-text-muted border-white/10';
+              : 'bg-surface/30 text-text-muted border-border/20';
     }
 </script>
 
 <div
-    class="flex flex-col border-b border-white/[0.03] hover:bg-white/[0.03] transition-colors group cursor-pointer"
+    class="flex flex-col border-b border-border/10 hover:bg-surface-hover/30 transition-colors group cursor-pointer"
     onclick={() => (isExpanded = !isExpanded)}
     onkeydown={e => e.key === 'Enter' && (isExpanded = !isExpanded)}
     role="button"
@@ -36,7 +38,7 @@
         <div class="flex flex-col min-w-0 flex-1">
             <div class="flex items-baseline gap-1.5 min-w-0">
                 <span
-                    class="text-[11px] font-black text-white group-hover:text-accent tracking-tighter transition-colors shrink-0"
+                    class="text-[11px] font-black text-text-primary group-hover:text-accent tracking-tighter transition-colors shrink-0"
                 >
                     {item.symbol}
                 </span>
@@ -50,18 +52,7 @@
 
         <!-- Column 2: Streak Badge (Compact) -->
         <div class="flex-shrink-0 w-16 flex justify-center">
-            <div
-                class="flex items-center gap-1.5 px-2 py-0.5 rounded border text-[9px] font-black font-mono tracking-tighter {badgeClass(
-                    item[`${channel}Streak`]
-                )}"
-            >
-                <span
-                    class="w-1 h-1 rounded-full {isBuy
-                        ? 'bg-bullish'
-                        : 'bg-bearish'} shadow-[0_0_8px_currentColor]"
-                ></span>
-                {streakAbs}D
-            </div>
+            <StreakBadge streak={item[`${channel}Streak`] || 0} size="sm" />
         </div>
 
         <!-- Column 3: Impact Amount & Change % -->
@@ -112,15 +103,15 @@
 
     <!-- Expanded Details -->
     {#if isExpanded}
-        <div class="bg-black/20 p-4 border-t border-white/5 space-y-4 animate-fade-in">
+        <div class="bg-surface-hover/40 p-4 border-t border-border/20 space-y-4 animate-fade-in">
             <div class="grid grid-cols-2 gap-4">
-                <div class="flex flex-col p-2 bg-white/5 rounded-lg">
+                <div class="flex flex-col p-2 bg-surface/60 rounded-lg">
                     <span class="text-[8px] font-mono text-text-muted uppercase">Latest_Price</span>
-                    <span class="text-sm font-black font-mono text-white"
+                    <span class="text-sm font-black font-mono text-text-primary"
                         >{item.latest.price?.toFixed(2) || '—'}</span
                     >
                 </div>
-                <div class="flex flex-col p-2 bg-white/5 rounded-lg">
+                <div class="flex flex-col p-2 bg-surface/60 rounded-lg">
                     <span class="text-[8px] font-mono text-text-muted uppercase"
                         >Intensity_Index</span
                     >
@@ -132,7 +123,7 @@
 
             <!-- Forensic Deep Dive Panel -->
             <div
-                class="grid grid-cols-2 md:grid-cols-4 gap-4 p-3 bg-white/[0.02] border border-white/[0.05] rounded"
+                class="grid grid-cols-2 md:grid-cols-4 gap-4 p-3 bg-surface/40 border border-border/20 rounded"
             >
                 <div class="flex flex-col">
                     <span
@@ -217,8 +208,8 @@
                         >Short_Debt</span
                     >
                     <div class="flex items-baseline gap-1">
-                        <span class="text-sm font-black font-mono text-white/80">
-                            {(item.lending?.shorting || 0 / 1000).toFixed(1)}K
+                        <span class="text-sm font-black font-mono text-text-primary/80">
+                            {((item.lending?.shorting || 0) / 1000).toFixed(1)}K
                         </span>
                         <span class="text-[8px] text-text-muted">LEND_SEL</span>
                     </div>
@@ -235,7 +226,7 @@
                                 item.dealerDet?.prop || 0
                             )}"
                         >
-                            {(item.dealerDet?.prop || 0 / 1000).toFixed(1)}K
+                            {((item.dealerDet?.prop || 0) / 1000).toFixed(1)}K
                         </span>
                         <span class="text-[8px] text-text-muted">ACTIVE</span>
                     </div>
@@ -248,7 +239,7 @@
                     >
                     <div class="flex items-baseline gap-1">
                         <span class="text-sm font-black font-mono text-text-muted/40">
-                            {(item.dealerDet?.hedge || 0 / 1000).toFixed(1)}K
+                            {((item.dealerDet?.hedge || 0) / 1000).toFixed(1)}K
                         </span>
                         <span class="text-[8px] text-text-muted">PASSIVE</span>
                     </div>
@@ -259,7 +250,7 @@
                 <div class="flex gap-4">
                     <div class="flex flex-col">
                         <span class="text-[7px] font-mono text-text-muted/40 uppercase">Open</span>
-                        <span class="text-[10px] font-black text-white/60"
+                        <span class="text-[10px] font-black text-text-muted/60"
                             >{item.latest.open?.toFixed(1) || '—'}</span
                         >
                     </div>
@@ -285,7 +276,7 @@
 
                 <a
                     href="/stocks/{item.symbol}"
-                    class="h-7 px-4 bg-accent/20 border border-accent/40 rounded-full text-[9px] font-black text-accent hover:bg-accent hover:text-white transition-all no-underline flex items-center gap-2"
+                    class="h-7 px-4 bg-accent/20 border border-accent/40 rounded-full text-[9px] font-black text-accent hover:bg-accent hover:text-on-accent transition-all no-underline flex items-center gap-2"
                     onclick={e => e.stopPropagation()}
                 >
                     FORENSIC_DEEP_DIVE

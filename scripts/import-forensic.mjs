@@ -18,7 +18,7 @@ db.pragma('journal_mode = WAL');
 db.pragma('synchronous = OFF');
 
 async function main() {
-    console.log(`🚀 Starting Multi-Source Forensic Import to ${DB_PATH}...`);
+    console.log(`🚀 正在匯入多源鑑識資料至 ${DB_PATH}...`);
 
     const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
     const dbDate = `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`;
@@ -105,7 +105,7 @@ async function main() {
 
     for (const importer of importers) {
         if (fs.existsSync(importer.path)) {
-            console.log(`📊 Importing ${importer.name} for ${dbDate}...`);
+            console.log(`📊 正在匯入 ${importer.name}（${dbDate}）...`);
             const data = JSON.parse(fs.readFileSync(importer.path, 'utf8'));
             const stmt = db.prepare(importer.sql);
             const batch = db.transaction(items => {
@@ -123,17 +123,17 @@ async function main() {
                 }
             });
             batch(data);
-            console.log(`✅ ${Array.isArray(data) ? data.length : 1} records processed.`);
+            console.log(`✅ 已處理 ${Array.isArray(data) ? data.length : 1} 筆紀錄。`);
         } else {
-            console.warn(`⚠️ Skipped ${importer.name}: File not found.`);
+            console.warn(`⚠️ 已跳過 ${importer.name}：檔案不存在。`);
         }
     }
 
     db.close();
-    console.log('\n✨ All forensic datasets synchronized.');
+    console.log('\n✨ 所有鑑識資料集已同步完成。');
 }
 
 main().catch(err => {
-    console.error('❌ Import failed: ', err.message);
+    console.error('❌ 匯入失敗：', err.message);
     process.exit(1);
 });

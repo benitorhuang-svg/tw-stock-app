@@ -4,10 +4,9 @@
  * Advanced multi-vector entity selection and forensic filtering.
  */
 import MainTerminal from '../layouts/MainTerminal.astro';
-import StrategySidebar from '../components/molecules/StrategySidebar.astro';
+import ScreenerController from '../components/organisms/ScreenerController.svelte';
 import ForensicFilteringMatrix from '../components/organisms/ForensicFilteringMatrix.astro';
 import ForensicTicker from '../components/molecules/ForensicTicker.astro';
-import TacticalIntelligenceHUD from '../components/organisms/TacticalIntelligenceHUD.astro';
 import BacktestHeatmap from '../components/molecules/BacktestHeatmap.astro';
 import ScreenerResults from '../components/organisms/ScreenerResults.svelte';
 
@@ -35,55 +34,24 @@ const presetStrategies = allStrategies.filter(s => supportedIds.includes(s.id));
 ---
 
 <MainTerminal title="選股中心">
-    <div class="space-y-6 relative pb-20 p-4 lg:p-10">
-        <TacticalIntelligenceHUD presetStrategies={presetStrategies} />
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <!-- Sidebar: Presets (Molecule) -->
-            <StrategySidebar strategies={presetStrategies} />
-
-            <!-- Main Panel: Filtering & Results -->
-            <div class="lg:col-span-9 space-y-8">
-                <!-- Filtering Matrix (Organism) -->
+    <div class="relative pb-20 pt-0 px-4 lg:px-6">
+        <ScreenerController client:load presetStrategies={presetStrategies}>
+            <div slot="matrix">
                 <ForensicFilteringMatrix />
-
-                <!-- Quantitative Backtest Matrix -->
-                <BacktestHeatmap />
-
-                <!-- Results Section -->
-                <div
-                    class="glass-card overflow-hidden animate-fade-up border-t-2 border-t-white/5"
-                    style="animation-delay: 200ms"
-                >
-                    <header
-                        class="px-8 py-5 border-b border-white/5 bg-white/[0.01] flex items-center justify-between"
-                    >
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em]"
-                                >Detection_Results</span
-                            >
-                            <div class="h-[1px] w-20 bg-white/5"></div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <button
-                                class="text-[10px] font-mono text-white/20 hover:text-white transition-all uppercase"
-                                id="visible-count">AWAITING_PARAMETERS</button
-                            >
-                        </div>
-                    </header>
-
-                    <ScreenerResults client:load />
-                </div>
-
-                <!-- Signal Stream -->
-                <div class="flex items-center justify-between pt-4">
-                    <ForensicTicker />
-                    <span class="text-[9px] font-mono text-white/20 uppercase tracking-widest"
-                        >Database_Frame: LATEST_60D_SYNC</span
-                    >
-                </div>
             </div>
+            <div slot="backtest">
+                <BacktestHeatmap />
+            </div>
+        </ScreenerController>
+
+        <!-- Signal Stream -->
+        <div
+            class="flex items-center justify-between pt-4 px-4 bg-surface/5 rounded-xl border border-border/5 mb-6"
+        >
+            <ForensicTicker />
+            <span class="text-[9px] font-mono text-text-muted/40 uppercase tracking-widest"
+                >Database_Frame: LATEST_60D_SYNC</span
+            >
         </div>
     </div>
 

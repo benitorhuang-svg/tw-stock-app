@@ -15,7 +15,7 @@
         icon = ''
     }: Props = $props();
 
-    let trendColor = $derived(trend > 0 ? 'text-bullish' : trend < 0 ? 'text-bearish' : 'text-white/40');
+    let trendColor = $derived(trend > 0 ? 'text-bullish' : trend < 0 ? 'text-bearish' : 'text-text-muted/60');
     let statusColor = $derived({
         normal: 'text-text-muted',
         low: 'text-accent',
@@ -32,15 +32,15 @@
 </script>
 
 <div
-    class="stat-card-molecule relative p-5 bg-surface-deep/40 rounded-2xl border border-white/[0.03] backdrop-blur-xl group hover:border-white/10 transition-all duration-500 {glowColor} shadow-2xl"
+    class="stat-card-molecule relative p-5 bg-surface-deep/40 rounded-2xl border border-border/30 backdrop-blur-xl group hover:border-border-hover transition-all duration-500 {glowColor} shadow-2xl"
 >
     <div class="flex items-center justify-between mb-4">
-        <span class="text-[9px] font-black font-mono tracking-[0.2em] text-white/40 uppercase">
+        <span class="text-[9px] font-black font-mono tracking-[0.2em] text-text-muted/60 uppercase">
             {label}
         </span>
         {#if icon}
             <div
-                class="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity"
+                class="w-7 h-7 rounded-lg bg-surface-hover flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity"
             >
                 <i class="text-sm">{icon}</i>
             </div>
@@ -48,13 +48,13 @@
     </div>
 
     <div class="relative">
-        <div class="text-[22px] font-black font-mono text-white tracking-tight">
+        <div class="text-[22px] font-black font-mono text-text-primary tracking-tight">
             {value}
         </div>
 
         <div class="flex items-center gap-2 mt-2">
             <div
-                class="px-1.5 py-0.5 rounded-md bg-white/5 border border-white/5 text-[8px] font-mono font-black uppercase {statusColor}"
+                class="px-1.5 py-0.5 rounded-md bg-surface-hover border border-border text-[8px] font-mono font-black uppercase {statusColor}"
             >
                 {status}
             </div>

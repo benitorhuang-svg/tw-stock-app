@@ -5,28 +5,32 @@
     interface Props {
         onNavigate: (id: string) => void;
         activeStates?: Record<string, boolean>;
+        navItems?: { id: string; label: string; icon: string }[];
     }
-    let { onNavigate, activeStates = {} }: Props = $props();
-
-    const navItems = [
-        { id: 'pulse', label: '大盤脈搏', icon: '📡' },
-        { id: 'scatter', label: '量價與產業', icon: '⚡' },
-        { id: 'movers', label: '漲跌排行', icon: '🏆' },
-        { id: 'flow', label: '資金流向', icon: '💰' },
-        { id: 'structure', label: '技術結構', icon: '📐' },
-    ];
+    let {
+        onNavigate,
+        activeStates = {},
+        navItems = [
+            { id: 'guide', label: '功能說明', icon: '📖' },
+            { id: 'pulse', label: '大盤脈搏', icon: '📡' },
+            { id: 'scatter', label: '量價與產業', icon: '⚡' },
+            { id: 'movers', label: '漲跌排行', icon: '🏆' },
+            { id: 'flow', label: '資金流向', icon: '💰' },
+            { id: 'structure', label: '技術結構', icon: '📐' },
+        ],
+    }: Props = $props();
 </script>
 
-<div class="px-5 flex-1 py-6 pb-10 flex flex-col gap-2 bg-surface/5">
+<div class="px-5 flex-1 py-1 flex flex-col gap-0.5 bg-surface/5">
     <span
-        class="text-[10px] font-mono font-black text-text-muted/40 uppercase tracking-[0.25em] mb-2"
+        class="text-[10px] font-mono font-black text-text-muted/40 uppercase tracking-[0.25em] mb-1"
         >快速索引 ( NAV )</span
     >
     {#each navItems as nav}
         {@const isActive = activeStates[nav.id]}
         <button
             onclick={() => onNavigate(nav.id)}
-            class="flex items-center gap-4 px-3 py-2.5 rounded-xl transition-all group group-active:scale-[0.98] text-left relative overflow-hidden
+            class="flex items-center gap-3 px-3 py-1 rounded-lg transition-all group group-active:scale-[0.98] text-left relative overflow-hidden
                    {isActive
                 ? 'bg-accent/10 border border-accent/20 shadow-sm'
                 : 'hover:bg-surface-hover/40 border border-transparent hover:translate-x-1.5'}"

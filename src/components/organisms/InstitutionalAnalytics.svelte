@@ -6,10 +6,11 @@
     // Normalize data (simplified for market level)
     const chartData = $derived(
         trend.map(d => ({
-            date: d.date.slice(4),
+            date: d.date.slice(5),
             f: d.f / 1000000, // Millions
             i: d.i / 1000000,
             d: d.d / 1000000,
+            avgChg: d.avgChg || 0,
         }))
     );
 
@@ -21,12 +22,16 @@
         Math.max(...chartData.flatMap(v => [Math.abs(v.f), Math.abs(v.i), Math.abs(v.d)]), 1)
     );
 
-    // Mock Price for correlation visualization
-    const chartPrice = $derived(
-        chartData.map((d, i) => 100 + Math.sin(i / 3) * 10 + Math.random() * 5)
-    );
-    const maxPrice = $derived(Math.max(...chartPrice, 1));
-    const minPrice = $derived(Math.min(...chartPrice, 0));
+    // Cumulative return line from avgChg
+    const priceValues = $derived.by(() => {
+        let cum = 100;
+        return chartData.map(d => {
+            cum += d.avgChg;
+            return cum;
+        });
+    });
+    const maxPrice = $derived(priceValues.length > 0 ? Math.max(...priceValues, 101) : 101);
+    const minPrice = $derived(priceValues.length > 0 ? Math.min(...priceValues, 99) : 99);
 
     function x(i: number) {
         return padding + (i * (width - 2 * padding)) / (chartData.length - 1 || 1);
@@ -64,6 +69,16 @@
             ? `M ${x(0)} ${y(chartData[0].f + chartData[0].i + chartData[0].d)} ` +
                   chartData
                       .map((d, i) => `L ${x(i)} ${y(d.f + d.i + d.d)}`)
+                      .slice(1)
+                      .join(' ')
+            : ''
+    );
+
+    const pathPrice = $derived(
+        priceValues.length > 1
+            ? `M ${x(0)} ${yP(priceValues[0])} ` +
+                  priceValues
+                      .map((p: number, i: number) => `L ${x(i)} ${yP(p)}`)
                       .slice(1)
                       .join(' ')
             : ''
@@ -117,7 +132,7 @@
         </div>
     </div>
 
-    <!-- Chart Container (Ultra Sleek) -->
+    <!-- Chart Container -->
     <div class="h-[150px] w-full">
         <svg viewBox="0 0 {width} {height}" class="w-full h-full overflow-visible">
             <!-- X-Axis Line -->
@@ -130,6 +145,11 @@
                 class="text-border"
                 stroke-dasharray="8 8"
             />
+
+            <!-- Y-Axis Labels -->
+            <text x={4} y={padding + 4} fill="var(--color-text-muted)" font-size="8" opacity="0.3" font-family="monospace">+{(maxFlow).toFixed(0)}M</text>
+            <text x={4} y={height / 2 + 3} fill="var(--color-text-muted)" font-size="8" opacity="0.3" font-family="monospace">0</text>
+            <text x={4} y={height - padding + 4} fill="var(--color-text-muted)" font-size="8" opacity="0.3" font-family="monospace">-{(maxFlow).toFixed(0)}M</text>
 
             {#if chartData.length > 0}
                 <!-- Price Line (Subtle Background) -->
@@ -173,19 +193,48 @@
                     stroke-dasharray="4 4"
                 />
 
-                <!-- Data Points (Glow) -->
+                <!-- Data Points with Value Labels -->
                 {#each chartData as d, i}
-                    {#if d.f + d.i + d.d > 0 && i > 0}
-                        <circle
-                            cx={x(i)}
-                            cy={y(d.f + d.i + d.d)}
-                            r="2"
-                            fill="var(--color-accent)"
-                            class="opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
+                    {@const total = d.f + d.i + d.d}
+                    <!-- X-axis date labels (every 3rd point) -->
+                    {#if i % 3 === 0}
+                        <text x={x(i)} y={height - 2} fill="var(--color-text-muted)" font-size="7" opacity="0.3" font-family="monospace" text-anchor="middle">{d.date}</text>
                     {/if}
+                    <!-- Value dots on hover -->
+                    <circle
+                        cx={x(i)}
+                        cy={y(total)}
+                        r="3"
+                        fill="var(--color-accent)"
+                        opacity="0.4"
+                    >
+                        <title>{d.date}: 外資 {d.f.toFixed(1)}M / 投信 {d.i.toFixed(1)}M / 自營 {d.d.toFixed(1)}M (合計 {total.toFixed(1)}M)</title>
+                    </circle>
                 {/each}
             {/if}
         </svg>
     </div>
+
+    <!-- Summary Values Row -->
+    {#if chartData.length > 0}
+        {@const latest = chartData[chartData.length - 1]}
+        {@const latestTotal = latest.f + latest.i + latest.d}
+        <div class="mt-4 flex items-center gap-6 text-[10px] font-mono border-t border-border/10 pt-3">
+            <div class="flex items-center gap-1.5">
+                <span class="w-2 h-[2px] bg-accent rounded-full"></span>
+                <span class="text-text-muted/40 uppercase">Latest Foreign:</span>
+                <span class="font-black {latest.f >= 0 ? 'text-bullish' : 'text-bearish'}">{latest.f >= 0 ? '+' : ''}{latest.f.toFixed(1)}M</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <span class="w-2 h-[2px] bg-bullish rounded-full"></span>
+                <span class="text-text-muted/40 uppercase">Trust:</span>
+                <span class="font-black {latest.i >= 0 ? 'text-bullish' : 'text-bearish'}">{latest.i >= 0 ? '+' : ''}{latest.i.toFixed(1)}M</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <span class="w-2 h-[2px] bg-white/30 rounded-full"></span>
+                <span class="text-text-muted/40 uppercase">Net:</span>
+                <span class="font-black {latestTotal >= 0 ? 'text-bullish' : 'text-bearish'}">{latestTotal >= 0 ? '+' : ''}{latestTotal.toFixed(1)}M</span>
+            </div>
+        </div>
+    {/if}
 </div>

@@ -16,7 +16,7 @@ const FORENSIC_DIR = path.join(DATA_DIR, 'forensic');
 const db = new Database(DB_PATH);
 
 async function crawl(dateStr) {
-    console.log(`\n🌐 Fetching TWSE Margin DATA for ${dateStr}...`);
+    console.log(`\n🌐 正在抓取 TWSE 融資融券日報（${dateStr}）...`);
     // Example date: 20260225
     const url = `https://www.twse.com.tw/exchangeReport/MI_MARGN?response=json&date=${dateStr}&selectType=ALL`;
 
@@ -25,17 +25,17 @@ async function crawl(dateStr) {
             headers: { 'User-Agent': 'Mozilla/5.0' },
         });
         const data = await response.json();
-        console.log(`📡 API Status: ${data.stat}`);
+        console.log(`📡 API 回應狀態：${data.stat}`);
 
         let rows = data.data; // Traditional format
         if (!rows && data.tables) {
-            console.log('📡 Found tables:', data.tables.map(t => t.title).join(' | '));
+            console.log('📡 發現資料表：', data.tables.map(t => t.title).join(' | '));
             const stockTable = data.tables.find(t => t.title.includes('融資融券'));
             if (stockTable) rows = stockTable.data;
         }
 
         if (!rows) {
-            console.warn(`⚠️ No detailed data found for ${dateStr}. Response Stat: ${data.stat}`);
+            console.warn(`⚠️ 查無 ${dateStr} 明細資料，API 回應狀態：${data.stat}`);
             return;
         }
 
@@ -59,7 +59,7 @@ async function crawl(dateStr) {
             VALUES (?, ?, ?, ?, ?, ?)
         `);
 
-        console.log(`📊 Processing ${rows.length} Margin records...`);
+        console.log(`📊 正在處理 ${rows.length} 筆融資融券紀錄...`);
 
         const marginData = [];
         const tx = db.transaction(data => {
@@ -104,9 +104,9 @@ async function crawl(dateStr) {
 
         fs.writeFileSync(marginPath, JSON.stringify(merged, null, 2));
 
-        console.log(`✅ Margin DATA Synced for ${dbDate}.`);
+        console.log(`✅ ${dbDate} 融資融券資料同步完成。`);
     } catch (err) {
-        console.error(`❌ Margin Fetch failed: ${err.message}`);
+        console.error(`❌ 融資融券抓取失敗：${err.message}`);
     }
 }
 

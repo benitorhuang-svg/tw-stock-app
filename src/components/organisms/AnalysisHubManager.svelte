@@ -1,6 +1,9 @@
 <script lang="ts">
-    import { onMount, tick } from 'svelte';
+    import { onMount } from 'svelte';
     import { getRecentViewed, addToRecentViewed } from '../../lib/user-account';
+    import AnalysisAccordion from './AnalysisAccordion.svelte';
+    import QuickNav from '../molecules/QuickNav.svelte';
+    import ForensicTrendChart from './ForensicTrendChart.svelte';
 
     interface StockSnapshot {
         symbol: string;
@@ -18,12 +21,19 @@
     let dividendStocks: StockSnapshot[] = $state([]);
     let isLoading = $state(true);
 
+    let expandedSections = $state<Record<string, boolean>>({
+        search: true,
+        recent: true,
+        dividend: false,
+    });
+
+    let expandedStocks = $state<Record<string, boolean>>({});
+
     onMount(async () => {
         try {
             const response = await fetch('/api/stocks/snapshot');
             allStocks = await response.json();
 
-            // Initial data sets
             updateRecent();
             dividendStocks = allStocks
                 .filter(s => s.yield > 0)
@@ -52,70 +62,305 @@
         const q = searchQuery.toLowerCase();
         matches = allStocks
             .filter(s => s.symbol.includes(q) || s.name.toLowerCase().includes(q))
-            .slice(0, 8);
+            .slice(0, 10);
+        expandedSections.search = true;
+    }
+
+    function toggleSection(key: string) {
+        expandedSections[key] = !expandedSections[key];
+    }
+
+    function toggleStock(symbol: string) {
+        expandedStocks[symbol] = !expandedStocks[symbol];
     }
 
     function selectStock(symbol: string) {
         addToRecentViewed(symbol);
         window.location.href = `/stocks/${symbol}`;
     }
+
+    function scrollToSection(key: string) {
+        expandedSections[key] = true;
+        setTimeout(() => {
+            const el = document.getElementById(`section-${key}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
 </script>
 
-<div class="space-y-12">
-    <!-- SEARCH NEXUS -->
-    <div class="relative max-w-2xl mx-auto w-full group animate-fade-up">
-        <div
-            class="absolute -inset-1 bg-gradient-to-r from-accent/20 to-transparent rounded-2xl blur opacity-25 group-focus-within:opacity-75 transition-opacity"
-        ></div>
-        <div
-            class="relative bg-[#0a0c10] border border-white/10 rounded-2xl p-2 flex items-center gap-4 focus-within:border-accent/40 transition-colors"
-        >
-            <div class="w-12 h-12 flex items-center justify-center text-white/20">🔍</div>
-            <input
-                type="text"
-                bind:value={searchQuery}
-                oninput={handleSearch}
-                placeholder="INPUT_ENTITY_IDENTITY_OR_SYMBOL..."
-                class="flex-1 bg-transparent border-none outline-none text-white font-black font-mono tracking-widest placeholder:text-white/10 uppercase"
-            />
-            <div class="pr-6 text-[8px] font-mono text-white/10 uppercase hidden md:block">
-                Nexus_Indexing: ACTIVE
+<div class="flex flex-col lg:flex-row gap-6 items-start relative pb-20">
+    <!-- LEFT SIDEBAR -->
+    <aside
+        class="w-full lg:w-64 bg-base-deep/80 backdrop-blur-xl border border-white/5 flex flex-col z-20 shrink-0 sticky top-0 lg:h-[calc(100vh-8rem)] rounded-2xl overflow-hidden shadow-2xl"
+    >
+        <div class="p-4 border-b border-white/5 bg-white/[0.02]">
+            <div class="relative group">
+                <div
+                    class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-white/20 group-focus-within:text-accent transition-colors"
+                >
+                    🔍
+                </div>
+                <input
+                    type="text"
+                    bind:value={searchQuery}
+                    oninput={handleSearch}
+                    placeholder="搜尋代號/名稱..."
+                    class="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-xs font-bold text-white outline-none focus:border-accent/40 transition-all"
+                />
             </div>
         </div>
 
-        <!-- SEARCH RESULTS DROPDOWN -->
-        {#if matches.length > 0}
-            <div
-                class="absolute top-full left-0 w-full mt-4 bg-surface/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[100] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300"
+        <div class="flex-1 overflow-y-auto p-2 space-y-1 custom-scrollbar">
+            <button
+                onclick={() => scrollToSection('search')}
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/[0.05] transition-all text-left group"
             >
-                <div class="p-2">
+                <span
+                    class="text-sm opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"
+                    >🔍</span
+                >
+                <span
+                    class="text-[11px] font-black tracking-widest uppercase text-white/40 group-hover:text-white"
+                    >搜尋結果</span
+                >
+            </button>
+            <button
+                onclick={() => scrollToSection('recent')}
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/[0.05] transition-all text-left group"
+            >
+                <span
+                    class="text-sm opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"
+                    >⏲️</span
+                >
+                <span
+                    class="text-[11px] font-black tracking-widest uppercase text-white/40 group-hover:text-white"
+                    >最近觀看</span
+                >
+            </button>
+            <button
+                onclick={() => scrollToSection('dividend')}
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/[0.05] transition-all text-left group"
+            >
+                <span
+                    class="text-sm opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"
+                    >💎</span
+                >
+                <span
+                    class="text-[11px] font-black tracking-widest uppercase text-white/40 group-hover:text-white"
+                    >高殖利率</span
+                >
+            </button>
+        </div>
+
+        <div class="p-4 border-t border-white/5 bg-white/[0.01]">
+            <div class="text-[9px] font-mono text-white/20 uppercase tracking-[0.2em] mb-1">
+                Status
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></div>
+                <span class="text-[9px] font-black text-white/60">NEXUS_UPLINK_OK</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 space-y-6 w-full min-w-0 animate-fade-right">
+        <!-- SEARCH RESULTS -->
+        {#if searchQuery.length > 0}
+            <AnalysisAccordion
+                id="search"
+                icon="🔍"
+                title="搜尋結果 ( SEARCH_RESULTS )"
+                isOpen={expandedSections.search}
+                onToggle={() => toggleSection('search')}
+            >
+                <div class="grid grid-cols-1 gap-3">
                     {#each matches as s}
+                        <div
+                            class="glass-card border-white/5 hover:border-accent/20 transition-all"
+                        >
+                            <button
+                                onclick={() => toggleStock(s.symbol)}
+                                class="w-full flex items-center justify-between p-4 group"
+                            >
+                                <div class="flex items-center gap-4">
+                                    <span class="font-mono text-sm font-black text-accent"
+                                        >{s.symbol}</span
+                                    >
+                                    <span
+                                        class="text-[13px] font-black text-white/90 group-hover:text-accent transition-colors"
+                                        >{s.name}</span
+                                    >
+                                    <span
+                                        class="text-[10px] font-mono text-white/20 uppercase tracking-widest hidden md:block"
+                                        >{s.sector || 'GENERAL'}</span
+                                    >
+                                </div>
+                                <div class="flex items-center gap-6">
+                                    <div class="text-right">
+                                        <div class="text-[13px] font-black font-mono text-white/80">
+                                            {s.price?.toFixed(2) || '—'}
+                                        </div>
+                                        <div
+                                            class="text-[10px] font-black font-mono {s.changePercent >=
+                                            0
+                                                ? 'text-bullish'
+                                                : 'text-bearish'}"
+                                        >
+                                            {s.changePercent >= 0
+                                                ? '+'
+                                                : ''}{s.changePercent.toFixed(2)}%
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div
+                                            class="text-white/20 group-hover:text-accent transition-transform {expandedStocks[
+                                                s.symbol
+                                            ]
+                                                ? 'rotate-90'
+                                                : ''}"
+                                        >
+                                            →
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                            {#if expandedStocks[s.symbol]}
+                                <div class="p-4 border-t border-white/5 animate-fade-in">
+                                    <div class="mb-4 flex justify-end">
+                                        <a
+                                            href="/stocks/{s.symbol}"
+                                            class="text-[10px] font-black text-accent hover:underline uppercase tracking-widest"
+                                            >查看詳細分析 →</a
+                                        >
+                                    </div>
+                                    <ForensicTrendChart symbol={s.symbol} price={s.price} />
+                                </div>
+                            {/if}
+                        </div>
+                    {/each}
+                    {#if matches.length === 0}
+                        <div class="p-12 text-center opacity-20">
+                            <span class="text-xs font-mono uppercase tracking-widest">無匹配項</span
+                            >
+                        </div>
+                    {/if}
+                </div>
+            </AnalysisAccordion>
+        {/if}
+
+        <!-- RECENT ANALYSES -->
+        <AnalysisAccordion
+            id="recent"
+            icon="⏲️"
+            title="最近觀看 ( RECENT_VIEWED )"
+            isOpen={expandedSections.recent}
+            onToggle={() => toggleSection('recent')}
+        >
+            <div class="grid grid-cols-1 gap-3">
+                {#if recentStocks.length === 0 && !isLoading}
+                    <div class="p-12 text-center opacity-20 glass-card">
+                        <span class="text-xs font-mono uppercase tracking-widest">無觀看記錄</span>
+                    </div>
+                {:else}
+                    {#each recentStocks as s}
+                        <div
+                            class="glass-card border-white/5 hover:border-accent/20 transition-all"
+                        >
+                            <button
+                                onclick={() => toggleStock(s.symbol)}
+                                class="w-full flex items-center justify-between p-4 group"
+                            >
+                                <div class="flex items-center gap-4">
+                                    <span class="font-mono text-sm font-black text-accent"
+                                        >{s.symbol}</span
+                                    >
+                                    <span
+                                        class="text-[13px] font-black text-white/90 group-hover:text-accent transition-colors"
+                                        >{s.name}</span
+                                    >
+                                </div>
+                                <div class="flex items-center gap-6">
+                                    <div class="text-right">
+                                        <div class="text-[13px] font-black font-mono text-white/80">
+                                            {s.price?.toFixed(2) || '—'}
+                                        </div>
+                                        <div
+                                            class="text-[10px] font-black font-mono {s.changePercent >=
+                                            0
+                                                ? 'text-bullish'
+                                                : 'text-bearish'}"
+                                        >
+                                            {s.changePercent >= 0
+                                                ? '+'
+                                                : ''}{s.changePercent.toFixed(2)}%
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="text-white/20 group-hover:text-accent transition-transform {expandedStocks[
+                                            s.symbol
+                                        ]
+                                            ? 'rotate-90'
+                                            : ''}"
+                                    >
+                                        →
+                                    </div>
+                                </div>
+                            </button>
+                            {#if expandedStocks[s.symbol]}
+                                <div class="p-4 border-t border-white/5 animate-fade-in">
+                                    <div class="mb-4 flex justify-end">
+                                        <a
+                                            href="/stocks/{s.symbol}"
+                                            class="text-[10px] font-black text-accent hover:underline uppercase tracking-widest"
+                                            >查看詳細分析 →</a
+                                        >
+                                    </div>
+                                    <ForensicTrendChart symbol={s.symbol} price={s.price} />
+                                </div>
+                            {/if}
+                        </div>
+                    {/each}
+                {/if}
+            </div>
+        </AnalysisAccordion>
+
+        <!-- DIVIDEND INTELLIGENCE -->
+        <AnalysisAccordion
+            id="dividend"
+            icon="💎"
+            title="高殖利率 ( QUANTUM_YIELD )"
+            isOpen={expandedSections.dividend}
+            onToggle={() => toggleSection('dividend')}
+        >
+            <div class="grid grid-cols-1 gap-3">
+                {#each dividendStocks as s}
+                    <div class="glass-card border-white/5 hover:border-accent/20 transition-all">
                         <button
-                            onclick={() => selectStock(s.symbol)}
-                            class="w-full search-result-item flex items-center justify-between p-4 rounded-xl hover:bg-white/[0.04] transition-all group"
+                            onclick={() => toggleStock(s.symbol)}
+                            class="w-full flex items-center justify-between p-4 group"
                         >
                             <div class="flex items-center gap-4">
                                 <span class="font-mono text-sm font-black text-accent"
                                     >{s.symbol}</span
                                 >
-                                <div class="flex flex-col text-left">
-                                    <span
-                                        class="text-[11px] font-black text-white/90 group-hover:text-accent transition-colors"
-                                        >{s.name}</span
-                                    >
-                                    <span
-                                        class="text-[8px] font-mono text-white/20 uppercase tracking-widest"
-                                        >{s.sector || 'GENERAL'}</span
-                                    >
-                                </div>
+                                <span
+                                    class="text-[13px] font-black text-white/90 group-hover:text-accent transition-colors"
+                                    >{s.name}</span
+                                >
+                                <span
+                                    class="px-2 py-0.5 rounded bg-warning/10 text-warning text-[9px] font-black font-mono uppercase"
+                                    >Yield: {s.yield.toFixed(2)}%</span
+                                >
                             </div>
                             <div class="flex items-center gap-6">
                                 <div class="text-right">
-                                    <div class="text-sm font-black font-mono text-white/70">
+                                    <div class="text-[13px] font-black font-mono text-white/80">
                                         {s.price?.toFixed(2) || '—'}
                                     </div>
                                     <div
-                                        class="text-[9px] font-black font-mono {s.changePercent >= 0
+                                        class="text-[10px] font-black font-mono {s.changePercent >=
+                                        0
                                             ? 'text-bullish'
                                             : 'text-bearish'}"
                                     >
@@ -125,110 +370,44 @@
                                     </div>
                                 </div>
                                 <div
-                                    class="w-4 h-4 text-white/20 group-hover:text-accent group-hover:translate-x-1 transition-all"
+                                    class="text-white/20 group-hover:text-accent transition-transform {expandedStocks[
+                                        s.symbol
+                                    ]
+                                        ? 'rotate-90'
+                                        : ''}"
                                 >
                                     →
                                 </div>
                             </div>
                         </button>
-                    {/each}
-                </div>
-            </div>
-        {/if}
-    </div>
-
-    <!-- MATRICES -->
-    <div
-        class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-up"
-        style="animation-delay: 200ms"
-    >
-        <!-- RECENT ANALYSES -->
-        <div class="glass-card overflow-hidden border-t-2 border-t-accent/20">
-            <header
-                class="px-8 py-4 border-b border-white/5 bg-white/[0.01] flex items-center justify-between"
-            >
-                <span
-                    class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em]"
-                    >Recently Viewed</span
-                >
-            </header>
-            <div class="p-6 space-y-3">
-                {#if recentStocks.length === 0 && !isLoading}
-                    <div
-                        class="flex flex-col items-center justify-center py-12 text-center opacity-20"
-                    >
-                        <div class="text-3xl mb-4">⏲️</div>
-                        <span class="text-[9px] font-mono uppercase tracking-[0.2em]"
-                            >Registry_Empty</span
-                        >
+                        {#if expandedStocks[s.symbol]}
+                            <div class="p-4 border-t border-white/5 animate-fade-in">
+                                <div class="mb-4 flex justify-end">
+                                    <a
+                                        href="/stocks/{s.symbol}"
+                                        class="text-[10px] font-black text-accent hover:underline uppercase tracking-widest"
+                                        >查看詳細分析 →</a
+                                    >
+                                </div>
+                                <ForensicTrendChart symbol={s.symbol} price={s.price} />
+                            </div>
+                        {/if}
                     </div>
-                {:else}
-                    {#each recentStocks as s}
-                        <a
-                            href="/stocks/{s.symbol}"
-                            class="flex items-center justify-between p-4 rounded-xl hover:bg-white/[0.04] transition-all border border-white/5 hover:border-accent/20 group no-underline"
-                        >
-                            <div class="flex items-center gap-4">
-                                <span
-                                    class="text-[10px] font-mono font-black border border-white/10 px-2 py-1 rounded bg-black/40 text-accent"
-                                    >{s.symbol}</span
-                                >
-                                <span
-                                    class="text-[11px] font-black text-white/70 group-hover:text-white transition-colors uppercase"
-                                    >{s.name}</span
-                                >
-                            </div>
-                            <div
-                                class="w-4 h-4 text-white/10 group-hover:text-accent transition-all"
-                            >
-                                →
-                            </div>
-                        </a>
-                    {/each}
-                {/if}
+                {/each}
             </div>
-        </div>
-
-        <!-- DIVIDEND INTELLIGENCE -->
-        <div class="glass-card overflow-hidden border-t-2 border-t-warning/20">
-            <header
-                class="px-8 py-4 border-b border-white/5 bg-white/[0.01] flex items-center justify-between"
-            >
-                <span
-                    class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em]"
-                    >Quantum Yield Wall</span
-                >
-            </header>
-            <div class="p-0">
-                <table class="w-full text-left">
-                    <tbody class="divide-y divide-white/[0.03]">
-                        {#each dividendStocks as s}
-                            <tr
-                                class="hover:bg-warning/[0.02] transition-colors cursor-pointer group"
-                                onclick={() => (window.location.href = '/stocks/' + s.symbol)}
-                            >
-                                <td class="py-4 px-8">
-                                    <div class="flex flex-col">
-                                        <span
-                                            class="text-[11px] font-black text-white/90 group-hover:text-warning transition-colors"
-                                            >{s.name}</span
-                                        >
-                                        <span
-                                            class="text-[8px] font-mono text-white/20 uppercase tracking-widest mt-0.5"
-                                            >{s.symbol}</span
-                                        >
-                                    </div>
-                                </td>
-                                <td
-                                    class="py-4 px-8 text-right font-mono text-[11px] font-black text-warning"
-                                >
-                                    {s.yield.toFixed(2)}%
-                                </td>
-                            </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        </AnalysisAccordion>
+    </main>
 </div>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+</style>

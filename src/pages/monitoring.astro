@@ -1,0 +1,120 @@
+---
+/**
+ * live.astro — Momentum_Nexus (FORCE_FIELD) Terminal
+ * High-fidelity real-time data orchestration with modular architecture.
+ */
+import MainTerminal from '../layouts/MainTerminal.astro';
+import LiveFilterPanel from '../components/organisms/LiveFilterPanel.astro';
+import LiveControlPanel from '../components/organisms/LiveControlPanel.astro';
+import LiveDataTable from '../components/organisms/LiveDataTable.svelte';
+import SyncHourglass from '../components/atoms/SyncHourglass.astro';
+import ScrollToTop from '../components/atoms/ScrollToTop.astro';
+---
+
+<MainTerminal title="即時開盤" fullWidth>
+    <div slot="header-actions" class="flex items-center justify-center mr-2 gap-2">
+        <div class="flex items-center gap-1.5 font-mono text-text-muted shrink-0 mr-1">
+            <span class="opacity-40 text-[9px] hidden sm:inline uppercase">Uplink_Sync:</span>
+            <span id="last-update-time" class="text-accent tracking-widest font-black text-[10px]"
+                >--:--:--</span
+            >
+        </div>
+        <SyncHourglass size="small" />
+    </div>
+
+    <div class="bg-base min-h-full">
+        <main class="px-4 lg:px-6 flex flex-col pb-4">
+            <div class="h-4"></div>
+            <span id="live-indicator" class="hidden"></span>
+
+            <!-- Atomic Utilities -->
+            <ScrollToTop />
+
+            <!-- Unified Command HUD: This is our sticky nexus -->
+            <div
+                class="flex flex-col border border-border rounded-xl bg-surface/40 shadow-elevated"
+            >
+                <!-- Toolbar: Sticky Level 1 (z-60) -->
+                <div
+                    id="live-toolbar-nexus"
+                    class="sticky top-0 z-[60] flex flex-wrap lg:flex-nowrap items-center gap-3 px-6 py-4 bg-surface bord"
+                >
+                    <div class="min-w-0">
+                        <LiveFilterPanel />
+                    </div>
+                    <div class="flex items-center justify-end gap-4 shrink-0">
+                        <LiveControlPanel />
+                    </div>
+                </div>
+
+                <!-- Data Table: Header Sticky Level 2 (z-50 via Svelte) -->
+                <div class="relative">
+                    <LiveDataTable client:load />
+                </div>
+            </div>
+
+            <!-- Footer Meta -->
+            <div
+                class="flex items-center justify-between px-2 py-4 text-[8px] font-mono text-text-muted/30 uppercase tracking-[0.2em]"
+            >
+                <div>Session_ID: {Math.random().toString(36).slice(7).toUpperCase()}</div>
+                <div class="flex items-center gap-4">
+                    <span>Frame_Rate: 60FPS</span>
+                    <span class="text-accent/40">Data_Source: TWSE_Realtime_Nexus</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../scripts/live-engine.ts"></script>
+    <script>
+        const syncToolbarHeight = () => {
+            const toolbar = document.getElementById('live-toolbar-nexus');
+            if (toolbar) {
+                document.documentElement.style.setProperty(
+                    '--toolbar-nexus-height',
+                    `${toolbar.offsetHeight}px`
+                );
+            }
+        };
+
+        // Precise observer to track multi-line toolbar wrap adjustments
+        const resizeObserver = new ResizeObserver(syncToolbarHeight);
+        const toolbar = document.getElementById('live-toolbar-nexus');
+        if (toolbar) {
+            resizeObserver.observe(toolbar);
+            syncToolbarHeight();
+        }
+
+        document.addEventListener('astro:page-load', syncToolbarHeight);
+    </script>
+</MainTerminal>
+
+<style is:global>
+    @keyframes hourglass-flip {
+        0%,
+        90% {
+            transform: rotate(0deg);
+        }
+        92% {
+            transform: rotate(-10deg);
+        }
+        98% {
+            transform: rotate(190deg);
+        }
+        100% {
+            transform: rotate(180deg);
+        }
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+</style>

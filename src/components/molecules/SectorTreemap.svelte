@@ -31,6 +31,8 @@
     let chartContainer: HTMLDivElement | null = null;
     let chart: any = $state(null);
     let ro: ResizeObserver | null = null;
+    let updateRaf: number | null = null;
+    let resizeRaf: number | null = null;
 
     // ─── Atom: Premium Color Mapping (TW Market: Red=Up, Green=Down) ───
     function getColor(val: number): string {
@@ -99,31 +101,35 @@
 
         if (!chart || len === 0) return;
 
-        // Force ECharts to completely replace the series (treemap needs this)
-        chart.setOption(
-            {
-                series: [
-                    {
-                        type: 'treemap',
-                        width: '100%',
-                        height: '100%',
-                        roam: false,
-                        nodeClick: false,
-                        breadcrumb: { show: false },
-                        label: {
-                            show: true,
-                            position: 'inside',
-                            fontSize: 12,
-                            fontFamily: 'monospace',
-                            color: '#fff',
+        if (updateRaf) cancelAnimationFrame(updateRaf);
+        updateRaf = requestAnimationFrame(() => {
+            // Force ECharts to completely replace the series (treemap needs this)
+            chart.setOption(
+                {
+                    series: [
+                        {
+                            type: 'treemap',
+                            width: '100%',
+                            height: '100%',
+                            roam: false,
+                            nodeClick: false,
+                            breadcrumb: { show: false },
+                            label: {
+                                show: true,
+                                position: 'inside',
+                                fontSize: 12,
+                                fontFamily: 'monospace',
+                                color: '#fff',
+                            },
+                            itemStyle: { gapWidth: 2 },
+                            data: data,
                         },
-                        itemStyle: { gapWidth: 2 },
-                        data: data,
-                    },
-                ],
-            },
-            { replaceMerge: ['series'] }
-        );
+                    ],
+                },
+                { replaceMerge: ['series'] }
+            );
+            updateRaf = null;
+        });
     });
 
     // ─── Lifecycle: Initialize ECharts instance ──────────
@@ -184,7 +190,10 @@
             });
 
             ro = new ResizeObserver(() => {
-                if (chart) chart.resize();
+                if (resizeRaf) cancelAnimationFrame(resizeRaf);
+                resizeRaf = requestAnimationFrame(() => {
+                    if (chart) chart.resize();
+                });
             });
             ro.observe(chartContainer);
 
@@ -215,6 +224,8 @@
     });
 
     onDestroy(() => {
+        if (updateRaf) cancelAnimationFrame(updateRaf);
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
         if (chart) chart.dispose();
         if (ro) ro.disconnect();
         if (unsubTheme) unsubTheme();

@@ -88,7 +88,7 @@
                         displayValue={marketStore.filterMinVol > 0
                             ? marketStore.filterMinVol >= 10000
                                 ? (marketStore.filterMinVol / 10000).toFixed(1) + '萬'
-                                : marketStore.filterMinVol
+                                : String(marketStore.filterMinVol)
                             : '0'}
                         onchange={val => (marketStore.filterMinVol = parseInt(val))}
                         onplus={() =>
@@ -177,7 +177,7 @@
                 displayValue={marketStore.filterMinVol > 0
                     ? marketStore.filterMinVol >= 10000
                         ? (marketStore.filterMinVol / 10000).toFixed(1) + '萬'
-                        : marketStore.filterMinVol
+                        : String(marketStore.filterMinVol)
                     : '0'}
                 onchange={val => (marketStore.filterMinVol = parseInt(val))}
                 onplus={() =>

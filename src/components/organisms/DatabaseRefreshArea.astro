@@ -38,7 +38,7 @@
                 <div class="flex justify-between relative">
                     <!-- Connecting Line -->
                     <div
-                        class="absolute top-[20px] left-0 w-full h-[2px] bg-white/5 -translate-y-1/2 z-0"
+                        class="absolute top-[20px] left-0 w-full h-[2px] bg-border/40 -translate-y-1/2 z-0"
                     >
                     </div>
                     <div
@@ -51,24 +51,25 @@
                     {
                         [
                             { step: 1, label: '清單更新', icon: '📋' },
-                            { step: 2, label: '數據與鑑識同步', icon: '🔍' },
+                            { step: 2, label: '數據同步', icon: '🔍' },
                             { step: 3, label: '快照建置', icon: '📸' },
                             { step: 4, label: '索引優化', icon: '⚡' },
-                            { step: 5, label: '同步完成', icon: '✅' },
+                            { step: 5, label: '延伸運算', icon: '🧮' },
+                            { step: 6, label: '同步完成', icon: '✅' },
                         ].map(s => (
                             <div
                                 class="flex flex-col items-center gap-2 relative z-10 stage-item"
                                 data-step={s.step}
                                 id={`stage-step-${s.step}`}
                             >
-                                <div class="w-10 h-10 rounded-full bg-surface border border-border/50 flex items-center justify-center text-[1rem] transition-all duration-500 stage-icon grayscale opacity-40 shadow-inner">
+                                <div class="w-10 h-10 rounded-full bg-glass border border-border flex items-center justify-center text-[1rem] transition-all duration-500 stage-icon grayscale opacity-40 shadow-inner">
                                     {s.icon}
                                 </div>
                                 <div class="flex flex-col items-center gap-0.5">
-                                    <span class="text-[9px] font-mono text-white/30 font-bold uppercase tracking-widest hidden md:block">
+                                    <span class="text-[9px] font-mono text-text-muted/60 font-bold uppercase tracking-widest hidden md:block">
                                         Step {s.step}
                                     </span>
-                                    <span class="text-[11px] font-black text-white/40 transition-colors stage-label tracking-wide whitespace-nowrap">
+                                    <span class="text-[11px] font-black text-text-secondary transition-colors stage-label tracking-wide whitespace-nowrap">
                                         {s.label}
                                     </span>
                                 </div>

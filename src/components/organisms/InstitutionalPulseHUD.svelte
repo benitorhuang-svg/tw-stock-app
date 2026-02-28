@@ -62,9 +62,9 @@
         </div>
 
         <!-- Section 2: Forensic Pulse (Broadcasting Gov & Concentration) -->
-        <div class="flex items-center gap-6 px-6 py-4 flex-1 min-w-fit bg-black/10">
+        <div class="flex items-center gap-6 px-6 py-4 flex-1 min-w-fit bg-surface-hover/30">
             <div class="flex flex-col gap-1">
-                <span class="text-[8px] font-black text-white/20 uppercase tracking-[0.2em]"
+                <span class="text-[8px] font-black text-text-muted/30 uppercase tracking-[0.2em]"
                     >Forensic_Aura</span
                 >
                 <div class="flex items-center gap-8">

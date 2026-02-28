@@ -106,6 +106,51 @@ const { title, description, fullWidth = false } = Astro.props;
                         >
                             <span>市場漲幅</span>
                         </a>
+
+                        <!-- Institutional Monitoring (法人監控) -->
+                        <a
+                            href="/institutional"
+                            id="nav-inst-btn"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group relative',
+                                Astro.url.pathname === '/institutional'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span>法人監控</span>
+                        </a>
+
+                        <!-- Stock Screener (選股策略) -->
+                        <a
+                            href="/screener"
+                            id="nav-screener-btn"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group relative',
+                                Astro.url.pathname === '/screener'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span>選股策略</span>
+                        </a>
+
+                        <!-- Individual Stock Analysis (個股分析) -->
+                        <a
+                            href="/stocks"
+                            id="nav-stocks-btn"
+                            class:list={[
+                                'flex items-center gap-2 px-4 h-[32px] rounded-lg transition-all text-[11px] font-black tracking-[0.2em] uppercase border backdrop-blur-md group relative',
+                                Astro.url.pathname === '/stocks'
+                                    ? 'active bg-accent/15 border-accent/40 text-accent shadow-[0_0_20px_rgba(var(--accent-rgb),0.15)] shadow-inner'
+                                    : 'bg-glass border-border text-text-muted hover:text-text-primary hover:border-border-highlight hover:bg-glass-hover',
+                            ]}
+                            data-astro-prefetch
+                        >
+                            <span>個股分析</span>
+                        </a>
                     </div>
 
                     <!-- Desktop Navigation Tabs -->

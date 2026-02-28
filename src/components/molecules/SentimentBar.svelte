@@ -39,7 +39,7 @@
     <!-- Bottom: Bar & Labels -->
     <div class="w-full flex flex-col gap-1.5">
         <div
-            class="h-6 w-full bg-surface-hover/20 rounded-lg overflow-hidden flex text-[10px] font-mono font-black text-white shadow-inner border border-border/10"
+            class="h-6 w-full bg-surface-hover/20 rounded-lg overflow-hidden flex text-[10px] font-mono font-black text-text-primary shadow-inner border border-border/10"
         >
             <!-- 下跌 on the Left (Down/Bearish) -->
             <div

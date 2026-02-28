@@ -17,6 +17,7 @@
     let chart: any = null;
     let ro: ResizeObserver | null = null;
     let echartsLabels: string[] = [];
+    let resizeRaf: number | null = null;
 
     export function focusOnDate(dateStr: string) {
         if (!chart || echartsLabels.length === 0) return;
@@ -80,9 +81,12 @@
             );
 
             const trins = data.map((d: any) => {
-                const issuesRatio = (d.up || 1) / (d.down || 1);
-                const volumeRatio = (d.upVolume || 1) / (d.downVolume || 1);
-                return Number((issuesRatio / volumeRatio).toFixed(2));
+                // Use pre-computed TRIN from API when available; otherwise fallback to client-side calculation
+                if (d.trin != null) return Number(d.trin);
+                const issuesRatio = (d.up || 0.1) / (d.down || 0.1);
+                const turnoverRatio = (d.upTurnover || 0.1) / (d.downTurnover || 0.1);
+                const val = issuesRatio / turnoverRatio;
+                return Number(Math.min(Math.max(val, 0.1), 8).toFixed(3));
             });
 
             const totalPoints = data.length;
@@ -99,6 +103,43 @@
                     backgroundColor: tc.tooltipBg,
                     borderColor: tc.tooltipBorder,
                     textStyle: { color: tc.tooltipText, fontSize: 10, fontFamily: 'monospace' },
+                    formatter: (params: any) => {
+                        if (!params || !params.length) return '';
+                        const date = params[0].axisValue;
+                        let html = `<div style="font-weight:bold;margin-bottom:4px">${date}</div>`;
+                        for (const p of params) {
+                            html += `<div>${p.marker} ${p.seriesName}: <b>${p.value}</b>`;
+                            if (p.seriesName.includes('TRIN')) {
+                                const v = p.value;
+                                const verdict =
+                                    v < 0.8
+                                        ? '強勢買盤'
+                                        : v < 1.0
+                                          ? '偏多'
+                                          : v < 1.2
+                                            ? '中性'
+                                            : v < 1.5
+                                              ? '偏空'
+                                              : '恐慌賣壓';
+                                html += ` <span style="opacity:0.7">(${verdict})</span>`;
+                            } else if (p.seriesName.includes('多空比')) {
+                                const v = p.value;
+                                const verdict =
+                                    v >= 2
+                                        ? '強勢多頭'
+                                        : v >= 1.2
+                                          ? '偏多'
+                                          : v >= 0.8
+                                            ? '均衡'
+                                            : v >= 0.5
+                                              ? '偏空'
+                                              : '全面弱勢';
+                                html += ` <span style="opacity:0.7">(${verdict})</span>`;
+                            }
+                            html += `</div>`;
+                        }
+                        return html;
+                    },
                 },
                 legend: {
                     data: ['多空比 (Breadth)', 'TRIN (Arms Index)'],
@@ -120,7 +161,7 @@
                     {
                         type: 'value',
                         name: '多空比',
-                        nameTextStyle: { color: tc.legendText },
+                        nameTextStyle: { color: tc.legendText, fontSize: 10 },
                         splitLine: {
                             lineStyle: { color: tc.splitLine, type: 'solid' },
                         },
@@ -129,19 +170,22 @@
                             fontSize: 9,
                             fontFamily: 'monospace',
                         },
-                        min: 'dataMin',
+                        min: 0,
+                        max: 8, // Standardize breadth scale
                     },
                     {
                         type: 'value',
                         name: 'TRIN',
-                        nameTextStyle: { color: tc.legendText },
+                        nameTextStyle: { color: '#f59e0b', fontSize: 10 },
                         splitLine: { show: false },
                         axisLine: { show: false },
                         axisLabel: {
-                            color: tc.legendText,
+                            color: '#f59e0b',
                             fontSize: 9,
                             fontFamily: 'monospace',
                         },
+                        min: 0,
+                        max: 4, // Normalized TRIN scale (0-4 is common)
                     },
                 ],
                 visualMap: {
@@ -177,6 +221,22 @@
                                 { offset: 1, color: tc.areaGradientBottom },
                             ]),
                         },
+                        markLine: {
+                            silent: true,
+                            symbol: 'none',
+                            lineStyle: { color: tc.markLine, type: 'dashed', width: 1 },
+                            data: [
+                                {
+                                    yAxis: 1,
+                                    label: {
+                                        show: false,
+                                        formatter: '多空分界',
+                                        fontSize: 9,
+                                        color: tc.legendText,
+                                    },
+                                },
+                            ],
+                        },
                     },
                     {
                         name: 'TRIN (Arms Index)',
@@ -185,7 +245,28 @@
                         yAxisIndex: 1,
                         smooth: true,
                         showSymbol: false,
-                        lineStyle: { width: 1.5, color: 'rgba(245, 158, 11, 0.25)', type: 'solid' }, // Light Amber
+                        lineStyle: { width: 1.5, color: 'rgba(245, 158, 11, 0.6)', type: 'solid' },
+                        markLine: {
+                            silent: true,
+                            symbol: 'none',
+                            lineStyle: {
+                                color: 'rgba(245, 158, 11, 0.3)',
+                                type: 'dashed',
+                                width: 1,
+                            },
+                            data: [
+                                {
+                                    yAxis: 1,
+                                    label: {
+                                        show: false,
+                                        formatter: 'TRIN=1',
+                                        fontSize: 9,
+                                        color: tc.legendText,
+                                        position: 'end',
+                                    },
+                                },
+                            ],
+                        },
                     },
                 ],
             };
@@ -204,7 +285,10 @@
             });
 
             ro = new ResizeObserver(() => {
-                if (chart) chart.resize();
+                if (resizeRaf) cancelAnimationFrame(resizeRaf);
+                resizeRaf = requestAnimationFrame(() => {
+                    if (chart) chart.resize();
+                });
             });
             ro.observe(chartContainer);
         } catch (e) {
@@ -224,6 +308,7 @@
     });
 
     onDestroy(() => {
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
         if (chart) chart.dispose();
         if (ro) ro.disconnect();
         if (unsubTheme) unsubTheme();

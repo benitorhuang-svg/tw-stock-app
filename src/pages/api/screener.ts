@@ -65,8 +65,6 @@ export const POST: APIRoute = async ({ request }) => {
         let fromAndWhereSql = `
             FROM latest_prices lp
             JOIN stocks s ON s.symbol = lp.symbol
-            LEFT JOIN chips ch ON ch.symbol = lp.symbol
-                AND ch.date = (SELECT MAX(date) FROM chips)
             WHERE 1 = 1
         `;
         const params: (string | number)[] = [];
@@ -97,14 +95,12 @@ export const POST: APIRoute = async ({ request }) => {
             params.push(f.eps);
         }
 
-        // Institutional Domain Vectors
+        // Institutional Domain Vectors (now from denormalized latest_prices)
         if (f.foreign !== undefined && f.foreign > 0) {
-            // This would ideally join a 'streaks' table or compute on the fly
-            // For now, let's assume if streak > 0, we check if today's foreign_inv > 0
-            fromAndWhereSql += ' AND COALESCE(ch.foreign_inv, 0) > 0';
+            fromAndWhereSql += ' AND COALESCE(lp.foreign_inv, 0) > 0';
         }
         if (f.trust !== undefined && f.trust > 0) {
-            fromAndWhereSql += ' AND COALESCE(ch.invest_trust, 0) > 0';
+            fromAndWhereSql += ' AND COALESCE(lp.invest_trust, 0) > 0';
         }
 
         // Preset Strategy Logic
@@ -122,7 +118,7 @@ export const POST: APIRoute = async ({ request }) => {
             SELECT
                 s.symbol,
                 s.name,
-                s.sector,
+                COALESCE(lp.sector, s.sector) AS sector,
                 lp.close,
                 lp.change_pct,
                 lp.volume,
@@ -134,9 +130,9 @@ export const POST: APIRoute = async ({ request }) => {
                 lp.operating_margin,
                 lp.net_margin,
                 lp.eps,
-                COALESCE(ch.foreign_inv, 0) AS foreign_inv,
-                COALESCE(ch.invest_trust, 0) AS invest_trust,
-                COALESCE(ch.dealer, 0) AS dealer
+                COALESCE(lp.foreign_inv, 0) AS foreign_inv,
+                COALESCE(lp.invest_trust, 0) AS invest_trust,
+                COALESCE(lp.dealer, 0) AS dealer
             ${fromAndWhereSql}
             ORDER BY lp.volume DESC
             LIMIT ? OFFSET ?

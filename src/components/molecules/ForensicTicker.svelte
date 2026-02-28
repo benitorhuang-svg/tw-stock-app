@@ -28,7 +28,7 @@
         if (alpha.govSupport.length > 0) {
             const top = alpha.govSupport[0];
             dynamic.push(
-                `GOVERNMENT BANK ACCUMULATION: ${top.symbol} [${top.name}] NET +${(top.government?.netAmount || 0 / 1000).toFixed(1)}M`
+                `GOVERNMENT BANK ACCUMULATION: ${top.symbol} [${top.name}] NET +${((top.government?.netAmount || 0) / 1000).toFixed(1)}M`
             );
         }
         if (alpha.mainAccumulation.length > 0) {
@@ -61,16 +61,16 @@
             class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_8px_var(--color-accent)]"
         ></div>
         <span
-            class="text-[9px] font-black text-white/40 uppercase tracking-[0.2em] whitespace-nowrap"
+            class="text-[9px] font-black text-text-muted/60 uppercase tracking-[0.2em] whitespace-nowrap"
             >Forensic_Signals:</span
         >
     </div>
 
-    <div class="h-[1px] w-8 bg-white/10 flex-shrink-0"></div>
+    <div class="h-[1px] w-8 bg-border flex-shrink-0"></div>
 
     <div class="flex-1 overflow-hidden">
         <p
-            class="text-[10px] text-white/40 italic font-mono truncate transition-all duration-500 uppercase tracking-tighter"
+            class="text-[10px] text-text-muted/60 italic font-mono truncate transition-all duration-500 uppercase tracking-tighter"
             style="opacity: {fadeOut ? '0' : '1'}; transform: translateY({fadeOut ? '4px' : '0'})"
         >
             {currentMessage}
@@ -78,7 +78,7 @@
     </div>
 
     <div
-        class="flex-shrink-0 text-[8px] font-black font-mono text-white/10 uppercase tracking-widest hidden md:block"
+        class="flex-shrink-0 text-[8px] font-black font-mono text-text-muted/20 uppercase tracking-widest hidden md:block"
     >
         [VERIFIED_STREAM]
     </div>

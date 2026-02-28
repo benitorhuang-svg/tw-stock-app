@@ -8,13 +8,15 @@ export function initDatabaseRefreshTerminal() {
 
     if (!startBtn || !refreshArea || !refreshTerminal) return;
 
-    const startRefresh = async (skipConfirm = false) => {
+    const startRefresh = async (skipConfirm = false, initialStep = 0) => {
         if (!skipConfirm && !confirm('即將執行資料庫資料更新，確認啟動同步？')) return;
 
         startBtn.disabled = true;
 
         if (!skipConfirm) {
             refreshTerminal.textContent = '>> 正在建立連線...\n';
+        } else {
+            refreshTerminal.textContent = '>> 背景更新進行中，正在重新連線...\n';
         }
 
         const timeToSec = (str: string) => {
@@ -64,7 +66,7 @@ export function initDatabaseRefreshTerminal() {
 
         const updateStage = (step: number) => {
             const line = document.getElementById('stage-progress-line');
-            if (line) line.style.width = `${(step - 1) * 25}%`;
+            if (line) line.style.width = `${(step - 1) * 20}%`;
 
             document.querySelectorAll('.stage-item').forEach(el => {
                 const s = parseInt((el as HTMLElement).dataset.step || '0');
@@ -104,7 +106,8 @@ export function initDatabaseRefreshTerminal() {
                 }
             });
         };
-        updateStage(1);
+        // 若為背景重連且有 currentStep，直接跳到該階段
+        updateStage(initialStep > 0 ? initialStep : 1);
 
         try {
             const res = await fetch('/api/db/refresh', { method: 'POST' });
@@ -150,11 +153,12 @@ export function initDatabaseRefreshTerminal() {
                         if (eta !== undefined && skipConfirm) forceETA(eta);
                     }
                 };
-                checkStage('[1/4]', 1);
-                checkStage('[2/4]', 2);
-                checkStage('[3/4]', 3, 60);
-                checkStage('[4/4]', 4, 30);
-                checkStage('[完成]', 5, 0);
+                checkStage('[1/6]', 1);
+                checkStage('[2/6]', 2);
+                checkStage('[3/6]', 3, 90);
+                checkStage('[4/6]', 4, 60);
+                checkStage('[5/6]', 5, 30);
+                checkStage('[完成]', 6, 0);
             }
         } catch (err: unknown) {
             console.error(err);
@@ -204,10 +208,15 @@ export function initDatabaseRefreshTerminal() {
             .then(res => res.json())
             .then(data => {
                 if (data.isRunning) {
-                    startRefresh(true);
+                    // 顯示更新面板 & 傳遞目前進度階段
+                    if (refreshArea) {
+                        refreshArea.classList.remove('hidden');
+                        refreshArea.classList.add('flex');
+                    }
+                    startRefresh(true, data.currentStep || 1);
                 }
             })
-            .catch(err => console.error('Failed to check background refresh status', err));
+            .catch(err => console.error('背景更新狀態檢查失敗', err));
     }
 }
 

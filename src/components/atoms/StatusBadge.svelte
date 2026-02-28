@@ -15,14 +15,14 @@
         bullish: 'bg-bullish/10 text-bullish',
         bearish: 'bg-bearish/10 text-bearish',
         accent: 'bg-accent/10 text-accent',
-        neutral: 'bg-white/10 text-white/60',
+        neutral: 'bg-surface-hover text-text-muted',
     };
 
     const dotColors = {
         bullish: 'bg-bullish',
         bearish: 'bg-bearish',
         accent: 'bg-accent',
-        neutral: 'bg-white/40',
+        neutral: 'bg-text-muted/60',
     };
 </script>
 

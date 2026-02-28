@@ -47,7 +47,7 @@
 
     <!-- Power Bar Engine -->
     <div
-        class="relative h-2.5 w-full rounded-md bg-stone-900/50 border border-white/5 overflow-hidden flex shadow-2xl"
+        class="relative h-2.5 w-full rounded-md bg-stone-900/50 border border-border overflow-hidden flex shadow-2xl"
     >
         <!-- Bearish Side -->
         <div
@@ -57,7 +57,7 @@
             <div class="absolute inset-0 bg-gradient-to-r from-transparent to-black/30"></div>
             {#if pctDown > 15}
                 <span
-                    class="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/40"
+                    class="absolute left-2 top-1/2 -translate-y-1/2 text-[8px] font-black text-text-muted/60"
                     >{Math.round(pctDown)}%</span
                 >
             {/if}
@@ -65,7 +65,7 @@
 
         <!-- Neutral Zone -->
         <div
-            class="h-full bg-white/5 transition-all duration-1000 ease-out"
+            class="h-full bg-surface-hover/50 transition-all duration-1000 ease-out"
             style="width: {pctFlat}%"
         ></div>
 
@@ -77,7 +77,7 @@
             <div class="absolute inset-0 bg-gradient-to-l from-transparent to-black/30"></div>
             {#if pctUp > 15}
                 <span
-                    class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black text-white/40"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-[8px] font-black text-text-muted/60"
                     >{Math.round(pctUp)}%</span
                 >
             {/if}
@@ -85,17 +85,17 @@
 
         <!-- Center Equator -->
         <div
-            class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/20 z-20 shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+            class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-text-muted/30 z-20 shadow-[0_0_10px_rgba(255,255,255,0.3)]"
         ></div>
 
         <!-- Glow Overlay -->
         <div
-            class="absolute inset-0 pointer-events-none bg-gradient-to-t from-white/5 to-transparent"
+            class="absolute inset-0 pointer-events-none bg-gradient-to-t from-surface-hover/30 to-transparent"
         ></div>
     </div>
 
     <!-- Pulse Line (Optional Aesthetic) -->
-    <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+    <div class="h-[1px] w-full bg-gradient-to-r from-transparent via-border/30 to-transparent"></div>
 </div>
 
 <style>

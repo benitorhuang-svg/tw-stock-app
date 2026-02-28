@@ -1,6 +1,6 @@
 ---
 /**
- * DatabaseSidebar.astro - Table navigator and health summary
+ * DatabaseSidebar.astro - Table navigator with layer grouping
  */
 interface TableStat {
     name: string;
@@ -14,6 +14,61 @@ interface Props {
 }
 
 const { tables, tableStats } = Astro.props;
+
+/**
+ * 資料庫四層分離架構
+ * 各分頁讀取快照/聚合層 → 秒開無卡頓
+ */
+const TABLE_LAYERS: { label: string; tag: string; color: string; tables: string[] }[] = [
+    {
+        label: '原始層 Raw',
+        tag: '①',
+        color: 'gray',
+        tables: [
+            'stocks',
+            'price_history',
+            'chips',
+            'margin_short',
+            'shareholder_distribution',
+            'government_chips',
+            'major_broker_chips',
+            'director_holdings',
+            'security_lending',
+            'dealer_details',
+            'valuation_history',
+            'fundamentals',
+            'monthly_revenue',
+        ],
+    },
+    {
+        label: '運算層 Computed',
+        tag: '②',
+        color: 'yellow',
+        tables: ['daily_indicators', 'chip_features', 'tech_features', 'valuation_features'],
+    },
+    {
+        label: '聚合層 Aggregated',
+        tag: '③',
+        color: 'green',
+        tables: ['market_breadth_history', 'institutional_trend', 'sector_daily'],
+    },
+    {
+        label: '快照層 Snapshot',
+        tag: '④',
+        color: 'accent',
+        tables: ['latest_prices', 'institutional_snapshot', 'ai_reports'],
+    },
+];
+
+// Build grouped stats
+const statMap = new Map(tableStats.map(t => [t.name, t]));
+const groupedStats = TABLE_LAYERS.map(layer => ({
+    ...layer,
+    items: layer.tables.map(name => statMap.get(name)).filter((s): s is TableStat => s != null),
+}));
+// Any tables not in our layer config
+const knownTables = new Set(TABLE_LAYERS.flatMap(l => l.tables));
+const ungrouped = tableStats.filter(t => !knownTables.has(t.name));
 ---
 
 <aside
@@ -74,41 +129,132 @@ const { tables, tableStats } = Astro.props;
     <nav class="flex-1 overflow-y-auto py-2 custom-scrollbar flex flex-col justify-between">
         <ul class="space-y-1 px-3" id="table-list">
             {
-                tableStats.map(t => (
-                    <li>
-                        <button
-                            class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
-                            data-table={t.name}
-                        >
-                            <div class="flex items-center gap-3 min-w-0 flex-1">
-                                <div class="w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all">
-                                    <svg
-                                        class="w-3.5 h-3.5 text-text-muted group-hover:text-accent"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="square"
-                                            stroke-linejoin="miter"
-                                            stroke-width="2"
-                                            d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm0 0h16M4 12h16"
-                                        />
-                                    </svg>
-                                </div>
-                                <span class="truncate tracking-wide group-hover:translate-x-1 transition-transform">
-                                    {t.name}
+                groupedStats.map(group => (
+                    <>
+                        {/* Layer Group Header */}
+                        <li class="pt-3 pb-1 px-2 first:pt-1">
+                            <div class="flex items-center gap-2">
+                                <span
+                                    class={`text-[9px] font-black uppercase tracking-[0.15em] ${
+                                        group.color === 'accent'
+                                            ? 'text-accent'
+                                            : group.color === 'green'
+                                              ? 'text-emerald-400'
+                                              : group.color === 'yellow'
+                                                ? 'text-amber-400'
+                                                : 'text-text-muted'
+                                    }`}
+                                >
+                                    {group.tag} {group.label}
+                                </span>
+                                <span class="text-[8px] text-text-muted font-mono">
+                                    ({group.items.length})
                                 </span>
                             </div>
-                            <span
-                                class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors"
-                                data-table-count={t.name}
-                            >
-                                {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
-                            </span>
-                        </button>
-                    </li>
+                        </li>
+                        {/* Tables in this layer */}
+                        {group.items.map(t => (
+                            <li>
+                                <button
+                                    class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
+                                    data-table={t.name}
+                                >
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <div
+                                            class={`w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center border transition-all ${
+                                                group.color === 'accent'
+                                                    ? 'bg-accent/10 border-accent/30 group-hover:border-accent/60'
+                                                    : group.color === 'green'
+                                                      ? 'bg-emerald-500/10 border-emerald-500/30 group-hover:border-emerald-500/60'
+                                                      : group.color === 'yellow'
+                                                        ? 'bg-amber-500/10 border-amber-500/30 group-hover:border-amber-500/60'
+                                                        : 'bg-glass border-border group-hover:border-accent/40'
+                                            }`}
+                                        >
+                                            <svg
+                                                class={`w-3.5 h-3.5 ${
+                                                    group.color === 'accent'
+                                                        ? 'text-accent'
+                                                        : group.color === 'green'
+                                                          ? 'text-emerald-400'
+                                                          : group.color === 'yellow'
+                                                            ? 'text-amber-400'
+                                                            : 'text-text-muted group-hover:text-accent'
+                                                }`}
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    stroke-linecap="square"
+                                                    stroke-linejoin="miter"
+                                                    stroke-width="2"
+                                                    d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm0 0h16M4 12h16"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <span class="truncate tracking-wide group-hover:translate-x-1 transition-transform">
+                                            {t.name}
+                                        </span>
+                                    </div>
+                                    <span
+                                        class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors"
+                                        data-table-count={t.name}
+                                    >
+                                        {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
+                                    </span>
+                                </button>
+                            </li>
+                        ))}
+                    </>
                 ))
+            }
+            {/* Ungrouped tables (fallback) */}
+            {
+                ungrouped.length > 0 && (
+                    <>
+                        <li class="pt-3 pb-1 px-2">
+                            <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.15em]">
+                                其他 Other ({ungrouped.length})
+                            </span>
+                        </li>
+                        {ungrouped.map(t => (
+                            <li>
+                                <button
+                                    class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
+                                    data-table={t.name}
+                                >
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <div class="w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all">
+                                            <svg
+                                                class="w-3.5 h-3.5 text-text-muted group-hover:text-accent"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    stroke-linecap="square"
+                                                    stroke-linejoin="miter"
+                                                    stroke-width="2"
+                                                    d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm0 0h16M4 12h16"
+                                                />
+                                            </svg>
+                                        </div>
+                                        <span class="truncate tracking-wide group-hover:translate-x-1 transition-transform">
+                                            {t.name}
+                                        </span>
+                                    </div>
+                                    <span
+                                        class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors"
+                                        data-table-count={t.name}
+                                    >
+                                        {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
+                                    </span>
+                                </button>
+                            </li>
+                        ))}
+                    </>
+                )
             }
         </ul>
     </nav>

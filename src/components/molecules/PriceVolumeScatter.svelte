@@ -16,6 +16,8 @@
     let chart: any = $state(null);
     let ro: ResizeObserver | null = null;
     let fixedMaxVolume: number = $state(0);
+    let updateRaf: number | null = null;
+    let resizeRaf: number | null = null;
 
     // ─── Derived: Prepared scatter data (reactive atom) ──
     const scatterData = $derived.by(() => {
@@ -33,9 +35,13 @@
         const len = data.length;
         if (!chart || len === 0) return;
 
-        chart.setOption({
-            xAxis: { max: FIXED_MAX_VOLUME },
-            series: [{ data }],
+        if (updateRaf) cancelAnimationFrame(updateRaf);
+        updateRaf = requestAnimationFrame(() => {
+            chart.setOption({
+                xAxis: { max: FIXED_MAX_VOLUME },
+                series: [{ data }],
+            });
+            updateRaf = null;
         });
     });
 
@@ -128,7 +134,10 @@
             chart.setOption(option);
 
             ro = new ResizeObserver(() => {
-                if (chart) chart.resize();
+                if (resizeRaf) cancelAnimationFrame(resizeRaf);
+                resizeRaf = requestAnimationFrame(() => {
+                    if (chart) chart.resize();
+                });
             });
             ro.observe(chartContainer);
         } catch (e) {
@@ -148,6 +157,8 @@
     });
 
     onDestroy(() => {
+        if (updateRaf) cancelAnimationFrame(updateRaf);
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
         if (chart) chart.dispose();
         if (ro) ro.disconnect();
         if (unsubTheme) unsubTheme();

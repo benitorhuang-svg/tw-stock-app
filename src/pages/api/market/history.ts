@@ -19,19 +19,15 @@ interface StockRow {
 
 function getStmts() {
     const db = dbService.getRawDb();
+
     return {
         summary: db.prepare(`
             SELECT 
-                count(CASE WHEN change_pct > 0 THEN 1 END) as up,
-                count(CASE WHEN change_pct < 0 THEN 1 END) as down,
-                count(CASE WHEN change_pct = 0 THEN 1 END) as flat,
-                count(*) as total,
-                sum(volume) as totalVolume,
-                sum(CASE WHEN change_pct > 0 THEN volume ELSE 0 END) as upVolume,
-                sum(CASE WHEN change_pct < 0 THEN volume ELSE 0 END) as downVolume,
-                avg(change_pct) as avgChange
-            FROM price_history
-            WHERE date = ? AND close > 0
+                up_count as up, down_count as down, flat_count as flat,
+                total_stocks as total, 
+                up_turnover as upVolume, down_turnover as downVolume
+            FROM market_breadth_history
+            WHERE date = ?
         `),
         availDates: db.prepare(
             'SELECT DISTINCT date FROM price_history ORDER BY date DESC LIMIT 60'
@@ -42,10 +38,10 @@ function getStmts() {
                    ph.close as price, ph.change_pct as changePercent, ph.volume,
                    coalesce(s.market, '') as _market,
                    coalesce(s.sector, '') as sector,
-                   lp.ma5, lp.ma20
+                   di.ma5, di.ma20, di.ma60, di.ma120
             FROM price_history ph
             LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
-            LEFT JOIN latest_prices lp ON trim(ph.symbol) = lp.symbol
+            LEFT JOIN daily_indicators di ON trim(ph.symbol) = di.symbol AND ph.date = di.date
             WHERE ph.date = ? AND ph.change_pct >= 0 AND ph.close > 0
             ORDER BY ph.change_pct DESC
             LIMIT 3000
@@ -56,10 +52,10 @@ function getStmts() {
                    ph.close as price, ph.change_pct as changePercent, ph.volume,
                    coalesce(s.market, '') as _market,
                    coalesce(s.sector, '') as sector,
-                   lp.ma5, lp.ma20
+                   di.ma5, di.ma20, di.ma60, di.ma120
             FROM price_history ph
             LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
-            LEFT JOIN latest_prices lp ON trim(ph.symbol) = lp.symbol
+            LEFT JOIN daily_indicators di ON trim(ph.symbol) = di.symbol AND ph.date = di.date
             WHERE ph.date = ? AND ph.change_pct <= 0 AND ph.close > 0
             ORDER BY ph.change_pct ASC
             LIMIT 3000
@@ -70,10 +66,10 @@ function getStmts() {
                    ph.close as price, ph.change_pct as changePercent, ph.volume,
                    coalesce(s.market, '') as _market,
                    coalesce(s.sector, '') as sector,
-                   lp.ma5, lp.ma20
+                   di.ma5, di.ma20, di.ma60, di.ma120
             FROM price_history ph
             LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
-            LEFT JOIN latest_prices lp ON trim(ph.symbol) = lp.symbol
+            LEFT JOIN daily_indicators di ON trim(ph.symbol) = di.symbol AND ph.date = di.date
             WHERE ph.date = ? AND ph.close > 0
             ORDER BY ph.volume DESC
             LIMIT 3000
@@ -104,8 +100,9 @@ function getStmts() {
             GROUP BY s.sector
         `),
         maBreadth: db.prepare(`
-            SELECT 0 as aboveMA20, 0 as aboveMA60, 0 as aboveMA120, 0 as total
-            WHERE ? = 'NO_DATA'
+            SELECT ma5_breadth as aboveMA5, ma20_breadth as aboveMA20, ma60_breadth as aboveMA60, ma120_breadth as aboveMA120, total_stocks as total
+            FROM market_breadth_history
+            WHERE date = ?
         `),
     };
 }

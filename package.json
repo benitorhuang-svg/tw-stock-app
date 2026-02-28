@@ -16,7 +16,7 @@
         "fetch:financials": "node scripts/fetch-financials.mjs",
         "fetch:chips": "node scripts/fetch-chips.mjs",
         "fetch:all": "npm run fetch:list && npm run fetch:revenue && npm run fetch:stats && npm run fetch:financials && npm run fetch:chips",
-        "build-db": "node scripts/build-sqlite-db.js && node scripts/import-forensic.mjs && node scripts/etl/generate-all-features.mjs",
+        "build-db": "node scripts/build-sqlite-db.js && node scripts/import-forensic.mjs && node scripts/etl/generate-all-features.mjs && node scripts/etl/migrate-to-analysis-tables.mjs",
         "refresh-db": "npm run fetch:all && npm run build-db",
         "format": "prettier --write .",
         "prettify": "npm run format"

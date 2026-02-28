@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { slide } from 'svelte/transition';
     /**
      * AnalysisAccordion.svelte - Organism
      * Standardized accordion section for dashboard analysis views
@@ -65,8 +64,24 @@
     </button>
 
     {#if isOpen}
-        <div transition:slide={{ duration: 300 }}>
-            {@render children?.()}
+        <div class="accordion-body">
+            <slot />
         </div>
     {/if}
 </section>
+
+<style>
+    .accordion-body {
+        animation: accordion-in 200ms ease-out;
+    }
+    @keyframes accordion-in {
+        from {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

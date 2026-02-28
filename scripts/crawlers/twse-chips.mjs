@@ -16,7 +16,7 @@ const CHIPS_DIR = path.join(DATA_DIR, 'chips');
 const db = new Database(DB_PATH);
 
 async function crawl(dateStr) {
-    console.log(`\n🌐 Fetching TWSE Institutional Trading for ${dateStr}...`);
+    console.log(`\n🌐 正在抓取 TWSE 三大法人買賣超日報（${dateStr}）...`);
     const url = `https://www.twse.com.tw/fund/T86?response=json&date=${dateStr}&selectType=ALL`;
 
     try {
@@ -26,7 +26,7 @@ async function crawl(dateStr) {
         const data = await response.json();
 
         if (!data || !data.data) {
-            console.warn(`⚠️ No data found for ${dateStr}. Market might be closed.`);
+            console.warn(`⚠️ 查無 ${dateStr} 資料，可能為休市日。`);
             return;
         }
 
@@ -38,7 +38,7 @@ async function crawl(dateStr) {
             VALUES (?, ?, ?, ?, ?)
         `);
 
-        console.log(`📊 Processing ${rows.length} stocks...`);
+        console.log(`📊 正在處理 ${rows.length} 檔股票...`);
 
         const tx = db.transaction(data => {
             for (const row of data) {
@@ -66,9 +66,9 @@ async function crawl(dateStr) {
             JSON.stringify(chipsData, null, 2)
         );
 
-        console.log(`✅ Synchronization complete for ${dbDate} (DB & JSON).`);
+        console.log(`✅ ${dbDate} 三大法人資料同步完成（DB & JSON）。`);
     } catch (err) {
-        console.error(`❌ Fetch failed: ${err.message}`);
+        console.error(`❌ 抓取失敗：${err.message}`);
     }
 }
 
