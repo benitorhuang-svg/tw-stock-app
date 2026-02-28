@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
+    import { getChartColors, onThemeChange } from '../../utils/chart-theme';
 
     /**
      * MarketBreadthChart.svelte - Organism for the ECharts Breadth visualization
@@ -78,18 +79,31 @@
                 d.down > 0 ? Number((d.up / d.down).toFixed(2)) : 1
             );
 
+            const trins = data.map((d: any) => {
+                const issuesRatio = (d.up || 1) / (d.down || 1);
+                const volumeRatio = (d.upVolume || 1) / (d.downVolume || 1);
+                return Number((issuesRatio / volumeRatio).toFixed(2));
+            });
+
             const totalPoints = data.length;
-            // Calculate starting percentage for last 30 days
-            const defaultStart = totalPoints > 30 ? ((totalPoints - 30) / totalPoints) * 100 : 0;
+            // Calculate starting percentage for last 20 days
+            const defaultStart = totalPoints > 20 ? ((totalPoints - 20) / totalPoints) * 100 : 0;
+
+            const tc = getChartColors();
 
             const option = {
-                grid: { top: 10, right: 0, bottom: 20, left: 30, containLabel: false },
+                grid: { top: 30, right: 30, bottom: 20, left: 30, containLabel: false },
                 tooltip: {
                     trigger: 'axis',
-                    axisPointer: { type: 'line', lineStyle: { color: 'rgba(255,255,255,0.2)' } },
-                    backgroundColor: 'rgba(15,23,42,0.9)',
-                    borderColor: 'rgba(250, 204, 21, 0.3)',
-                    textStyle: { color: '#fff', fontSize: 10, fontFamily: 'monospace' },
+                    axisPointer: { type: 'line', lineStyle: { color: tc.markLine } },
+                    backgroundColor: tc.tooltipBg,
+                    borderColor: tc.tooltipBorder,
+                    textStyle: { color: tc.tooltipText, fontSize: 10, fontFamily: 'monospace' },
+                },
+                legend: {
+                    data: ['多空比 (Breadth)', 'TRIN (Arms Index)'],
+                    textStyle: { color: tc.legendText, fontSize: 10 },
+                    top: 0,
                 },
                 xAxis: {
                     type: 'category',
@@ -97,23 +111,42 @@
                     axisLine: { show: false },
                     axisTick: { show: false },
                     axisLabel: {
-                        color: 'rgba(255,255,255,0.3)',
+                        color: tc.legendText,
                         fontSize: 9,
                         fontFamily: 'monospace',
                     },
                 },
-                yAxis: {
-                    type: 'value',
-                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)', type: 'solid' } },
-                    axisLabel: {
-                        color: 'rgba(255,255,255,0.4)',
-                        fontSize: 9,
-                        fontFamily: 'monospace',
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '多空比',
+                        nameTextStyle: { color: tc.legendText },
+                        splitLine: {
+                            lineStyle: { color: tc.splitLine, type: 'solid' },
+                        },
+                        axisLabel: {
+                            color: tc.legendText,
+                            fontSize: 9,
+                            fontFamily: 'monospace',
+                        },
+                        min: 'dataMin',
                     },
-                    min: 'dataMin',
-                },
+                    {
+                        type: 'value',
+                        name: 'TRIN',
+                        nameTextStyle: { color: tc.legendText },
+                        splitLine: { show: false },
+                        axisLine: { show: false },
+                        axisLabel: {
+                            color: tc.legendText,
+                            fontSize: 9,
+                            fontFamily: 'monospace',
+                        },
+                    },
+                ],
                 visualMap: {
                     show: false,
+                    seriesIndex: 0, // Apply only to breadth
                     dimension: 1,
                     pieces: [
                         { max: 0.999, color: 'rgba(34, 197, 94, 0.9)' },
@@ -131,17 +164,28 @@
                 ],
                 series: [
                     {
+                        name: '多空比 (Breadth)',
                         data: ratios,
                         type: 'line',
+                        yAxisIndex: 0,
                         smooth: 0.3,
                         symbol: 'none',
                         lineStyle: { width: 2.5 },
                         areaStyle: {
                             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                                { offset: 0, color: 'rgba(255, 255, 255, 0.15)' },
-                                { offset: 1, color: 'rgba(255, 255, 255, 0.0)' },
+                                { offset: 0, color: tc.areaGradientTop },
+                                { offset: 1, color: tc.areaGradientBottom },
                             ]),
                         },
+                    },
+                    {
+                        name: 'TRIN (Arms Index)',
+                        data: trins,
+                        type: 'line',
+                        yAxisIndex: 1,
+                        smooth: true,
+                        showSymbol: false,
+                        lineStyle: { width: 1.5, color: 'rgba(245, 158, 11, 0.25)', type: 'solid' }, // Light Amber
                     },
                 ],
             };
@@ -151,7 +195,9 @@
             chart.getZr().on('click', (params: any) => {
                 const pointInPixel = [params.offsetX, params.offsetY];
                 if (chart.containPixel('grid', pointInPixel)) {
-                    const xIndex = chart.convertFromPixel({ seriesIndex: 0 }, pointInPixel)[0];
+                    const xIndex = Math.round(
+                        chart.convertFromPixel({ seriesIndex: 0 }, pointInPixel)[0]
+                    );
                     const dateClicked = labels[xIndex];
                     if (dateClicked) onDateSelect(dateClicked);
                 }
@@ -166,29 +212,37 @@
         }
     }
 
+    let unsubTheme: (() => void) | null = null;
+
     onMount(() => {
         initChart(initialData);
+        unsubTheme = onThemeChange(() => {
+            if (chart) chart.dispose();
+            chart = null;
+            initChart(initialData);
+        });
     });
 
     onDestroy(() => {
         if (chart) chart.dispose();
         if (ro) ro.disconnect();
+        if (unsubTheme) unsubTheme();
     });
 </script>
 
 <div
-    class="flex-[1.5] lg:max-w-[600px] glass-card border-l-4 border-l-blue-500 p-4 relative overflow-hidden shadow-elevated shrink-[3] min-w-[300px] flex flex-col gap-3"
+    class="w-full h-full glass-card border-l-4 border-l-blue-500 px-4 pt-3 pb-1 relative overflow-hidden shadow-elevated flex flex-col gap-1"
 >
     <div class="flex items-center justify-between">
         <h3
-            class="text-[10px] font-mono font-black text-white/40 uppercase tracking-[0.2em] flex items-center gap-2"
+            class="text-[10px] font-mono font-black text-text-muted/60 uppercase tracking-[0.2em] flex items-center gap-2"
         >
             <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-            大盤市場多空比分析 <span class="text-white/10 ml-1">/ BREADTH TREND</span>
+            綜合大盤量價趨勢 ( BREADTH & MOMENTUM )
         </h3>
         <button
             onclick={resetZoom}
-            class="flex items-center gap-1 px-2 py-1 rounded-full border border-border bg-glass hover:bg-glass-hover text-[9px] font-black text-white/40 hover:text-accent transition-all uppercase tracking-widest active:scale-95"
+            class="flex items-center gap-1 px-2 py-1 rounded-full border border-border bg-glass hover:bg-glass-hover text-[9px] font-black text-text-muted/60 hover:text-accent transition-all uppercase tracking-widest active:scale-95"
         >
             <svg
                 class="w-3 h-3"

@@ -609,6 +609,10 @@ if (fs.existsSync(CHIPS_DIR)) {
 // Schema generation and data initialization complete
 
 // 處理 CSV 歷史價格
+let totalRecords = 0;
+let processedFiles = 0;
+
+if (fs.existsSync(PRICES_DIR)) {
 console.log('📈 正在掃描 CSV 歷史價格檔案...');
 const csvFiles = fs.readdirSync(PRICES_DIR).filter(f => f.endsWith('.csv'));
 console.log(`   共找到 ${csvFiles.length} 個 CSV 檔案\n`);
@@ -620,8 +624,6 @@ const insertHistory = db.prepare(`
 `);
 
 // 使用 transaction 進行批次插入 (大幅提升效能)
-let totalRecords = 0;
-let processedFiles = 0;
 
 const processCSVBatch = db.transaction(records => {
     for (const record of records) {
@@ -710,6 +712,9 @@ const calcBatch = db.transaction(list => {
 });
 calcBatch(symbols);
 console.log('✅ 技術面指標計算完成');
+} else {
+    console.log('⚠️ 未找到 prices 資料夾，跳過 CSV 歷史價格匯入');
+}
 
 console.log('\n');
 

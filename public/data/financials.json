@@ -1,5 +1,31 @@
 [
   {
+    "symbol": "1232",
+    "name": "大統益",
+    "year": "114",
+    "quarter": "4",
+    "eps": 8.25,
+    "grossProfit": 2892017,
+    "operatingIncome": 1689740,
+    "grossMargin": 13.44,
+    "operatingMargin": 7.85,
+    "netMargin": 6.42,
+    "netIncome": 1381702
+  },
+  {
+    "symbol": "1236",
+    "name": "宏亞",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.43,
+    "grossProfit": 459504,
+    "operatingIncome": -42660,
+    "grossMargin": 25.34,
+    "operatingMargin": -2.35,
+    "netMargin": -2.04,
+    "netIncome": -36925
+  },
+  {
     "symbol": "1342",
     "name": "八貫",
     "year": "114",
@@ -11,6 +37,19 @@
     "operatingMargin": 18.48,
     "netMargin": 15.48,
     "netIncome": 442789
+  },
+  {
+    "symbol": "1436",
+    "name": "華友聯",
+    "year": "114",
+    "quarter": "4",
+    "eps": 5.39,
+    "grossProfit": 1953578,
+    "operatingIncome": 1439610,
+    "grossMargin": 50.21,
+    "operatingMargin": 37,
+    "netMargin": 24.83,
+    "netIncome": 966143
   },
   {
     "symbol": "1459",
@@ -26,6 +65,19 @@
     "netIncome": 252255
   },
   {
+    "symbol": "1515",
+    "name": "力山",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.97,
+    "grossProfit": 689949,
+    "operatingIncome": -20483,
+    "grossMargin": 12.73,
+    "operatingMargin": -0.38,
+    "netMargin": 3.21,
+    "netIncome": 173956
+  },
+  {
     "symbol": "1535",
     "name": "中宇",
     "year": "114",
@@ -37,6 +89,45 @@
     "operatingMargin": 4.15,
     "netMargin": 4.36,
     "netIncome": 495280
+  },
+  {
+    "symbol": "1597",
+    "name": "直得",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.91,
+    "grossProfit": 466551,
+    "operatingIncome": 105506,
+    "grossMargin": 40.99,
+    "operatingMargin": 9.27,
+    "netMargin": 6.98,
+    "netIncome": 79421
+  },
+  {
+    "symbol": "1605",
+    "name": "華新",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.75,
+    "grossProfit": 11092986,
+    "operatingIncome": 18851,
+    "grossMargin": 6.37,
+    "operatingMargin": 0.01,
+    "netMargin": 1.34,
+    "netIncome": 2339416
+  },
+  {
+    "symbol": "1712",
+    "name": "興農",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.6,
+    "grossProfit": 5674865,
+    "operatingIncome": 1295969,
+    "grossMargin": 30.49,
+    "operatingMargin": 6.96,
+    "netMargin": 5.91,
+    "netIncome": 1099055
   },
   {
     "symbol": "1720",
@@ -78,6 +169,19 @@
     "netIncome": 316150
   },
   {
+    "symbol": "1731",
+    "name": "美吾華",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.36,
+    "grossProfit": 1001668,
+    "operatingIncome": 217367,
+    "grossMargin": 63.23,
+    "operatingMargin": 13.72,
+    "netMargin": 11.43,
+    "netIncome": 181002
+  },
+  {
     "symbol": "1752",
     "name": "南光",
     "year": "114",
@@ -89,6 +193,32 @@
     "operatingMargin": 13.67,
     "netMargin": 11.28,
     "netIncome": 243948
+  },
+  {
+    "symbol": "2002",
+    "name": "中鋼",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.29,
+    "grossProfit": 9025257,
+    "operatingIncome": -3904078,
+    "grossMargin": 2.85,
+    "operatingMargin": -1.23,
+    "netMargin": -1.11,
+    "netIncome": -3506701
+  },
+  {
+    "symbol": "2006",
+    "name": "東和鋼鐵",
+    "year": "114",
+    "quarter": "4",
+    "eps": 6.47,
+    "grossProfit": 8576988,
+    "operatingIncome": 5846938,
+    "grossMargin": 14.82,
+    "operatingMargin": 10.11,
+    "netMargin": 8.22,
+    "netIncome": 4757984
   },
   {
     "symbol": "2013",
@@ -130,6 +260,19 @@
     "netIncome": 2253128
   },
   {
+    "symbol": "2049",
+    "name": "上銀",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.31,
+    "grossProfit": 6977848,
+    "operatingIncome": 1643229,
+    "grossMargin": 28.76,
+    "operatingMargin": 6.77,
+    "netMargin": 5.81,
+    "netIncome": 1410128
+  },
+  {
     "symbol": "2059",
     "name": "川湖",
     "year": "114",
@@ -141,6 +284,32 @@
     "operatingMargin": 69.07,
     "netMargin": 56.21,
     "netIncome": 9837067
+  },
+  {
+    "symbol": "2062",
+    "name": "橋椿",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.39,
+    "grossProfit": 610612,
+    "operatingIncome": 71231,
+    "grossMargin": 9.71,
+    "operatingMargin": 1.13,
+    "netMargin": 1.25,
+    "netIncome": 78740
+  },
+  {
+    "symbol": "2301",
+    "name": "光寶科",
+    "year": "114",
+    "quarter": "4",
+    "eps": 6.64,
+    "grossProfit": 38039258,
+    "operatingIncome": 16737802,
+    "grossMargin": 22.9,
+    "operatingMargin": 10.08,
+    "netMargin": 9.1,
+    "netIncome": 15111794
   },
   {
     "symbol": "2303",
@@ -182,6 +351,32 @@
     "netIncome": 1410397
   },
   {
+    "symbol": "2330",
+    "name": "台積電",
+    "year": "114",
+    "quarter": "4",
+    "eps": 66.26,
+    "grossProfit": 2281293979,
+    "operatingIncome": 1936091677,
+    "grossMargin": 59.89,
+    "operatingMargin": 50.83,
+    "netMargin": 45.03,
+    "netIncome": 1715396780
+  },
+  {
+    "symbol": "2340",
+    "name": "台亞",
+    "year": "114",
+    "quarter": "4",
+    "eps": -2.88,
+    "grossProfit": -137632,
+    "operatingIncome": -1285803,
+    "grossMargin": -3.18,
+    "operatingMargin": -29.72,
+    "netMargin": -31.79,
+    "netIncome": -1375352
+  },
+  {
     "symbol": "2344",
     "name": "華邦電",
     "year": "114",
@@ -193,6 +388,45 @@
     "operatingMargin": 6.19,
     "netMargin": 3.55,
     "netIncome": 3177448
+  },
+  {
+    "symbol": "2379",
+    "name": "瑞昱",
+    "year": "114",
+    "quarter": "4",
+    "eps": 28.77,
+    "grossProfit": 61373678,
+    "operatingIncome": 14359841,
+    "grossMargin": 50.02,
+    "operatingMargin": 11.7,
+    "netMargin": 12.02,
+    "netIncome": 14753316
+  },
+  {
+    "symbol": "2395",
+    "name": "研華",
+    "year": "114",
+    "quarter": "4",
+    "eps": 12.25,
+    "grossProfit": 28197604,
+    "operatingIncome": 11566974,
+    "grossMargin": 39.78,
+    "operatingMargin": 16.32,
+    "netMargin": 14.81,
+    "netIncome": 10500516
+  },
+  {
+    "symbol": "2412",
+    "name": "中華電",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.99,
+    "grossProfit": 86969217,
+    "operatingIncome": 48547702,
+    "grossMargin": 36.83,
+    "operatingMargin": 20.56,
+    "netMargin": 17.16,
+    "netIncome": 40517100
   },
   {
     "symbol": "2419",
@@ -247,6 +481,45 @@
     "netIncome": 444355
   },
   {
+    "symbol": "2454",
+    "name": "聯發科",
+    "year": "114",
+    "quarter": "4",
+    "eps": 66.16,
+    "grossProfit": 283079941,
+    "operatingIncome": 103469695,
+    "grossMargin": 47.5,
+    "operatingMargin": 17.36,
+    "netMargin": 17.81,
+    "netIncome": 106117575
+  },
+  {
+    "symbol": "2455",
+    "name": "全新",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.97,
+    "grossProfit": 1219726,
+    "operatingIncome": 669263,
+    "grossMargin": 36.09,
+    "operatingMargin": 19.8,
+    "netMargin": 16.21,
+    "netIncome": 547942
+  },
+  {
+    "symbol": "2480",
+    "name": "敦陽科",
+    "year": "114",
+    "quarter": "4",
+    "eps": 8,
+    "grossProfit": 2039817,
+    "operatingIncome": 996785,
+    "grossMargin": 24.3,
+    "operatingMargin": 11.87,
+    "netMargin": 10.14,
+    "netIncome": 851292
+  },
+  {
     "symbol": "2488",
     "name": "漢平",
     "year": "114",
@@ -260,6 +533,32 @@
     "netIncome": 364592
   },
   {
+    "symbol": "2548",
+    "name": "華固",
+    "year": "114",
+    "quarter": "4",
+    "eps": 10.15,
+    "grossProfit": 5147712,
+    "operatingIncome": 3980353,
+    "grossMargin": 28.22,
+    "operatingMargin": 21.82,
+    "netMargin": 17.77,
+    "netIncome": 3241406
+  },
+  {
+    "symbol": "2633",
+    "name": "台灣高鐵",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.17,
+    "grossProfit": 23641277,
+    "operatingIncome": 21500302,
+    "grossMargin": 43.26,
+    "operatingMargin": 39.34,
+    "netMargin": 12.04,
+    "netIncome": 6580187
+  },
+  {
     "symbol": "2762",
     "name": "世界健身-KY",
     "year": "114",
@@ -271,6 +570,14 @@
     "operatingMargin": 5.99,
     "netMargin": 3.72,
     "netIncome": 409081
+  },
+  {
+    "symbol": "2801",
+    "name": "彰化商業銀行股份有限公司",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.51,
+    "netIncome": 17774866
   },
   {
     "symbol": "2912",
@@ -299,6 +606,32 @@
     "netIncome": 330951
   },
   {
+    "symbol": "3006",
+    "name": "晶豪科",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.87,
+    "grossProfit": 2485753,
+    "operatingIncome": 344567,
+    "grossMargin": 17.05,
+    "operatingMargin": 2.36,
+    "netMargin": 1.68,
+    "netIncome": 244350
+  },
+  {
+    "symbol": "3008",
+    "name": "大立光",
+    "year": "114",
+    "quarter": "4",
+    "eps": 159.41,
+    "grossProfit": 30837054,
+    "operatingIncome": 23558264,
+    "grossMargin": 50.43,
+    "operatingMargin": 38.53,
+    "netMargin": 35.26,
+    "netIncome": 21560257
+  },
+  {
     "symbol": "3029",
     "name": "零壹",
     "year": "114",
@@ -310,6 +643,19 @@
     "operatingMargin": 6.01,
     "netMargin": 5.18,
     "netIncome": 1288628
+  },
+  {
+    "symbol": "3030",
+    "name": "德律",
+    "year": "114",
+    "quarter": "4",
+    "eps": 10.49,
+    "grossProfit": 4940754,
+    "operatingIncome": 2992240,
+    "grossMargin": 58.35,
+    "operatingMargin": 35.34,
+    "netMargin": 29.27,
+    "netIncome": 2478679
   },
   {
     "symbol": "3035",
@@ -349,6 +695,32 @@
     "operatingMargin": -56.42,
     "netMargin": 125.97,
     "netIncome": 158146
+  },
+  {
+    "symbol": "3092",
+    "name": "鴻碩",
+    "year": "114",
+    "quarter": "4",
+    "eps": -5.14,
+    "grossProfit": 71865,
+    "operatingIncome": -570289,
+    "grossMargin": 4.38,
+    "operatingMargin": -34.8,
+    "netMargin": -34.29,
+    "netIncome": -561933
+  },
+  {
+    "symbol": "3130",
+    "name": "一零四",
+    "year": "114",
+    "quarter": "4",
+    "eps": 14.7,
+    "grossProfit": 2303218,
+    "operatingIncome": 532121,
+    "grossMargin": 86.12,
+    "operatingMargin": 19.9,
+    "netMargin": 18.25,
+    "netIncome": 488047
   },
   {
     "symbol": "3189",
@@ -455,6 +827,32 @@
     "netIncome": -9388
   },
   {
+    "symbol": "3515",
+    "name": "華擎",
+    "year": "114",
+    "quarter": "4",
+    "eps": 15.28,
+    "grossProfit": 6481198,
+    "operatingIncome": 2744801,
+    "grossMargin": 13.55,
+    "operatingMargin": 5.74,
+    "netMargin": 4.94,
+    "netIncome": 2362563
+  },
+  {
+    "symbol": "3545",
+    "name": "敦泰",
+    "year": "114",
+    "quarter": "4",
+    "eps": -4.64,
+    "grossProfit": 2965123,
+    "operatingIncome": -132671,
+    "grossMargin": 24.81,
+    "operatingMargin": -1.11,
+    "netMargin": -8.29,
+    "netIncome": -990258
+  },
+  {
     "symbol": "3563",
     "name": "牧德",
     "year": "114",
@@ -494,6 +892,19 @@
     "netIncome": 2773881
   },
   {
+    "symbol": "3679",
+    "name": "新至陞",
+    "year": "114",
+    "quarter": "4",
+    "eps": 9.78,
+    "grossProfit": 1474064,
+    "operatingIncome": 1003143,
+    "grossMargin": 32.97,
+    "operatingMargin": 22.44,
+    "netMargin": 13.76,
+    "netIncome": 615304
+  },
+  {
     "symbol": "4133",
     "name": "亞諾法",
     "year": "114",
@@ -505,6 +916,32 @@
     "operatingMargin": 4.85,
     "netMargin": -0.32,
     "netIncome": -1141
+  },
+  {
+    "symbol": "4576",
+    "name": "大銀微系統",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.01,
+    "grossProfit": 990954,
+    "operatingIncome": 324240,
+    "grossMargin": 36.51,
+    "operatingMargin": 11.95,
+    "netMargin": 9.58,
+    "netIncome": 259924
+  },
+  {
+    "symbol": "4583",
+    "name": "台灣精銳",
+    "year": "114",
+    "quarter": "4",
+    "eps": 12,
+    "grossProfit": 1563733,
+    "operatingIncome": 942328,
+    "grossMargin": 52.16,
+    "operatingMargin": 31.43,
+    "netMargin": 32.08,
+    "netIncome": 961843
   },
   {
     "symbol": "4915",
@@ -546,6 +983,19 @@
     "netIncome": 112351
   },
   {
+    "symbol": "5203",
+    "name": "訊連",
+    "year": "114",
+    "quarter": "4",
+    "eps": 3.63,
+    "grossProfit": 2077553,
+    "operatingIncome": 367776,
+    "grossMargin": 84.47,
+    "operatingMargin": 14.95,
+    "netMargin": 11.67,
+    "netIncome": 286976
+  },
+  {
     "symbol": "5225",
     "name": "東科-KY",
     "year": "114",
@@ -572,6 +1022,14 @@
     "netIncome": 756955
   },
   {
+    "symbol": "5876",
+    "name": "上海商業儲蓄銀行股份有限公司",
+    "year": "114",
+    "quarter": "4",
+    "eps": 3.06,
+    "netIncome": 16919560
+  },
+  {
     "symbol": "6120",
     "name": "達運",
     "year": "114",
@@ -596,6 +1054,19 @@
     "operatingMargin": 4.9,
     "netMargin": 10.25,
     "netIncome": 64763
+  },
+  {
+    "symbol": "6176",
+    "name": "瑞儀",
+    "year": "114",
+    "quarter": "4",
+    "eps": 9.4,
+    "grossProfit": 10441621,
+    "operatingIncome": 5870882,
+    "grossMargin": 21.4,
+    "operatingMargin": 12.03,
+    "netMargin": 8.9,
+    "netIncome": 4343421
   },
   {
     "symbol": "6183",
@@ -663,6 +1134,45 @@
     "netIncome": 36012
   },
   {
+    "symbol": "6669",
+    "name": "緯穎",
+    "year": "114",
+    "quarter": "4",
+    "eps": 275.06,
+    "grossProfit": 78454023,
+    "operatingIncome": 63917511,
+    "grossMargin": 8.25,
+    "operatingMargin": 6.72,
+    "netMargin": 5.38,
+    "netIncome": 51118163
+  },
+  {
+    "symbol": "6719",
+    "name": "力智",
+    "year": "114",
+    "quarter": "4",
+    "eps": 6.58,
+    "grossProfit": 1595623,
+    "operatingIncome": 667803,
+    "grossMargin": 34.83,
+    "operatingMargin": 14.58,
+    "netMargin": 15.12,
+    "netIncome": 692687
+  },
+  {
+    "symbol": "6770",
+    "name": "力積電",
+    "year": "114",
+    "quarter": "4",
+    "eps": -1.86,
+    "grossProfit": -1536997,
+    "operatingIncome": -5960078,
+    "grossMargin": -3.29,
+    "operatingMargin": -12.75,
+    "netMargin": -16.72,
+    "netIncome": -7812660
+  },
+  {
     "symbol": "6782",
     "name": "視陽",
     "year": "114",
@@ -713,6 +1223,19 @@
     "operatingMargin": 21.45,
     "netMargin": 16.27,
     "netIncome": 157242
+  },
+  {
+    "symbol": "6834",
+    "name": "天二科技",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.5,
+    "grossProfit": 256196,
+    "operatingIncome": 44674,
+    "grossMargin": 17.9,
+    "operatingMargin": 3.12,
+    "netMargin": 3.1,
+    "netIncome": 44398
   },
   {
     "symbol": "6962",

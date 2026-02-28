@@ -2,6 +2,7 @@
     import { marketStore } from '../../stores/market.svelte';
     import { SECTOR_OPTIONS } from '../../lib/filters/sector-filter';
     import CyberRangeSlider from '../atoms/CyberRangeSlider.svelte';
+    import CyberSelect from '../atoms/CyberSelect.svelte';
 
     /**
      * StrategyFilterMatrix.svelte - Molecule for the filter controls
@@ -33,35 +34,31 @@
             <div
                 class="flex items-center gap-0.5 px-0.5 py-0.5 bg-glass rounded-full border border-border h-8 min-w-[300px]"
             >
-                <select
+                <CyberSelect
                     bind:value={marketStore.filterMarket}
-                    class="flex-1 appearance-none h-7 px-2 text-center bg-transparent text-[10px] font-black tracking-widest text-[#94a3b8] cursor-pointer outline-none hover:text-accent transition-all uppercase"
-                >
-                    <option value="">全部市場</option>
-                    <option value="tse">上市</option>
-                    <option value="otc">上櫃</option>
-                </select>
+                    options={[
+                        { value: 'tse', label: '上市' },
+                        { value: 'otc', label: '上櫃' },
+                    ]}
+                    placeholder="全部市場"
+                />
                 <div class="w-px h-3 bg-border shrink-0"></div>
-                <select
+                <CyberSelect
                     bind:value={marketStore.filterSector}
-                    class="flex-[1.5] appearance-none h-7 px-2 text-center bg-transparent text-[10px] font-black tracking-widest text-text-primary/60 cursor-pointer outline-none hover:text-accent transition-all uppercase"
-                >
-                    <option value="">所有產業</option>
-                    {#each SECTOR_OPTIONS as opt}
-                        <option value={opt.value}>{opt.label}</option>
-                    {/each}
-                </select>
+                    options={SECTOR_OPTIONS}
+                    placeholder="所有產業"
+                />
                 <div class="w-px h-3 bg-border shrink-0"></div>
-                <select
+                <CyberSelect
                     bind:value={marketStore.filterPriceRange}
-                    class="flex-1 appearance-none h-7 px-2 text-center bg-transparent text-[10px] font-black tracking-widest text-[#94a3b8] cursor-pointer outline-none hover:text-accent transition-all uppercase"
-                >
-                    <option value="">價格區間</option>
-                    <option value="0-50">50↓</option>
-                    <option value="50-100">50-100</option>
-                    <option value="100-500">100-500</option>
-                    <option value="500-10000">500↑</option>
-                </select>
+                    options={[
+                        { value: '0-50', label: '50↓' },
+                        { value: '50-100', label: '50-100' },
+                        { value: '100-500', label: '100-500' },
+                        { value: '500-10000', label: '500↑' },
+                    ]}
+                    placeholder="價格區間"
+                />
             </div>
 
             <div class="flex items-center gap-4 flex-1 max-w-[600px]">
@@ -110,16 +107,16 @@
         </div>
         <button
             onclick={resetFilters}
-            class="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/5 hover:bg-white/10 text-[10px] font-black text-white/40 hover:text-white transition-all uppercase tracking-[0.2em] active:scale-95 whitespace-nowrap"
+            class="flex items-center gap-2 px-4 py-2 rounded-full border border-border/20 bg-surface-hover/20 hover:bg-surface-hover/40 text-[10px] font-black text-text-muted hover:text-text-primary transition-all uppercase tracking-[0.2em] active:scale-95 whitespace-nowrap"
             >RESET</button
         >
     </div>
 {:else}
     <!-- VERTICAL SIDEBAR LAYOUT -->
-    <div class="w-full flex flex-col gap-4 p-4 border-b border-white/5 bg-white/[0.02]">
+    <div class="w-full flex flex-col gap-4 p-4 border-b border-border/10 bg-surface-hover/5">
         <div class="flex items-center justify-between mb-1">
             <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.2em]"
-                >戰略篩選 / FILTERS</span
+                >戰略篩選 ( FILTERS )</span
             >
             <button
                 onclick={resetFilters}
@@ -128,42 +125,37 @@
             >
         </div>
 
-        <!-- Compact Select Row -->
         <div
-            class="flex items-center gap-0.5 px-0.5 py-0.5 bg-white/5 rounded-lg border border-white/5 h-9 shrink-0"
+            class="flex items-center gap-0.5 px-0.5 py-0.5 bg-surface-hover/10 rounded-lg border border-border/10 h-9 shrink-0"
         >
-            <select
+            <CyberSelect
                 bind:value={marketStore.filterMarket}
-                class="flex-1 appearance-none h-7 px-1 text-center bg-transparent text-[9px] font-bold tracking-tighter text-white/50 cursor-pointer outline-none hover:text-accent transition-all uppercase"
-            >
-                <option value="">市場</option>
-                <option value="tse">上市</option>
-                <option value="otc">上櫃</option>
-            </select>
-            <div class="w-px h-3 bg-white/10 shrink-0"></div>
-            <select
+                options={[
+                    { value: 'tse', label: '上市' },
+                    { value: 'otc', label: '上櫃' },
+                ]}
+                placeholder="市場"
+            />
+            <div class="w-px h-3 bg-border/20 shrink-0"></div>
+            <CyberSelect
                 bind:value={marketStore.filterSector}
-                class="flex-1 appearance-none h-7 px-1 text-center bg-transparent text-[9px] font-bold tracking-tighter text-white/50 cursor-pointer outline-none hover:text-accent transition-all uppercase"
-            >
-                <option value="">產業</option>
-                {#each SECTOR_OPTIONS as opt}
-                    <option value={opt.value}>{opt.label}</option>
-                {/each}
-            </select>
-            <div class="w-px h-3 bg-white/10 shrink-0"></div>
-            <select
+                options={SECTOR_OPTIONS}
+                placeholder="產業"
+            />
+            <div class="w-px h-3 bg-border/20 shrink-0"></div>
+            <CyberSelect
                 bind:value={marketStore.filterPriceRange}
-                class="flex-1 appearance-none h-7 px-1 text-center bg-transparent text-[9px] font-bold tracking-tighter text-white/50 cursor-pointer outline-none hover:text-accent transition-all uppercase"
-            >
-                <option value="">價格</option>
-                <option value="0-50">50↓</option>
-                <option value="50-100">50-100</option>
-                <option value="100-500">100-500</option>
-                <option value="500-10000">500↑</option>
-            </select>
+                options={[
+                    { value: '0-50', label: '50↓' },
+                    { value: '50-100', label: '50-100' },
+                    { value: '100-500', label: '100-500' },
+                    { value: '500-10000', label: '500↑' },
+                ]}
+                placeholder="價格"
+            />
         </div>
 
-        <div class="space-y-4 pt-2 border-t border-white/5">
+        <div class="space-y-4 pt-2 border-t border-border/10">
             <CyberRangeSlider
                 label="漲跌幅"
                 bind:value={marketStore.filterTrend}

@@ -42,7 +42,7 @@
             {displayValue}
         </span>
         <span
-            class="text-[7px] text-white/30 font-black tracking-widest leading-none mt-0.5 uppercase"
+            class="text-[7px] text-text-muted/80 font-black tracking-widest leading-none mt-0.5 uppercase"
         >
             {label}
         </span>
@@ -50,7 +50,8 @@
 
     <button
         onclick={onminus}
-        class="text-white/20 hover:text-accent transition-colors text-xs font-bold px-1">－</button
+        class="text-text-muted/60 hover:text-accent transition-colors text-xs font-bold px-1"
+        >－</button
     >
 
     <input
@@ -60,12 +61,13 @@
         {step}
         bind:value
         oninput={e => onchange((e.target as HTMLInputElement).value)}
-        class="flex-1 w-0 min-w-0 h-1 bg-white/5 rounded-full appearance-none flex-shrink cursor-pointer accent-accent custom-range"
+        class="flex-1 w-0 min-w-0 h-1 bg-border/20 rounded-full appearance-none flex-shrink cursor-pointer accent-accent custom-range"
     />
 
     <button
         onclick={onplus}
-        class="text-white/20 hover:text-accent transition-colors text-xs font-bold px-1">＋</button
+        class="text-text-muted/60 hover:text-accent transition-colors text-xs font-bold px-1"
+        >＋</button
     >
 </div>
 
@@ -73,7 +75,7 @@
     .custom-range {
         -webkit-appearance: none;
         appearance: none;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--color-border);
         height: 4px;
         border-radius: 10px;
     }

@@ -375,6 +375,32 @@
         scrollbar-width: thin;
         scrollbar-color: var(--color-scrollbar, hsl(0 0% 50% / 0.2)) transparent;
     }
+
+    /* ── Main workspace wider scrollbar for easier dragging ── */
+    .main-scrollbar::-webkit-scrollbar {
+        width: 14px;
+    }
+
+    .main-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .main-scrollbar::-webkit-scrollbar-thumb {
+        background: var(--color-scrollbar, hsl(0 0% 50% / 0.2));
+        border-radius: 7px;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .main-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: var(--color-scrollbar-hover, hsl(0 0% 50% / 0.3));
+        background-clip: padding-box;
+    }
+
+    .main-scrollbar {
+        scrollbar-width: auto;
+        scrollbar-color: var(--color-scrollbar, hsl(0 0% 50% / 0.2)) transparent;
+    }
 }
 
 /* ══════════════════════════════════════════════════

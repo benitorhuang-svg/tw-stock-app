@@ -4,7 +4,7 @@
  * The outermost layout for all pages.
  * Full-width viewport + top navigation bar (desktop) / bottom-nav (mobile)
  */
-import { ClientRouter } from 'astro:transitions';
+import { ClientRouter, fade } from 'astro:transitions';
 import BaseHead from './BaseHead.astro';
 import DesktopNavTabs from '../components/molecules/DesktopNavTabs.astro';
 import MobileNavTabs from '../components/molecules/MobileNavTabs.astro';
@@ -160,10 +160,11 @@ const { title, description, fullWidth = false } = Astro.props;
 
         <main
             class:list={[
-                'flex-1 overflow-y-auto overflow-x-hidden',
+                'flex-1 overflow-y-auto overflow-x-hidden main-scrollbar',
                 fullWidth ? 'p-0' : 'p-4 lg:p-6',
             ]}
             id="main-workspace"
+            transition:animate={fade({ duration: '0.15s' })}
         >
             <div class:list={[fullWidth ? '' : 'max-w-[1400px] mx-auto w-full']}>
                 <slot />

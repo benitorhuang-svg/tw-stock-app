@@ -29,6 +29,8 @@ interface DashboardStock {
     trustStreak: number;
     dealerStreak: number;
     sector: string;
+    ma5?: number;
+    ma20?: number;
 }
 
 let gainers: DashboardStock[] = [];
@@ -43,6 +45,8 @@ let totalVolume = 0;
 let avgChange = 0;
 let breadthTimeline: any[] = [];
 let distribution: any = null;
+let initialSectorData: any[] = [];
+let initialMAData: any = null;
 
 try {
     // Fast path: direct SQL aggregation (SSR mode with DB available)
@@ -128,13 +132,15 @@ try {
         grossMargin: r.gross_margin || 0,
         operatingMargin: r.operating_margin || 0,
         netMargin: r.net_margin || 0,
+        ma5: r.ma5 || 0,
+        ma20: r.ma20 || 0,
         foreignStreak: 0,
         trustStreak: 0,
         dealerStreak: 0,
         sector: r.sector || 'other',
     });
 
-    const selectCols = `s.symbol, s.name, s.market, s.sector, lp.close, lp.change, lp.change_pct, lp.volume, lp.high, lp.low, lp.open, lp.date, lp.pe, lp.pb, lp.yield, lp.eps, lp.revenue_yoy, lp.gross_margin, lp.operating_margin, lp.net_margin`;
+    const selectCols = `s.symbol, s.name, s.market, s.sector, lp.close, lp.change, lp.change_pct, lp.volume, lp.high, lp.low, lp.open, lp.date, lp.pe, lp.pb, lp.yield, lp.eps, lp.revenue_yoy, lp.gross_margin, lp.operating_margin, lp.net_margin, lp.ma5, lp.ma20`;
 
     gainers = dbService
         .queryAll<any>(
@@ -161,14 +167,41 @@ try {
                 date,
                 count(CASE WHEN change_pct > 0 THEN 1 END) as up,
                 count(CASE WHEN change_pct < 0 THEN 1 END) as down,
-                count(CASE WHEN change_pct = 0 THEN 1 END) as flat
+                count(CASE WHEN change_pct = 0 THEN 1 END) as flat,
+                sum(CASE WHEN change_pct > 0 THEN volume ELSE 0 END) as upVolume,
+                sum(CASE WHEN change_pct < 0 THEN volume ELSE 0 END) as downVolume
             FROM price_history
             WHERE close > 0
             GROUP BY date
             ORDER BY date DESC
-            LIMIT 150
+            LIMIT 1500
         ) sub
         ORDER BY date ASC
+    `);
+
+    // Fetch initial sector data for Treemap
+    // Fetch initial MA data
+    initialMAData = dbService.queryOne<any>(`
+        SELECT 
+            sum(CASE WHEN close > ma20 THEN 1 ELSE 0 END) as aboveMA20,
+            sum(CASE WHEN close > ma5 THEN 1 ELSE 0 END) as aboveMA60, -- Temporary fallback to MA5
+            0 as aboveMA120,
+            count(*) as total
+        FROM latest_prices
+        WHERE close > 0
+    `);
+
+    initialSectorData = dbService.queryAll<any>(`
+        SELECT 
+            coalesce(s.sector, 'Other') as name,
+            sum(ph.volume) as value,
+            avg(ph.change_pct) as change,
+            count(*) as count
+        FROM price_history ph
+        LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+        WHERE ph.date = (SELECT MAX(date) FROM price_history) AND ph.close > 0
+        GROUP BY s.sector
+        ORDER BY value DESC
     `);
 } catch {
     // Fallback: JSON-based data loading (static build / no DB)
@@ -202,8 +235,8 @@ try {
 }
 ---
 
-<MainTerminal title="市場漲幅">
-    <div class="space-y-6 relative pb-20">
+<MainTerminal title="市場漲幅" fullWidth={true}>
+    <div class="relative pb-20 pt-0 px-4 lg:px-6">
         <DashboardController
             client:load
             upCount={upCount}
@@ -217,6 +250,8 @@ try {
             topVolume={topVolume}
             initialBreadthData={breadthTimeline}
             distribution={distribution}
+            initialSectorData={initialSectorData}
+            initialMAData={initialMAData}
         />
 
         <SentimentTrendModal />

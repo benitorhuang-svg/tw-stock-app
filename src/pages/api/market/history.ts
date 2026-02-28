@@ -2,15 +2,8 @@ import type { APIRoute } from 'astro';
 import { dbService } from '../../../lib/db/sqlite-service';
 
 /**
- * API: /api/market/history?date=2026-01-23&sector=machinery
- *
- * Atomic Data Service: Returns full market snapshot for a specific date.
- * Supports optional server-side sector filtering for efficiency.
- *
- * Optimizations:
- * - All queries use cached prepared statements (module-scope singleton)
- * - Cache-Control headers for browser caching
- * - TRIM() on symbol JOINs for data integrity
+ * API: /api/market/history?date=2026-01-23
+ * returns full market snapshot, distribution, and sector summaries.
  */
 export const prerender = false;
 
@@ -24,7 +17,6 @@ interface StockRow {
     sector?: string;
 }
 
-
 function getStmts() {
     const db = dbService.getRawDb();
     return {
@@ -35,6 +27,8 @@ function getStmts() {
                 count(CASE WHEN change_pct = 0 THEN 1 END) as flat,
                 count(*) as total,
                 sum(volume) as totalVolume,
+                sum(CASE WHEN change_pct > 0 THEN volume ELSE 0 END) as upVolume,
+                sum(CASE WHEN change_pct < 0 THEN volume ELSE 0 END) as downVolume,
                 avg(change_pct) as avgChange
             FROM price_history
             WHERE date = ? AND close > 0
@@ -47,9 +41,11 @@ function getStmts() {
                    coalesce(s.name, trim(ph.symbol)) as name,
                    ph.close as price, ph.change_pct as changePercent, ph.volume,
                    coalesce(s.market, '') as _market,
-                   coalesce(s.sector, '') as sector
+                   coalesce(s.sector, '') as sector,
+                   lp.ma5, lp.ma20
             FROM price_history ph
             LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+            LEFT JOIN latest_prices lp ON trim(ph.symbol) = lp.symbol
             WHERE ph.date = ? AND ph.change_pct >= 0 AND ph.close > 0
             ORDER BY ph.change_pct DESC
             LIMIT 3000
@@ -59,9 +55,11 @@ function getStmts() {
                    coalesce(s.name, trim(ph.symbol)) as name,
                    ph.close as price, ph.change_pct as changePercent, ph.volume,
                    coalesce(s.market, '') as _market,
-                   coalesce(s.sector, '') as sector
+                   coalesce(s.sector, '') as sector,
+                   lp.ma5, lp.ma20
             FROM price_history ph
             LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+            LEFT JOIN latest_prices lp ON trim(ph.symbol) = lp.symbol
             WHERE ph.date = ? AND ph.change_pct <= 0 AND ph.close > 0
             ORDER BY ph.change_pct ASC
             LIMIT 3000
@@ -71,12 +69,43 @@ function getStmts() {
                    coalesce(s.name, trim(ph.symbol)) as name,
                    ph.close as price, ph.change_pct as changePercent, ph.volume,
                    coalesce(s.market, '') as _market,
-                   coalesce(s.sector, '') as sector
+                   coalesce(s.sector, '') as sector,
+                   lp.ma5, lp.ma20
             FROM price_history ph
             LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+            LEFT JOIN latest_prices lp ON trim(ph.symbol) = lp.symbol
             WHERE ph.date = ? AND ph.close > 0
             ORDER BY ph.volume DESC
             LIMIT 3000
+        `),
+        distribution: db.prepare(`
+            SELECT 
+                count(CASE WHEN change_pct >= 9 THEN 1 END) as p9,
+                count(CASE WHEN change_pct >= 6 AND change_pct < 9 THEN 1 END) as p6_9,
+                count(CASE WHEN change_pct >= 3 AND change_pct < 6 THEN 1 END) as p3_6,
+                count(CASE WHEN change_pct > 0 AND change_pct < 3 THEN 1 END) as p0_3,
+                count(CASE WHEN change_pct = 0 THEN 1 END) as zero,
+                count(CASE WHEN change_pct > -3 AND change_pct < 0 THEN 1 END) as m0_3,
+                count(CASE WHEN change_pct > -6 AND change_pct <= -3 THEN 1 END) as m3_6,
+                count(CASE WHEN change_pct > -9 AND change_pct <= -6 THEN 1 END) as m6_9,
+                count(CASE WHEN change_pct <= -9 THEN 1 END) as m9
+            FROM price_history
+            WHERE date = ? AND close > 0
+        `),
+        sectorSummary: db.prepare(`
+            SELECT 
+                coalesce(s.sector, 'Other') as name,
+                sum(ph.volume) as value,
+                avg(ph.change_pct) as change,
+                count(*) as count
+            FROM price_history ph
+            LEFT JOIN stocks s ON trim(ph.symbol) = s.symbol
+            WHERE ph.date = ? AND ph.close > 0
+            GROUP BY s.sector
+        `),
+        maBreadth: db.prepare(`
+            SELECT 0 as aboveMA20, 0 as aboveMA60, 0 as aboveMA120, 0 as total
+            WHERE ? = 'NO_DATA'
         `),
     };
 }
@@ -93,15 +122,7 @@ export const GET: APIRoute = async ({ url }) => {
 
     try {
         const s = getStmts();
-
-        const summary = s.summary.get(date) as {
-            up: number;
-            down: number;
-            flat: number;
-            total: number;
-            totalVolume: number;
-            avgChange: number;
-        };
+        const summary = s.summary.get(date) as any;
 
         if (!summary || summary.total === 0) {
             return new Response(
@@ -114,38 +135,31 @@ export const GET: APIRoute = async ({ url }) => {
             );
         }
 
-        const distribution = dbService.getRawDb().prepare(`
-            SELECT 
-                count(CASE WHEN change_pct >= 9 THEN 1 END) as p9,
-                count(CASE WHEN change_pct >= 6 AND change_pct < 9 THEN 1 END) as p6_9,
-                count(CASE WHEN change_pct >= 3 AND change_pct < 6 THEN 1 END) as p3_6,
-                count(CASE WHEN change_pct > 0 AND change_pct < 3 THEN 1 END) as p0_3,
-                count(CASE WHEN change_pct = 0 THEN 1 END) as zero,
-                count(CASE WHEN change_pct > -3 AND change_pct < 0 THEN 1 END) as m0_3,
-                count(CASE WHEN change_pct > -6 AND change_pct <= -3 THEN 1 END) as m3_6,
-                count(CASE WHEN change_pct > -9 AND change_pct <= -6 THEN 1 END) as m6_9,
-                count(CASE WHEN change_pct <= -9 THEN 1 END) as m9
-            FROM price_history
-            WHERE date = ? AND close > 0
-        `).get(date) as any;
-
+        const distribution = s.distribution.get(date) as any;
+        const sectorSummary = s.sectorSummary.all(date) as any[];
+        const maBreadth = s.maBreadth.get(date) as any;
         const ratio = summary.down > 0 ? summary.up / summary.down : 999;
 
         const gainers: StockRow[] = s.gainers.all(date) as StockRow[];
         const losers: StockRow[] = s.losers.all(date) as StockRow[];
         const volumeLeaders: StockRow[] = s.volumeLeaders.all(date) as StockRow[];
 
-        // Determine caching strategy
         const today = new Date().toISOString().slice(0, 10);
         const cacheControl =
             date === today
-                ? 'private, no-cache' // Today: always fetch fresh
-                : 'private, max-age=300, must-revalidate'; // Past: cache 5min, revalidate
+                ? 'private, no-cache'
+                : 'private, max-age=300, must-revalidate';
 
         return new Response(
             JSON.stringify({
                 date,
-                summary: { ...summary, ratio: Number(ratio.toFixed(2)), distribution },
+                summary: {
+                    ...summary,
+                    ratio: Number(ratio.toFixed(2)),
+                    distribution,
+                    sectors: sectorSummary,
+                    maBreadth: maBreadth
+                },
                 gainers,
                 losers,
                 volumeLeaders,

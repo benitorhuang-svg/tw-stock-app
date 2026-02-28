@@ -83,3 +83,60 @@ export function applyStockFilter(s: any, config: FilterConfig): boolean {
 
     return true;
 }
+
+/**
+ * Distribution bin filter — checks if a stock's change% falls within a specific distribution bin
+ */
+export function isStockInActiveBin(pct: number, activeIndex: number | null): boolean {
+    if (activeIndex === null) return true;
+
+    switch (activeIndex) {
+        case 0: return pct <= -9;
+        case 1: return pct > -9 && pct <= -6;
+        case 2: return pct > -6 && pct <= -3;
+        case 3: return pct > -3 && pct < 0;
+        case 4: return pct === 0;
+        case 5: return pct > 0 && pct < 3;
+        case 6: return pct >= 3 && pct < 6;
+        case 7: return pct >= 6 && pct < 9;
+        case 8: return pct >= 9;
+        default: return true;
+    }
+}
+
+/**
+ * Aggregate stocks into sector summary for treemap visualization
+ */
+export function aggregateSectors(stocks: any[]): { name: string; value: number; change: number; count: number }[] {
+    const map = new Map<string, { name: string; value: number; change: number; count: number }>();
+    stocks.forEach(s => {
+        const secName = s.sector || '其他';
+        if (!map.has(secName)) {
+            map.set(secName, { name: secName, value: 0, change: 0, count: 0 });
+        }
+        const agg = map.get(secName)!;
+        agg.value += s.volume || 0;
+        agg.change += s.changePercent || 0;
+        agg.count++;
+    });
+    return Array.from(map.values()).map(v => ({
+        ...v,
+        change: v.count > 0 ? v.change / v.count : 0,
+    }));
+}
+
+/**
+ * Calculate MA breadth from a filtered stock list
+ */
+export function calcMABreadth(stocks: any[]): { aboveMA20: number; aboveMA60: number; aboveMA120: number; total: number } | null {
+    if (!stocks.length) return null;
+
+    let above20 = 0, above60 = 0, above120 = 0;
+    stocks.forEach(s => {
+        if (s.price > (s.ma20 || 0)) above20++;
+        if (s.price > (s.ma60 || s.ma5 || 0)) above60++;
+        if (s.price > (s.ma120 || 0)) above120++;
+    });
+
+    return { aboveMA20: above20, aboveMA60: above60, aboveMA120: above120, total: stocks.length };
+}

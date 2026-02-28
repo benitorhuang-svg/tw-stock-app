@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
+    import { getChartColors, onThemeChange } from '../../utils/chart-theme';
 
     /**
      * MarketDistributionChart.svelte - Molecule for visualizing price change distribution
@@ -42,7 +43,20 @@
 
     // Reactive effect to update chart when distribution or active index changes
     $effect(() => {
-        if (chart && (distribution || activeRangeIndex !== undefined)) {
+        // Explicitly read all distribution fields to ensure Svelte tracks them
+        const _ = distribution && [
+            distribution.p9,
+            distribution.p6_9,
+            distribution.p3_6,
+            distribution.p0_3,
+            distribution.zero,
+            distribution.m0_3,
+            distribution.m3_6,
+            distribution.m6_9,
+            distribution.m9,
+        ];
+        const __ = activeRangeIndex;
+        if (chart) {
             updateChart();
         }
     });
@@ -104,14 +118,16 @@
                 distribution?.p9 || 0,
             ];
 
+            const tc = getChartColors();
+
             const option = {
                 grid: { top: 10, right: 10, bottom: 25, left: 35 },
                 tooltip: {
                     trigger: 'axis',
                     axisPointer: { type: 'shadow' },
-                    backgroundColor: 'rgba(15,23,42,0.9)',
-                    borderColor: 'rgba(255,255,255,0.1)',
-                    textStyle: { color: '#fff', fontSize: 10, fontFamily: 'monospace' },
+                    backgroundColor: tc.tooltipBg,
+                    borderColor: tc.tooltipBorder,
+                    textStyle: { color: tc.tooltipText, fontSize: 10, fontFamily: 'monospace' },
                 },
                 xAxis: {
                     type: 'category',
@@ -119,7 +135,7 @@
                     axisLine: { show: false },
                     axisTick: { show: false },
                     axisLabel: {
-                        color: 'rgba(255,255,255,0.4)',
+                        color: tc.legendText,
                         fontSize: 8,
                         interval: 0,
                     },
@@ -127,9 +143,9 @@
                 },
                 yAxis: {
                     type: 'value',
-                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+                    splitLine: { lineStyle: { color: tc.splitLine } },
                     axisLabel: {
-                        color: 'rgba(255,255,255,0.4)',
+                        color: tc.legendText,
                         fontSize: 8,
                     },
                 },
@@ -201,19 +217,27 @@
         }
     }
 
+    let unsubTheme: (() => void) | null = null;
+
     onMount(() => {
         initChart();
+        unsubTheme = onThemeChange(() => {
+            if (chart) chart.dispose();
+            chart = null;
+            initChart();
+        });
     });
 
     onDestroy(() => {
         if (chart) chart.dispose();
         if (ro) ro.disconnect();
+        if (unsubTheme) unsubTheme();
     });
 </script>
 
 <div class="flex flex-col gap-2 h-full">
-    <span class="text-[8px] text-white/20 uppercase font-mono tracking-widest font-bold">
-        個股漲跌家數分佈 <span class="text-white/10 ml-1">/ DISTRIBUTION</span>
+    <span class="text-[8px] text-text-muted/60 uppercase font-mono tracking-widest font-bold">
+        個股漲跌家數分佈 ( DISTRIBUTION )
     </span>
     <div
         class="flex-1 w-full min-h-[120px] relative rounded-xl overflow-hidden"
