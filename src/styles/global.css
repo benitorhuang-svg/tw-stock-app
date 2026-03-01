@@ -1247,3 +1247,4 @@
 .flash {
     animation: rowFlash 0.8s ease-out;
 }
+\n/* Chart utility */\n.chart-fill { width:100%; height:100%; display:block; }\n

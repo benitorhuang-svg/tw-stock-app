@@ -66,7 +66,7 @@
     </button>
 
     {#if isOpen}
-        <div class="accordion-body">
+        <div class="accordion-body flex flex-col gap-3 min-h-0">
             {#if children}
                 {@render children()}
             {/if}
