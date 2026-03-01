@@ -2,24 +2,25 @@
 /**
  * StockChartSection.astro - Interactive intraday chart and quick stats
  */
-import type { StockWithDetails } from '../../types/stock';
+import type { StockWithDetails, PriceHistoryRecord } from '../../types/stock';
 import TemporalPriceChart from '../molecules/TemporalPriceChart.astro';
 import CoreMetricMatrix from '../molecules/CoreMetricMatrix.astro';
 import InstitutionalRatingCard from '../molecules/InstitutionalRatingCard.astro';
 
 interface Props {
     stock: StockWithDetails;
+    priceData?: PriceHistoryRecord[];
 }
 
-const { stock } = Astro.props;
+const { stock, priceData = [] } = Astro.props;
 ---
 
 <div
     class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 animate-fade-up"
     style="animation-delay: 150ms"
 >
-    <!-- Main: Intraday Chart -->
-    <TemporalPriceChart change={stock.change} symbol={stock.symbol} />
+    <!-- Main: Price Chart -->
+    <TemporalPriceChart change={stock.change} symbol={stock.symbol} priceData={priceData} />
 
     <!-- Side: Quick Stats Matrix -->
     <div class="lg:col-span-4 space-y-6">

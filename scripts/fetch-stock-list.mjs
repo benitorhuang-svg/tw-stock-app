@@ -124,12 +124,14 @@ async function fetchTPExStocks() {
 
         const data = await response.json();
 
-        if (!data.aaData) {
-            throw new Error('無資料');
+        // TPEx API 新版格式：資料在 tables[0].data（舊版為 aaData）
+        const rows = data.aaData || data.tables?.[0]?.data;
+        if (!rows) {
+            throw new Error('無資料（aaData / tables[0].data 皆不存在）');
         }
 
         // 解析資料
-        const stocks = data.aaData
+        const stocks = rows
             .filter(row => {
                 const symbol = row[0];
                 // 取 4 位數代碼 (普通股) 或 00 開頭的代號 (ETF)

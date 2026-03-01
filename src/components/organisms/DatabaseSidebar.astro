@@ -13,6 +13,9 @@ interface Props {
     tableStats: TableStat[];
 }
 
+import SidebarLayerHeader from '../molecules/SidebarLayerHeader.astro';
+import DatabaseSidebarItem from '../atoms/DatabaseSidebarItem.astro';
+
 const { tables, tableStats } = Astro.props;
 
 /**
@@ -38,6 +41,7 @@ const TABLE_LAYERS: { label: string; tag: string; color: string; tables: string[
             'valuation_history',
             'fundamentals',
             'monthly_revenue',
+            'dividends',
         ],
     },
     {
@@ -56,7 +60,7 @@ const TABLE_LAYERS: { label: string; tag: string; color: string; tables: string[
         label: '快照層 Snapshot',
         tag: '④',
         color: 'accent',
-        tables: ['latest_prices', 'institutional_snapshot', 'ai_reports'],
+        tables: ['latest_prices', 'institutional_snapshot', 'ai_reports', 'screener_scores', 'backtest_results'],
     },
 ];
 
@@ -129,133 +133,120 @@ const ungrouped = tableStats.filter(t => !knownTables.has(t.name));
     <nav class="flex-1 overflow-y-auto py-2 custom-scrollbar flex flex-col justify-between">
         <ul class="space-y-1 px-3" id="table-list">
             {
-                groupedStats.map(group => (
-                    <>
-                        {/* Layer Group Header */}
-                        <li class="pt-3 pb-1 px-2 first:pt-1">
-                            <div class="flex items-center gap-2">
-                                <span
-                                    class={`text-[9px] font-black uppercase tracking-[0.15em] ${
-                                        group.color === 'accent'
-                                            ? 'text-accent'
-                                            : group.color === 'green'
-                                              ? 'text-emerald-400'
-                                              : group.color === 'yellow'
-                                                ? 'text-amber-400'
-                                                : 'text-text-muted'
-                                    }`}
-                                >
-                                    {group.tag} {group.label}
-                                </span>
-                                <span class="text-[8px] text-text-muted font-mono">
-                                    ({group.items.length})
-                                </span>
-                            </div>
-                        </li>
-                        {/* Tables in this layer */}
-                        {group.items.map(t => (
-                            <li>
-                                <button
-                                    class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
-                                    data-table={t.name}
-                                >
-                                    <div class="flex items-center gap-3 min-w-0 flex-1">
-                                        <div
-                                            class={`w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center border transition-all ${
-                                                group.color === 'accent'
-                                                    ? 'bg-accent/10 border-accent/30 group-hover:border-accent/60'
-                                                    : group.color === 'green'
-                                                      ? 'bg-emerald-500/10 border-emerald-500/30 group-hover:border-emerald-500/60'
-                                                      : group.color === 'yellow'
-                                                        ? 'bg-amber-500/10 border-amber-500/30 group-hover:border-amber-500/60'
-                                                        : 'bg-glass border-border group-hover:border-accent/40'
-                                            }`}
-                                        >
-                                            <svg
-                                                class={`w-3.5 h-3.5 ${
-                                                    group.color === 'accent'
-                                                        ? 'text-accent'
-                                                        : group.color === 'green'
-                                                          ? 'text-emerald-400'
-                                                          : group.color === 'yellow'
-                                                            ? 'text-amber-400'
-                                                            : 'text-text-muted group-hover:text-accent'
-                                                }`}
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="square"
-                                                    stroke-linejoin="miter"
-                                                    stroke-width="2"
-                                                    d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm0 0h16M4 12h16"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <span class="truncate tracking-wide group-hover:translate-x-1 transition-transform">
-                                            {t.name}
-                                        </span>
-                                    </div>
-                                    <span
-                                        class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors"
-                                        data-table-count={t.name}
-                                    >
-                                        {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
-                                    </span>
-                                </button>
-                            </li>
-                        ))}
-                    </>
+                groupedStats.map((group, idx) => (
+                    <li class="layer-group" data-layer-id={idx}>
+                        <SidebarLayerHeader
+                            label={group.label}
+                            tag={group.tag}
+                            count={group.items.length}
+                            color={group.color}
+                            isExpanded={false}
+                        />
+
+                        <ul
+                            class="space-y-1 mt-1 layer-content origin-top transition-all duration-300 overflow-hidden"
+                            style="max-height: 0px; opacity: 0; pointer-events: none;"
+                        >
+                            {group.items.map(t => (
+                                <DatabaseSidebarItem
+                                    name={t.name}
+                                    rows={t.rows}
+                                    color={group.color}
+                                />
+                            ))}
+                        </ul>
+                    </li>
                 ))
             }
             {/* Ungrouped tables (fallback) */}
             {
                 ungrouped.length > 0 && (
-                    <>
-                        <li class="pt-3 pb-1 px-2">
-                            <span class="text-[9px] font-black text-text-muted uppercase tracking-[0.15em]">
-                                其他 Other ({ungrouped.length})
-                            </span>
-                        </li>
-                        {ungrouped.map(t => (
-                            <li>
-                                <button
-                                    class="w-full text-left px-4 py-3 rounded-xl text-[11px] font-mono text-text-secondary hover:bg-glass-hover hover:text-text-primary transition-all flex items-center justify-between group border border-transparent active:scale-[0.98]"
-                                    data-table={t.name}
-                                >
-                                    <div class="flex items-center gap-3 min-w-0 flex-1">
-                                        <div class="w-6 h-6 shrink-0 rounded-lg overflow-hidden flex items-center justify-center bg-glass border border-border group-hover:border-accent/40 group-hover:bg-accent/10 transition-all">
-                                            <svg
-                                                class="w-3.5 h-3.5 text-text-muted group-hover:text-accent"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="square"
-                                                    stroke-linejoin="miter"
-                                                    stroke-width="2"
-                                                    d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm0 0h16M4 12h16"
-                                                />
-                                            </svg>
-                                        </div>
-                                        <span class="truncate tracking-wide group-hover:translate-x-1 transition-transform">
-                                            {t.name}
-                                        </span>
-                                    </div>
-                                    <span
-                                        class="text-[9px] text-text-muted shrink-0 ml-2 group-hover:text-accent font-mono transition-colors"
-                                        data-table-count={t.name}
-                                    >
-                                        {t.rows > 1000 ? (t.rows / 1000).toFixed(1) + 'K' : t.rows}
-                                    </span>
-                                </button>
-                            </li>
-                        ))}
-                    </>
+                    <li class="layer-group">
+                        <SidebarLayerHeader
+                            label="其他 Other"
+                            count={ungrouped.length}
+                            color="gray"
+                        />
+
+                        <ul
+                            class="space-y-1 mt-1 layer-content origin-top transition-all duration-300 overflow-hidden"
+                            style="max-height: 0px; opacity: 0; pointer-events: none;"
+                        >
+                            {ungrouped.map(t => (
+                                <DatabaseSidebarItem name={t.name} rows={t.rows} color="gray" />
+                            ))}
+                        </ul>
+                    </li>
                 )
             }
         </ul>
     </nav>
 </aside>
+
+<script>
+    function setupSidebarFolding() {
+        console.log('Setting up sidebar folding...');
+        const groups = document.querySelectorAll('.layer-group');
+        console.log(`Found ${groups.length} layer groups`);
+
+        groups.forEach((group, idx) => {
+            const btn = group.querySelector('.layer-toggle-btn') as HTMLButtonElement;
+            const content = group.querySelector('.layer-content') as HTMLElement;
+            const chevron = group.querySelector('.chevron-icon') as SVGElement;
+
+            if (!btn || !content || !chevron) {
+                console.warn(`Missing elements for group ${idx}`, { btn, content, chevron });
+                return;
+            }
+
+            // Sync visual state if needed (though Astro props handle this partially)
+            // But let's re-verify to be safe
+            const isInitialExpanded = btn.getAttribute('aria-expanded') === 'true';
+            if (isInitialExpanded) {
+                content.style.maxHeight = '2000px';
+                chevron.style.transform = 'rotate(0deg)';
+            }
+
+            // Define toggle function
+            const toggle = (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+                console.log(`Toggling group ${idx}. Current expanded state: ${isExpanded}`);
+
+                if (isExpanded) {
+                    btn.setAttribute('aria-expanded', 'false');
+                    content.style.maxHeight = '0px';
+                    content.style.opacity = '0';
+                    content.style.pointerEvents = 'none';
+                    chevron.style.transform = 'rotate(-90deg)';
+                } else {
+                    btn.setAttribute('aria-expanded', 'true');
+                    content.style.maxHeight = '2000px';
+                    content.style.opacity = '1';
+                    content.style.pointerEvents = 'auto';
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+            };
+
+            btn.onclick = toggle;
+        });
+    }
+
+    // Initial run
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupSidebarFolding);
+    } else {
+        setupSidebarFolding();
+    }
+
+    // Support View Transitions
+    document.addEventListener('astro:page-load', () => {
+        console.log('Astro page load detected');
+        setupSidebarFolding();
+    });
+
+    // Final fallback
+    setTimeout(setupSidebarFolding, 500);
+</script>

@@ -1,22 +1,26 @@
 <script lang="ts">
-    // Mock data for Margin Trend
-    const data = Array.from({ length: 20 }, (_, i) => ({
-        date: `01/${String(i + 1).padStart(2, '0')}`,
-        margin: 30000 + Math.random() * 10000,
-        short: 1000 + Math.random() * 500,
-        ratio: 2 + Math.random() * 3,
-    }));
+    // Real margin/short data via props
+    interface MarginPoint {
+        date: string;
+        margin: number;
+        short: number;
+        ratio: number;
+    }
+
+    let { data = [] }: { data: MarginPoint[] } = $props();
+
+    const hasData = $derived(data.length >= 2);
 
     const width = 800;
     const height = 250;
     const padding = 30;
 
-    const maxMargin = Math.max(...data.map(d => d.margin));
-    const maxShort = Math.max(...data.map(d => d.short));
-    const maxRatio = Math.max(...data.map(d => d.ratio));
+    const maxMargin = $derived(hasData ? Math.max(...data.map(d => d.margin)) || 1 : 1);
+    const maxShort = $derived(hasData ? Math.max(...data.map(d => d.short)) || 1 : 1);
+    const maxRatio = $derived(hasData ? Math.max(...data.map(d => d.ratio)) || 1 : 1);
 
     function x(i: number) {
-        return padding + (i * (width - 2 * padding)) / (data.length - 1);
+        return padding + (i * (width - 2 * padding)) / (data.length - 1 || 1);
     }
 
     function yMargin(val: number) {
@@ -31,24 +35,18 @@
         return height - padding - (val / maxRatio) * (height - 2 * padding);
     }
 
-    const pathMargin =
-        `M ${x(0)} ${yMargin(data[0].margin)} ` +
-        data
-            .map((d, i) => `L ${x(i)} ${yMargin(d.margin)}`)
-            .slice(1)
-            .join(' ');
-    const pathShort =
-        `M ${x(0)} ${yShort(data[0].short)} ` +
-        data
-            .map((d, i) => `L ${x(i)} ${yShort(d.short)}`)
-            .slice(1)
-            .join(' ');
-    const pathRatio =
-        `M ${x(0)} ${yRatio(data[0].ratio)} ` +
-        data
-            .map((d, i) => `L ${x(i)} ${yRatio(d.ratio)}`)
-            .slice(1)
-            .join(' ');
+    const pathMargin = $derived(hasData
+        ? `M ${x(0)} ${yMargin(data[0].margin)} ` +
+          data.map((d, i) => `L ${x(i)} ${yMargin(d.margin)}`).slice(1).join(' ')
+        : '');
+    const pathShort = $derived(hasData
+        ? `M ${x(0)} ${yShort(data[0].short)} ` +
+          data.map((d, i) => `L ${x(i)} ${yShort(d.short)}`).slice(1).join(' ')
+        : '');
+    const pathRatio = $derived(hasData
+        ? `M ${x(0)} ${yRatio(data[0].ratio)} ` +
+          data.map((d, i) => `L ${x(i)} ${yRatio(d.ratio)}`).slice(1).join(' ')
+        : '');
 </script>
 
 <div

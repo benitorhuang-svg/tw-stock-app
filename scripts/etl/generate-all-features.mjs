@@ -21,6 +21,20 @@ const db = new Database(DB_PATH);
 async function generate() {
     console.log('🧪 啟動鑑識特徵提取（M1 ETL）...');
 
+    // 0. 正規化 chips 日期格式 (YYYYMMDD → YYYY-MM-DD)
+    const compactCount = db.prepare(
+        "SELECT COUNT(*) AS c FROM chips WHERE date NOT LIKE '____-__-__'"
+    ).get().c;
+    if (compactCount > 0) {
+        console.log(`   🔧 正規化 ${compactCount} 筆 compact 日期 → ISO...`);
+        db.exec(`
+            UPDATE chips
+            SET date = substr(date,1,4)||'-'||substr(date,5,2)||'-'||substr(date,7,2)
+            WHERE length(date) = 8 AND date NOT LIKE '____-__-__';
+        `);
+        console.log('   ✅ chips 日期格式已統一為 YYYY-MM-DD');
+    }
+
     // 1. Reset / Ensure Feature Tables Exist (Lean approach)
     db.exec(`
         DROP TABLE IF EXISTS chip_features;
@@ -303,7 +317,7 @@ async function generate() {
     // ④ 快照層: institutional_snapshot + latest_prices enrichment
     // ═══════════════════════════════════════════
 
-    // 8. 法人籌碼總覽快照 (合併 7 張法人表最新資料 → 一檔一列)
+    // 8. 法人籌碼總覽快照 (合併 8 張法人表最新資料 → 一檔一列)
     db.exec(`
         INSERT OR REPLACE INTO institutional_snapshot
             (symbol, date, foreign_inv, invest_trust, dealer,

@@ -11,11 +11,12 @@ interface Props {
 const { symbol, activeTab = 'overview' } = Astro.props;
 
 const tabs = [
-    { id: 'overview', label: '總覽', icon: '📊' },
-    { id: 'technical', label: '技術面', icon: '📈' },
-    { id: 'chips', label: '籌碼面', icon: '🏦' },
-    { id: 'fundamentals', label: '基本面', icon: '💰' },
-    { id: 'alerts', label: 'AI 報告', icon: '🤖' },
+    { id: 'overview', label: '核心總覽', icon: '📊' },
+    { id: 'sector', label: '產業監測', icon: '🌐' },
+    { id: 'technical', label: '技術動能', icon: '📈' },
+    { id: 'forensic', label: '法人鑒識', icon: '🏦' },
+    { id: 'valuation', label: '價值核心', icon: '💰' },
+    { id: 'risk', label: '風控診斷', icon: '🛡️' },
 ];
 ---
 
@@ -73,6 +74,17 @@ const tabs = [
             });
 
             history.replaceState(null, '', `#${tabId}`);
+
+            // Scroll to the content with a consistent offset (similar to other pages)
+            const content = document.getElementById('tab-content');
+            const scrollContainer = document.getElementById('main-workspace');
+            if (content && scrollContainer) {
+                const rect = content.getBoundingClientRect();
+                const containerRect = scrollContainer.getBoundingClientRect();
+                // 120px offset to keep the TabBar and container header visible
+                const offset = rect.top - containerRect.top - 120;
+                scrollContainer.scrollBy({ top: offset, behavior: 'smooth' });
+            }
         }
 
         // Initialize from URL hash

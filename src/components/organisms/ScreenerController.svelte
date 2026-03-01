@@ -26,6 +26,8 @@
         results: true,
     });
 
+    const NAV_ORDER = ['presets', 'matrix', 'backtest', 'results'];
+
     function toggleSection(key: string) {
         expandedSections[key] = !expandedSections[key];
     }
@@ -34,15 +36,63 @@
         if (expandedSections[key]) {
             // If already open, toggle it closed
             expandedSections[key] = false;
+
+            const allClosed = Object.values(expandedSections).every(v => v === false);
+            const scrollContainer = document.getElementById('main-workspace');
+
+            if (allClosed) {
+                if (scrollContainer) {
+                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } else {
+                // Find nearest open section ABOVE the one we just closed
+                const currentIndex = NAV_ORDER.indexOf(key);
+                let targetKey = null;
+
+                // 1. Look above
+                for (let i = currentIndex - 1; i >= 0; i--) {
+                    if (expandedSections[NAV_ORDER[i]]) {
+                        targetKey = NAV_ORDER[i];
+                        break;
+                    }
+                }
+
+                // 2. If nothing above, look below
+                if (!targetKey) {
+                    for (let i = currentIndex + 1; i < NAV_ORDER.length; i++) {
+                        if (expandedSections[NAV_ORDER[i]]) {
+                            targetKey = NAV_ORDER[i];
+                            break;
+                        }
+                    }
+                }
+
+                if (targetKey && scrollContainer) {
+                    setTimeout(() => {
+                        const el = document.getElementById(`section-${targetKey}`);
+                        if (el) {
+                            const scrollContainerRect = scrollContainer.getBoundingClientRect();
+                            const filterBottom = scrollContainerRect.top + 64;
+                            const elRect = el.getBoundingClientRect();
+                            const scrollOffset = elRect.top - filterBottom + 60;
+                            scrollContainer.scrollBy({
+                                top: scrollOffset,
+                                behavior: 'smooth',
+                            });
+                        }
+                    }, 100);
+                }
+            }
         } else {
             expandedSections[key] = true;
             setTimeout(() => {
                 const el = document.getElementById(`section-${key}`);
                 const scrollContainer = document.getElementById('main-workspace');
                 if (el && scrollContainer) {
-                    const filterBottom = scrollContainer.getBoundingClientRect().top + 96;
+                    const scrollContainerRect = scrollContainer.getBoundingClientRect();
+                    const filterBottom = scrollContainerRect.top + 64;
                     const elRect = el.getBoundingClientRect();
-                    const scrollOffset = elRect.top - filterBottom;
+                    const scrollOffset = elRect.top - filterBottom + 60;
                     scrollContainer.scrollBy({
                         top: scrollOffset,
                         behavior: 'smooth',

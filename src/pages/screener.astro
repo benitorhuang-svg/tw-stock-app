@@ -32,7 +32,7 @@ const presetStrategies = allStrategies.filter(s => supportedIds.includes(s.id));
 
 <MainTerminal title="選股中心">
     <div class="relative pb-20 pt-0 px-4 lg:px-6">
-        <ScreenerController client:idle presetStrategies={presetStrategies} />
+        <ScreenerController client:load presetStrategies={presetStrategies} />
 
         <!-- Signal Stream -->
         <div

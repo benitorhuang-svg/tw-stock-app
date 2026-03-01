@@ -7,6 +7,7 @@ import IntradayChart from '../molecules/IntradayChart.astro';
 import OrderBook from '../molecules/OrderBook.astro';
 import TradeTape from '../molecules/TradeTape.astro';
 import AiQuickInsights from '../molecules/AiQuickInsights.astro';
+import type { PriceHistoryRecord } from '../../types/stock';
 
 interface Props {
     symbol: string;
@@ -17,9 +18,10 @@ interface Props {
     high: number;
     low: number;
     volume: number;
+    priceData?: PriceHistoryRecord[];
 }
 
-const { symbol, price, change } = Astro.props;
+const { symbol, price, change, priceData = [] } = Astro.props;
 
 const isBullish = change > 0;
 const isBearish = change < 0;
@@ -54,7 +56,75 @@ const insights = [
         <!-- Left: Intraday Chart Area -->
         <div class="lg:col-span-8 space-y-4">
             <!-- Intraday Chart -->
-            <IntradayChart price={price} isBullish={isBullish} isBearish={isBearish} />
+            <IntradayChart price={price} isBullish={isBullish} isBearish={isBearish} priceData={priceData} />
+
+            <!-- Day Trading Momentum Pulse (Skill #7) -->
+            <div class="glass-card p-5 border-l-4 border-accent relative overflow-hidden group">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                </div>
+                <div class="flex items-center justify-between mb-4 relative z-10">
+                    <div class="flex flex-col">
+                        <h4
+                            class="text-[10px] font-mono font-black text-accent uppercase tracking-[0.2em]"
+                        >
+                            Momentum_Pulse
+                        </h4>
+                        <p class="text-[9px] text-text-muted mt-0.5 uppercase tracking-widest">
+                            Intraday Attack Velocity
+                        </p>
+                    </div>
+                    <div
+                        class="px-3 py-1 rounded bg-accent/10 border border-accent/20 text-[10px] font-mono font-bold text-accent animate-pulse"
+                    >
+                        LIVE_SCANNING
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+                    <div class="space-y-1">
+                        <span class="text-[9px] text-text-muted uppercase font-bold tracking-widest"
+                            >Flow_Strength</span
+                        >
+                        <div
+                            class="flex items-end gap-2 text-xl font-mono font-black {isBullish ? 'text-bullish' : 'text-bearish'}"
+                        >
+                            {isBullish ? '⚡88' : '📉24'}
+                            <span class="text-[10px] opacity-40 mb-1 tracking-tighter">/100</span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] text-text-muted uppercase font-bold tracking-widest"
+                            >Volatility_Index</span
+                        >
+                        <div class="text-xl font-mono font-black text-text-primary">1.24%</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] text-text-muted uppercase font-bold tracking-widest"
+                            >Tick_Speed</span
+                        >
+                        <div class="text-xl font-mono font-black text-warning">Rapid</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] text-text-muted uppercase font-bold tracking-widest"
+                            >Volume_Ratio</span
+                        >
+                        <div class="text-xl font-mono font-black text-accent">1.82x</div>
+                    </div>
+                </div>
+
+                <!-- Momentum Meter -->
+                <div class="mt-6 h-1 w-full bg-surface-hover rounded-full overflow-hidden flex">
+                    <div class="h-full bg-bullish transition-all duration-1000" style="width: 65%;">
+                    </div>
+                    <div
+                        class="h-full bg-bearish/30 transition-all duration-1000"
+                        style="width: 35%;"
+                    >
+                    </div>
+                </div>
+            </div>
 
             <!-- AI Quick Insights -->
             <AiQuickInsights symbol={symbol} insights={insights} />

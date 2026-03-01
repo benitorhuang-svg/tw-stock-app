@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
     import { marketStore } from '../../stores/market.svelte.ts';
+    import { uiStore } from '../../stores/ui.svelte.ts';
 
     // Molecules
     import MarketKeyDimensions from '../molecules/MarketKeyDimensions.svelte';
@@ -34,7 +35,7 @@
         distribution?: any;
     }
 
-    let props = $props<Props>();
+    let props: Props = $props();
 
     // ─── Local Reactive State ────────────────────────────
     /**
@@ -66,6 +67,8 @@
         structure: false,
     });
 
+    const NAV_ORDER = ['guide', 'pulse', 'scatter', 'movers', 'flow', 'structure'];
+
     function toggleSection(key: string) {
         expandedSections[key] = !expandedSections[key];
     }
@@ -74,6 +77,59 @@
         if (expandedSections[key]) {
             // If already open, toggle it closed
             expandedSections[key] = false;
+
+            // NEW logic: Scroll back to the nearest open section ABOVE
+            const allClosed = Object.values(expandedSections).every(v => v === false);
+            const scrollContainer = document.getElementById('main-workspace');
+
+            if (allClosed) {
+                if (scrollContainer) {
+                    scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } else {
+                // Find nearest open section ABOVE the one we just closed
+                const currentIndex = NAV_ORDER.indexOf(key);
+                let targetKey = null;
+
+                // 1. Look above
+                for (let i = currentIndex - 1; i >= 0; i--) {
+                    if (expandedSections[NAV_ORDER[i]]) {
+                        targetKey = NAV_ORDER[i];
+                        break;
+                    }
+                }
+
+                // 2. If nothing above, look below (optional, but keep focus)
+                if (!targetKey) {
+                    for (let i = currentIndex + 1; i < NAV_ORDER.length; i++) {
+                        if (expandedSections[NAV_ORDER[i]]) {
+                            targetKey = NAV_ORDER[i];
+                            break;
+                        }
+                    }
+                }
+
+                if (targetKey && scrollContainer) {
+                    // Slight delay to allow layout to settle after collapse
+                    setTimeout(() => {
+                        const el = document.getElementById(`section-${targetKey}`);
+                        if (el) {
+                            const filterEl = scrollContainer.querySelector(
+                                '.sticky.z-30'
+                            ) as HTMLElement;
+                            const filterBottom = filterEl
+                                ? filterEl.getBoundingClientRect().bottom
+                                : scrollContainer.getBoundingClientRect().top + 64;
+                            const elRect = el.getBoundingClientRect();
+                            const scrollOffset = elRect.top - filterBottom + 60;
+                            scrollContainer.scrollBy({
+                                top: scrollOffset,
+                                behavior: 'smooth',
+                            });
+                        }
+                    }, 100);
+                }
+            }
         } else {
             // Expand and scroll
             expandedSections[key] = true;
@@ -85,9 +141,10 @@
                     const filterEl = scrollContainer.querySelector('.sticky.z-30') as HTMLElement;
                     const filterBottom = filterEl
                         ? filterEl.getBoundingClientRect().bottom
-                        : scrollContainer.getBoundingClientRect().top + 96;
+                        : scrollContainer.getBoundingClientRect().top + 64;
                     const elRect = el.getBoundingClientRect();
-                    const scrollOffset = elRect.top - filterBottom+56;
+                    // Reduced offset from +56 to +20 to move content higher
+                    const scrollOffset = elRect.top - filterBottom + 60;
                     scrollContainer.scrollBy({
                         top: scrollOffset,
                         behavior: 'smooth',
@@ -256,7 +313,9 @@
     });
     const filteredTopVolume = $derived.by(() => {
         if (!expandedSections.flow) return [];
-        return [...allFilteredStocks].sort((a, b) => (b.volume || 0) - (a.volume || 0)).slice(0, 15);
+        return [...allFilteredStocks]
+            .sort((a, b) => (b.volume || 0) - (a.volume || 0))
+            .slice(0, 15);
     });
 
     const scatterStocks = $derived.by(() => {
@@ -297,33 +356,42 @@
 
     <main class="flex-1 space-y-4 animate-fade-right min-w-0">
         <!-- 戰略篩選 / FILTERS -->
-        <div
-            class="w-full flex flex-col gap-2 mb-2 sticky top-4 z-30 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)]"
-        >
+        {#if uiStore.showMarketFilters}
             <div
-                class="glass-card shadow-elevated rounded-xl overflow-hidden border border-border backdrop-blur-2xl bg-base-deep/90"
+                class="w-full flex flex-col gap-2 mb-2 sticky top-4 z-30 shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)] animate-fade-down"
             >
-                <StrategyFilterMatrix vertical={false} />
+                <div
+                    class="glass-card shadow-elevated rounded-xl overflow-hidden border border-border backdrop-blur-2xl bg-base-deep/90"
+                >
+                    <StrategyFilterMatrix vertical={false} />
+                </div>
             </div>
-        </div>
+        {/if}
 
         <!-- ⓪ 功能說明 ( FEATURE GUIDE ) -->
-        <AnalysisAccordion id="guide" icon="📖" title="功能說明 ( FEATURE GUIDE )" isOpen={expandedSections.guide} onToggle={() => toggleSection('guide')}>
-            <div class="glass-card bg-base-deep/30 px-5 py-4 shadow-elevated rounded-xl border border-border/10">
+        <AnalysisAccordion
+            id="guide"
+            icon="📖"
+            title="功能說明 ( FEATURE GUIDE )"
+            isOpen={expandedSections.guide}
+            onToggle={() => toggleSection('guide')}
+        >
+            <div
+                class="glass-card bg-base-deep/30 px-5 py-4 shadow-elevated rounded-xl border border-border/10"
+            >
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {#each [
-                        { icon: '📡', title: '大盤脈搏', desc: '即時總覽漲跌家數、成交量、平均漲幅等大盤關鍵指標，並以分佈圖顯示個股漲跌幅度分布。點選分佈柱可篩選特定漲跌區間。' },
-                        { icon: '⚡', title: '量價與產業', desc: '散佈圖展示個股量價關係，樹狀圖顯示產業板塊漲跌熱度。點選產業可快速篩選該板塊個股。' },
-                        { icon: '🏆', title: '漲跌排行', desc: '即時顯示當日漲幅/跌幅前 5 名的個股，自動依篩選條件更新排行結果。' },
-                        { icon: '💰', title: '資金流向', desc: '以成交量排序顯示前 5 活躍個股，快速掌握市場資金集中方向。' },
-                        { icon: '📐', title: '技術結構', desc: '多重均線多空排列分析—顯示站上月線/季線/半年線的個股比例，以及漲跌比率趨勢圖。' },
-                        { icon: '🔍', title: '篩選概述', desc: '上方篩選列可依市場別、產業別、價格區間、最低成交量、趨勢方向等條件快速過濾個股。' },
-                    ] as item}
-                        <div class="flex gap-3 items-start p-3 rounded-lg bg-surface/30 border border-border/5">
+                    {#each [{ icon: '📡', title: '大盤脈搏', desc: '即時總覽漲跌家數、成交量、平均漲幅等大盤關鍵指標，並以分佈圖顯示個股漲跌幅度分布。點選分佈柱可篩選特定漲跌區間。' }, { icon: '⚡', title: '量價與產業', desc: '散佈圖展示個股量價關係，樹狀圖顯示產業板塊漲跌熱度。點選產業可快速篩選該板塊個股。' }, { icon: '🏆', title: '漲跌排行', desc: '即時顯示當日漲幅/跌幅前 5 名的個股，自動依篩選條件更新排行結果。' }, { icon: '💰', title: '資金流向', desc: '以成交量排序顯示前 5 活躍個股，快速掌握市場資金集中方向。' }, { icon: '📐', title: '技術結構', desc: '多重均線多空排列分析—顯示站上月線/季線/半年線的個股比例，以及漲跌比率趨勢圖。' }, { icon: '🔍', title: '篩選概述', desc: '上方篩選列可依市場別、產業別、價格區間、最低成交量、趨勢方向等條件快速過濾個股。' }] as item}
+                        <div
+                            class="flex gap-3 items-start p-3 rounded-lg bg-surface/30 border border-border/5"
+                        >
                             <span class="text-xl mt-0.5 shrink-0">{item.icon}</span>
                             <div class="min-w-0">
-                                <p class="text-xs font-bold text-text-primary tracking-wide mb-1">{item.title}</p>
-                                <p class="text-[11px] text-text-muted leading-relaxed">{item.desc}</p>
+                                <p class="text-xs font-bold text-text-primary tracking-wide mb-1">
+                                    {item.title}
+                                </p>
+                                <p class="text-[11px] text-text-muted leading-relaxed">
+                                    {item.desc}
+                                </p>
                             </div>
                         </div>
                     {/each}

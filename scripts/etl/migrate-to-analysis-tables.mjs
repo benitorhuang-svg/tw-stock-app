@@ -2,14 +2,14 @@
  * migrate-to-analysis-tables.mjs
  *
  * 三層分離 ETL：
- * 1. 運算層：從 price_history 計算每日個股的 MA5/20/60/120, RSI14, MACD, KD → daily_indicators
+ * 1. 運算層：從 price_history 計算每日個股的 MA5/10/20/60/120, ATR14, RSI14, MACD, KD → daily_indicators
  * 2. 聚合層：依日期聚合大盤指標 (Breadth, Volume, TRIN, MA Breadth) → market_breadth_history
  */
 
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { SMA, RSI, MACD, Stochastic } from 'technicalindicators';
+import { SMA, RSI, MACD, Stochastic, ATR } from 'technicalindicators';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, '..', '..', 'public', 'data', 'stocks.db');
@@ -33,8 +33,8 @@ async function run() {
     db.exec('DELETE FROM daily_indicators; DELETE FROM market_breadth_history;');
 
     const insertIndicator = db.prepare(`
-        INSERT INTO daily_indicators (symbol, date, ma5, ma20, ma60, ma120, rsi14, macd_diff, macd_dea, kd_k, kd_d)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO daily_indicators (symbol, date, ma5, ma10, ma20, ma60, ma120, atr14, rsi14, macd_diff, macd_dea, kd_k, kd_d)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     // ─── 第一階段：個股技術指標運算 ───
@@ -56,9 +56,13 @@ async function run() {
 
             // MA
             const ma5 = SMA.calculate({ period: 5, values: closes });
+            const ma10 = SMA.calculate({ period: 10, values: closes });
             const ma20 = SMA.calculate({ period: 20, values: closes });
             const ma60 = SMA.calculate({ period: 60, values: closes });
             const ma120 = SMA.calculate({ period: 120, values: closes });
+
+            // ATR-14 (Average True Range)
+            const atr14 = ATR.calculate({ period: 14, high: highs, low: lows, close: closes });
 
             // RSI-14
             const rsi14 = RSI.calculate({ period: 14, values: closes });
@@ -85,9 +89,11 @@ async function run() {
             // Pad arrays to match history length
             const pad = (arr, offset) => new Array(offset).fill(null).concat(arr);
             const ma5Full = pad(ma5, 4);
+            const ma10Full = pad(ma10, 9);
             const ma20Full = pad(ma20, 19);
             const ma60Full = pad(ma60, 59);
             const ma120Full = pad(ma120, 119);
+            const atr14Full = pad(atr14, 14);
             const rsi14Full = pad(rsi14, 14);
             const macdOffset = history.length - macdResult.length;
             const macdFull = pad(macdResult, macdOffset);
@@ -101,9 +107,11 @@ async function run() {
                     symbol,
                     history[i].date,
                     ma5Full[i] != null ? Number(ma5Full[i].toFixed(2)) : null,
+                    ma10Full[i] != null ? Number(ma10Full[i].toFixed(2)) : null,
                     ma20Full[i] != null ? Number(ma20Full[i].toFixed(2)) : null,
                     ma60Full[i] != null ? Number(ma60Full[i].toFixed(2)) : null,
                     ma120Full[i] != null ? Number(ma120Full[i].toFixed(2)) : null,
+                    atr14Full[i] != null ? Number(atr14Full[i].toFixed(2)) : null,
                     rsi14Full[i] != null ? Number(rsi14Full[i].toFixed(2)) : null,
                     m?.histogram != null ? Number(m.histogram.toFixed(4)) : null,
                     m?.signal != null ? Number(m.signal.toFixed(4)) : null,
@@ -131,13 +139,14 @@ async function run() {
             up_turnover, down_turnover,
             up_volume, down_volume,
             trin, ma5_breadth, ma20_breadth, ma60_breadth, ma120_breadth,
-            total_stocks
+            adl, total_stocks
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const breadthTx = db.transaction(() => {
         let processed = 0;
+        let adl = 0;  // Cumulative Advance-Decline Line
         for (const date of allDates) {
             const dayData = db
                 .prepare(
@@ -209,6 +218,8 @@ async function run() {
             const turnRatio = (upT || 0.1) / (downT || 0.1);
             const trin = Math.min(Math.max(issuesRatio / turnRatio, 0.1), 8);
 
+            adl += (up - down);  // ADL = cumulative sum of (advances - declines)
+
             insertBreadth.run(
                 date,
                 up,
@@ -223,6 +234,7 @@ async function run() {
                 count20 > 0 ? Number(((above20 / count20) * 100).toFixed(2)) : 0,
                 count60 > 0 ? Number(((above60 / count60) * 100).toFixed(2)) : 0,
                 count120 > 0 ? Number(((above120 / count120) * 100).toFixed(2)) : 0,
+                adl,
                 dayData.length
             );
 

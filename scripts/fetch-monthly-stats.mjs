@@ -44,24 +44,60 @@ async function main() {
     const d = String(now.getDate()).padStart(2, '0');
     const dateStr = `${y}${m}${d}`;
 
-    console.log(`📥 開始抓取 ${dateStr} 上市公司月報統計 (P/E, Yield)...`);
+    console.log(`📥 開始抓取 ${dateStr} 月報統計 (P/E, Yield)...`);
 
-    const url = `https://www.twse.com.tw/exchangeReport/BWIBBU_ALL?response=json&date=${dateStr}`;
-    const data = await fetchWithRetry(url);
+    let stats = [];
 
-    if (!data || data.stat !== 'OK' || !data.data) {
-        console.error('   ❌ 無資料或非交易日');
-        return;
+    // ── 1. TWSE 上市 ──
+    const twseUrl = `https://www.twse.com.tw/exchangeReport/BWIBBU_ALL?response=json&date=${dateStr}`;
+    const twseData = await fetchWithRetry(twseUrl);
+
+    if (twseData && twseData.stat === 'OK' && twseData.data) {
+        // 格式: 股票代號, 股票名稱, 本益比, 殖利率(%), 股價淨值比
+        const tseStats = twseData.data.map(row => ({
+            symbol: row[0],
+            name: row[1],
+            peRatio: parseFloat(row[2]) || 0,
+            dividendYield: parseFloat(row[3]) || 0,
+            pbRatio: parseFloat(row[4]) || 0,
+        }));
+        stats.push(...tseStats);
+        console.log(`   ✅ TWSE 上市: ${tseStats.length} 檔`);
+    } else {
+        console.warn('   ⚠️ TWSE 無資料或非交易日');
     }
 
-    // 格式: 股票代號, 股票名稱, 本益比, 殖利率(%), 股價淨值比
-    const stats = data.data.map(row => ({
-        symbol: row[0],
-        name: row[1],
-        peRatio: parseFloat(row[2]) || 0,
-        dividendYield: parseFloat(row[3]) || 0,
-        pbRatio: parseFloat(row[4]) || 0,
-    }));
+    // ── 2. TPEx 上櫃 ──
+    // TPEx 使用民國日期: YYY/MM/DD
+    const rocYear = y - 1911;
+    const rocDate = `${rocYear}/${m}/${d}`;
+
+    await new Promise(r => setTimeout(r, 3000)); // 避免被擋
+
+    const tpexUrl = `https://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_result.php?l=zh-tw&o=json&d=${rocDate}&c=`;
+    const tpexData = await fetchWithRetry(tpexUrl);
+
+    if (tpexData) {
+        const rows = tpexData.aaData || tpexData.tables?.[0]?.data;
+        if (rows && rows.length > 0) {
+            // TPEx 格式: 0=代號, 1=名稱, 2=本益比, 3=殖利率, 4=股價淨值比
+            const otcStats = rows
+                .filter(r => /^\d{4}$/.test(String(r[0]).trim()))
+                .map(r => ({
+                    symbol: String(r[0]).trim(),
+                    name: String(r[1]).trim(),
+                    peRatio: parseFloat(r[2]) || 0,
+                    dividendYield: parseFloat(r[3]) || 0,
+                    pbRatio: parseFloat(r[4]) || 0,
+                }));
+            stats.push(...otcStats);
+            console.log(`   ✅ TPEx 上櫃: ${otcStats.length} 檔`);
+        } else {
+            console.warn('   ⚠️ TPEx 無上櫃月報資料');
+        }
+    } else {
+        console.warn('   ⚠️ TPEx 請求失敗');
+    }
 
     if (!fs.existsSync(path.dirname(OUTPUT_FILE)))
         fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });

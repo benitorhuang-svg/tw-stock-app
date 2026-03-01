@@ -19,6 +19,19 @@
     let echartsLabels: string[] = [];
     let resizeRaf: number | null = null;
 
+    // Reactive effect to wait for data and re-init/update
+    $effect(() => {
+        if (initialData && initialData.length > 0) {
+            if (chart) {
+                // If already initialized, we could call setOption,
+                // but initChart handles the full logic safer for now
+                initChart(initialData);
+            } else {
+                initChart(initialData);
+            }
+        }
+    });
+
     export function focusOnDate(dateStr: string) {
         if (!chart || echartsLabels.length === 0) return;
         const index = echartsLabels.indexOf(dateStr);
@@ -61,16 +74,28 @@
     }
 
     async function initChart(data: any[]) {
-        if (!chartContainer) return;
+        if (!chartContainer || !data || data.length === 0) {
+            if (chart) {
+                chart.clear();
+            }
+            return;
+        }
 
         try {
             const echarts = (window as any).echarts;
             if (!echarts) {
-                setTimeout(() => initChart(data), 50);
+                setTimeout(() => initChart(data), 100);
                 return;
             }
 
             if (chart) chart.dispose();
+
+            // Check container visibility/size
+            if (chartContainer.clientWidth === 0 || chartContainer.clientHeight === 0) {
+                setTimeout(() => initChart(data), 100);
+                return;
+            }
+
             chart = echarts.init(chartContainer);
 
             const labels = data.map((d: any) => d.date);
@@ -82,9 +107,11 @@
 
             const trins = data.map((d: any) => {
                 // Use pre-computed TRIN from API when available; otherwise fallback to client-side calculation
-                if (d.trin != null) return Number(d.trin);
+                if (d.trin != null && !isNaN(d.trin)) return Number(d.trin);
                 const issuesRatio = (d.up || 0.1) / (d.down || 0.1);
-                const turnoverRatio = (d.upTurnover || 0.1) / (d.downTurnover || 0.1);
+                const upVol = d.upTurnover || d.upVolume || 0.1;
+                const dnVol = d.downTurnover || d.downVolume || 0.1;
+                const turnoverRatio = upVol / dnVol;
                 const val = issuesRatio / turnoverRatio;
                 return Number(Math.min(Math.max(val, 0.1), 8).toFixed(3));
             });
@@ -299,7 +326,11 @@
     let unsubTheme: (() => void) | null = null;
 
     onMount(() => {
-        initChart(initialData);
+        // Delay slightly for initial mount to ensure parent layout is calculated
+        setTimeout(() => {
+            initChart(initialData);
+        }, 150);
+
         unsubTheme = onThemeChange(() => {
             if (chart) chart.dispose();
             chart = null;

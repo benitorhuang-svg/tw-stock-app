@@ -147,9 +147,12 @@ function showProgress(current, total, symbol, name, status) {
 
 /**
  * 從 Yahoo Finance 取得歷史資料
+ * @param {string} symbol - 股票代碼
+ * @param {string} market - 市場別 ('TSE' | 'OTC')
  */
-async function fetchYahooFinance(symbol) {
-    const twSymbol = `${symbol}.TW`;
+async function fetchYahooFinance(symbol, market) {
+    const suffix = market === 'OTC' ? 'TWO' : 'TW';
+    const twSymbol = `${symbol}.${suffix}`;
     const endDate = Math.floor(Date.now() / 1000);
     const startDate = endDate - YEARS_BACK * 365 * 24 * 60 * 60;
 
@@ -324,7 +327,7 @@ async function main() {
     startTime = Date.now();
 
     for (let i = startIndex; i < stocks.length; i++) {
-        const { symbol, name } = stocks[i];
+        const { symbol, name, market } = stocks[i];
         const displayIndex = i - startIndex + 1;
         const displayTotal = stocks.length - startIndex;
 
@@ -337,7 +340,7 @@ async function main() {
             const statusType = i === startIndex && !forceAll ? 'retry' : 'loading';
             showProgress(displayIndex, displayTotal, symbol, name, statusType);
 
-            const data = await fetchYahooFinance(symbol);
+            const data = await fetchYahooFinance(symbol, market);
 
             if (data && saveToCSV(symbol, name, data)) {
                 success++;

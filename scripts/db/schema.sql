@@ -9,14 +9,15 @@
 --                           security_lending, dealer_details,
 --                           valuation_history, fundamentals, monthly_revenue, dividends
 --
---   ② 運算層 (Computed)   : daily_indicators, chip_features,
+--   ② 運算層 (Computed)   : market_index, daily_indicators, chip_features,
 --                           tech_features, valuation_features
 --
 --   ③ 聚合層 (Aggregated) : market_breadth_history,
 --                           institutional_trend, sector_daily
 --
 --   ④ 快照層 (Snapshot)   : latest_prices, ai_reports,
---                           institutional_snapshot
+--                           institutional_snapshot,
+--                           screener_scores, backtest_results
 --
 -- 設計原則:
 --   • 各分頁讀取快照/聚合層 → 零 JOIN, 毫秒級回應
@@ -146,13 +147,14 @@ CREATE TABLE IF NOT EXISTS valuation_history (
 -- 12. 基本面數據 (季度)
 CREATE TABLE IF NOT EXISTS fundamentals (
     symbol TEXT NOT NULL,
-    year INTEGER NOT NULL,
+    year INTEGER NOT NULL,       -- 民國年 (ROC), 如 114 = 西元 2025; SQL 比較需 +1911
     quarter INTEGER NOT NULL,
     eps REAL,
     gross_margin REAL,
     operating_margin REAL,
     net_margin REAL,
     revenue_yoy REAL,
+    debt_ratio REAL,                  -- 負債比率 %
     PRIMARY KEY (symbol, year, quarter)
 );
 
@@ -181,15 +183,29 @@ CREATE TABLE IF NOT EXISTS dividends (
 -- ②  運 算 層  (Computed / Per-Stock Daily)
 -- ═══════════════════════════════════════════
 
--- 15. 每日個股技術指標 (由 ETL 從 price_history 運算後寫入)
+-- 15. 大盤加權指數 (TAIEX ^TWII, 由 fetch-market-index.mjs 寫入)
+--     用途: Alpha/Beta 計算, MA60 系統性風險門檻, 回測基準
+CREATE TABLE IF NOT EXISTS market_index (
+    date TEXT PRIMARY KEY,
+    open REAL,
+    high REAL,
+    low REAL,
+    close REAL,
+    volume INTEGER
+);
+
+-- 16. 每日個股技術指標 (由 ETL 從 price_history 運算後寫入)
 CREATE TABLE IF NOT EXISTS daily_indicators (
     symbol TEXT NOT NULL,
     date TEXT NOT NULL,
     -- 移動平均線
     ma5 REAL,
+    ma10 REAL,
     ma20 REAL,
     ma60 REAL,
     ma120 REAL,
+    -- 波動率
+    atr14 REAL,                   -- ATR (14日), 停損/部位計算核心
     -- 動能指標
     rsi14 REAL,                   -- RSI (14日)
     -- MACD 指標
@@ -202,7 +218,7 @@ CREATE TABLE IF NOT EXISTS daily_indicators (
     FOREIGN KEY (symbol) REFERENCES stocks(symbol) ON DELETE CASCADE
 );
 
--- 16. 籌碼特徵 (ETL 運算)
+-- 17. 籌碼特徵 (ETL 運算)
 CREATE TABLE IF NOT EXISTS chip_features (
     symbol TEXT NOT NULL,
     date TEXT NOT NULL,
@@ -214,7 +230,7 @@ CREATE TABLE IF NOT EXISTS chip_features (
     PRIMARY KEY (symbol, date)
 );
 
--- 17. 技術指標特徵 (ETL 從 price_history 運算; 每檔僅保留最新)
+-- 18. 技術指標特徵 (ETL 從 price_history 運算; 每檔僅保留最新)
 CREATE TABLE IF NOT EXISTS tech_features (
     symbol TEXT NOT NULL,
     date TEXT NOT NULL,
@@ -228,7 +244,7 @@ CREATE TABLE IF NOT EXISTS tech_features (
     PRIMARY KEY (symbol, date)
 );
 
--- 18. 估值特徵 (ETL 從 latest_prices 複製; 每檔僅保留最新)
+-- 19. 估值特徵 (ETL 從 latest_prices 複製; 每檔僅保留最新)
 CREATE TABLE IF NOT EXISTS valuation_features (
     symbol TEXT NOT NULL,
     date TEXT NOT NULL,
@@ -242,7 +258,7 @@ CREATE TABLE IF NOT EXISTS valuation_features (
 -- ③  聚 合 層  (Aggregated / Market-Wide Daily)
 -- ═══════════════════════════════════════════
 
--- 19. 每日大盤廣度指標 (由 ETL 聚合 price_history + daily_indicators)
+-- 20. 每日大盤廣度指標 (由 ETL 聚合 price_history + daily_indicators)
 CREATE TABLE IF NOT EXISTS market_breadth_history (
     date TEXT PRIMARY KEY,
     -- 漲跌家數
@@ -262,11 +278,13 @@ CREATE TABLE IF NOT EXISTS market_breadth_history (
     ma20_breadth REAL,
     ma60_breadth REAL,
     ma120_breadth REAL,
+    -- 漲跌線 (Advance-Decline Line)
+    adl INTEGER DEFAULT 0,         -- 累積 ADL = SUM(up_count - down_count)
     -- 全市場股數
     total_stocks INTEGER
 );
 
--- 20. 法人每日市場彙總 (ETL 聚合 chips → 按日加總三大法人)
+-- 21. 法人每日市場彙總 (ETL 聚合 chips → 按日加總三大法人)
 --     用途: 法人監控頁「趨勢圖」→ 直讀, 不需 GROUP BY
 CREATE TABLE IF NOT EXISTS institutional_trend (
     date TEXT PRIMARY KEY,
@@ -279,7 +297,7 @@ CREATE TABLE IF NOT EXISTS institutional_trend (
     sell_count INTEGER              -- 三大法人合計賣超檔數
 );
 
--- 21. 產業每日彙總 (ETL 聚合 latest_prices + stocks → 按產業加總)
+-- 22. 產業每日彙總 (ETL 聚合 latest_prices + stocks → 按產業加總)
 --     用途: 首頁「產業板塊」& 選股頁「產業篩選」→ 直讀
 CREATE TABLE IF NOT EXISTS sector_daily (
     sector TEXT NOT NULL,
@@ -302,7 +320,7 @@ CREATE TABLE IF NOT EXISTS sector_daily (
 -- ④  快 照 層  (Snapshot)
 -- ═══════════════════════════════════════════
 
--- 22. 最新行情快照 (每日更新, 用於首頁列表; 不存放歷史)
+-- 23. 最新行情快照 (每日更新, 用於首頁列表; 不存放歷史)
 --     包含技術指標 + 法人籌碼 + 產業, 供列表/選股/排行直讀
 CREATE TABLE IF NOT EXISTS latest_prices (
     symbol TEXT NOT NULL PRIMARY KEY,
@@ -324,6 +342,7 @@ CREATE TABLE IF NOT EXISTS latest_prices (
     gross_margin REAL DEFAULT 0,
     operating_margin REAL DEFAULT 0,
     net_margin REAL DEFAULT 0,
+    debt_ratio REAL DEFAULT 0,        -- 負債比率 % (從 fundamentals 複製)
     -- 技術指標 (從 daily_indicators 複製)
     ma5 REAL DEFAULT 0,
     ma20 REAL DEFAULT 0,
@@ -339,7 +358,7 @@ CREATE TABLE IF NOT EXISTS latest_prices (
     FOREIGN KEY (symbol) REFERENCES stocks(symbol) ON DELETE CASCADE
 );
 
--- 23. 法人籌碼總覽快照 (每檔一列; 合併 7 張法人表最新資料)
+-- 24. 法人籌碼總覽快照 (每檔一列; 合併 8 張法人表最新資料)
 --     用途: 法人監控頁 → 直讀, 取代 7-table JOIN + Window function
 CREATE TABLE IF NOT EXISTS institutional_snapshot (
     symbol TEXT NOT NULL PRIMARY KEY,
@@ -376,12 +395,48 @@ CREATE TABLE IF NOT EXISTS institutional_snapshot (
     FOREIGN KEY (symbol) REFERENCES stocks(symbol) ON DELETE CASCADE
 );
 
--- 24. AI 分析報告快取
+-- 25. AI 分析報告快取
 CREATE TABLE IF NOT EXISTS ai_reports (
     symbol TEXT NOT NULL,
     date TEXT NOT NULL,
     report TEXT,
     PRIMARY KEY (symbol, date)
+);
+
+-- 26. 選股評分快照 (多策略評分匯總, 由 ETL/篩選引擎寫入)
+CREATE TABLE IF NOT EXISTS screener_scores (
+    symbol TEXT NOT NULL PRIMARY KEY,
+    date TEXT NOT NULL,
+    -- 各模型評分 (0~100)
+    fundamental_score REAL DEFAULT 0,
+    valuation_score REAL DEFAULT 0,
+    technical_score REAL DEFAULT 0,
+    chip_score REAL DEFAULT 0,
+    forensic_score REAL DEFAULT 0,
+    -- 加權總分
+    total_score REAL DEFAULT 0,
+    -- 信號等級
+    signal TEXT,                   -- 'STRONG_BUY' | 'BUY' | 'HOLD' | 'SELL'
+    FOREIGN KEY (symbol) REFERENCES stocks(symbol) ON DELETE CASCADE
+);
+
+-- 27. 回測結果 (策略回測引擎產出)
+CREATE TABLE IF NOT EXISTS backtest_results (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    strategy_name TEXT NOT NULL,    -- 策略名稱 (如 'foreign_3buy_t5')
+    run_date TEXT NOT NULL,         -- 回測執行日期
+    params TEXT,                    -- JSON 格式的策略參數
+    -- 績效指標
+    total_trades INTEGER,
+    win_rate REAL,                  -- 勝率 %
+    avg_return REAL,                -- 平均報酬 %
+    total_return REAL,              -- 累計報酬 %
+    max_drawdown REAL,              -- 最大回撤 %
+    sharpe_ratio REAL,              -- 夏普比率
+    profit_factor REAL,             -- 獲利因子
+    avg_holding_days REAL,          -- 平均持有天數
+    -- 原始交易明細 (JSON)
+    trades TEXT                     -- [{symbol, entry_date, exit_date, entry_price, exit_price, return_pct, exit_reason}]
 );
 
 -- ═══════════════════════════════════════════
@@ -408,6 +463,7 @@ CREATE INDEX IF NOT EXISTS idx_revenue_symbol ON monthly_revenue(symbol);
 -- 運算層
 CREATE INDEX IF NOT EXISTS idx_daily_ind_date ON daily_indicators(date);
 CREATE INDEX IF NOT EXISTS idx_daily_ind_symbol_date ON daily_indicators(symbol, date DESC);
+CREATE INDEX IF NOT EXISTS idx_market_index_date ON market_index(date DESC);
 CREATE INDEX IF NOT EXISTS idx_chip_feat_date ON chip_features(date);
 CREATE INDEX IF NOT EXISTS idx_tech_feat_symbol ON tech_features(symbol);
 CREATE INDEX IF NOT EXISTS idx_val_feat_symbol ON valuation_features(symbol);
@@ -428,3 +484,8 @@ CREATE INDEX IF NOT EXISTS idx_latest_revenue_yoy ON latest_prices(revenue_yoy D
 CREATE INDEX IF NOT EXISTS idx_latest_sector ON latest_prices(sector);
 CREATE INDEX IF NOT EXISTS idx_latest_foreign ON latest_prices(foreign_inv DESC);
 CREATE INDEX IF NOT EXISTS idx_inst_snap_symbol ON institutional_snapshot(symbol);
+
+-- 評分 & 回測
+CREATE INDEX IF NOT EXISTS idx_screener_total ON screener_scores(total_score DESC);
+CREATE INDEX IF NOT EXISTS idx_screener_signal ON screener_scores(signal);
+CREATE INDEX IF NOT EXISTS idx_backtest_strategy ON backtest_results(strategy_name, run_date DESC);

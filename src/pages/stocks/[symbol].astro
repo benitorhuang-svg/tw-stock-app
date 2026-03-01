@@ -8,6 +8,7 @@ import StockAnalysisHero from '../../components/molecules/StockAnalysisHero.astr
 import StockChartSection from '../../components/organisms/StockChartSection.astro';
 import TabBar from '../../components/organisms/TabBar.astro';
 import TabOverview from '../../components/organisms/TabOverview.astro';
+import TabSector from '../../components/organisms/TabSector.astro';
 import TabTechnical from '../../components/organisms/TabTechnical.astro';
 import TabChips from '../../components/organisms/TabChips.astro';
 import TabFundamentals from '../../components/organisms/TabFundamentals.astro';
@@ -108,17 +109,20 @@ const isNotFound = stockData.price === 0 && stockData.name === symbol;
                     />
 
                     {/* Chart & Matrix Sections (Organism) */}
-                    <StockChartSection stock={stockData} />
+                    <StockChartSection stock={stockData} priceData={priceHistory} />
 
                     {/* Deep Analysis Tabs */}
                     <div class="space-y-6">
                         <TabBar symbol={symbol} />
 
                         <div id="tab-content" class="min-h-[400px]">
-                            <div id="tab-overview">
-                                <TabOverview {...stockData} />
+                            <div id="tab-overview" data-tab-content="overview">
+                                <TabOverview {...stockData} priceData={priceHistory} />
                             </div>
-                            <div id="tab-technical" class="hidden">
+                            <div id="tab-sector" class="hidden" data-tab-content="sector">
+                                <TabSector symbol={symbol} sector={stockData.sector || ''} />
+                            </div>
+                            <div id="tab-technical" class="hidden" data-tab-content="technical">
                                 <TabTechnical
                                     symbol={symbol}
                                     price={stockData.price}
@@ -126,10 +130,10 @@ const isNotFound = stockData.price === 0 && stockData.name === symbol;
                                     priceData={priceHistory}
                                 />
                             </div>
-                            <div id="tab-chips" class="hidden">
+                            <div id="tab-forensic" class="hidden" data-tab-content="forensic">
                                 <TabChips symbol={symbol} price={stockData.price} />
                             </div>
-                            <div id="tab-fundamentals" class="hidden">
+                            <div id="tab-valuation" class="hidden" data-tab-content="valuation">
                                 <TabFundamentals
                                     symbol={symbol}
                                     pe={stockData.pe}
@@ -140,7 +144,7 @@ const isNotFound = stockData.price === 0 && stockData.name === symbol;
                                     priceData={priceHistory}
                                 />
                             </div>
-                            <div id="tab-alerts" class="hidden">
+                            <div id="tab-risk" class="hidden" data-tab-content="risk">
                                 <TabAlerts
                                     symbol={symbol}
                                     name={stockData.name}

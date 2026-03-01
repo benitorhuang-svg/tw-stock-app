@@ -90,6 +90,12 @@ try {
     DROP TABLE IF EXISTS dealer_details;
     DROP TABLE IF EXISTS market_breadth_history;
     DROP TABLE IF EXISTS daily_indicators;
+    DROP TABLE IF EXISTS market_index;
+    DROP TABLE IF EXISTS institutional_trend;
+    DROP TABLE IF EXISTS sector_daily;
+    DROP TABLE IF EXISTS institutional_snapshot;
+    DROP TABLE IF EXISTS screener_scores;
+    DROP TABLE IF EXISTS backtest_results;
 
     -- 股票基本資料
     CREATE TABLE stocks (
@@ -353,17 +359,32 @@ try {
         ma20_breadth REAL,
         ma60_breadth REAL,
         ma120_breadth REAL,
+        adl INTEGER DEFAULT 0,
         total_stocks INTEGER
     );
+
+    -- 大盤加權指數 TAIEX (Yahoo ^TWII)
+    CREATE TABLE market_index (
+        date TEXT PRIMARY KEY,
+        open REAL,
+        high REAL,
+        low REAL,
+        close REAL,
+        volume INTEGER
+    );
+
+    CREATE INDEX idx_market_index_date ON market_index(date DESC);
 
     -- 每日個股指標歷史 (分析數據 - 運算層)
     CREATE TABLE daily_indicators (
         symbol TEXT NOT NULL,
         date TEXT NOT NULL,
         ma5 REAL,
+        ma10 REAL,
         ma20 REAL,
         ma60 REAL,
         ma120 REAL,
+        atr14 REAL,
         rsi14 REAL,
         macd_diff REAL,
         macd_dea REAL,
@@ -374,6 +395,96 @@ try {
 
     CREATE INDEX idx_daily_ind_date ON daily_indicators(date);
     CREATE INDEX idx_daily_ind_symbol_date ON daily_indicators(symbol, date DESC);
+
+    -- 法人資金趨勢 (ETL 聚合)
+    CREATE TABLE institutional_trend (
+        date TEXT PRIMARY KEY,
+        total_foreign INTEGER,
+        total_trust INTEGER,
+        total_dealer INTEGER,
+        total_net INTEGER,
+        avg_change_pct REAL,
+        buy_count INTEGER,
+        sell_count INTEGER
+    );
+
+    -- 產業每日彙總 (ETL 聚合)
+    CREATE TABLE sector_daily (
+        sector TEXT NOT NULL,
+        date TEXT NOT NULL,
+        stock_count INTEGER,
+        avg_change_pct REAL,
+        total_volume INTEGER,
+        total_turnover REAL,
+        up_count INTEGER,
+        down_count INTEGER,
+        top_gainer_symbol TEXT,
+        top_gainer_pct REAL,
+        avg_pe REAL,
+        avg_pb REAL,
+        avg_yield REAL,
+        PRIMARY KEY (sector, date)
+    );
+
+    -- 法人籌碼總覽快照 (ETL)
+    CREATE TABLE institutional_snapshot (
+        symbol TEXT NOT NULL PRIMARY KEY,
+        date TEXT,
+        foreign_inv INTEGER DEFAULT 0,
+        invest_trust INTEGER DEFAULT 0,
+        dealer INTEGER DEFAULT 0,
+        margin_bal INTEGER DEFAULT 0,
+        margin_net INTEGER DEFAULT 0,
+        short_bal INTEGER DEFAULT 0,
+        short_net INTEGER DEFAULT 0,
+        total_shareholders INTEGER,
+        large_holder_1000_ratio REAL,
+        small_holder_under_10_ratio REAL,
+        gov_net_buy INTEGER DEFAULT 0,
+        gov_net_amount REAL DEFAULT 0,
+        main_net_shares INTEGER DEFAULT 0,
+        main_concentration REAL DEFAULT 0,
+        director_ratio REAL DEFAULT 0,
+        pawn_ratio REAL DEFAULT 0,
+        insider_change INTEGER DEFAULT 0,
+        lending_balance INTEGER DEFAULT 0,
+        short_selling_balance INTEGER DEFAULT 0,
+        prop_buy INTEGER DEFAULT 0,
+        hedge_buy INTEGER DEFAULT 0
+    );
+
+    -- 選股評分快照
+    CREATE TABLE screener_scores (
+        symbol TEXT NOT NULL PRIMARY KEY,
+        date TEXT NOT NULL,
+        fundamental_score REAL DEFAULT 0,
+        valuation_score REAL DEFAULT 0,
+        technical_score REAL DEFAULT 0,
+        chip_score REAL DEFAULT 0,
+        forensic_score REAL DEFAULT 0,
+        total_score REAL DEFAULT 0,
+        signal TEXT
+    );
+
+    -- 回測結果
+    CREATE TABLE backtest_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        strategy_name TEXT NOT NULL,
+        run_date TEXT NOT NULL,
+        params TEXT,
+        total_trades INTEGER,
+        win_rate REAL,
+        avg_return REAL,
+        total_return REAL,
+        max_drawdown REAL,
+        sharpe_ratio REAL,
+        profit_factor REAL,
+        avg_holding_days REAL,
+        trades TEXT
+    );
+
+    CREATE INDEX idx_inst_trend_date ON institutional_trend(date);
+    CREATE INDEX idx_sector_daily_date ON sector_daily(date);
 `);
 } catch (e) {
     console.error(`❌ SQL 初始化失敗: ${e.message}`);
@@ -484,6 +595,17 @@ if (fs.existsSync(LATEST_PRICES_JSON)) {
 
     insertLatestBatch(latestPrices);
     console.log(`✅ 已匯入 ${Object.keys(latestPrices).length} 檔股票之最新行情\n`);
+}
+
+// 確保所有 stocks 都有 latest_prices 列 (含尚無 CSV 的上櫃股)
+{
+    const inserted = db.prepare(`
+        INSERT OR IGNORE INTO latest_prices (symbol, date)
+        SELECT symbol, '' FROM stocks WHERE symbol NOT IN (SELECT symbol FROM latest_prices)
+    `).run();
+    if (inserted.changes > 0) {
+        console.log(`📌 已為 ${inserted.changes} 檔缺少行情的股票建立 latest_prices 佔位列\n`);
+    }
 }
 
 // 載入每月統計 (補齊 PE, Yield 並存入估值歷史)
@@ -638,6 +760,14 @@ if (fs.existsSync(CHIPS_DIR)) {
         VALUES (?, ?, ?, ?, ?)
     `);
 
+    // 日期格式正規化: YYYYMMDD → YYYY-MM-DD
+    function normalizeDate(raw) {
+        if (/^\d{8}$/.test(raw)) {
+            return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
+        }
+        return raw; // 已是 YYYY-MM-DD 或其他格式
+    }
+
     const chipsBatch = db.transaction((data, date) => {
         for (const item of data) {
             insertChips.run(item.symbol, date, item.foreign_inv, item.invest_trust, item.dealer);
@@ -645,11 +775,12 @@ if (fs.existsSync(CHIPS_DIR)) {
     });
 
     for (const file of files) {
-        const date = file.replace('.json', '');
+        const rawDate = file.replace('.json', '');
+        const date = normalizeDate(rawDate);
         const data = JSON.parse(fs.readFileSync(path.join(CHIPS_DIR, file), 'utf-8'));
         chipsBatch(data, date);
     }
-    console.log(`✅ 已載入 ${files.length} 個日期的籌碼數據\n`);
+    console.log(`✅ 已載入 ${files.length} 個日期的籌碼數據 (日期格式已正規化為 YYYY-MM-DD)\n`);
 }
 
 // Schema generation and data initialization complete
@@ -787,6 +918,28 @@ if (fs.existsSync(PRICES_DIR)) {
     console.log('✅ 技術面指標計算完成');
 } else {
     console.log('⚠️ 未找到 prices 資料夾，跳過 CSV 歷史價格匯入');
+}
+
+console.log('\n');
+
+// ===== 匯入大盤指數 (market_index) =====
+const MARKET_INDEX_JSON = path.join(DATA_DIR, 'market_index.json');
+if (fs.existsSync(MARKET_INDEX_JSON)) {
+    console.log('📊 正在匯入 TAIEX 大盤指數...');
+    const indexData = JSON.parse(fs.readFileSync(MARKET_INDEX_JSON, 'utf-8'));
+    const insertIndex = db.prepare(
+        'INSERT OR REPLACE INTO market_index (date, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?)'
+    );
+    const batchIndex = db.transaction(rows => {
+        for (const r of rows) {
+            insertIndex.run(r.date, r.open, r.high, r.low, r.close, r.volume);
+        }
+    });
+    batchIndex(indexData);
+    console.log(`✅ TAIEX: ${indexData.length} 筆`);
+    totalRecords += indexData.length;
+} else {
+    console.log('⚠️ 未找到 market_index.json，跳過大盤指數匯入');
 }
 
 console.log('\n');

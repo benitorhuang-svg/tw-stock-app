@@ -2,6 +2,7 @@
 import MainTerminal from '../layouts/MainTerminal.astro';
 import DashboardController from '../components/organisms/DashboardController.svelte';
 import SentimentTrendModal from '../components/organisms/SentimentTrendModal.astro';
+import HeaderFilterToggle from '../components/atoms/HeaderFilterToggle.svelte';
 
 /**
  * Lightweight SSR: Only compute summary numbers (1 SQL row).
@@ -96,9 +97,10 @@ try {
 ---
 
 <MainTerminal title="市場漲幅" fullWidth={true}>
+    <HeaderFilterToggle slot="header-actions" client:load />
     <div class="relative pb-20 pt-0 px-4 lg:px-6">
         <DashboardController
-            client:idle
+            client:load
             upCount={upCount}
             downCount={downCount}
             flatCount={flatCount}

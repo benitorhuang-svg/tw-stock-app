@@ -13,11 +13,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_FILE = path.join(__dirname, '..', 'public', 'data', 'financials.json');
 
 // 使用多個 OpenAPI 端點來獲取最完整的「最新財報批次」
+// TWSE = 上市, TPEx = 上櫃
 const ENDPOINTS = [
+    // ── TWSE 上市 ──
     'https://openapi.twse.com.tw/v1/opendata/t187ap06_L_ci', // 損益表摘要
     'https://openapi.twse.com.tw/v1/opendata/t187ap17_L', // 獲利能力分析
     'https://openapi.twse.com.tw/v1/opendata/t187ap14_L', // 每股盈餘
     'https://openapi.twse.com.tw/v1/opendata/t187ap07_L_ci', // 資產負債表 (一般業)
+    // ── TPEx 上櫃 ──
+    'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap06_O', // 上櫃損益表
+    'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap17_O', // 上櫃獲利能力
+    'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap14_O', // 上櫃每股盈餘
+    'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap07_O', // 上櫃資產負債表
 ];
 
 const REQUEST_TIMEOUT = 10000;
@@ -50,6 +57,11 @@ async function main() {
     for (const url of ENDPOINTS) {
         console.log(`   正在抓取: ${url.split('/').pop()}`);
         const data = await fetchWithRetry(url);
+
+        if (!Array.isArray(data) || data.length === 0) {
+            console.log(`   ⚠️ 無資料或解析失敗: ${url.split('/').pop()}`);
+            continue;
+        }
 
         data.forEach(item => {
             const symbol = item['公司代號']?.trim();

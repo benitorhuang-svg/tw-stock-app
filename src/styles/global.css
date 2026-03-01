@@ -260,6 +260,12 @@
     }
 }
 
+@keyframes sub-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+.sub-running { animation: sub-pulse 1.5s ease-in-out infinite; }
+
 @keyframes nav-glow {
     0%,
     100% {
