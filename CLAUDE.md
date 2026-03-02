@@ -1,6 +1,6 @@
 ﻿# TW-stock Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-02-23
+Auto-generated from all feature plans. Last updated: 2026-03-02
 
 ## Active Technologies
 
@@ -40,4 +40,5 @@ TypeScript / Node.js 20+: Follow standard conventions
 
 - 002-analytics-engine: Added 策略回測引擎 (Strategy Backtesting Engine)
 - 005-ui-layout: Added 策略回測分頁 (Strategy Backtest Tab)
+- 006-ml-transformer: Added Transformer 選股策略模型 + TradeMemory 三層記憶系統 (L1/L2/L3)
     <!-- MANUAL ADDITIONS END -->

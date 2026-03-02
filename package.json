@@ -18,6 +18,9 @@
         "fetch:all": "npm run fetch:list && npm run fetch:revenue && npm run fetch:stats && npm run fetch:financials && npm run fetch:chips",
         "build-db": "node scripts/build-sqlite-db.js && node scripts/import-forensic.mjs && node scripts/etl/generate-all-features.mjs && node scripts/etl/migrate-to-analysis-tables.mjs",
         "refresh-db": "npm run fetch:all && npm run build-db",
+        "ml:train": "npx tsx scripts/ml/train.ts",
+        "ml:predict": "npx tsx scripts/ml/predict.ts",
+        "ml:reflect": "npx tsx scripts/ml/reflect.ts",
         "format": "prettier --write .",
         "prettify": "npm run format"
     },
@@ -27,6 +30,7 @@
         "@astrojs/svelte": "^7.2.5",
         "@tailwindcss/typography": "^0.5.19",
         "@tailwindcss/vite": "^4.2.0",
+        "@tensorflow/tfjs-node": "^4.22.0",
         "astro": "^5.16.15",
         "better-sqlite3": "^12.6.2",
         "chartgpu": "^0.1.6",

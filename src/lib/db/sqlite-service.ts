@@ -244,3 +244,17 @@ export class SqliteService {
 
 // 導出單例
 export const dbService = SqliteService.getInstance();
+
+/**
+ * Writable DB helper — opens a separate read-write connection
+ * Used ONLY for AI scoring persistence (screener_scores table).
+ * Callers must close the returned instance when done.
+ */
+export function openWritableDb(): InstanceType<typeof Database> | null {
+    const dbPath = path.resolve(process.cwd(), 'public', 'data', 'stocks.db');
+    if (!fs.existsSync(dbPath)) return null;
+    const db = new Database(dbPath, { fileMustExist: true });
+    db.pragma('journal_mode = WAL');
+    db.pragma('busy_timeout = 5000');
+    return db;
+}

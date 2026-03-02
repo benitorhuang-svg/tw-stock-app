@@ -3,6 +3,7 @@
     import QuickNav from '../molecules/QuickNav.svelte';
     import AnalysisAccordion from '../organisms/AnalysisAccordion.svelte';
     import ScreenerResults from './ScreenerResults.svelte';
+    import AiScreenerResults from './AiScreenerResults.svelte';
     import ForensicFilteringMatrix from './ForensicFilteringMatrix.svelte';
     import BacktestHeatmap from '../molecules/BacktestHeatmap.svelte';
 
@@ -24,9 +25,10 @@
         matrix: false,
         backtest: false,
         results: true,
+        'ai-results': false,
     });
 
-    const NAV_ORDER = ['presets', 'matrix', 'backtest', 'results'];
+    const NAV_ORDER = ['presets', 'matrix', 'backtest', 'results', 'ai-results'];
 
     function toggleSection(key: string) {
         expandedSections[key] = !expandedSections[key];
@@ -107,7 +109,31 @@
         { id: 'matrix', label: '過濾矩陣', icon: '📊' },
         { id: 'backtest', label: '回測表現', icon: '🔍' },
         { id: 'results', label: '篩選結果', icon: '🧬' },
+        { id: 'ai-results', label: 'AI選股結果', icon: '🤖' },
     ];
+
+    // When "執行AI選股" button is clicked, auto-open the AI accordion
+    onMount(() => {
+        const openAiPanel = () => {
+            if (!expandedSections['ai-results']) {
+                expandedSections['ai-results'] = true;
+            }
+            setTimeout(() => {
+                const el = document.getElementById('section-ai-results');
+                const scrollContainer = document.getElementById('main-workspace');
+                if (el && scrollContainer) {
+                    const rect = el.getBoundingClientRect();
+                    const containerRect = scrollContainer.getBoundingClientRect();
+                    scrollContainer.scrollBy({
+                        top: rect.top - containerRect.top - 64,
+                        behavior: 'smooth',
+                    });
+                }
+            }, 200);
+        };
+        window.addEventListener('tw-ai-run', openAiPanel);
+        return () => window.removeEventListener('tw-ai-run', openAiPanel);
+    });
 </script>
 
 <div class="flex flex-col lg:flex-row gap-4 items-start relative pb-10 pt-4">
@@ -234,6 +260,35 @@
                     </div>
                 </header>
                 <ScreenerResults />
+            </div>
+        </AnalysisAccordion>
+
+        <!-- ⑤ AI選股結果 ( AI INFERENCE RESULTS ) -->
+        <AnalysisAccordion
+            id="ai-results"
+            icon="🤖"
+            title="AI 選股結果 ( AI INFERENCE RESULTS )"
+            isOpen={expandedSections['ai-results']}
+            onToggle={() => toggleSection('ai-results')}
+        >
+            <div class="glass-card overflow-hidden border border-border/20 shadow-elevated">
+                <header
+                    class="px-6 py-4 border-b border-border/10 bg-surface/30 flex items-center justify-between"
+                >
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="text-[10px] font-mono text-text-muted uppercase tracking-[0.2em]"
+                            >Transformer_Signal_Stream</span
+                        >
+                        <div class="h-[1px] w-12 bg-border/20"></div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-[9px] font-mono text-accent/60 uppercase tracking-wider">Model: TF-Encoder-v1</span>
+                    </div>
+                </header>
+                <div class="p-4">
+                    <AiScreenerResults />
+                </div>
             </div>
         </AnalysisAccordion>
     </main>

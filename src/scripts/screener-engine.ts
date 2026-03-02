@@ -172,4 +172,9 @@ function renderResults(results: ScreenerApiResult[]) {
 document.addEventListener('astro:page-load', () => {
     setupScreener();
     execute_entity_isolation();
+
+    // AI Screener button → dispatch event to AiScreenerResults.svelte
+    document.getElementById('ai-screener-btn')?.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('tw-ai-run'));
+    });
 });

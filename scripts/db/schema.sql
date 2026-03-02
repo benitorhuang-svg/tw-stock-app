@@ -1,7 +1,7 @@
 -- M1: TW-Stock Forensic Ecosystem Schema (stocks.db)
--- Last updated: 2026-02-28
+-- Last updated: 2026-03-02
 --
--- 四層分離架構 (Raw → Computed → Aggregated → Snapshot):
+-- 五層分離架構 (Raw → Computed → Aggregated → Snapshot → ML Memory):
 --
 --   ① 原始層 (Raw)       : stocks, price_history, chips, margin_short,
 --                           shareholder_distribution, government_chips,
@@ -19,10 +19,14 @@
 --                           institutional_snapshot,
 --                           screener_scores, backtest_results
 --
+--   ⑤ ML 記憶層 (Trade Memory) : trade_journal, trade_patterns,
+--                                strategy_adjustments, ml_models
+--
 -- 設計原則:
 --   • 各分頁讀取快照/聚合層 → 零 JOIN, 毫秒級回應
 --   • 運算層由 ETL 離線填入 → 不占線上查詢時間
 --   • 原始層僅供 ETL 與資料探索使用
+--   • ML 記憶層儲存模型預測、反思模式與策略調整
 
 -- ═══════════════════════════════════════════
 -- ①  原 始 層  (Raw Data)
@@ -489,3 +493,64 @@ CREATE INDEX IF NOT EXISTS idx_inst_snap_symbol ON institutional_snapshot(symbol
 CREATE INDEX IF NOT EXISTS idx_screener_total ON screener_scores(total_score DESC);
 CREATE INDEX IF NOT EXISTS idx_screener_signal ON screener_scores(signal);
 CREATE INDEX IF NOT EXISTS idx_backtest_strategy ON backtest_results(strategy_name, run_date DESC);
+
+-- ═══════════════════════════════════════════
+-- ⑤  ML 模型記憶層  (Trade Memory — L1/L2/L3)
+-- ═══════════════════════════════════════════
+-- 概念借鏡: TradeMemory Protocol (https://github.com/mnemox-ai/tradememory-protocol)
+-- 以 TypeScript + SQLite 原生實作，無需 Python
+
+-- 28. L1: 交易日誌 (Hot Memory)
+CREATE TABLE IF NOT EXISTS trade_journal (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    model_id TEXT NOT NULL,
+    symbol TEXT NOT NULL,
+    signal_date TEXT NOT NULL,
+    signal TEXT NOT NULL CHECK (signal IN ('BUY','HOLD','SELL')),
+    confidence REAL NOT NULL,
+    features_json TEXT,
+    reasoning TEXT,
+    outcome_return REAL,
+    outcome_date TEXT,
+    is_correct INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_journal_model ON trade_journal(model_id);
+CREATE INDEX IF NOT EXISTS idx_journal_date ON trade_journal(signal_date DESC);
+
+-- 29. L2: 交易模式 (Warm Memory)
+CREATE TABLE IF NOT EXISTS trade_patterns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pattern_name TEXT NOT NULL UNIQUE,
+    condition_json TEXT NOT NULL,
+    signal_type TEXT,
+    win_rate REAL,
+    avg_return REAL,
+    sample_count INTEGER DEFAULT 0,
+    discovered_at TEXT DEFAULT (datetime('now')),
+    status TEXT DEFAULT 'active' CHECK (status IN ('active','deprecated'))
+);
+
+-- 30. L3: 策略調整 (Cold Memory)
+CREATE TABLE IF NOT EXISTS strategy_adjustments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pattern_id INTEGER,
+    adjustment_type TEXT NOT NULL,
+    adjustment_json TEXT NOT NULL,
+    reason TEXT,
+    applied_at TEXT DEFAULT (datetime('now')),
+    status TEXT DEFAULT 'proposed' CHECK (status IN ('proposed','approved','applied','rejected')),
+    FOREIGN KEY (pattern_id) REFERENCES trade_patterns(id)
+);
+CREATE INDEX IF NOT EXISTS idx_adj_status ON strategy_adjustments(status);
+
+-- 31. ML 模型後設資料
+CREATE TABLE IF NOT EXISTS ml_models (
+    model_id TEXT PRIMARY KEY,
+    model_name TEXT NOT NULL,
+    version INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now')),
+    config_json TEXT,
+    metrics_json TEXT,
+    norm_stats_json TEXT,
+    weights_path TEXT
+);
