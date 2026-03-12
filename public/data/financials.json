@@ -1,5 +1,37 @@
 [
   {
+    "symbol": "1101",
+    "name": "台泥",
+    "year": "114",
+    "quarter": "4",
+    "eps": -1.6,
+    "grossProfit": 27557589,
+    "operatingIncome": 10077592,
+    "grossMargin": 18.4,
+    "operatingMargin": 6.73,
+    "netMargin": -7.92,
+    "netIncome": -11862586,
+    "totalAssets": 588835474,
+    "totalLiabilities": 296129659,
+    "debtRatio": 50.29
+  },
+  {
+    "symbol": "1103",
+    "name": "嘉泥",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.84,
+    "grossProfit": 487407,
+    "operatingIncome": -80193,
+    "grossMargin": 16.16,
+    "operatingMargin": -2.66,
+    "netMargin": 18.8,
+    "netIncome": 566896,
+    "totalAssets": 32617313,
+    "totalLiabilities": 13894261,
+    "debtRatio": 42.6
+  },
+  {
     "symbol": "1215",
     "name": "卜蜂",
     "year": "114",
@@ -64,6 +96,22 @@
     "debtRatio": 38.63
   },
   {
+    "symbol": "1233",
+    "name": "天仁",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.75,
+    "grossProfit": 1291274,
+    "operatingIncome": 70720,
+    "grossMargin": 59.76,
+    "operatingMargin": 3.27,
+    "netMargin": 3.13,
+    "netIncome": 67730,
+    "totalAssets": 2200692,
+    "totalLiabilities": 843199,
+    "debtRatio": 38.32
+  },
+  {
     "symbol": "1236",
     "name": "宏亞",
     "year": "114",
@@ -96,6 +144,38 @@
     "debtRatio": 34.85
   },
   {
+    "symbol": "1303",
+    "name": "南亞",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.57,
+    "grossProfit": 21599221,
+    "operatingIncome": 3703579,
+    "grossMargin": 8.31,
+    "operatingMargin": 1.42,
+    "netMargin": 1.95,
+    "netIncome": 5065640,
+    "totalAssets": 610598465,
+    "totalLiabilities": 238799500,
+    "debtRatio": 39.11
+  },
+  {
+    "symbol": "1305",
+    "name": "華夏",
+    "year": "114",
+    "quarter": "4",
+    "eps": -1.58,
+    "grossProfit": -349915,
+    "operatingIncome": -1259942,
+    "grossMargin": -3.79,
+    "operatingMargin": -13.66,
+    "netMargin": -10.65,
+    "netIncome": -982229,
+    "totalAssets": 17427129,
+    "totalLiabilities": 9188787,
+    "debtRatio": 52.73
+  },
+  {
     "symbol": "1310",
     "name": "台苯",
     "year": "114",
@@ -110,6 +190,22 @@
     "totalAssets": 9961760,
     "totalLiabilities": 2433824,
     "debtRatio": 24.43
+  },
+  {
+    "symbol": "1321",
+    "name": "大洋",
+    "year": "114",
+    "quarter": "4",
+    "eps": -1.25,
+    "grossProfit": 259339,
+    "operatingIncome": -133017,
+    "grossMargin": 7.21,
+    "operatingMargin": -3.7,
+    "netMargin": -7.67,
+    "netIncome": -275549,
+    "totalAssets": 11382310,
+    "totalLiabilities": 5690429,
+    "debtRatio": 49.99
   },
   {
     "symbol": "1323",
@@ -240,6 +336,22 @@
     "debtRatio": 67.98
   },
   {
+    "symbol": "1439",
+    "name": "雋揚",
+    "year": "114",
+    "quarter": "4",
+    "eps": 3.21,
+    "grossProfit": 217256,
+    "operatingIncome": 121825,
+    "grossMargin": 26.72,
+    "operatingMargin": 14.98,
+    "netMargin": 41.94,
+    "netIncome": 341016,
+    "totalAssets": 5901008,
+    "totalLiabilities": 2450868,
+    "debtRatio": 41.53
+  },
+  {
     "symbol": "1440",
     "name": "南紡",
     "year": "114",
@@ -304,6 +416,38 @@
     "debtRatio": 24.82
   },
   {
+    "symbol": "1470",
+    "name": "大統新創",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.78,
+    "grossProfit": 194404,
+    "operatingIncome": 83522,
+    "grossMargin": 24.19,
+    "operatingMargin": 10.39,
+    "netMargin": 8.37,
+    "netIncome": 67265,
+    "totalAssets": 1160341,
+    "totalLiabilities": 146852,
+    "debtRatio": 12.66
+  },
+  {
+    "symbol": "1471",
+    "name": "首利",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.03,
+    "grossProfit": 15573,
+    "operatingIncome": -95792,
+    "grossMargin": 8.53,
+    "operatingMargin": -52.45,
+    "netMargin": 2.75,
+    "netIncome": 5023,
+    "totalAssets": 1677600,
+    "totalLiabilities": 127476,
+    "debtRatio": 7.6
+  },
+  {
     "symbol": "1472",
     "name": "三洋實業",
     "year": "114",
@@ -352,6 +496,38 @@
     "debtRatio": 15.41
   },
   {
+    "symbol": "1477",
+    "name": "聚陽",
+    "year": "114",
+    "quarter": "4",
+    "eps": 14.65,
+    "grossProfit": 8563818,
+    "operatingIncome": 4680502,
+    "grossMargin": 24.87,
+    "operatingMargin": 13.6,
+    "netMargin": 10.66,
+    "netIncome": 3669397,
+    "totalAssets": 23904412,
+    "totalLiabilities": 9730259,
+    "debtRatio": 40.7
+  },
+  {
+    "symbol": "1513",
+    "name": "中興電",
+    "year": "114",
+    "quarter": "4",
+    "eps": 8.07,
+    "grossProfit": 7067749,
+    "operatingIncome": 4976856,
+    "grossMargin": 25.75,
+    "operatingMargin": 18.13,
+    "netMargin": 14.54,
+    "netIncome": 3990342,
+    "totalAssets": 47698790,
+    "totalLiabilities": 26812433,
+    "debtRatio": 56.21
+  },
+  {
     "symbol": "1515",
     "name": "力山",
     "year": "114",
@@ -366,6 +542,22 @@
     "totalAssets": 8272858,
     "totalLiabilities": 4284874,
     "debtRatio": 51.79
+  },
+  {
+    "symbol": "1516",
+    "name": "川飛",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.04,
+    "grossProfit": 4603,
+    "operatingIncome": -11949,
+    "grossMargin": 5.84,
+    "operatingMargin": -15.16,
+    "netMargin": 2.28,
+    "netIncome": 1799,
+    "totalAssets": 208908,
+    "totalLiabilities": 2228,
+    "debtRatio": 1.07
   },
   {
     "symbol": "1524",
@@ -432,6 +624,22 @@
     "debtRatio": 47.39
   },
   {
+    "symbol": "1539",
+    "name": "巨庭",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.21,
+    "grossProfit": 126821,
+    "operatingIncome": 31903,
+    "grossMargin": 9.74,
+    "operatingMargin": 2.45,
+    "netMargin": 1.04,
+    "netIncome": 13605,
+    "totalAssets": 2148107,
+    "totalLiabilities": 551193,
+    "debtRatio": 25.66
+  },
+  {
     "symbol": "1540",
     "name": "喬福",
     "year": "114",
@@ -494,6 +702,22 @@
     "totalAssets": 18222616,
     "totalLiabilities": 9443435,
     "debtRatio": 51.82
+  },
+  {
+    "symbol": "1568",
+    "name": "倉佑",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.36,
+    "grossProfit": 340781,
+    "operatingIncome": 165013,
+    "grossMargin": 32.38,
+    "operatingMargin": 15.68,
+    "netMargin": 13.2,
+    "netIncome": 138918,
+    "totalAssets": 2380321,
+    "totalLiabilities": 353630,
+    "debtRatio": 14.86
   },
   {
     "symbol": "1582",
@@ -560,6 +784,54 @@
     "debtRatio": 41.96
   },
   {
+    "symbol": "1608",
+    "name": "華榮",
+    "year": "114",
+    "quarter": "4",
+    "eps": 5.5,
+    "grossProfit": 1174864,
+    "operatingIncome": 923963,
+    "grossMargin": 10.37,
+    "operatingMargin": 8.15,
+    "netMargin": 21.27,
+    "netIncome": 2409693,
+    "totalAssets": 16533902,
+    "totalLiabilities": 5811185,
+    "debtRatio": 35.15
+  },
+  {
+    "symbol": "1617",
+    "name": "榮星",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.68,
+    "grossProfit": 243007,
+    "operatingIncome": -932,
+    "grossMargin": 7.23,
+    "operatingMargin": -0.03,
+    "netMargin": 3.3,
+    "netIncome": 110834,
+    "totalAssets": 3369903,
+    "totalLiabilities": 1029284,
+    "debtRatio": 30.54
+  },
+  {
+    "symbol": "1618",
+    "name": "合機",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.21,
+    "grossProfit": 911151,
+    "operatingIncome": 752130,
+    "grossMargin": 18.92,
+    "operatingMargin": 15.62,
+    "netMargin": 16.83,
+    "netIncome": 810406,
+    "totalAssets": 8440211,
+    "totalLiabilities": 1845966,
+    "debtRatio": 21.87
+  },
+  {
     "symbol": "1707",
     "name": "葡萄王",
     "year": "114",
@@ -590,6 +862,22 @@
     "totalAssets": 15370664,
     "totalLiabilities": 6742216,
     "debtRatio": 43.86
+  },
+  {
+    "symbol": "1714",
+    "name": "和桐",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.5,
+    "grossProfit": 2505997,
+    "operatingIncome": 1257472,
+    "grossMargin": 10.43,
+    "operatingMargin": 5.23,
+    "netMargin": 5,
+    "netIncome": 1199995,
+    "totalAssets": 24999031,
+    "totalLiabilities": 7746106,
+    "debtRatio": 30.99
   },
   {
     "symbol": "1720",
@@ -640,6 +928,22 @@
     "debtRatio": 31.68
   },
   {
+    "symbol": "1727",
+    "name": "中華化",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.04,
+    "grossProfit": 216035,
+    "operatingIncome": 1009,
+    "grossMargin": 10.97,
+    "operatingMargin": 0.05,
+    "netMargin": 0.26,
+    "netIncome": 5109,
+    "totalAssets": 3512963,
+    "totalLiabilities": 1418940,
+    "debtRatio": 40.39
+  },
+  {
     "symbol": "1730",
     "name": "花仙子",
     "year": "114",
@@ -670,6 +974,22 @@
     "totalAssets": 3237440,
     "totalLiabilities": 1074509,
     "debtRatio": 33.19
+  },
+  {
+    "symbol": "1735",
+    "name": "日勝化",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.78,
+    "grossProfit": 417655,
+    "operatingIncome": 52216,
+    "grossMargin": 18.13,
+    "operatingMargin": 2.27,
+    "netMargin": 3.37,
+    "netIncome": 77624,
+    "totalAssets": 2955375,
+    "totalLiabilities": 1402979,
+    "debtRatio": 47.47
   },
   {
     "symbol": "1736",
@@ -720,6 +1040,22 @@
     "debtRatio": 34.88
   },
   {
+    "symbol": "1760",
+    "name": "寶齡富錦",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.22,
+    "grossProfit": 1116851,
+    "operatingIncome": 307848,
+    "grossMargin": 54.13,
+    "operatingMargin": 14.92,
+    "netMargin": 9.22,
+    "netIncome": 190169,
+    "totalAssets": 3226687,
+    "totalLiabilities": 1272025,
+    "debtRatio": 39.42
+  },
+  {
     "symbol": "1773",
     "name": "勝一",
     "year": "114",
@@ -766,6 +1102,22 @@
     "totalAssets": 11857725,
     "totalLiabilities": 1332988,
     "debtRatio": 11.24
+  },
+  {
+    "symbol": "1805",
+    "name": "寶徠",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.2,
+    "grossProfit": 83442,
+    "operatingIncome": 27275,
+    "grossMargin": 29.28,
+    "operatingMargin": 9.57,
+    "netMargin": 9.16,
+    "netIncome": 26117,
+    "totalAssets": 2002298,
+    "totalLiabilities": 375578,
+    "debtRatio": 18.76
   },
   {
     "symbol": "1808",
@@ -816,6 +1168,22 @@
     "debtRatio": 49.64
   },
   {
+    "symbol": "1909",
+    "name": "榮成",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.39,
+    "grossProfit": 4403899,
+    "operatingIncome": -13385,
+    "grossMargin": 9.85,
+    "operatingMargin": -0.03,
+    "netMargin": -1.17,
+    "netIncome": -522212,
+    "totalAssets": 68753224,
+    "totalLiabilities": 48426543,
+    "debtRatio": 70.44
+  },
+  {
     "symbol": "2002",
     "name": "中鋼",
     "year": "114",
@@ -846,6 +1214,38 @@
     "totalAssets": 51997209,
     "totalLiabilities": 17534863,
     "debtRatio": 33.72
+  },
+  {
+    "symbol": "2008",
+    "name": "高興昌",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.68,
+    "grossProfit": 305475,
+    "operatingIncome": 161577,
+    "grossMargin": 16.8,
+    "operatingMargin": 8.89,
+    "netMargin": 7.15,
+    "netIncome": 130022,
+    "totalAssets": 8234382,
+    "totalLiabilities": 4494272,
+    "debtRatio": 54.58
+  },
+  {
+    "symbol": "2009",
+    "name": "第一銅",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.34,
+    "grossProfit": -11771,
+    "operatingIncome": -75271,
+    "grossMargin": -0.41,
+    "operatingMargin": -2.59,
+    "netMargin": 4.18,
+    "netIncome": 121501,
+    "totalAssets": 11625222,
+    "totalLiabilities": 1911308,
+    "debtRatio": 16.44
   },
   {
     "symbol": "2012",
@@ -974,6 +1374,22 @@
     "totalAssets": 28718181,
     "totalLiabilities": 16261307,
     "debtRatio": 56.62
+  },
+  {
+    "symbol": "2032",
+    "name": "新鋼",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.56,
+    "grossProfit": 126384,
+    "operatingIncome": 24965,
+    "grossMargin": 4.16,
+    "operatingMargin": 0.82,
+    "netMargin": 2.4,
+    "netIncome": 73108,
+    "totalAssets": 2164447,
+    "totalLiabilities": 411887,
+    "debtRatio": 19.03
   },
   {
     "symbol": "2033",
@@ -1136,6 +1552,14 @@
     "debtRatio": 30.18
   },
   {
+    "symbol": "2207",
+    "name": "和泰汽車股份有限公司",
+    "year": "114",
+    "quarter": "4",
+    "eps": 33.93,
+    "netIncome": 22469167
+  },
+  {
     "symbol": "2208",
     "name": "台船",
     "year": "114",
@@ -1248,6 +1672,22 @@
     "debtRatio": 56.25
   },
   {
+    "symbol": "2302",
+    "name": "麗正",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.49,
+    "grossProfit": 309798,
+    "operatingIncome": 117164,
+    "grossMargin": 36.63,
+    "operatingMargin": 13.85,
+    "netMargin": 9.68,
+    "netIncome": 81873,
+    "totalAssets": 2606140,
+    "totalLiabilities": 797986,
+    "debtRatio": 30.62
+  },
+  {
     "symbol": "2303",
     "name": "聯電",
     "year": "114",
@@ -1262,6 +1702,22 @@
     "totalAssets": 578996009,
     "totalLiabilities": 199140569,
     "debtRatio": 34.39
+  },
+  {
+    "symbol": "2305",
+    "name": "全友",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.2,
+    "grossProfit": 332293,
+    "operatingIncome": 7312,
+    "grossMargin": 44.52,
+    "operatingMargin": 0.98,
+    "netMargin": 11.82,
+    "netIncome": 88222,
+    "totalAssets": 3037162,
+    "totalLiabilities": 634001,
+    "debtRatio": 20.87
   },
   {
     "symbol": "2308",
@@ -1408,6 +1864,38 @@
     "debtRatio": 61.72
   },
   {
+    "symbol": "2352",
+    "name": "佳世達",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.64,
+    "grossProfit": 35020814,
+    "operatingIncome": 3190668,
+    "grossMargin": 16.84,
+    "operatingMargin": 1.53,
+    "netMargin": 0.67,
+    "netIncome": 1392044,
+    "totalAssets": 205190038,
+    "totalLiabilities": 144758949,
+    "debtRatio": 70.55
+  },
+  {
+    "symbol": "2354",
+    "name": "鴻準",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.32,
+    "grossProfit": 5840779,
+    "operatingIncome": 2444017,
+    "grossMargin": 3.74,
+    "operatingMargin": 1.57,
+    "netMargin": 2,
+    "netIncome": 3118856,
+    "totalAssets": 158622021,
+    "totalLiabilities": 51822674,
+    "debtRatio": 32.67
+  },
+  {
     "symbol": "2355",
     "name": "敬鵬",
     "year": "114",
@@ -1454,6 +1942,38 @@
     "totalAssets": 631656719,
     "totalLiabilities": 334093522,
     "debtRatio": 52.89
+  },
+  {
+    "symbol": "2360",
+    "name": "致茂",
+    "year": "114",
+    "quarter": "4",
+    "eps": 27.7,
+    "grossProfit": 17424909,
+    "operatingIncome": 9197516,
+    "grossMargin": 61.55,
+    "operatingMargin": 32.49,
+    "netMargin": 42.12,
+    "netIncome": 11925899,
+    "totalAssets": 47150052,
+    "totalLiabilities": 14587481,
+    "debtRatio": 30.94
+  },
+  {
+    "symbol": "2367",
+    "name": "燿華",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.68,
+    "grossProfit": 2414649,
+    "operatingIncome": 455889,
+    "grossMargin": 14.86,
+    "operatingMargin": 2.81,
+    "netMargin": 2.98,
+    "netIncome": 484450,
+    "totalAssets": 24798873,
+    "totalLiabilities": 11940652,
+    "debtRatio": 48.15
   },
   {
     "symbol": "2369",
@@ -1504,6 +2024,38 @@
     "debtRatio": 80.96
   },
   {
+    "symbol": "2383",
+    "name": "台光電",
+    "year": "114",
+    "quarter": "4",
+    "eps": 41.67,
+    "grossProfit": 28119910,
+    "operatingIncome": 19108269,
+    "grossMargin": 29.83,
+    "operatingMargin": 20.27,
+    "netMargin": 15.54,
+    "netIncome": 14644888,
+    "totalAssets": 107912536,
+    "totalLiabilities": 57477331,
+    "debtRatio": 53.26
+  },
+  {
+    "symbol": "2385",
+    "name": "群光",
+    "year": "114",
+    "quarter": "4",
+    "eps": 9.05,
+    "grossProfit": 17244445,
+    "operatingIncome": 7971225,
+    "grossMargin": 18.03,
+    "operatingMargin": 8.33,
+    "netMargin": 8,
+    "netIncome": 7655573,
+    "totalAssets": 100995225,
+    "totalLiabilities": 48709056,
+    "debtRatio": 48.23
+  },
+  {
     "symbol": "2387",
     "name": "精元",
     "year": "114",
@@ -1536,6 +2088,22 @@
     "debtRatio": 27.3
   },
   {
+    "symbol": "2397",
+    "name": "友通",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.49,
+    "grossProfit": 2829528,
+    "operatingIncome": 519593,
+    "grossMargin": 26.02,
+    "operatingMargin": 4.78,
+    "netMargin": 3.03,
+    "netIncome": 329092,
+    "totalAssets": 12356077,
+    "totalLiabilities": 6654137,
+    "debtRatio": 53.85
+  },
+  {
     "symbol": "2408",
     "name": "南亞科",
     "year": "114",
@@ -1550,6 +2118,22 @@
     "totalAssets": 208452718,
     "totalLiabilities": 37914362,
     "debtRatio": 18.19
+  },
+  {
+    "symbol": "2409",
+    "name": "友達",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.9,
+    "grossProfit": 32354808,
+    "operatingIncome": -1055589,
+    "grossMargin": 11.5,
+    "operatingMargin": -0.38,
+    "netMargin": 2.48,
+    "netIncome": 6988523,
+    "totalAssets": 382023047,
+    "totalLiabilities": 218182497,
+    "debtRatio": 57.11
   },
   {
     "symbol": "2412",
@@ -1632,6 +2216,22 @@
     "debtRatio": 20.71
   },
   {
+    "symbol": "2426",
+    "name": "鼎元",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.25,
+    "grossProfit": 289108,
+    "operatingIncome": -38117,
+    "grossMargin": 12.38,
+    "operatingMargin": -1.63,
+    "netMargin": -3.26,
+    "netIncome": -76236,
+    "totalAssets": 4634324,
+    "totalLiabilities": 864607,
+    "debtRatio": 18.66
+  },
+  {
     "symbol": "2427",
     "name": "三商電",
     "year": "114",
@@ -1710,6 +2310,22 @@
     "totalAssets": 1700387,
     "totalLiabilities": 514900,
     "debtRatio": 30.28
+  },
+  {
+    "symbol": "2434",
+    "name": "統懋",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.02,
+    "grossProfit": -7963,
+    "operatingIncome": -62093,
+    "grossMargin": -17.48,
+    "operatingMargin": -136.32,
+    "netMargin": 1.69,
+    "netIncome": 768,
+    "totalAssets": 703522,
+    "totalLiabilities": 232066,
+    "debtRatio": 32.99
   },
   {
     "symbol": "2439",
@@ -1840,6 +2456,54 @@
     "debtRatio": 32.86
   },
   {
+    "symbol": "2460",
+    "name": "建通",
+    "year": "114",
+    "quarter": "4",
+    "eps": -3,
+    "grossProfit": -7997,
+    "operatingIncome": -435376,
+    "grossMargin": -0.25,
+    "operatingMargin": -13.73,
+    "netMargin": -15.79,
+    "netIncome": -500761,
+    "totalAssets": 4972570,
+    "totalLiabilities": 3463272,
+    "debtRatio": 69.65
+  },
+  {
+    "symbol": "2462",
+    "name": "良得電",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.27,
+    "grossProfit": 533877,
+    "operatingIncome": 102059,
+    "grossMargin": 13.14,
+    "operatingMargin": 2.51,
+    "netMargin": 0.99,
+    "netIncome": 40079,
+    "totalAssets": 5860766,
+    "totalLiabilities": 2190812,
+    "debtRatio": 37.38
+  },
+  {
+    "symbol": "2464",
+    "name": "盟立",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.84,
+    "grossProfit": 1253741,
+    "operatingIncome": -75228,
+    "grossMargin": 18.77,
+    "operatingMargin": -1.13,
+    "netMargin": -2.53,
+    "netIncome": -168794,
+    "totalAssets": 11294906,
+    "totalLiabilities": 6289235,
+    "debtRatio": 55.68
+  },
+  {
     "symbol": "2465",
     "name": "麗臺",
     "year": "114",
@@ -1854,6 +2518,38 @@
     "totalAssets": 1499262,
     "totalLiabilities": 412660,
     "debtRatio": 27.52
+  },
+  {
+    "symbol": "2467",
+    "name": "志聖",
+    "year": "114",
+    "quarter": "4",
+    "eps": 5.5,
+    "grossProfit": 2643741,
+    "operatingIncome": 883244,
+    "grossMargin": 43.32,
+    "operatingMargin": 14.47,
+    "netMargin": 14.63,
+    "netIncome": 892907,
+    "totalAssets": 15313208,
+    "totalLiabilities": 8324548,
+    "debtRatio": 54.36
+  },
+  {
+    "symbol": "2468",
+    "name": "華經",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.25,
+    "grossProfit": 266008,
+    "operatingIncome": 86165,
+    "grossMargin": 9.87,
+    "operatingMargin": 3.2,
+    "netMargin": 3.25,
+    "netIncome": 87509,
+    "totalAssets": 2391323,
+    "totalLiabilities": 1116065,
+    "debtRatio": 46.67
   },
   {
     "symbol": "2471",
@@ -1886,6 +2582,22 @@
     "totalAssets": 228017620,
     "totalLiabilities": 81822408,
     "debtRatio": 35.88
+  },
+  {
+    "symbol": "2478",
+    "name": "大毅",
+    "year": "114",
+    "quarter": "4",
+    "eps": 3.45,
+    "grossProfit": 1237842,
+    "operatingIncome": 624185,
+    "grossMargin": 22.82,
+    "operatingMargin": 11.51,
+    "netMargin": 9.16,
+    "netIncome": 496732,
+    "totalAssets": 10191449,
+    "totalLiabilities": 3057537,
+    "debtRatio": 30
   },
   {
     "symbol": "2480",
@@ -2000,6 +2712,22 @@
     "debtRatio": 40.07
   },
   {
+    "symbol": "2497",
+    "name": "怡利電",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.37,
+    "grossProfit": 1143050,
+    "operatingIncome": 448011,
+    "grossMargin": 25.59,
+    "operatingMargin": 10.03,
+    "netMargin": 6.43,
+    "netIncome": 287249,
+    "totalAssets": 4339260,
+    "totalLiabilities": 1983931,
+    "debtRatio": 45.72
+  },
+  {
     "symbol": "2504",
     "name": "國產",
     "year": "114",
@@ -2030,6 +2758,38 @@
     "totalAssets": 14642259,
     "totalLiabilities": 4921052,
     "debtRatio": 33.61
+  },
+  {
+    "symbol": "2509",
+    "name": "全坤建",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.8,
+    "grossProfit": 80917,
+    "operatingIncome": -97658,
+    "grossMargin": 30.6,
+    "operatingMargin": -36.93,
+    "netMargin": -67.07,
+    "netIncome": -177348,
+    "totalAssets": 13631981,
+    "totalLiabilities": 9426615,
+    "debtRatio": 69.15
+  },
+  {
+    "symbol": "2511",
+    "name": "太子",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.33,
+    "grossProfit": 2589053,
+    "operatingIncome": 528652,
+    "grossMargin": 27.68,
+    "operatingMargin": 5.65,
+    "netMargin": 5.33,
+    "netIncome": 498371,
+    "totalAssets": 47147458,
+    "totalLiabilities": 21203083,
+    "debtRatio": 44.97
   },
   {
     "symbol": "2528",
@@ -2064,6 +2824,38 @@
     "debtRatio": 67.05
   },
   {
+    "symbol": "2537",
+    "name": "聯上發",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.15,
+    "grossProfit": 328741,
+    "operatingIncome": 161937,
+    "grossMargin": 26.18,
+    "operatingMargin": 12.9,
+    "netMargin": 3.48,
+    "netIncome": 43652,
+    "totalAssets": 18524124,
+    "totalLiabilities": 14089761,
+    "debtRatio": 76.06
+  },
+  {
+    "symbol": "2542",
+    "name": "興富發",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.1,
+    "grossProfit": 9289577,
+    "operatingIncome": 6430529,
+    "grossMargin": 29.91,
+    "operatingMargin": 20.71,
+    "netMargin": 17.73,
+    "netIncome": 5505862,
+    "totalAssets": 276204028,
+    "totalLiabilities": 213181235,
+    "debtRatio": 77.18
+  },
+  {
     "symbol": "2547",
     "name": "日勝生",
     "year": "114",
@@ -2094,6 +2886,38 @@
     "totalAssets": 54257081,
     "totalLiabilities": 31834496,
     "debtRatio": 58.67
+  },
+  {
+    "symbol": "2606",
+    "name": "裕民",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.31,
+    "grossProfit": 4483617,
+    "operatingIncome": 3703725,
+    "grossMargin": 28.8,
+    "operatingMargin": 23.79,
+    "netMargin": 23.39,
+    "netIncome": 3640394,
+    "totalAssets": 87421021,
+    "totalLiabilities": 48541676,
+    "debtRatio": 55.53
+  },
+  {
+    "symbol": "2610",
+    "name": "華航",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.42,
+    "grossProfit": 37226516,
+    "operatingIncome": 20836218,
+    "grossMargin": 17.8,
+    "operatingMargin": 9.96,
+    "netMargin": 7.73,
+    "netIncome": 16173472,
+    "totalAssets": 354823917,
+    "totalLiabilities": 252283699,
+    "debtRatio": 71.1
   },
   {
     "symbol": "2617",
@@ -2176,6 +3000,38 @@
     "debtRatio": 49.26
   },
   {
+    "symbol": "2704",
+    "name": "國賓",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.57,
+    "grossProfit": 392603,
+    "operatingIncome": -14806,
+    "grossMargin": 28.93,
+    "operatingMargin": -1.09,
+    "netMargin": 15.5,
+    "netIncome": 210353,
+    "totalAssets": 33275917,
+    "totalLiabilities": 7670327,
+    "debtRatio": 23.05
+  },
+  {
+    "symbol": "2705",
+    "name": "六福",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.87,
+    "grossProfit": 748675,
+    "operatingIncome": 150673,
+    "grossMargin": 32.69,
+    "operatingMargin": 6.58,
+    "netMargin": 7.27,
+    "netIncome": 166585,
+    "totalAssets": 15794956,
+    "totalLiabilities": 10767557,
+    "debtRatio": 68.17
+  },
+  {
     "symbol": "2706",
     "name": "第一店",
     "year": "114",
@@ -2206,6 +3062,22 @@
     "totalAssets": 10204353,
     "totalLiabilities": 5859001,
     "debtRatio": 57.42
+  },
+  {
+    "symbol": "2712",
+    "name": "遠雄來",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.38,
+    "grossProfit": 100588,
+    "operatingIncome": -37668,
+    "grossMargin": 19.16,
+    "operatingMargin": -7.17,
+    "netMargin": -7.69,
+    "netIncome": -40371,
+    "totalAssets": 1674223,
+    "totalLiabilities": 647931,
+    "debtRatio": 38.7
   },
   {
     "symbol": "2727",
@@ -2304,12 +3176,50 @@
     "netIncome": 1277875
   },
   {
+    "symbol": "2851",
+    "name": "中再保",
+    "year": "114",
+    "quarter": "4",
+    "grossMargin": 17.64,
+    "operatingMargin": 14.72,
+    "netMargin": 12.81,
+    "eps": 3.66,
+    "netIncome": 2932619
+  },
+  {
+    "symbol": "2852",
+    "name": "第一保",
+    "year": "114",
+    "quarter": "4",
+    "grossMargin": 34.4,
+    "operatingMargin": 14.27,
+    "netMargin": 11.64,
+    "eps": 2.92,
+    "netIncome": 880192
+  },
+  {
     "symbol": "2855",
     "name": "統一綜合證券股份有限公司",
     "year": "114",
     "quarter": "4",
     "eps": 3,
     "netIncome": 4825778
+  },
+  {
+    "symbol": "2880",
+    "name": "華南金融控股股份有限公司",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.9,
+    "netIncome": 26424261
+  },
+  {
+    "symbol": "2889",
+    "name": "國票金融控股股份有限公司",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.63,
+    "netIncome": 2869390
   },
   {
     "symbol": "2901",
@@ -2486,6 +3396,22 @@
     "totalAssets": 6903047,
     "totalLiabilities": 1963407,
     "debtRatio": 28.44
+  },
+  {
+    "symbol": "3017",
+    "name": "奇鋐",
+    "year": "114",
+    "quarter": "4",
+    "eps": 49.17,
+    "grossProfit": 36034003,
+    "operatingIncome": 27555663,
+    "grossMargin": 25.81,
+    "operatingMargin": 19.73,
+    "netMargin": 15,
+    "netIncome": 20950520,
+    "totalAssets": 160136525,
+    "totalLiabilities": 109571884,
+    "debtRatio": 68.42
   },
   {
     "symbol": "3019",
@@ -2680,6 +3606,22 @@
     "debtRatio": 45.62
   },
   {
+    "symbol": "3052",
+    "name": "夆典",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.1,
+    "grossProfit": 430189,
+    "operatingIncome": 262790,
+    "grossMargin": 12.58,
+    "operatingMargin": 7.68,
+    "netMargin": 6.61,
+    "netIncome": 225958,
+    "totalAssets": 13476224,
+    "totalLiabilities": 9873335,
+    "debtRatio": 73.26
+  },
+  {
     "symbol": "3054",
     "name": "立萬利",
     "year": "114",
@@ -2696,6 +3638,22 @@
     "debtRatio": 7.49
   },
   {
+    "symbol": "3055",
+    "name": "蔚華科",
+    "year": "114",
+    "quarter": "4",
+    "eps": -2.68,
+    "grossProfit": 74100,
+    "operatingIncome": -302684,
+    "grossMargin": 16.14,
+    "operatingMargin": -65.91,
+    "netMargin": -70.42,
+    "netIncome": -323387,
+    "totalAssets": 2014338,
+    "totalLiabilities": 341593,
+    "debtRatio": 16.96
+  },
+  {
     "symbol": "3056",
     "name": "富華新",
     "year": "114",
@@ -2710,6 +3668,38 @@
     "totalAssets": 15077407,
     "totalLiabilities": 6321783,
     "debtRatio": 41.93
+  },
+  {
+    "symbol": "3059",
+    "name": "華晶科",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.24,
+    "grossProfit": 2254316,
+    "operatingIncome": 474655,
+    "grossMargin": 25.98,
+    "operatingMargin": 5.47,
+    "netMargin": 6.38,
+    "netIncome": 553558,
+    "totalAssets": 16751465,
+    "totalLiabilities": 6366128,
+    "debtRatio": 38
+  },
+  {
+    "symbol": "3060",
+    "name": "銘異",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.39,
+    "grossProfit": 469789,
+    "operatingIncome": 26778,
+    "grossMargin": 12.3,
+    "operatingMargin": 0.7,
+    "netMargin": -1.15,
+    "netIncome": -44100,
+    "totalAssets": 4505991,
+    "totalLiabilities": 1848738,
+    "debtRatio": 41.03
   },
   {
     "symbol": "3090",
@@ -2776,6 +3766,38 @@
     "debtRatio": 56.89
   },
   {
+    "symbol": "3149",
+    "name": "正達",
+    "year": "114",
+    "quarter": "4",
+    "eps": -2.85,
+    "grossProfit": -240391,
+    "operatingIncome": -601940,
+    "grossMargin": -10.53,
+    "operatingMargin": -26.37,
+    "netMargin": -26.49,
+    "netIncome": -604611,
+    "totalAssets": 4883292,
+    "totalLiabilities": 2326545,
+    "debtRatio": 47.64
+  },
+  {
+    "symbol": "3150",
+    "name": "鈺寶-創",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.22,
+    "grossProfit": 134610,
+    "operatingIncome": -16681,
+    "grossMargin": 44.6,
+    "operatingMargin": -5.53,
+    "netMargin": -3.29,
+    "netIncome": -9933,
+    "totalAssets": 659828,
+    "totalLiabilities": 51532,
+    "debtRatio": 7.81
+  },
+  {
     "symbol": "3164",
     "name": "景岳",
     "year": "114",
@@ -2790,6 +3812,22 @@
     "totalAssets": 1665083,
     "totalLiabilities": 215353,
     "debtRatio": 12.93
+  },
+  {
+    "symbol": "3167",
+    "name": "大量",
+    "year": "114",
+    "quarter": "4",
+    "eps": 8.13,
+    "grossProfit": 1989001,
+    "operatingIncome": 916429,
+    "grossMargin": 39.17,
+    "operatingMargin": 18.05,
+    "netMargin": 14.1,
+    "netIncome": 716187,
+    "totalAssets": 8411800,
+    "totalLiabilities": 4994411,
+    "debtRatio": 59.37
   },
   {
     "symbol": "3168",
@@ -2838,6 +3876,38 @@
     "totalAssets": 2477311,
     "totalLiabilities": 715015,
     "debtRatio": 28.86
+  },
+  {
+    "symbol": "3266",
+    "name": "昇陽",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.58,
+    "grossProfit": 461403,
+    "operatingIncome": 183161,
+    "grossMargin": 32.19,
+    "operatingMargin": 12.78,
+    "netMargin": 14.57,
+    "netIncome": 208883,
+    "totalAssets": 13308074,
+    "totalLiabilities": 6913606,
+    "debtRatio": 51.95
+  },
+  {
+    "symbol": "3308",
+    "name": "聯德",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.68,
+    "grossProfit": 3677,
+    "operatingIncome": -32164,
+    "grossMargin": 46.62,
+    "operatingMargin": -407.81,
+    "netMargin": 518.7,
+    "netIncome": 40910,
+    "totalAssets": 2174146,
+    "totalLiabilities": 1052866,
+    "debtRatio": 48.43
   },
   {
     "symbol": "3311",
@@ -3128,6 +4198,22 @@
     "debtRatio": 61.99
   },
   {
+    "symbol": "3605",
+    "name": "宏致",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.35,
+    "grossProfit": 2823681,
+    "operatingIncome": 596596,
+    "grossMargin": 26,
+    "operatingMargin": 5.49,
+    "netMargin": 6.09,
+    "netIncome": 661225,
+    "totalAssets": 14849417,
+    "totalLiabilities": 6915191,
+    "debtRatio": 46.57
+  },
+  {
     "symbol": "3622",
     "name": "洋華",
     "year": "114",
@@ -3158,6 +4244,22 @@
     "totalAssets": 4954548,
     "totalLiabilities": 1638454,
     "debtRatio": 33.07
+  },
+  {
+    "symbol": "3653",
+    "name": "健策",
+    "year": "114",
+    "quarter": "4",
+    "eps": 36.75,
+    "grossProfit": 8433990,
+    "operatingIncome": 6498133,
+    "grossMargin": 41.6,
+    "operatingMargin": 32.05,
+    "netMargin": 26.19,
+    "netIncome": 5310342,
+    "totalAssets": 27968731,
+    "totalLiabilities": 4904018,
+    "debtRatio": 17.53
   },
   {
     "symbol": "3679",
@@ -3320,6 +4422,22 @@
     "debtRatio": 5.33
   },
   {
+    "symbol": "4137",
+    "name": "麗豐-KY",
+    "year": "114",
+    "quarter": "4",
+    "eps": 7.13,
+    "grossProfit": 3183550,
+    "operatingIncome": 737462,
+    "grossMargin": 82.09,
+    "operatingMargin": 19.02,
+    "netMargin": 15.16,
+    "netIncome": 588001,
+    "totalAssets": 9523912,
+    "totalLiabilities": 4247102,
+    "debtRatio": 44.59
+  },
+  {
     "symbol": "4164",
     "name": "承業醫",
     "year": "114",
@@ -3350,6 +4468,22 @@
     "totalAssets": 6202011,
     "totalLiabilities": 2846034,
     "debtRatio": 45.89
+  },
+  {
+    "symbol": "4540",
+    "name": "全球傳動",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.66,
+    "grossProfit": 246428,
+    "operatingIncome": -300143,
+    "grossMargin": 9.63,
+    "operatingMargin": -11.73,
+    "netMargin": -2.89,
+    "netIncome": -74067,
+    "totalAssets": 7535136,
+    "totalLiabilities": 4085858,
+    "debtRatio": 54.22
   },
   {
     "symbol": "4545",
@@ -3464,6 +4598,22 @@
     "debtRatio": 9.45
   },
   {
+    "symbol": "4585",
+    "name": "達明",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.46,
+    "grossProfit": 928998,
+    "operatingIncome": 111125,
+    "grossMargin": 50.99,
+    "operatingMargin": 6.1,
+    "netMargin": 7.48,
+    "netIncome": 136370,
+    "totalAssets": 7749336,
+    "totalLiabilities": 878141,
+    "debtRatio": 11.33
+  },
+  {
     "symbol": "4588",
     "name": "玖鼎電力",
     "year": "114",
@@ -3512,6 +4662,22 @@
     "debtRatio": 46.59
   },
   {
+    "symbol": "4807",
+    "name": "日成-KY",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.24,
+    "grossProfit": 309250,
+    "operatingIncome": 27708,
+    "grossMargin": 14.53,
+    "operatingMargin": 1.3,
+    "netMargin": -0.07,
+    "netIncome": -1425,
+    "totalAssets": 1539383,
+    "totalLiabilities": 663176,
+    "debtRatio": 43.08
+  },
+  {
     "symbol": "4906",
     "name": "正文",
     "year": "114",
@@ -3558,6 +4724,38 @@
     "totalAssets": 29991428,
     "totalLiabilities": 16873592,
     "debtRatio": 56.26
+  },
+  {
+    "symbol": "4930",
+    "name": "燦星網",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.6,
+    "grossProfit": 863992,
+    "operatingIncome": 21222,
+    "grossMargin": 14.48,
+    "operatingMargin": 0.36,
+    "netMargin": 2.06,
+    "netIncome": 123082,
+    "totalAssets": 11275090,
+    "totalLiabilities": 4932316,
+    "debtRatio": 43.75
+  },
+  {
+    "symbol": "4938",
+    "name": "和碩",
+    "year": "114",
+    "quarter": "4",
+    "eps": 5.39,
+    "grossProfit": 42501260,
+    "operatingIncome": 11608679,
+    "grossMargin": 3.8,
+    "operatingMargin": 1.04,
+    "netMargin": 1.62,
+    "netIncome": 18109587,
+    "totalAssets": 623115179,
+    "totalLiabilities": 376657299,
+    "debtRatio": 60.45
   },
   {
     "symbol": "4942",
@@ -3800,6 +4998,38 @@
     "debtRatio": 51.72
   },
   {
+    "symbol": "5519",
+    "name": "隆大",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.96,
+    "grossProfit": 1804803,
+    "operatingIncome": 1341883,
+    "grossMargin": 33.1,
+    "operatingMargin": 24.61,
+    "netMargin": 19.95,
+    "netIncome": 1087811,
+    "totalAssets": 14783593,
+    "totalLiabilities": 8564105,
+    "debtRatio": 57.93
+  },
+  {
+    "symbol": "5521",
+    "name": "工信",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.52,
+    "grossProfit": 606975,
+    "operatingIncome": 247723,
+    "grossMargin": 6.72,
+    "operatingMargin": 2.74,
+    "netMargin": 2.81,
+    "netIncome": 253873,
+    "totalAssets": 13816188,
+    "totalLiabilities": 8188861,
+    "debtRatio": 59.27
+  },
+  {
     "symbol": "5525",
     "name": "順天",
     "year": "114",
@@ -3814,6 +5044,38 @@
     "totalAssets": 21021717,
     "totalLiabilities": 15433222,
     "debtRatio": 73.42
+  },
+  {
+    "symbol": "5531",
+    "name": "鄉林",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.28,
+    "grossProfit": 242367,
+    "operatingIncome": -763365,
+    "grossMargin": 22.6,
+    "operatingMargin": -71.17,
+    "netMargin": -41.83,
+    "netIncome": -448691,
+    "totalAssets": 44628678,
+    "totalLiabilities": 34780799,
+    "debtRatio": 77.93
+  },
+  {
+    "symbol": "5607",
+    "name": "遠雄港",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.77,
+    "grossProfit": 2058145,
+    "operatingIncome": 1528958,
+    "grossMargin": 49.68,
+    "operatingMargin": 36.9,
+    "netMargin": 24.81,
+    "netIncome": 1027805,
+    "totalAssets": 27156684,
+    "totalLiabilities": 16103545,
+    "debtRatio": 59.3
   },
   {
     "symbol": "5706",
@@ -3856,6 +5118,22 @@
     "netIncome": 16919560
   },
   {
+    "symbol": "5906",
+    "name": "台南-KY",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.98,
+    "grossProfit": 925832,
+    "operatingIncome": 41399,
+    "grossMargin": 55.05,
+    "operatingMargin": 2.46,
+    "netMargin": 1.74,
+    "netIncome": 29211,
+    "totalAssets": 1919230,
+    "totalLiabilities": 1249197,
+    "debtRatio": 65.09
+  },
+  {
     "symbol": "6024",
     "name": "群益期貨股份有限公司",
     "year": "114",
@@ -3878,6 +5156,22 @@
     "totalAssets": 14270665,
     "totalLiabilities": 8877018,
     "debtRatio": 62.2
+  },
+  {
+    "symbol": "6116",
+    "name": "彩晶",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.75,
+    "grossProfit": -1764824,
+    "operatingIncome": -3397149,
+    "grossMargin": -15.43,
+    "operatingMargin": -29.7,
+    "netMargin": -18.71,
+    "netIncome": -2140130,
+    "totalAssets": 43092414,
+    "totalLiabilities": 9075547,
+    "debtRatio": 21.06
   },
   {
     "symbol": "6120",
@@ -4104,6 +5398,22 @@
     "debtRatio": 44.35
   },
   {
+    "symbol": "6216",
+    "name": "居易",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.6,
+    "grossProfit": 340794,
+    "operatingIncome": 56720,
+    "grossMargin": 45.01,
+    "operatingMargin": 7.49,
+    "netMargin": 7.61,
+    "netIncome": 57612,
+    "totalAssets": 1864132,
+    "totalLiabilities": 116857,
+    "debtRatio": 6.27
+  },
+  {
     "symbol": "6225",
     "name": "天瀚",
     "year": "114",
@@ -4120,6 +5430,22 @@
     "debtRatio": 11.55
   },
   {
+    "symbol": "6239",
+    "name": "力成",
+    "year": "114",
+    "quarter": "4",
+    "eps": 7.48,
+    "grossProfit": 12729191,
+    "operatingIncome": 8131839,
+    "grossMargin": 16.99,
+    "operatingMargin": 10.85,
+    "netMargin": 9.64,
+    "netIncome": 7220542,
+    "totalAssets": 123163392,
+    "totalLiabilities": 51888888,
+    "debtRatio": 42.13
+  },
+  {
     "symbol": "6257",
     "name": "矽格",
     "year": "114",
@@ -4134,6 +5460,22 @@
     "totalAssets": 43021625,
     "totalLiabilities": 18145646,
     "debtRatio": 42.18
+  },
+  {
+    "symbol": "6271",
+    "name": "同欣電",
+    "year": "114",
+    "quarter": "4",
+    "eps": 7.64,
+    "grossProfit": 3186404,
+    "operatingIncome": 1606104,
+    "grossMargin": 27.6,
+    "operatingMargin": 13.91,
+    "netMargin": 13.87,
+    "netIncome": 1601398,
+    "totalAssets": 34355475,
+    "totalLiabilities": 7620652,
+    "debtRatio": 22.18
   },
   {
     "symbol": "6278",
@@ -4166,6 +5508,38 @@
     "totalAssets": 9010108,
     "totalLiabilities": 6119597,
     "debtRatio": 67.92
+  },
+  {
+    "symbol": "6282",
+    "name": "康舒",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.18,
+    "grossProfit": 8168387,
+    "operatingIncome": 714374,
+    "grossMargin": 25.75,
+    "operatingMargin": 2.25,
+    "netMargin": 0.47,
+    "netIncome": 147620,
+    "totalAssets": 51365469,
+    "totalLiabilities": 28460566,
+    "debtRatio": 55.41
+  },
+  {
+    "symbol": "6285",
+    "name": "啟碁",
+    "year": "114",
+    "quarter": "4",
+    "eps": 6.41,
+    "grossProfit": 13761587,
+    "operatingIncome": 3768261,
+    "grossMargin": 12.48,
+    "operatingMargin": 3.42,
+    "netMargin": 2.78,
+    "netIncome": 3062696,
+    "totalAssets": 75306614,
+    "totalLiabilities": 41018079,
+    "debtRatio": 54.47
   },
   {
     "symbol": "6405",
@@ -4216,6 +5590,22 @@
     "debtRatio": 54.72
   },
   {
+    "symbol": "6426",
+    "name": "統新",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.78,
+    "grossProfit": 145745,
+    "operatingIncome": -24495,
+    "grossMargin": 29.91,
+    "operatingMargin": -5.03,
+    "netMargin": -6.15,
+    "netIncome": -29986,
+    "totalAssets": 1020222,
+    "totalLiabilities": 116185,
+    "debtRatio": 11.39
+  },
+  {
     "symbol": "6446",
     "name": "藥華藥",
     "year": "114",
@@ -4230,6 +5620,22 @@
     "totalAssets": 37411294,
     "totalLiabilities": 5435963,
     "debtRatio": 14.53
+  },
+  {
+    "symbol": "6451",
+    "name": "訊芯-KY",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.26,
+    "grossProfit": 1218376,
+    "operatingIncome": 164864,
+    "grossMargin": 16.18,
+    "operatingMargin": 2.19,
+    "netMargin": 0.83,
+    "netIncome": 62793,
+    "totalAssets": 19142413,
+    "totalLiabilities": 11469309,
+    "debtRatio": 59.92
   },
   {
     "symbol": "6456",
@@ -4360,6 +5766,22 @@
     "debtRatio": 16.12
   },
   {
+    "symbol": "6534",
+    "name": "正瀚-創",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.51,
+    "grossProfit": 1526820,
+    "operatingIncome": 623132,
+    "grossMargin": 83.93,
+    "operatingMargin": 34.25,
+    "netMargin": 25.49,
+    "netIncome": 463789,
+    "totalAssets": 3574474,
+    "totalLiabilities": 888475,
+    "debtRatio": 24.86
+  },
+  {
     "symbol": "6552",
     "name": "易華電",
     "year": "114",
@@ -4456,6 +5878,22 @@
     "debtRatio": 20.79
   },
   {
+    "symbol": "6591",
+    "name": "動力-KY",
+    "year": "114",
+    "quarter": "4",
+    "eps": 5.37,
+    "grossProfit": 590367,
+    "operatingIncome": 256728,
+    "grossMargin": 33.68,
+    "operatingMargin": 14.65,
+    "netMargin": 11.87,
+    "netIncome": 208152,
+    "totalAssets": 3524362,
+    "totalLiabilities": 1273762,
+    "debtRatio": 36.14
+  },
+  {
     "symbol": "6592",
     "name": "和潤企業",
     "year": "114",
@@ -4504,6 +5942,22 @@
     "debtRatio": 49.61
   },
   {
+    "symbol": "6657",
+    "name": "華安",
+    "year": "114",
+    "quarter": "4",
+    "eps": -2.92,
+    "grossProfit": 5832,
+    "operatingIncome": -275275,
+    "grossMargin": 76,
+    "operatingMargin": -3587.11,
+    "netMargin": -3367.24,
+    "netIncome": -258402,
+    "totalAssets": 948982,
+    "totalLiabilities": 52709,
+    "debtRatio": 5.55
+  },
+  {
     "symbol": "6658",
     "name": "聯策",
     "year": "114",
@@ -4550,6 +6004,22 @@
     "totalAssets": 6052888,
     "totalLiabilities": 2891910,
     "debtRatio": 47.78
+  },
+  {
+    "symbol": "6695",
+    "name": "芯鼎",
+    "year": "114",
+    "quarter": "4",
+    "eps": -1.83,
+    "grossProfit": 441307,
+    "operatingIncome": -248874,
+    "grossMargin": 39.2,
+    "operatingMargin": -22.11,
+    "netMargin": -15.63,
+    "netIncome": -175913,
+    "totalAssets": 1849367,
+    "totalLiabilities": 293932,
+    "debtRatio": 15.89
   },
   {
     "symbol": "6698",
@@ -4824,6 +6294,38 @@
     "debtRatio": 45.74
   },
   {
+    "symbol": "6906",
+    "name": "現觀科",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.87,
+    "grossProfit": 302230,
+    "operatingIncome": 57452,
+    "grossMargin": 86.8,
+    "operatingMargin": 16.5,
+    "netMargin": 17.59,
+    "netIncome": 61237,
+    "totalAssets": 898560,
+    "totalLiabilities": 170486,
+    "debtRatio": 18.97
+  },
+  {
+    "symbol": "6909",
+    "name": "創控",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.01,
+    "grossProfit": 328317,
+    "operatingIncome": 83902,
+    "grossMargin": 59.58,
+    "operatingMargin": 15.23,
+    "netMargin": 11.77,
+    "netIncome": 64847,
+    "totalAssets": 1247716,
+    "totalLiabilities": 174519,
+    "debtRatio": 13.99
+  },
+  {
     "symbol": "6919",
     "name": "康霈*",
     "year": "114",
@@ -4838,6 +6340,38 @@
     "totalAssets": 9474106,
     "totalLiabilities": 63658,
     "debtRatio": 0.67
+  },
+  {
+    "symbol": "6924",
+    "name": "榮惠-KY創",
+    "year": "114",
+    "quarter": "4",
+    "eps": 5.68,
+    "grossProfit": 380065,
+    "operatingIncome": 153227,
+    "grossMargin": 22.44,
+    "operatingMargin": 9.05,
+    "netMargin": 6.99,
+    "netIncome": 118421,
+    "totalAssets": 1072304,
+    "totalLiabilities": 496434,
+    "debtRatio": 46.3
+  },
+  {
+    "symbol": "6933",
+    "name": "AMAX-KY",
+    "year": "114",
+    "quarter": "4",
+    "eps": 5.04,
+    "grossProfit": 872180,
+    "operatingIncome": 242383,
+    "grossMargin": 12.48,
+    "operatingMargin": 3.47,
+    "netMargin": 3.05,
+    "netIncome": 212997,
+    "totalAssets": 3994955,
+    "totalLiabilities": 1703727,
+    "debtRatio": 42.65
   },
   {
     "symbol": "6936",
@@ -4968,6 +6502,22 @@
     "debtRatio": 70.64
   },
   {
+    "symbol": "6988",
+    "name": "威力暘-創",
+    "year": "114",
+    "quarter": "4",
+    "eps": -1.13,
+    "grossProfit": 209525,
+    "operatingIncome": -46286,
+    "grossMargin": 26.46,
+    "operatingMargin": -5.84,
+    "netMargin": -6.83,
+    "netIncome": -54079,
+    "totalAssets": 1190648,
+    "totalLiabilities": 461830,
+    "debtRatio": 38.79
+  },
+  {
     "symbol": "6994",
     "name": "富威電力",
     "year": "114",
@@ -5016,6 +6566,22 @@
     "debtRatio": 19.83
   },
   {
+    "symbol": "7750",
+    "name": "新代",
+    "year": "114",
+    "quarter": "4",
+    "eps": 35.12,
+    "grossProfit": 6387263,
+    "operatingIncome": 2822133,
+    "grossMargin": 45.75,
+    "operatingMargin": 20.22,
+    "netMargin": 16.36,
+    "netIncome": 2283305,
+    "totalAssets": 17659660,
+    "totalLiabilities": 6286849,
+    "debtRatio": 35.6
+  },
+  {
     "symbol": "7765",
     "name": "中華資安",
     "year": "114",
@@ -5062,6 +6628,22 @@
     "totalAssets": 10574150,
     "totalLiabilities": 4650231,
     "debtRatio": 43.98
+  },
+  {
+    "symbol": "8016",
+    "name": "矽創",
+    "year": "114",
+    "quarter": "4",
+    "eps": 14.66,
+    "grossProfit": 5818676,
+    "operatingIncome": 2124041,
+    "grossMargin": 30.62,
+    "operatingMargin": 11.18,
+    "netMargin": 11.7,
+    "netIncome": 2223965,
+    "totalAssets": 22103720,
+    "totalLiabilities": 5658160,
+    "debtRatio": 25.6
   },
   {
     "symbol": "8021",
@@ -5208,6 +6790,22 @@
     "debtRatio": 47.06
   },
   {
+    "symbol": "8162",
+    "name": "微矽電子-創",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.57,
+    "grossProfit": 321189,
+    "operatingIncome": 126380,
+    "grossMargin": 25.2,
+    "operatingMargin": 9.91,
+    "netMargin": 8.44,
+    "netIncome": 107541,
+    "totalAssets": 2540654,
+    "totalLiabilities": 1059978,
+    "debtRatio": 41.72
+  },
+  {
     "symbol": "8163",
     "name": "達方",
     "year": "114",
@@ -5222,6 +6820,54 @@
     "totalAssets": 33086399,
     "totalLiabilities": 20359653,
     "debtRatio": 61.53
+  },
+  {
+    "symbol": "8201",
+    "name": "無敵",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.35,
+    "grossProfit": 115783,
+    "operatingIncome": -34273,
+    "grossMargin": 24.52,
+    "operatingMargin": -7.26,
+    "netMargin": -4.66,
+    "netIncome": -22018,
+    "totalAssets": 692466,
+    "totalLiabilities": 231373,
+    "debtRatio": 33.41
+  },
+  {
+    "symbol": "8210",
+    "name": "勤誠",
+    "year": "114",
+    "quarter": "4",
+    "eps": 29.06,
+    "grossProfit": 6594135,
+    "operatingIncome": 4767433,
+    "grossMargin": 29.97,
+    "operatingMargin": 21.67,
+    "netMargin": 16.64,
+    "netIncome": 3660638,
+    "totalAssets": 23456355,
+    "totalLiabilities": 12379647,
+    "debtRatio": 52.78
+  },
+  {
+    "symbol": "8213",
+    "name": "志超",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.27,
+    "grossProfit": 2117046,
+    "operatingIncome": 881075,
+    "grossMargin": 11.53,
+    "operatingMargin": 4.8,
+    "netMargin": 3.28,
+    "netIncome": 602194,
+    "totalAssets": 31351616,
+    "totalLiabilities": 14502549,
+    "debtRatio": 46.26
   },
   {
     "symbol": "8215",
@@ -5254,6 +6900,22 @@
     "totalAssets": 2169368,
     "totalLiabilities": 1268417,
     "debtRatio": 58.47
+  },
+  {
+    "symbol": "8249",
+    "name": "菱光",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.03,
+    "grossProfit": 763817,
+    "operatingIncome": 353723,
+    "grossMargin": 20.53,
+    "operatingMargin": 9.51,
+    "netMargin": 11.54,
+    "netIncome": 429372,
+    "totalAssets": 10352436,
+    "totalLiabilities": 2735714,
+    "debtRatio": 26.43
   },
   {
     "symbol": "8261",
@@ -5334,6 +6996,22 @@
     "totalAssets": 27049072,
     "totalLiabilities": 17259308,
     "debtRatio": 63.81
+  },
+  {
+    "symbol": "8462",
+    "name": "柏文",
+    "year": "114",
+    "quarter": "4",
+    "eps": 8.49,
+    "grossProfit": 1937018,
+    "operatingIncome": 900589,
+    "grossMargin": 31.93,
+    "operatingMargin": 14.85,
+    "netMargin": 11.05,
+    "netIncome": 670317,
+    "totalAssets": 11988038,
+    "totalLiabilities": 9614471,
+    "debtRatio": 80.2
   },
   {
     "symbol": "8464",
@@ -5448,6 +7126,22 @@
     "debtRatio": 27.44
   },
   {
+    "symbol": "9906",
+    "name": "欣巴巴",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.09,
+    "grossProfit": 425608,
+    "operatingIncome": 76148,
+    "grossMargin": 32.83,
+    "operatingMargin": 5.87,
+    "netMargin": 0.66,
+    "netIncome": 8521,
+    "totalAssets": 8892359,
+    "totalLiabilities": 7546215,
+    "debtRatio": 84.86
+  },
+  {
     "symbol": "9907",
     "name": "統一實",
     "year": "114",
@@ -5478,6 +7172,22 @@
     "totalAssets": 52690990,
     "totalLiabilities": 24865916,
     "debtRatio": 47.19
+  },
+  {
+    "symbol": "9911",
+    "name": "櫻花",
+    "year": "114",
+    "quarter": "4",
+    "eps": 6.27,
+    "grossProfit": 3629052,
+    "operatingIncome": 1573470,
+    "grossMargin": 35.32,
+    "operatingMargin": 15.31,
+    "netMargin": 13.37,
+    "netIncome": 1373870,
+    "totalAssets": 11212509,
+    "totalLiabilities": 4189941,
+    "debtRatio": 37.37
   },
   {
     "symbol": "9917",
@@ -5528,6 +7238,22 @@
     "debtRatio": 22.12
   },
   {
+    "symbol": "9926",
+    "name": "新海",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.68,
+    "grossProfit": 646544,
+    "operatingIncome": 454069,
+    "grossMargin": 26.18,
+    "operatingMargin": 18.38,
+    "netMargin": 19.51,
+    "netIncome": 481846,
+    "totalAssets": 8850415,
+    "totalLiabilities": 4621476,
+    "debtRatio": 52.22
+  },
+  {
     "symbol": "9930",
     "name": "中聯資源",
     "year": "114",
@@ -5574,6 +7300,22 @@
     "totalAssets": 5507642,
     "totalLiabilities": 1556118,
     "debtRatio": 28.25
+  },
+  {
+    "symbol": "9955",
+    "name": "佳龍",
+    "year": "114",
+    "quarter": "4",
+    "eps": 0.54,
+    "grossProfit": 128238,
+    "operatingIncome": -17189,
+    "grossMargin": 8.51,
+    "operatingMargin": -1.14,
+    "netMargin": 3.73,
+    "netIncome": 56142,
+    "totalAssets": 2819486,
+    "totalLiabilities": 1583790,
+    "debtRatio": 56.17
   },
   {
     "symbol": "9958",
