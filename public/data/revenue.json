@@ -5676,6 +5676,18 @@
     "note": "-"
   },
   {
+    "symbol": "2852",
+    "name": "第一保",
+    "month": "11502",
+    "revenue": 725462,
+    "lastMonthRevenue": 799148,
+    "lastYearRevenue": 782351,
+    "revenueYoY": -7.271544357967204,
+    "cumulativeRevenue": 1524610,
+    "cumulativeYoY": -4.744142921585313,
+    "note": "-"
+  },
+  {
     "symbol": "2855",
     "name": "統一證",
     "month": "11502",
@@ -5686,6 +5698,18 @@
     "cumulativeRevenue": 5355795,
     "cumulativeYoY": 299.46857309077893,
     "note": "今年單月營收及累計營收較去年同期增加，主因今年泛自營業務操作獲利優於去年同期所致。"
+  },
+  {
+    "symbol": "2882",
+    "name": "國泰金",
+    "month": "11502",
+    "revenue": 26123903,
+    "lastMonthRevenue": 26002151,
+    "lastYearRevenue": 29364042,
+    "revenueYoY": -11.034376670623207,
+    "cumulativeRevenue": 52126054,
+    "cumulativeYoY": -5.248305224111084,
+    "note": "-"
   },
   {
     "symbol": "2884",
@@ -13584,6 +13608,18 @@
     "note": "-"
   },
   {
+    "symbol": "2848",
+    "name": "華南保",
+    "month": "11502",
+    "revenue": 1321260,
+    "lastMonthRevenue": 1579692,
+    "lastYearRevenue": 1423017,
+    "revenueYoY": -7.150792998256521,
+    "cumulativeRevenue": 2900950,
+    "cumulativeYoY": 0.7589877107344036,
+    "note": "-"
+  },
+  {
     "symbol": "2856",
     "name": "元富證券",
     "month": "11502",
@@ -14169,6 +14205,18 @@
     "revenueYoY": 2.268965886422896,
     "cumulativeRevenue": 11589458,
     "cumulativeYoY": 9.93611928977756,
+    "note": "-"
+  },
+  {
+    "symbol": "5846",
+    "name": "國泰人壽",
+    "month": "11502",
+    "revenue": 44399520,
+    "lastMonthRevenue": 32808098,
+    "lastYearRevenue": 41296624,
+    "revenueYoY": 7.5136795685768405,
+    "cumulativeRevenue": 77207618,
+    "cumulativeYoY": -3.79577559339035,
     "note": "-"
   },
   {
@@ -14907,12 +14955,12 @@
     "symbol": "7746",
     "name": "智安",
     "month": "11502",
-    "revenue": 10963,
+    "revenue": 11001,
     "lastMonthRevenue": 10646,
     "lastYearRevenue": 31956,
-    "revenueYoY": -65.69345349856052,
-    "cumulativeRevenue": 21609,
-    "cumulativeYoY": -66.01877624192103,
+    "revenueYoY": -65.57453999248968,
+    "cumulativeRevenue": 21647,
+    "cumulativeYoY": -65.95901935808526,
     "note": "-"
   },
   {
