@@ -5604,6 +5604,18 @@
     "note": "-"
   },
   {
+    "symbol": "2816",
+    "name": "旺旺保",
+    "month": "11502",
+    "revenue": 1311666,
+    "lastMonthRevenue": 1592604,
+    "lastYearRevenue": 1032265,
+    "revenueYoY": 27.066790020004554,
+    "cumulativeRevenue": 2904270,
+    "cumulativeYoY": 22.519154493934092,
+    "note": "-"
+  },
+  {
     "symbol": "2820",
     "name": "華票",
     "month": "11502",
@@ -5614,6 +5626,18 @@
     "cumulativeRevenue": 802351,
     "cumulativeYoY": 106.84213918356299,
     "note": "主係本年票債券獲利及金融商品評價利益增加"
+  },
+  {
+    "symbol": "2832",
+    "name": "台產",
+    "month": "11502",
+    "revenue": 803079,
+    "lastMonthRevenue": 874568,
+    "lastYearRevenue": 843506,
+    "revenueYoY": -4.79273413585677,
+    "cumulativeRevenue": 1677647,
+    "cumulativeYoY": -0.47831477537654754,
+    "note": "-"
   },
   {
     "symbol": "2834",
@@ -5700,6 +5724,42 @@
     "note": "今年單月營收及累計營收較去年同期增加，主因今年泛自營業務操作獲利優於去年同期所致。"
   },
   {
+    "symbol": "2867",
+    "name": "三商壽",
+    "month": "11502",
+    "revenue": 7693563,
+    "lastMonthRevenue": 6375140,
+    "lastYearRevenue": 8814375,
+    "revenueYoY": -12.715728568389704,
+    "cumulativeRevenue": 14068703,
+    "cumulativeYoY": -3.3799796261991997,
+    "note": "-"
+  },
+  {
+    "symbol": "2880",
+    "name": "華南金",
+    "month": "11502",
+    "revenue": 5516626,
+    "lastMonthRevenue": 6839814,
+    "lastYearRevenue": 5111306,
+    "revenueYoY": 7.929871543593751,
+    "cumulativeRevenue": 12356440,
+    "cumulativeYoY": 17.11476127059115,
+    "note": "-"
+  },
+  {
+    "symbol": "2881",
+    "name": "富邦金",
+    "month": "11502",
+    "revenue": 29373464,
+    "lastMonthRevenue": 23880545,
+    "lastYearRevenue": 17377587,
+    "revenueYoY": 69.03074057405094,
+    "cumulativeRevenue": 53254009,
+    "cumulativeYoY": 36.35846153349805,
+    "note": "本月營業收入較去年本月營業收入增加，主係投資相關淨收益增加所致。"
+  },
+  {
     "symbol": "2882",
     "name": "國泰金",
     "month": "11502",
@@ -5724,6 +5784,42 @@
     "note": "-"
   },
   {
+    "symbol": "2885",
+    "name": "元大金",
+    "month": "11502",
+    "revenue": 13315992,
+    "lastMonthRevenue": 17771233,
+    "lastYearRevenue": 8756541,
+    "revenueYoY": 52.06908755409242,
+    "cumulativeRevenue": 31087225,
+    "cumulativeYoY": 80.89377648913481,
+    "note": "本月營業收入淨額較去年同期增加，主係分離帳戶保險商品資產淨損益增加所致。"
+  },
+  {
+    "symbol": "2886",
+    "name": "兆豐金",
+    "month": "11502",
+    "revenue": 6460103,
+    "lastMonthRevenue": 8155833,
+    "lastYearRevenue": 6507358,
+    "revenueYoY": -0.7261779665418746,
+    "cumulativeRevenue": 14615936,
+    "cumulativeYoY": 9.57870193352976,
+    "note": "-"
+  },
+  {
+    "symbol": "2887",
+    "name": "台新新光金",
+    "month": "11502",
+    "revenue": 16283678,
+    "lastMonthRevenue": 18773450,
+    "lastYearRevenue": 5666390,
+    "revenueYoY": 187.3730540961706,
+    "cumulativeRevenue": 35057128,
+    "cumulativeYoY": 203.68885714496093,
+    "note": "本年度新增新光子公司"
+  },
+  {
     "symbol": "2889",
     "name": "國票金",
     "month": "11502",
@@ -5745,6 +5841,18 @@
     "revenueYoY": 13.287824916874833,
     "cumulativeRevenue": 17798164,
     "cumulativeYoY": 35.41463254302121,
+    "note": "-"
+  },
+  {
+    "symbol": "2891",
+    "name": "中信金",
+    "month": "11502",
+    "revenue": 20907830,
+    "lastMonthRevenue": 25856645,
+    "lastYearRevenue": 18313705,
+    "revenueYoY": 14.164938225225317,
+    "cumulativeRevenue": 46764475,
+    "cumulativeYoY": 30.7830771146678,
     "note": "-"
   },
   {
@@ -5793,6 +5901,18 @@
     "revenueYoY": -21.695526695526695,
     "cumulativeRevenue": 64702,
     "cumulativeYoY": -20.18109818531723,
+    "note": "-"
+  },
+  {
+    "symbol": "2905",
+    "name": "三商",
+    "month": "11502",
+    "revenue": 10029671,
+    "lastMonthRevenue": 15589258,
+    "lastYearRevenue": 9545466,
+    "revenueYoY": 5.072617722382542,
+    "cumulativeRevenue": 25618929,
+    "cumulativeYoY": 13.96722251068632,
     "note": "-"
   },
   {
@@ -9009,6 +9129,18 @@
     "revenueYoY": 0.5982740311492546,
     "cumulativeRevenue": 9147761,
     "cumulativeYoY": 0.7797080683270782,
+    "note": "-"
+  },
+  {
+    "symbol": "5880",
+    "name": "合庫金",
+    "month": "11502",
+    "revenue": 5202882,
+    "lastMonthRevenue": 5365877,
+    "lastYearRevenue": 4397651,
+    "revenueYoY": 18.310479844808057,
+    "cumulativeRevenue": 10568759,
+    "cumulativeYoY": 13.447403762065667,
     "note": "-"
   },
   {
@@ -13596,6 +13728,30 @@
     "note": "-"
   },
   {
+    "symbol": "2823",
+    "name": "凱基人壽",
+    "month": "11502",
+    "revenue": 11373544,
+    "lastMonthRevenue": 11482496,
+    "lastYearRevenue": 8338209,
+    "revenueYoY": 36.40272149570729,
+    "cumulativeRevenue": 22856040,
+    "cumulativeYoY": 19.241841083291657,
+    "note": "-"
+  },
+  {
+    "symbol": "2833",
+    "name": "台灣人壽",
+    "month": "11502",
+    "revenue": 10513342,
+    "lastMonthRevenue": 8976497,
+    "lastYearRevenue": 11453026,
+    "revenueYoY": -8.20467883334937,
+    "cumulativeRevenue": 19489839,
+    "cumulativeYoY": -5.391193172537162,
+    "note": "-"
+  },
+  {
     "symbol": "2837",
     "name": "凱基銀行",
     "month": "11502",
@@ -13677,6 +13833,18 @@
     "revenueYoY": 14.735232918595269,
     "cumulativeRevenue": 173294,
     "cumulativeYoY": 43.82080286821641,
+    "note": "-"
+  },
+  {
+    "symbol": "2877",
+    "name": "國泰產險",
+    "month": "11502",
+    "revenue": 3233091,
+    "lastMonthRevenue": 3624192,
+    "lastYearRevenue": 3262080,
+    "revenueYoY": -0.888666127133608,
+    "cumulativeRevenue": 6857283,
+    "cumulativeYoY": 6.009306234286512,
     "note": "-"
   },
   {
@@ -14064,6 +14232,18 @@
     "note": "-"
   },
   {
+    "symbol": "5828",
+    "name": "富邦保",
+    "month": "11502",
+    "revenue": 6184822,
+    "lastMonthRevenue": 6941619,
+    "lastYearRevenue": 5514099,
+    "revenueYoY": 12.163782333251543,
+    "cumulativeRevenue": 13126441,
+    "cumulativeYoY": 6.372103795458649,
+    "note": "-"
+  },
+  {
     "symbol": "5830",
     "name": "三信商銀",
     "month": "11502",
@@ -14316,6 +14496,18 @@
     "note": "-"
   },
   {
+    "symbol": "5865",
+    "name": "富邦人壽",
+    "month": "11502",
+    "revenue": 39903173,
+    "lastMonthRevenue": 37314472,
+    "lastYearRevenue": 24437636,
+    "revenueYoY": 63.28573271162563,
+    "cumulativeRevenue": 77217645,
+    "cumulativeYoY": 43.44220901794541,
+    "note": "-"
+  },
+  {
     "symbol": "5866",
     "name": "統一期",
     "month": "11502",
@@ -14337,6 +14529,18 @@
     "revenueYoY": -1.2457293035479633,
     "cumulativeRevenue": 88715,
     "cumulativeYoY": 17.323053322048242,
+    "note": "-"
+  },
+  {
+    "symbol": "5868",
+    "name": "臺灣金控",
+    "month": "11502",
+    "revenue": 45180314,
+    "lastMonthRevenue": 47610668,
+    "lastYearRevenue": -10287152,
+    "revenueYoY": 539.1916635430292,
+    "cumulativeRevenue": 92790982,
+    "cumulativeYoY": 895.9197880373687,
     "note": "-"
   },
   {
@@ -14409,6 +14613,18 @@
     "revenueYoY": 64.9418503144856,
     "cumulativeRevenue": 10731189,
     "cumulativeYoY": 89.23122092633673,
+    "note": "-"
+  },
+  {
+    "symbol": "6025",
+    "name": "臺銀人壽",
+    "month": "11502",
+    "revenue": 1861451,
+    "lastMonthRevenue": 2076349,
+    "lastYearRevenue": 933189,
+    "revenueYoY": 99.47202549537126,
+    "cumulativeRevenue": 3937800,
+    "cumulativeYoY": 58.6463851121056,
     "note": "-"
   },
   {
@@ -14856,6 +15072,18 @@
     "note": "-"
   },
   {
+    "symbol": "6960",
+    "name": "南山產物",
+    "month": "11502",
+    "revenue": 1055192,
+    "lastMonthRevenue": 1131584,
+    "lastYearRevenue": 786889,
+    "revenueYoY": 34.09667691377056,
+    "cumulativeRevenue": 2186776,
+    "cumulativeYoY": 34.58913489157602,
+    "note": "-"
+  },
+  {
     "symbol": "6978",
     "name": "愛盛科技",
     "month": "11502",
@@ -14865,6 +15093,18 @@
     "revenueYoY": 105.69411764705882,
     "cumulativeRevenue": 53637,
     "cumulativeYoY": 236.89466742038817,
+    "note": "-"
+  },
+  {
+    "symbol": "6985",
+    "name": "新光人壽",
+    "month": "11502",
+    "revenue": 17273731,
+    "lastMonthRevenue": 16703990,
+    "lastYearRevenue": 631867,
+    "revenueYoY": 2633.7605856928753,
+    "cumulativeRevenue": 33977721,
+    "cumulativeYoY": 1362.029267503467,
     "note": "-"
   },
   {
