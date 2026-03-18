@@ -1960,6 +1960,22 @@
     "debtRatio": 35.15
   },
   {
+    "symbol": "1609",
+    "name": "大亞",
+    "year": "114",
+    "quarter": "4",
+    "eps": 1.65,
+    "grossProfit": 4348909,
+    "operatingIncome": 2730121,
+    "grossMargin": 13.98,
+    "operatingMargin": 8.78,
+    "netMargin": 5.23,
+    "netIncome": 1626726,
+    "totalAssets": 63043142,
+    "totalLiabilities": 43284107,
+    "debtRatio": 68.66
+  },
+  {
     "symbol": "1614",
     "name": "三洋電",
     "year": "114",
@@ -9010,6 +9026,22 @@
     "debtRatio": 18.45
   },
   {
+    "symbol": "4532",
+    "name": "瑞智",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.05,
+    "grossProfit": 3378586,
+    "operatingIncome": 1368302,
+    "grossMargin": 16.66,
+    "operatingMargin": 6.75,
+    "netMargin": 5.44,
+    "netIncome": 1103247,
+    "totalAssets": 28319539,
+    "totalLiabilities": 16950723,
+    "debtRatio": 59.86
+  },
+  {
     "symbol": "4540",
     "name": "全球傳動",
     "year": "114",
@@ -9874,6 +9906,22 @@
     "debtRatio": 35.09
   },
   {
+    "symbol": "5284",
+    "name": "jpp-KY",
+    "year": "114",
+    "quarter": "4",
+    "eps": 12.05,
+    "grossProfit": 1410500,
+    "operatingIncome": 788441,
+    "grossMargin": 37.8,
+    "operatingMargin": 21.13,
+    "netMargin": 16.45,
+    "netIncome": 613863,
+    "totalAssets": 7423031,
+    "totalLiabilities": 3709067,
+    "debtRatio": 49.97
+  },
+  {
     "symbol": "5285",
     "name": "界霖",
     "year": "114",
@@ -9984,6 +10032,22 @@
     "totalAssets": 3989040,
     "totalLiabilities": 471538,
     "debtRatio": 11.82
+  },
+  {
+    "symbol": "5484",
+    "name": "慧友",
+    "year": "114",
+    "quarter": "4",
+    "eps": -0.6,
+    "grossProfit": 115697,
+    "operatingIncome": -74325,
+    "grossMargin": 22.85,
+    "operatingMargin": -14.68,
+    "netMargin": -7.97,
+    "netIncome": -40340,
+    "totalAssets": 939675,
+    "totalLiabilities": 445581,
+    "debtRatio": 47.42
   },
   {
     "symbol": "5515",

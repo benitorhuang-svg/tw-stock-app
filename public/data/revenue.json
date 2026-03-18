@@ -5700,6 +5700,30 @@
     "note": "-"
   },
   {
+    "symbol": "2850",
+    "name": "新產",
+    "month": "11502",
+    "revenue": 2275924,
+    "lastMonthRevenue": 2351893,
+    "lastYearRevenue": 2128813,
+    "revenueYoY": 6.910470764693752,
+    "cumulativeRevenue": 4627817,
+    "cumulativeYoY": 6.133122526453488,
+    "note": "-"
+  },
+  {
+    "symbol": "2851",
+    "name": "中再保",
+    "month": "11502",
+    "revenue": 2138550,
+    "lastMonthRevenue": 2221848,
+    "lastYearRevenue": 1052635,
+    "revenueYoY": 103.16158972483339,
+    "cumulativeRevenue": 4360398,
+    "cumulativeYoY": 103.45695948263192,
+    "note": "營業收入淨額較去年同期增加，主係淨投資損益增加所致。"
+  },
+  {
     "symbol": "2852",
     "name": "第一保",
     "month": "11502",
@@ -5769,6 +5793,18 @@
     "revenueYoY": -11.034376670623207,
     "cumulativeRevenue": 52126054,
     "cumulativeYoY": -5.248305224111084,
+    "note": "-"
+  },
+  {
+    "symbol": "2883",
+    "name": "凱基金",
+    "month": "11502",
+    "revenue": 9367975,
+    "lastMonthRevenue": 8752466,
+    "lastYearRevenue": 7481586,
+    "revenueYoY": 25.21375815234898,
+    "cumulativeRevenue": 18120441,
+    "cumulativeYoY": 8.911005405628927,
     "note": "-"
   },
   {
@@ -5853,6 +5889,18 @@
     "revenueYoY": 14.164938225225317,
     "cumulativeRevenue": 46764475,
     "cumulativeYoY": 30.7830771146678,
+    "note": "-"
+  },
+  {
+    "symbol": "2892",
+    "name": "第一金",
+    "month": "11502",
+    "revenue": 5959029,
+    "lastMonthRevenue": 6995405,
+    "lastYearRevenue": 5789104,
+    "revenueYoY": 2.93525561123103,
+    "cumulativeRevenue": 12954434,
+    "cumulativeYoY": 15.208446130783619,
     "note": "-"
   },
   {
@@ -13800,6 +13848,18 @@
     "note": "-"
   },
   {
+    "symbol": "2863",
+    "name": "泰安產物",
+    "month": "11502",
+    "revenue": 1301611,
+    "lastMonthRevenue": 1354947,
+    "lastYearRevenue": 1118320,
+    "revenueYoY": 16.389852636097004,
+    "cumulativeRevenue": 2656598,
+    "cumulativeYoY": 14.228428650606336,
+    "note": "-"
+  },
+  {
     "symbol": "2872",
     "name": "台灣票券",
     "month": "11502",
@@ -13833,6 +13893,18 @@
     "revenueYoY": 14.735232918595269,
     "cumulativeRevenue": 173294,
     "cumulativeYoY": 43.82080286821641,
+    "note": "-"
+  },
+  {
+    "symbol": "2876",
+    "name": "宏泰人壽",
+    "month": "11502",
+    "revenue": 3442434,
+    "lastMonthRevenue": 3639665,
+    "lastYearRevenue": 467884,
+    "revenueYoY": 635.7451847039009,
+    "cumulativeRevenue": 7082099,
+    "cumulativeYoY": 252.52335397240282,
     "note": "-"
   },
   {
@@ -14577,6 +14649,18 @@
     "revenueYoY": 12.34937341698624,
     "cumulativeRevenue": 30829054,
     "cumulativeYoY": 0.0653869307738226,
+    "note": "-"
+  },
+  {
+    "symbol": "5874",
+    "name": "南山人壽",
+    "month": "11502",
+    "revenue": 28100220,
+    "lastMonthRevenue": 25209681,
+    "lastYearRevenue": 28733404,
+    "revenueYoY": -2.2036511928764164,
+    "cumulativeRevenue": 53309901,
+    "cumulativeYoY": 3.7383066269130203,
     "note": "-"
   },
   {
