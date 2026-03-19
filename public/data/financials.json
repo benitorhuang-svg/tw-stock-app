@@ -10306,6 +10306,22 @@
     "debtRatio": 62.2
   },
   {
+    "symbol": "6115",
+    "name": "鎰勝",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.85,
+    "grossProfit": 1230142,
+    "operatingIncome": 779645,
+    "grossMargin": 16.29,
+    "operatingMargin": 10.33,
+    "netMargin": 7,
+    "netIncome": 528679,
+    "totalAssets": 8348097,
+    "totalLiabilities": 3051195,
+    "debtRatio": 36.55
+  },
+  {
     "symbol": "6116",
     "name": "彩晶",
     "year": "114",
