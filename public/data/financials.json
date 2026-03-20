@@ -1976,6 +1976,22 @@
     "debtRatio": 68.66
   },
   {
+    "symbol": "1612",
+    "name": "宏泰",
+    "year": "114",
+    "quarter": "4",
+    "eps": 2.77,
+    "grossProfit": 1124233,
+    "operatingIncome": 879750,
+    "grossMargin": 14.89,
+    "operatingMargin": 11.65,
+    "netMargin": 11.58,
+    "netIncome": 874200,
+    "totalAssets": 9684742,
+    "totalLiabilities": 1201708,
+    "debtRatio": 12.41
+  },
+  {
     "symbol": "1614",
     "name": "三洋電",
     "year": "114",
@@ -7426,6 +7442,22 @@
     "debtRatio": 59.71
   },
   {
+    "symbol": "3046",
+    "name": "建碁",
+    "year": "114",
+    "quarter": "4",
+    "eps": 4.01,
+    "grossProfit": 632920,
+    "operatingIncome": 355130,
+    "grossMargin": 8.42,
+    "operatingMargin": 4.73,
+    "netMargin": 4.17,
+    "netIncome": 313484,
+    "totalAssets": 3836819,
+    "totalLiabilities": 2178886,
+    "debtRatio": 56.79
+  },
+  {
     "symbol": "3047",
     "name": "訊舟",
     "year": "114",
@@ -7686,7 +7718,7 @@
     "name": "正達",
     "year": "114",
     "quarter": "4",
-    "eps": -2.85,
+    "eps": -2.86,
     "grossProfit": -240391,
     "operatingIncome": -601940,
     "grossMargin": -10.53,
@@ -8192,6 +8224,22 @@
     "totalAssets": 27130072,
     "totalLiabilities": 12030712,
     "debtRatio": 44.34
+  },
+  {
+    "symbol": "3518",
+    "name": "柏騰",
+    "year": "114",
+    "quarter": "4",
+    "eps": -1.56,
+    "grossProfit": 21719,
+    "operatingIncome": -157064,
+    "grossMargin": 6.79,
+    "operatingMargin": -49.1,
+    "netMargin": -46.7,
+    "netIncome": -149393,
+    "totalAssets": 2246061,
+    "totalLiabilities": 845942,
+    "debtRatio": 37.66
   },
   {
     "symbol": "3528",
